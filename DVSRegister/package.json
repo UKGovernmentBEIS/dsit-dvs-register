@@ -1,0 +1,17 @@
+{
+  "name": "dvsregister",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile-sass": "dart-sass ./wwwroot/css/main.scss ./wwwroot/css/main.css"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dart-sass": "^1.25.0",
+    "govuk-frontend": "^5.1.0",
+    "sass": "^1.70.0"
+  }
+}
