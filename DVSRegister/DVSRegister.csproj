@@ -8,4 +8,7 @@
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+  <ItemGroup>
+    <ProjectReference Include="..\DVSRegister.BusinessLogic\DVSRegister.BusinessLogic.csproj" />
+  </ItemGroup>
 </Project>
