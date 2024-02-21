@@ -33,7 +33,7 @@ namespace DVSRegister
                  {
                      source.AwsOptions = new AWSOptions()
                      {
-                         Region = RegionEndpoint.EUNorth1
+                         Region = RegionEndpoint.EUWest2
                      };
                      source.Optional = true;
                      source.Path = "/";
@@ -51,7 +51,7 @@ namespace DVSRegister
             }
             catch (Exception ex)
             {
-                Console.WriteLine("DB connection failed:" + ex.Message);
+                Console.WriteLine(Constants.DbConnectionFailed + ex.Message);
             }
         }
     }
