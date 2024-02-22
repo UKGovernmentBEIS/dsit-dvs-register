@@ -20,7 +20,7 @@ namespace DVSRegister
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            string connectionString = string.Format(Constants.ConnectionStringBuiler,
+            string connectionString = string.Format(Constants.ConnectionStringBuilder,
             configuration.GetValue<string>("host"), configuration.GetValue<string>("user"),
              configuration.GetValue<string>("password"),configuration.GetValue<string>("name"));           
             services.AddDbContext<DVSRegisterDbContext>(opt =>
