@@ -10,9 +10,10 @@ Console.WriteLine(environment);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
-.AddJsonFile($"appsettings.{environment}.json", optional: true);
+.AddJsonFile($"appsettings.{environment}.json", optional: true)
+.AddEnvironmentVariables();
 
-startup.ConfigureSystemsManager(builder.Configuration, environment);
+
 startup.ConfigureServices(builder.Services);
 var app = builder.Build();
 
