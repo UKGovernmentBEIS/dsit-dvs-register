@@ -1,6 +1,4 @@
-﻿using Amazon;
-using Amazon.Extensions.NETCore.Setup;
-using DVSRegister.CommonUtility;
+﻿using DVSRegister.CommonUtility;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
@@ -20,28 +18,11 @@ namespace DVSRegister
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            string connectionString = string.Format(Constants.ConnectionStringBuilder,
-            configuration.GetValue<string>("host"), configuration.GetValue<string>("user"),
-             configuration.GetValue<string>("password"),configuration.GetValue<string>("name"));           
+            string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));           
             services.AddDbContext<DVSRegisterDbContext>(opt =>
                 opt.UseNpgsql(connectionString));
         }
-
-        public void ConfigureSystemsManager(ConfigurationManager configuration, string environment)
-        {
-            if (environment != Environments.Development)
-            {
-                configuration.AddSystemsManager(source =>
-                {
-                    source.AwsOptions = new AWSOptions()
-                    {
-                        Region = RegionEndpoint.EUWest2
-                    };
-                    source.Optional = true;
-                    source.Path = "/rds/dvsrds/";
-                });
-            }
-        }
+              
         public void ConfigureDatabaseHealthCheck(DVSRegisterDbContext? dbContext)
         {
             try
