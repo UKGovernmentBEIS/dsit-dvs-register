@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>b1586965-8e26-47e7-95b9-39870821933f</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
@@ -19,5 +20,11 @@
     <ProjectReference Include="..\DVSRegister.BusinessLogic\DVSRegister.BusinessLogic.csproj" />
     <ProjectReference Include="..\DVSRegister.CommonUtility\DVSRegister.CommonUtility.csproj" />
     <ProjectReference Include="..\DVSRegister.Data\DVSRegister.Data.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Middleware\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Middleware\" />
   </ItemGroup>
 </Project>
