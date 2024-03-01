@@ -1,6 +1,6 @@
 ﻿using DVSRegister;
 using DVSRegister.Data;
-
+using DVSRegister.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration, builder.Environment);
@@ -22,6 +22,8 @@ using var scope = app.Services.CreateScope();
 var dbContext = scope.ServiceProvider.GetRequiredService<DVSRegisterDbContext>();
 startup.ConfigureDatabaseHealthCheck(dbContext);
 
+
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -30,6 +32,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+if(app.Environment.IsDevelopment() || app.Environment.IsStaging())
+{
+    app.UseMiddleware<BasicAuthMiddleware>();
+}
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
@@ -37,5 +45,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.Run();
+
+
 
