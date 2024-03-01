@@ -1,5 +1,6 @@
 ﻿using DVSRegister.CommonUtility;
 using DVSRegister.Data;
+using DVSRegister.Middleware;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
@@ -17,8 +18,15 @@ namespace DVSRegister
 
         public void ConfigureServices(IServiceCollection services)
         {
+
+            if(webHostEnvironment.IsDevelopment() || webHostEnvironment.IsStaging())
+            {
+                services.Configure<BasicAuthMiddlewareConfiguration>(
+                    configuration.GetSection(BasicAuthMiddlewareConfiguration.ConfigSection));
+            }
             services.AddControllersWithViews();
-            string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));           
+            string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));
+
             services.AddDbContext<DVSRegisterDbContext>(opt =>
                 opt.UseNpgsql(connectionString));
         }
