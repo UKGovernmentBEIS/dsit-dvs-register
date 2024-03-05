@@ -39,6 +39,7 @@ namespace DVSRegister.Data.Entities
         public YesNoEnum ConfirmLegalRequirements { get; set; }
         public YesNoEnum ConfirmAccuracy { get; set; }
         public string URN { get; set; }
-        public PreAssessmentStatusEnum PreAssessmentStatus { get; set; }       
+        public PreAssessmentStatusEnum PreAssessmentStatus { get; set; }
+        public string TrustmarkNumber { get; set; }
     }
 }
