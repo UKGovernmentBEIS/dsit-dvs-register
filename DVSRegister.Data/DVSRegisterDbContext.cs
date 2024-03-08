@@ -1,4 +1,5 @@
 ﻿
+using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DVSRegister.Data
@@ -8,6 +9,7 @@ namespace DVSRegister.Data
         public DVSRegisterDbContext(DbContextOptions<DVSRegisterDbContext> options) : base(options)
         {
         }
-        
+        public DbSet<PreAssessment> PreAssessment { get; set; }
     }
+
 }

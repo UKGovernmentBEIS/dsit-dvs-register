@@ -1,4 +1,6 @@
 ﻿using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Email;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data;
 using DVSRegister.Middleware;
 using Microsoft.EntityFrameworkCore;
@@ -29,8 +31,17 @@ namespace DVSRegister
 
             services.AddDbContext<DVSRegisterDbContext>(opt =>
                 opt.UseNpgsql(connectionString));
+
+            ConfigureGovUkNotify(services);
         }
-              
+
+        private void ConfigureGovUkNotify(IServiceCollection services)
+        {
+            services.AddScoped<IEmailSender, GovUkNotifyApi>();
+            services.Configure<GovUkNotifyConfiguration>(
+                configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
+        }
+
         public void ConfigureDatabaseHealthCheck(DVSRegisterDbContext? dbContext)
         {
             try
