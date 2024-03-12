@@ -44,7 +44,7 @@ app.UseRouting();
 app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=PreAssessment}/{action=StartPage}/{id?}");
 
 app.Run();
 

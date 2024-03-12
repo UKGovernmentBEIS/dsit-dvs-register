@@ -1,0 +1,24 @@
+﻿@model DVSRegister.Models.SummaryViewModel
+@{
+    ViewData["Title"] = "Summary";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Summary</h1>
+
+@using (Html.BeginForm("SaveSummary", "PreAssessment", FormMethod.Post))
+{
+
+    <label class="govuk-label govuk-label--l" for="event-name">
+        SponsorFullName
+    </label>
+
+
+    @Html.TextBoxFor(m => m.sponsorViewModel.SponsorFullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+
+    <button type="submit" class="govuk-button" data-module="govuk-button">
+        Save and continue
+    </button>
+}
+
+

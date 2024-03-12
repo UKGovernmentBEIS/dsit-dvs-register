@@ -1,0 +1,18 @@
+﻿@model DVSRegister.Models.CountryViewModel
+@{
+    ViewData["Title"] = "Country";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Country</h1>
+
+
+@using (Html.BeginForm("SaveCountry", "PreAssessment", FormMethod.Post))
+{
+
+   
+    <button type="submit" class="govuk-button" data-module="govuk-button">
+        Save and continue
+    </button>
+}
+
