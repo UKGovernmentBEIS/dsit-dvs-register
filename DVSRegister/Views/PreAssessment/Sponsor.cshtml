@@ -1,0 +1,33 @@
+﻿@model DVSRegister.Models.SponsorViewModel
+@{
+    ViewData["Title"] = "Sponsor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Sponsor</h1>
+
+
+@using (Html.BeginForm("SaveSponsor", "PreAssessment", FormMethod.Post))
+{
+
+    <div class="govuk-form-group">
+
+        <label class="govuk-label govuk-label--l" for="event-name">
+            SponsorFullName
+        </label>
+
+
+        @Html.TextBoxFor(m => m.SponsorFullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+
+        <label class="govuk-label govuk-label--l" for="event-name">
+            Email
+        </label>
+        @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+    </div>
+
+
+    <button type="submit" class="govuk-button" data-module="govuk-button">
+        Save and continue
+    </button>
+}
+
