@@ -33,13 +33,26 @@ namespace DVSRegister
                 opt.UseNpgsql(connectionString));
 
             ConfigureGovUkNotify(services);
+            ConfigureSession(services);
         }
+
+       
 
         private void ConfigureGovUkNotify(IServiceCollection services)
         {
             services.AddScoped<IEmailSender, GovUkNotifyApi>();
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
+        }
+        private void ConfigureSession(IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // ToDo:Adjust the timeout
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
         }
 
         public void ConfigureDatabaseHealthCheck(DVSRegisterDbContext? dbContext)
