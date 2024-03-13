@@ -2,7 +2,9 @@
 {
     public class SummaryViewModel
     {
-       //Add all other view models
-       public SponsorViewModel sponsorViewModel { get; set; }
+        public bool ConfirmAccuracy { get; set; }
+        public SponsorViewModel SponsorViewModel { get; set; }
+        public CountryViewModel CountryViewModel { get; set; }
+        public CompanyViewModel CompanyViewModel { get; set; }
     }
 }

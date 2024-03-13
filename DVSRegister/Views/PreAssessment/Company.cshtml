@@ -8,10 +8,15 @@
 
 @using (Html.BeginForm("SaveCompany", "PreAssessment", FormMethod.Post))
 {
+    <label class="govuk-label govuk-label--l" for="event-name">
+        Company name
+    </label>
 
 
+    @Html.TextBoxFor(m => m.RegisteredCompanyName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
     <button type="submit" class="govuk-button" data-module="govuk-button">
         Save and continue
     </button>
+   
 }
 

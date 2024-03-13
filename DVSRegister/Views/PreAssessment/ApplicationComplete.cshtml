@@ -1,4 +1,4 @@
-﻿
+﻿@model DVSRegister.Models.ResponseViewModel
 @{
     ViewData["Title"] = "ApplicationComplete";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -6,12 +6,5 @@
 
 <h1>ApplicationComplete</h1>
 
-@using (Html.BeginForm("SubmitApplication", "PreAssessment", FormMethod.Post))
-{
 
-
-    <button type="submit" class="govuk-button" data-module="govuk-button">
-        Submit
-    </button>
-}
-
+@Html.Label(Model.Message)

@@ -10,7 +10,12 @@
 @using (Html.BeginForm("SaveCountry", "PreAssessment", FormMethod.Post))
 {
 
-   
+    <label class="govuk-label govuk-label--l" for="event-name">
+        CountryName
+    </label>
+
+
+    @Html.TextBoxFor(m => m.Name, new { @class = "govuk-input", id = "event-name", name = "eventName" })
     <button type="submit" class="govuk-button" data-module="govuk-button">
         Save and continue
     </button>
