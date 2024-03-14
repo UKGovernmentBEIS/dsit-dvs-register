@@ -1,8 +1,9 @@
 ﻿using DVSRegister.BusinessLogic.Models;
-using DVSRegister.CommonUtility;
+using DVSRegister.BusinessLogic.Models.PreAssessment;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace DVSRegister.Controllers
 {
@@ -104,14 +105,23 @@ namespace DVSRegister.Controllers
         public IActionResult Country()
         {
             SummaryViewModel summaryViewModel = GetPreAssessmentSummary();
-            return View(summaryViewModel.CountryViewModel);
+            CountryViewModel countryViewModel = new CountryViewModel();
+            countryViewModel.SelectedCountryIds = summaryViewModel.SelectedCountries.Select(c => c.Id).ToList();
+            countryViewModel.AvailableCountries = new List<CountryDto>  //ToDo: Change to db call
+            { new CountryDto { Id = 1, CountryName = "Abu Dhabi" },
+            new CountryDto { Id = 25, CountryName = "Belgium" },
+            new CountryDto { Id = 52, CountryName = "China" } };
+
+            return View(countryViewModel);
         }
 
         [HttpPost]
         public IActionResult SaveCountry(CountryViewModel countryViewModel)
         {
             SummaryViewModel summaryViewModel = GetPreAssessmentSummary();
-            summaryViewModel.CountryViewModel = countryViewModel;
+            List<CountryDto> availableCountries = JsonConvert.DeserializeObject<List<CountryDto>>(HttpContext.Request.Form["AvailableCountries"]);
+            summaryViewModel.SelectedCountries = availableCountries
+            .Where(c => countryViewModel.SelectedCountryIds.Contains(c.Id)).ToList();
             _httpContextAccessor?.HttpContext?.Session.Set("PreAssessmentSummary", summaryViewModel);
             return RedirectToAction("Company");
         }
@@ -166,10 +176,11 @@ namespace DVSRegister.Controllers
             SummaryViewModel model = _httpContextAccessor?.HttpContext?.Session.Get<SummaryViewModel>("PreAssessmentSummary") ?? new SummaryViewModel
             {
                 IsApplicationSponsor = false,
-                SponsorViewModel = new SponsorViewModel { ContactViewModel = new ContactViewModel()},
+                SponsorViewModel = new SponsorViewModel { ContactViewModel = new ContactViewModel() },
                 CompanyViewModel = new CompanyViewModel(),
                 CountryViewModel = new CountryViewModel(),
-                ConfirmAccuracy = false
+                ConfirmAccuracy = false,
+                SelectedCountries = new List<CountryDto>()
             };
             return model;
         }
