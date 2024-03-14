@@ -1,0 +1,15 @@
+﻿@model DVSRegister.Models.SummaryViewModel
+@{
+    ViewData["Title"] = "SelectApplicationSponsor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>SelectApplicationSponsor</h1>
+
+@using (Html.BeginForm("SaveApplicationSponsorSelection", "PreAssessment", FormMethod.Post))
+{
+    @Html.RadioButtonFor(m => m.IsApplicationSponsor, "Yes")    
+
+    <button type="submit">Submit</button>
+}
+

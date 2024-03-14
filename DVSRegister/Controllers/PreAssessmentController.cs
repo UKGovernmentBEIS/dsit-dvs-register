@@ -30,7 +30,38 @@ namespace DVSRegister.Controllers
         {
             SummaryViewModel summaryViewModel = GetPreAssessmentSummary();
             _httpContextAccessor?.HttpContext?.Session.Set("PreAssessmentSummary", summaryViewModel);
-            return RedirectToAction("Sponsor");
+            return RedirectToAction("SelectApplicationSponsor");
+        }
+
+        /// <summary>
+        /// Select Application Sponsor or Not
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult SelectApplicationSponsor()
+        {
+            SummaryViewModel summaryViewModel = GetPreAssessmentSummary();
+            return View(summaryViewModel);
+        }
+
+      
+        [HttpPost]
+        public IActionResult SaveApplicationSponsorSelection(SummaryViewModel viewModel)
+        {
+            SummaryViewModel summaryViewModel = GetPreAssessmentSummary();
+            summaryViewModel.IsApplicationSponsor = viewModel.IsApplicationSponsor;
+            _httpContextAccessor?.HttpContext?.Session.Set("PreAssessmentSummary", summaryViewModel);
+            if (summaryViewModel.IsApplicationSponsor)
+            {
+                //Provide Contact details
+                return RedirectToAction("Contact");
+            }
+            else
+            {
+                //Provider sponser contact and the user's contact
+                return RedirectToAction("Sponsor");
+               
+            }
         }
 
         /// <summary>
@@ -44,11 +75,27 @@ namespace DVSRegister.Controllers
             return View(summaryViewModel.SponsorViewModel);
         }
 
+        [HttpGet]
+        public IActionResult Contact()
+        {
+            SummaryViewModel summaryViewModel = GetPreAssessmentSummary();
+            return View(summaryViewModel.SponsorViewModel.ContactViewModel);
+        }
+
         [HttpPost]
         public IActionResult SaveSponsor(SponsorViewModel sponsorViewModel)
         {
             SummaryViewModel summaryViewModel = GetPreAssessmentSummary();
             summaryViewModel.SponsorViewModel = sponsorViewModel;
+            _httpContextAccessor?.HttpContext?.Session.Set("PreAssessmentSummary", summaryViewModel);
+            return RedirectToAction("Country");
+        }
+
+        [HttpPost]
+        public IActionResult SaveContact(ContactViewModel contactViewModel)
+        {
+            SummaryViewModel summaryViewModel = GetPreAssessmentSummary();
+            summaryViewModel.SponsorViewModel.ContactViewModel = contactViewModel;
             _httpContextAccessor?.HttpContext?.Session.Set("PreAssessmentSummary", summaryViewModel);
             return RedirectToAction("Country");
         }
@@ -99,11 +146,11 @@ namespace DVSRegister.Controllers
             model.ConfirmAccuracy =summaryViewModel.ConfirmAccuracy;
             MapViewModelToDto(model);
             //ToDo: Call Service to save to DB 
-            return RedirectToAction("ApplicationComplete", new ResponseViewModel { IsSuccess = true, Message= Constants.ApplicationSubmittedMessage });
+            return RedirectToAction("ApplicationComplete");
         }
 
         [HttpGet]
-        public async Task<IActionResult> ApplicationComplete(ResponseViewModel responseViewModel)
+        public async Task<IActionResult> ApplicationComplete()
         {
             return View("ApplicationComplete");
         }
@@ -118,7 +165,8 @@ namespace DVSRegister.Controllers
         {
             SummaryViewModel model = _httpContextAccessor?.HttpContext?.Session.Get<SummaryViewModel>("PreAssessmentSummary") ?? new SummaryViewModel
             {
-                SponsorViewModel = new SponsorViewModel(),
+                IsApplicationSponsor = false,
+                SponsorViewModel = new SponsorViewModel { ContactViewModel = new ContactViewModel()},
                 CompanyViewModel = new CompanyViewModel(),
                 CountryViewModel = new CountryViewModel(),
                 ConfirmAccuracy = false

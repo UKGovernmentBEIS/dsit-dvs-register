@@ -9,16 +9,7 @@
 @using (Html.BeginForm("SaveSummaryAndSubmit", "PreAssessment", FormMethod.Post))
 {
 
-    <label class="govuk-label govuk-label--l" for="event-name">
-        SponsorFullName
-    </label>
-
-
-    @Html.TextBoxFor(m => m.SponsorViewModel.SponsorFullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-
-    <label class="govuk-label govuk-label--l" for="event-name">
-        Confirm
-    </label>
+   
     @Html.CheckBoxFor(m => m.ConfirmAccuracy, new { @checked = "checked" })
     <button type="submit" class="govuk-button" data-module="govuk-button">
         Save and continue
