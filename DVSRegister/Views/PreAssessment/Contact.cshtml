@@ -1,0 +1,37 @@
+﻿@model DVSRegister.Models.ContactViewModel
+@{
+    ViewData["Title"] = "Contact";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Contact</h1>
+
+@using (Html.BeginForm("SaveContact", "PreAssessment", FormMethod.Post))
+{
+   
+
+
+    <div class="govuk-form-group">
+
+        <label class="govuk-label govuk-label--l" for="event-name">
+         FullName
+        </label>
+
+
+        @Html.TextBoxFor(m => m.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+
+        <label class="govuk-label govuk-label--l" for="event-name">
+            Email
+        </label>
+        @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+    </div>
+
+
+ 
+
+
+    <button type="submit" class="govuk-button" data-module="govuk-button">
+        Save and continue
+    </button>
+}
+

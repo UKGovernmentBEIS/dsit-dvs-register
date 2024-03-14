@@ -20,9 +20,25 @@
         @Html.TextBoxFor(m => m.SponsorFullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
 
         <label class="govuk-label govuk-label--l" for="event-name">
+            Sponsor   Email
+        </label>
+        @Html.TextBoxFor(m => m.SponsorEmail, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+    </div>
+
+
+    <div class="govuk-form-group">
+
+        <label class="govuk-label govuk-label--l" for="event-name">
+          FullName
+        </label>
+
+
+        @Html.TextBoxFor(m => m.ContactViewModel.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+
+        <label class="govuk-label govuk-label--l" for="event-name">
             Email
         </label>
-        @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+        @Html.TextBoxFor(m => m.ContactViewModel.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
     </div>
 
 
