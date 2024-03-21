@@ -1,15 +1,62 @@
 ﻿@model DVSRegister.Models.SummaryViewModel
 @{
-    ViewData["Title"] = "SelectApplicationSponsor";
+    ViewData["Title"] = "Digital Verifications Services Register - Pre Assessment";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>SelectApplicationSponsor</h1>
 
 @using (Html.BeginForm("SaveApplicationSponsorSelection", "PreAssessment", FormMethod.Post))
 {
-    @Html.RadioButtonFor(m => m.IsApplicationSponsor, "Yes")    
 
-    <button type="submit">Submit</button>
+    <div class="govuk-width-container">
+        <nav><a href="URL" class="govuk-back-link" id="back-link">Back</a></nav>
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <div class="govuk-form-group">
+                        <span class="govuk-caption-l">Page 1 of 5</span>
+                        <h1 class="govuk-heading-xl form-title">Provide contact details of the application sponsor</h1>
+                        <details class="govuk-details">
+                            <summary class="govuk-details__summary">
+                                <span class="govuk-details__summary-text">
+                                    Who is the application sponsor
+                                </span>
+                            </summary>
+                            <div class="govuk-details__text">
+                                <!--ToDo - Add Details Text-->
+                            </div>
+                        </details>
+                        <fieldset class="govuk-fieldset" aria-describedby="applicationName-hint">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                <h1 class="govuk-fieldset__heading">
+                                    Are you the application sponsor?
+                                </h1>
+                            </legend>
+                            <div id="applicationSponsor-hint" class="govuk-hint">
+                                If you are completing this on behalf of the application sponsor, you will be asked to provide both your and their details
+                            </div>
+
+
+                            <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                                <div class="govuk-radios__item">
+                                    @Html.RadioButtonFor(m => m.IsApplicationSponsor, true, new { @id = "applicationName-1", @class = "govuk-radios__input" })
+                                    <label class="govuk-label govuk-radios__label" for="applicationName-1">
+                                        Yes
+                                    </label>
+                                </div>
+                                <div class="govuk-radios__item">
+                                    @Html.RadioButtonFor(m => m.IsApplicationSponsor, false, new { @id = "applicationName-2", @class = "govuk-radios__input" })
+                                    <label class="govuk-label govuk-radios__label" for="applicationName-2">
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <button type="submit" class="govuk-button continue-btn">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 }
 

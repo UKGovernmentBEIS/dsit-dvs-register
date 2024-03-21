@@ -4,34 +4,60 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Contact</h1>
 
 @using (Html.BeginForm("SaveContact", "PreAssessment", FormMethod.Post))
 {
-   
+    <div class="govuk-width-container">
+        <nav><a href="URL" class="govuk-back-link" id="back-link">Back</a></nav>
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <span class="govuk-caption-l">Page 2 of 5</span>
+                    <h1 class="govuk-heading-xl form-title">Provide contact details of the application sponsor</h1>
+                    <details class="govuk-details">
+                        <summary class="govuk-details__summary">
+                            <span class="govuk-details__summary-text">
+                                Who is the application sponsor
+                            </span>
+                        </summary>
+                        <div class="govuk-details__text">
+                            <!--ToDo - Add Details Text-->
+                        </div>
+                    </details>
+
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Full name of application sponsor
+                        </label>
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                    </div>
+
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Job title of application sponsor
+                        </label>
+                        @Html.TextBoxFor(m => m.JobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                    </div>
 
 
-    <div class="govuk-form-group">
-
-        <label class="govuk-label govuk-label--l" for="event-name">
-         FullName
-        </label>
-
-
-        @Html.TextBoxFor(m => m.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-
-        <label class="govuk-label govuk-label--l" for="event-name">
-            Email
-        </label>
-        @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Email address of application sponsor
+                        </label>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                    </div>
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Telephone number of application sponsor
+                        </label>
+                        @Html.TextBoxFor(m => m.TelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
+                    </div>
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </main>
     </div>
-
-
- 
-
-
-    <button type="submit" class="govuk-button" data-module="govuk-button">
-        Save and continue
-    </button>
 }
 

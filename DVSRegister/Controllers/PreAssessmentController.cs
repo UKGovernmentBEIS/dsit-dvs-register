@@ -60,7 +60,6 @@ namespace DVSRegister.Controllers
             {
                 //Provider sponser contact and the user's contact
                 return RedirectToAction("Sponsor");
-               
             }
         }
 
