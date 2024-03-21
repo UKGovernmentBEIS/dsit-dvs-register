@@ -1,1 +1,5 @@
 ﻿@import "../../node_modules/govuk-frontend/dist/govuk/all";
+//settings
+@import "./settings/_colors";
+//components
+@import "./components/alert";

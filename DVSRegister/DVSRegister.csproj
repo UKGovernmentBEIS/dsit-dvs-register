@@ -28,5 +28,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Middleware\" />
+    <Folder Include="wwwroot\css\settings\" />
+    <Folder Include="wwwroot\css\components\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\css\settings\" />
+    <Content Remove="wwwroot\css\components\" />
   </ItemGroup>
 </Project>

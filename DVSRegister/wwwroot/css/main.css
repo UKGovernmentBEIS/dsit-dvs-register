@@ -7446,5 +7446,15 @@ x:-moz-any-link {
 /*# sourceMappingURL=_width.scss.map */
 /*# sourceMappingURL=_all.scss.map */
 /*# sourceMappingURL=all.scss.map */
+.alert {
+  padding: 15px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-left: 10px solid #2b8cc4;
+  background-color: #dbeff9;
+}
+.alert p:last-child {
+  margin-bottom: 0;
+}
 
 /*# sourceMappingURL=main.css.map */
