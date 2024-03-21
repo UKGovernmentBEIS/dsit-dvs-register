@@ -1,22 +1,116 @@
 ﻿@model DVSRegister.Models.CompanyViewModel
 @{
     ViewData["Title"] = "Company";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout-simple.cshtml";
 }
 
-<h1>Company</h1>
 
-@using (Html.BeginForm("SaveCompany", "PreAssessment", FormMethod.Post))
-{
-    <label class="govuk-label govuk-label--l" for="event-name">
-        Company name
-    </label>
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">Provide an overview of your company</h1>
+                <p class="govuk-body">Please provide us with information about your company.</p>
+
+                <div class="alert">
+                    <h2 class="govuk-heading-s">
+                        Some of this information will be made public
+                    </h2>
+                    <p class="govuk-body">
+                        If your application is successful, your company’s registered name and trading name(s) will be publicly available on the register of digital identity and attribute service providers.
+                    </p>
+                </div>
+
+                @using (Html.BeginForm("SaveCompany", "PreAssessment", FormMethod.Post))
+                {
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Registered name
+                        </label>
+                        <div id="event-name-hint" class="govuk-hint">
+                            For example, YOUR COMPANY UK SERVICES LTD
+                        </div>
+
+                        @Html.TextBoxFor(m => m.RegisteredCompanyName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "event-name", name = "eventName" })
+                    </div>
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Trading name
+                        </label>
+                        <div id="event-name-hint" class="govuk-hint">
+                            For example, YOUR COMPANY UK SERVICES LTD
+                        </div>
 
 
-    @Html.TextBoxFor(m => m.RegisteredCompanyName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-    <button type="submit" class="govuk-button" data-module="govuk-button">
-        Save and continue
-    </button>
-   
-}
+                        @Html.TextBoxFor(m => m.TradingName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "trading-name", name = "tradingName" })
+                    </div>
 
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Companies House registration number
+                        </label>
+                        <div id="event-name-hint" class="govuk-hint">
+                            This number should allow for checks against Companies House.
+                        </div>
+                        <div id="event-name-hint" class="govuk-hint">
+                            In the UK it is 8 characters. For example, 01234567 or AC012345.
+                        </div>
+
+
+                        @Html.TextBoxFor(m => m.CompanyRegistrationNumber, new { @class = "govuk-input govuk-input--width-10", id = "company-registration", name = "companyRegistration" })
+                    </div>
+
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                Do you have a parent company outside the UK?
+                            </legend>
+
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                <div class="govuk-radios__item">
+                                    @Html.RadioButtonFor(m => m.HasParentCompany, true, new { @class = "govuk-radios__input", id = "parent-company-yes", @data_aria_controls = "conditional-contact" })
+                                    <label class="govuk-label govuk-radios__label" for="parent-company-yes">
+                                        Yes
+                                    </label>
+                                </div>
+                                <div class="govuk-radios__conditional" id="conditional-contact">
+                                    <div class="govuk-form-group">
+                                        <label class="govuk-label govuk-label--m" for="event-name">
+                                            Trading name
+                                        </label>
+                                        <div id="event-name-hint" class="govuk-hint">
+                                            For example, YOUR COMPANY SERVICES LTD
+                                        </div>
+
+
+                                        @Html.TextBoxFor(m => m.ParentCompanyRegisteredName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "parent-company-registered-name", name = "parentCompanyRegisteredName" })
+                                    </div>
+                                    <div class="govuk-form-group">
+                                        <label class="govuk-label govuk-label--m" for="event-name">
+                                            Location of parent company
+                                        </label>
+
+
+                                        @Html.TextBoxFor(m => m.ParentCompanyLocation, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "parent-company-location", @name = "parentCompanyLocation" })
+
+                                    </div>
+                                </div>
+                                <div class="govuk-radios__item">
+                                    @Html.RadioButtonFor(m => m.HasParentCompany, false, new { @class = "govuk-radios__input", id = "parent-company-no" })
+                                    <label class="govuk-label govuk-radios__label" for="parent-company-no">
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Save and continue
+                    </button>
+
+                }
+            </div>
+        </div>
+    </main>
+</div>
