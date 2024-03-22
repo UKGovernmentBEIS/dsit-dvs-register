@@ -2,7 +2,7 @@
 
 namespace DVSRegister.CommonUtility.Models.Enums
 {
-    public enum PreAssessmentStatusEnum
+    public enum PreRegistrationStatusEnum
     {
 
         [Description("RECEIVED")]

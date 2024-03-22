@@ -5,7 +5,7 @@
 }
 
 
-@using (Html.BeginForm("SaveSponsor", "PreAssessment", FormMethod.Post))
+@using (Html.BeginForm("SaveSponsor", "PreRegistration", FormMethod.Post))
 {
     <div class="govuk-width-container">
         <nav><a href="URL" class="govuk-back-link" id="back-link">Back</a></nav>
@@ -34,25 +34,25 @@
                         <label class="govuk-label govuk-label--m" for="event-name">
                             Full name of application sponsor
                         </label>
-                        @Html.TextBoxFor(m => m.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                        @Html.TextBoxFor(m => m.SponsorFullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
                     </div>
                     <div class="govuk-form-group">
                         <label class="govuk-label govuk-label--m" for="event-name">
                             Job title of application sponsor
                         </label>
-                        @Html.TextBoxFor(m => m.JobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                        @Html.TextBoxFor(m => m.SponsorJobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
                     </div>
                     <div class="govuk-form-group">
                         <label class="govuk-label govuk-label--m" for="event-name">
                             Email address of application sponsor
                         </label>
-                        @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                        @Html.TextBoxFor(m => m.SponsorEmail, new { @class = "govuk-input", id = "event-name", name = "eventName" })
                     </div>
                     <div class="govuk-form-group">
                         <label class="govuk-label govuk-label--m" for="event-name">
                             Telephone number of application sponsor
                         </label>
-                        @Html.TextBoxFor(m => m.TelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
+                        @Html.TextBoxFor(m => m.SponsorTelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
                     </div>
 
                     <div class="govuk-form-group">
@@ -63,25 +63,25 @@
                         <label class="govuk-label govuk-label--m" for="event-name">
                             Your full name
                         </label>
-                        @Html.TextBoxFor(m => m.SponsorFullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                        @Html.TextBoxFor(m => m.ContactViewModel.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
                     </div>
                     <div class="govuk-form-group">
                         <label class="govuk-label govuk-label--m" for="event-name">
                             Your job title
                         </label>
-                        @Html.TextBoxFor(m => m.SponsorEmail, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                        @Html.TextBoxFor(m => m.ContactViewModel.JobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
                     </div>
                     <div class="govuk-form-group">
                         <label class="govuk-label govuk-label--m" for="event-name">
                             Your email address
                         </label>
-                        @Html.TextBoxFor(m => m.ContactViewModel.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                        @Html.TextBoxFor(m => m.ContactViewModel.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
                     </div>
                     <div class="govuk-form-group">
                         <label class="govuk-label govuk-label--m" for="event-name">
                             Your telephone number
                         </label>
-                        @Html.TextBoxFor(m => m.ContactViewModel.Email, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
+                        @Html.TextBoxFor(m => m.ContactViewModel.TelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
                     </div>
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Continue
