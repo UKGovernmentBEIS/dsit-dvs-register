@@ -1,4 +1,6 @@
-﻿namespace DVSRegister.Models
+﻿using DVSRegister.BusinessLogic.Models.PreRegistration;
+
+namespace DVSRegister.Models
 {
     public class SummaryViewModel
     {
@@ -8,5 +10,7 @@
         public SponsorViewModel SponsorViewModel { get; set; }
         public CountryViewModel CountryViewModel { get; set; }
         public CompanyViewModel CompanyViewModel { get; set; }
+      
+        public string ErrorMessage { get; set; }
     }
 }

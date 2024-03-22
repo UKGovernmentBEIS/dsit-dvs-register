@@ -1,7 +1,10 @@
-﻿using DVSRegister.CommonUtility;
+﻿using DVSRegister.BusinessLogic;
+using DVSRegister.BusinessLogic.Services.PreAssessment;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data;
+using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
@@ -34,6 +37,8 @@ namespace DVSRegister
 
             ConfigureGovUkNotify(services);
             ConfigureSession(services);
+            ConfigureDvsRegisterServices(services);
+            ConfigureAutomapperServices(services);
         }
 
        
@@ -55,6 +60,15 @@ namespace DVSRegister
             });
         }
 
+        public void ConfigureDvsRegisterServices(IServiceCollection services)
+        {
+            services.AddScoped<IPreRegistrationRepository, PreRegistrationRepository>();
+            services.AddScoped<IPreRegistrationService, PreRegistrationService>();
+        }
+        public void ConfigureAutomapperServices(IServiceCollection services)
+        {
+            services.AddAutoMapper(typeof(AutoMapperProfile));
+        }
         public void ConfigureDatabaseHealthCheck(DVSRegisterDbContext? dbContext)
         {
             try
