@@ -4,7 +4,7 @@ namespace DVSRegister.CommonUtility.Email
 {
     public interface IEmailSender
     {
-        public Task<bool> SendEmail(string emailAddress);
+        public Task<bool> SendEmailConfirmation(string emailAddress, string recipientName);
 
     }
 }
