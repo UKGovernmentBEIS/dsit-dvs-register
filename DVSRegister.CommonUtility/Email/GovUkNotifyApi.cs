@@ -52,14 +52,18 @@ namespace DVSRegister.CommonUtility.Email
         }
 
 
-        public async Task<bool> SendEmail(string emailAddress)
+        public async Task<bool> SendEmailConfirmation(string emailAddress, string recipientName)
         {
             var template = govUkNotifyConfig.EmailConfirmationTemplate;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientNamePlaceholder, recipientName }                
+            };
             var emailModel = new GovUkNotifyEmailModel
             {
                 EmailAddress = emailAddress,
                 TemplateId = template.Id,
-                Personalisation = new Dictionary<string, dynamic>()
+                Personalisation = personalisation
             };
             return await SendEmail(emailModel);
         }

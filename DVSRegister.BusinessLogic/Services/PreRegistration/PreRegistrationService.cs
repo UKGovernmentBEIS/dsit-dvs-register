@@ -42,10 +42,10 @@ namespace DVSRegister.BusinessLogic.Services.PreAssessment
                  PreRegistration preRegistration = new PreRegistration();
                 automapper.Map(preRegistrationDto, preRegistration);                
                 GenericResponse genericResponse = await preRegistrationRepository.SavePreRegistration(preRegistration);
-                genericResponse.EmailSent = await emailSender.SendEmail(preRegistrationDto.Email);
+                genericResponse.EmailSent = await emailSender.SendEmailConfirmation(preRegistrationDto.Email, preRegistrationDto.FullName);
                 if (!string.IsNullOrEmpty(preRegistrationDto.SponsorEmail))
                 {
-                    genericResponse.EmailSent = await emailSender.SendEmail(preRegistrationDto.SponsorEmail);
+                    genericResponse.EmailSent = await emailSender.SendEmailConfirmation(preRegistrationDto.SponsorEmail, preRegistrationDto.SponsorFullName);
                 }
                 //ToDo: Correct Error Messages
                 genericResponse.Message  = genericResponse.EmailSent && genericResponse.Success ? "Success" : "Failed";
