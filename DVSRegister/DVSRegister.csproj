@@ -18,6 +18,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.33" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DVSRegister.BusinessLogic\DVSRegister.BusinessLogic.csproj" />
@@ -26,11 +27,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Middleware\" />
+    <None Remove="Validations\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Middleware\" />
     <Folder Include="wwwroot\css\settings\" />
     <Folder Include="wwwroot\css\components\" />
+    <Folder Include="Validations\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\css\settings\" />

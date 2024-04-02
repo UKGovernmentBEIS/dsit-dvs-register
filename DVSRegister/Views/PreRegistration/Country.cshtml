@@ -5,34 +5,55 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Country</h1>
 
 
-@using (Html.BeginForm("SaveCountry", "PreRegistration", FormMethod.Post))
-{
+<div class="govuk-width-container">
 
-    var groupedCountries = Model.AvailableCountries
-       .GroupBy(c => c.CountryName.Substring(0, 1).ToUpper())
-       .OrderBy(g => g.Key);
-
-    @foreach (var group in groupedCountries)
+    @if (Model.IsApplicationSponsor == true)
     {
-        <h2>@group.Key</h2>
-        <ul>
-            @foreach (var country in group)
-            {
-                <li>
-                    <input type="checkbox" name="SelectedCountryIds" value="@country.Id" id="country_@country.Id"
-                    @(Model.SelectedCountryIds.Contains(country.Id) ? "checked" : "") />
-                    <label for="country_@country.Id">@country.CountryName</label>
-                </li>
-            }
-        </ul>
+        <nav>@Html.ActionLink("Back", "Contact", "PreRegistration", null, new { @class = "govuk-back-link" })</nav>
     }
+    else
+    {
+        <nav>@Html.ActionLink("Back", "Sponsor", "PreRegistration", null, new { @class = "govuk-back-link" })</nav>
+    }
+    <h1 class="govuk-heading-xl">Country</h1>
 
-    //DONOT Remove : Keeping AvailableCountries hidden variable to avoid db call to fetch countries after post
-    @Html.Hidden("AvailableCountries", JsonConvert.SerializeObject(Model.AvailableCountries))
-    <button type="submit" class="govuk-button" data-module="govuk-button">
-        Save and continue
-    </button>
-}
+    @using (Html.BeginForm("SaveCountry", "PreRegistration", FormMethod.Post))
+    {
+
+        var groupedCountries = Model.AvailableCountries
+           .GroupBy(c => c.CountryName.Substring(0, 1).ToUpper())
+           .OrderBy(g => g.Key);
+
+        @foreach (var group in groupedCountries)
+        {
+
+            <main class="govuk-main-wrapper">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+
+                        <h2 class="govuk-heading-l">@group.Key</h2>
+                        <ul class="govuk-list govuk-list--bullet">
+                            @foreach (var country in group)
+                            {
+                                <li>
+                                    <input type="checkbox" name="SelectedCountryIds" value="@country.Id" id="country_@country.Id"
+                                           @(Model.SelectedCountryIds.Contains(country.Id) ? "checked" : "") />
+                                    <label for="country_@country.Id">@country.CountryName</label>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </main>
+
+        }
+
+        //DONOT Remove : Keeping AvailableCountries hidden variable to avoid db call to fetch countries after post
+        @Html.Hidden("AvailableCountries", JsonConvert.SerializeObject(Model.AvailableCountries))
+        <button type="submit" class="govuk-button" data-module="govuk-button">
+            Save and continue
+        </button>
+    }
+</div>
