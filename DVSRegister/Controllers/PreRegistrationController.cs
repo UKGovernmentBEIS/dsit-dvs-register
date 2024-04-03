@@ -5,6 +5,8 @@ using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
+using DVSRegister.Validations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -17,8 +19,9 @@ namespace DVSRegister.Controllers
 
         public PreRegistrationController(ILogger<PreRegistrationController> logger, IPreRegistrationService preRegistrationService)
         {
-            this.logger = logger;      
+            this.logger = logger;
             this.preRegistrationService = preRegistrationService;
+            
         }
 
         /// <summary>
@@ -27,6 +30,7 @@ namespace DVSRegister.Controllers
         /// <returns></returns>
         public async Task<IActionResult> StartPage()
         {
+            HttpContext?.Session.Set("IsFirstVisit", true);
             return View("StartPage");
         }
 
@@ -75,6 +79,13 @@ namespace DVSRegister.Controllers
         [HttpGet]
         public IActionResult Sponsor()
         {
+            // Retrieve form validation and first visit info from Session
+            ViewBag.IsFirstVisit = HttpContext?.Session.GetString("IsFirstVisit");
+
+            ContactViewModelValidator.RetrieveAndSetValidationParametersForContactModel(ViewBag, HttpContext);
+
+            ContactViewModelValidator.RetrieveAndSetValidationParametersForSponsorModel(ViewBag, HttpContext);
+
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             return View(summaryViewModel.SponsorViewModel);
         }
@@ -82,6 +93,10 @@ namespace DVSRegister.Controllers
         [HttpGet]
         public IActionResult Contact()
         {
+            // Retrieve form validation and first visit info from Session
+            ViewBag.IsFirstVisit = HttpContext?.Session.GetString("IsFirstVisit");
+            ContactViewModelValidator.RetrieveAndSetValidationParametersForContactModel(ViewBag, HttpContext);
+
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             return View(summaryViewModel.SponsorViewModel.ContactViewModel);
         }
@@ -92,6 +107,24 @@ namespace DVSRegister.Controllers
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             summaryViewModel.SponsorViewModel = sponsorViewModel;
             HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
+
+            ContactViewModelValidator.ValidateSponsorViewModel(HttpContext, sponsorViewModel);
+            ContactViewModelValidator.ValidateContactViewModel(HttpContext, sponsorViewModel.ContactViewModel);
+
+            if (string.IsNullOrEmpty(HttpContext?.Session.GetString("IsFirstVisit")))
+            {
+                HttpContext?.Session.SetString("IsFirstVisit", "true");
+            }
+            else
+            {
+                HttpContext?.Session.SetString("IsFirstVisit", "false");
+            }
+
+            if (ContactViewModelValidator.IsContactModelValid(HttpContext) && ContactViewModelValidator.IsSponsorModelValid(HttpContext))
+            {
+                return RedirectToAction("Sponsor");
+            }
+
             return RedirectToAction("Country");
         }
 
@@ -101,6 +134,23 @@ namespace DVSRegister.Controllers
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             summaryViewModel.SponsorViewModel.ContactViewModel = contactViewModel;
             HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
+
+            ContactViewModelValidator.ValidateContactViewModel(HttpContext, contactViewModel);
+            
+            if (string.IsNullOrEmpty(HttpContext?.Session.GetString("IsFirstVisit")))
+            {
+                HttpContext?.Session.SetString("IsFirstVisit", "true");
+            }
+            else
+            {
+                HttpContext?.Session.SetString("IsFirstVisit", "false");
+            }
+
+            if (ContactViewModelValidator.IsContactModelValid(HttpContext))
+            {
+                return RedirectToAction("Contact");
+            }
+
             return RedirectToAction("Country");
         }
 
@@ -109,6 +159,7 @@ namespace DVSRegister.Controllers
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             CountryViewModel countryViewModel = new CountryViewModel();
+            countryViewModel.IsApplicationSponsor = summaryViewModel.IsApplicationSponsor;
             countryViewModel.SelectedCountryIds = summaryViewModel.CountryViewModel.SelectedCountries.Select(c => c.Id).ToList();
             countryViewModel.AvailableCountries = await preRegistrationService.GetCountries();
             return View(countryViewModel);
