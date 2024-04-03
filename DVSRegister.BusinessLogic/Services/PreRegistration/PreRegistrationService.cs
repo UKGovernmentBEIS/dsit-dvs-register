@@ -23,16 +23,8 @@ namespace DVSRegister.BusinessLogic.Services.PreAssessment
         }
         public async Task<List<CountryDto>> GetCountries()
         {
-            try
-            {
-                var countryList = await preRegistrationRepository.GetCountries();
-                return automapper.Map<List<CountryDto>>(countryList);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message);
-                return null;
-            }
+            var countryList = await preRegistrationRepository.GetCountries();
+            return automapper.Map<List<CountryDto>>(countryList);
         }
 
         public async Task<GenericResponse> SavePreRegistration(PreRegistrationDto preRegistrationDto)
@@ -46,15 +38,13 @@ namespace DVSRegister.BusinessLogic.Services.PreAssessment
                 if (!string.IsNullOrEmpty(preRegistrationDto.SponsorEmail))
                 {
                     genericResponse.EmailSent = await emailSender.SendEmailConfirmation(preRegistrationDto.SponsorEmail, preRegistrationDto.SponsorFullName);
-                }
-                //ToDo: Correct Error Messages
-                genericResponse.Message  = genericResponse.EmailSent && genericResponse.Success ? "Success" : "Failed";
+                }               
                 return genericResponse;
             }
             catch (Exception ex)
             {
                 logger.LogError(ex.Message);
-                return new GenericResponse { Success = false, Message = "Some error occured" };
+                return new GenericResponse { Success = false};
             }
         }
     }

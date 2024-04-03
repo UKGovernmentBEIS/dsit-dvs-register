@@ -17,15 +17,7 @@ namespace DVSRegister.Data.Repositories
         }
         public async Task<List<Country>> GetCountries()
         {
-            try
-            {
-                return await context.Country.ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex.Message);
-                return null;
-            }
+            return await context.Country.ToListAsync();
         }
 
         public async Task<GenericResponse> SavePreRegistration(PreRegistration preRegistration)
@@ -42,8 +34,7 @@ namespace DVSRegister.Data.Repositories
             catch (Exception ex)
             {
                 genericResponse.EmailSent = false;
-                genericResponse.Success = false;
-                genericResponse.Message = "Db save failed.";
+                genericResponse.Success = false;              
                 transaction.Rollback();
                 logger.LogError(ex.Message);
             }
