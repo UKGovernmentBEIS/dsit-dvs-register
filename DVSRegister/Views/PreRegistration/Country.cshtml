@@ -21,6 +21,7 @@
 
     @using (Html.BeginForm("SaveCountry", "PreRegistration", FormMethod.Post))
     {
+        @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
 
         var groupedCountries = Model.AvailableCountries
            .GroupBy(c => c.CountryName.Substring(0, 1).ToUpper())

@@ -6,7 +6,6 @@ using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Validations;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -77,7 +76,7 @@ namespace DVSRegister.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Sponsor()
+        public IActionResult Sponsor(bool fromSummaryPage)
         {
             // Retrieve form validation and first visit info from Session
             ViewBag.IsFirstVisit = HttpContext?.Session.GetString("IsFirstVisit");
@@ -85,18 +84,18 @@ namespace DVSRegister.Controllers
             ContactViewModelValidator.RetrieveAndSetValidationParametersForContactModel(ViewBag, HttpContext);
 
             ContactViewModelValidator.RetrieveAndSetValidationParametersForSponsorModel(ViewBag, HttpContext);
-
+            ViewBag.fromSummaryPage = fromSummaryPage;
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             return View(summaryViewModel.SponsorViewModel);
         }
 
         [HttpGet]
-        public IActionResult Contact()
+        public IActionResult Contact(bool fromSummaryPage)
         {
             // Retrieve form validation and first visit info from Session
             ViewBag.IsFirstVisit = HttpContext?.Session.GetString("IsFirstVisit");
             ContactViewModelValidator.RetrieveAndSetValidationParametersForContactModel(ViewBag, HttpContext);
-
+            ViewBag.fromSummaryPage = fromSummaryPage;
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             return View(summaryViewModel.SponsorViewModel.ContactViewModel);
         }
@@ -104,8 +103,10 @@ namespace DVSRegister.Controllers
         [HttpPost]
         public IActionResult SaveSponsor(SponsorViewModel sponsorViewModel)
         {
+            bool fromSummaryPage = sponsorViewModel.FromSummaryPage;
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             summaryViewModel.SponsorViewModel = sponsorViewModel;
+            summaryViewModel.SponsorViewModel.FromSummaryPage = false;
             HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
 
             ContactViewModelValidator.ValidateSponsorViewModel(HttpContext, sponsorViewModel);
@@ -125,14 +126,16 @@ namespace DVSRegister.Controllers
                 return RedirectToAction("Sponsor");
             }
 
-            return RedirectToAction("Country");
+            return fromSummaryPage ? RedirectToAction("Summary") : RedirectToAction("Country");
         }
 
         [HttpPost]
         public IActionResult SaveContact(ContactViewModel contactViewModel)
         {
+            bool fromSummaryPage = contactViewModel.FromSummaryPage;
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             summaryViewModel.SponsorViewModel.ContactViewModel = contactViewModel;
+            summaryViewModel.SponsorViewModel.ContactViewModel.FromSummaryPage = false;
             HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
 
             ContactViewModelValidator.ValidateContactViewModel(HttpContext, contactViewModel);
@@ -151,12 +154,13 @@ namespace DVSRegister.Controllers
                 return RedirectToAction("Contact");
             }
 
-            return RedirectToAction("Country");
+            return fromSummaryPage? RedirectToAction("Summary") : RedirectToAction("Country");
         }
 
         [HttpGet]
-        public async Task <IActionResult> Country()
+        public async Task <IActionResult> Country(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             CountryViewModel countryViewModel = new CountryViewModel();
             countryViewModel.IsApplicationSponsor = summaryViewModel.IsApplicationSponsor;
@@ -168,11 +172,13 @@ namespace DVSRegister.Controllers
         [HttpPost]
         public IActionResult SaveCountry(CountryViewModel countryViewModel)
         {
+            bool fromSummaryPage = countryViewModel.FromSummaryPage;
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             List<CountryDto> availableCountries = JsonConvert.DeserializeObject<List<CountryDto>>(HttpContext.Request.Form["AvailableCountries"]);            
             summaryViewModel.CountryViewModel.SelectedCountries = availableCountries.Where(c => countryViewModel.SelectedCountryIds.Contains(c.Id)).ToList();
+            summaryViewModel.CountryViewModel.FromSummaryPage = false;
             HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
-            return RedirectToAction("Company");
+            return fromSummaryPage ? RedirectToAction("Summary") : RedirectToAction("Company");
         }
 
         [HttpGet]
@@ -192,9 +198,17 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet]
-        public IActionResult Summary()
+        public ActionResult ShowHideCountries(bool hideCountries)
+        {
+            return RedirectToAction("Summary", new { hideCountries = hideCountries });
+        }
+
+        [HttpGet]
+        public IActionResult Summary(bool hideCountries, bool confirmAccuracy = true)
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
+            ViewBag.HideCountries = hideCountries;
+            ViewBag.ConfirmAccuracy = confirmAccuracy;
             return View(summaryViewModel);
         }
 
@@ -202,10 +216,10 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveSummaryAndSubmit(SummaryViewModel summaryViewModel)
         {
             SummaryViewModel model = GetPreRegistrationSummary();
-            model.ConfirmAccuracy =summaryViewModel.ConfirmAccuracy;
-
-            if(model.ConfirmAccuracy)
-            {
+            model.ConfirmAccuracy = summaryViewModel.ConfirmAccuracy;
+          
+            if (model.ConfirmAccuracy)
+            {               
                 PreRegistrationDto preRegistrationDto = MapViewModelToDto(model);
                 GenericResponse genericResponse =  await preRegistrationService.SavePreRegistration(preRegistrationDto);
                 if(genericResponse.Success && genericResponse.EmailSent) 
@@ -220,8 +234,8 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                model.ErrorMessage = Constants.ConfirmationMessage;
-                return RedirectToAction("Summary");
+                
+                return RedirectToAction("Summary", new { confirmAccuracy = model.ConfirmAccuracy });
             }
             
         }

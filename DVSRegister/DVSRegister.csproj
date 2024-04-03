@@ -33,7 +33,6 @@
     <Folder Include="Middleware\" />
     <Folder Include="wwwroot\css\settings\" />
     <Folder Include="wwwroot\css\components\" />
-    <Folder Include="Validations\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\css\settings\" />
