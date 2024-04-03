@@ -8,5 +8,6 @@ namespace DVSRegister.Models
         public List<CountryDto> AvailableCountries { get; set; }       
         public List<int> SelectedCountryIds { get; set; }
         public List<CountryDto> SelectedCountries { get; set; }
+        public bool FromSummaryPage { get; set; }
     }
 }

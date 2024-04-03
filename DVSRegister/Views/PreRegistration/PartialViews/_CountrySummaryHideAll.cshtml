@@ -1,0 +1,32 @@
+﻿@model DVSRegister.Models.CountryViewModel
+<div class="govuk-summary-card__content">
+    <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Your selection of countries
+            </dt>
+            <dd class="govuk-summary-list__value">
+
+                @foreach (var item in Model.SelectedCountries.Take(15))
+                {
+
+                    @item.CountryName
+
+                    <br>
+
+                }
+                @if (Model.SelectedCountries.Count > 15)
+                {
+
+                    <div>...</div>
+
+                }
+            </dd>
+            <dd class="govuk-summary-list__actions">
+                @Html.ActionLink("Change", "Country", "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+            </dd>
+
+        </div>
+
+    </dl>
+</div>
