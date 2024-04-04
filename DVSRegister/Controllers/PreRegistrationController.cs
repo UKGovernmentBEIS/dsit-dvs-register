@@ -226,10 +226,9 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("ApplicationComplete");
                 }
-                else //TODO:Error views
-                {
-                    model.ErrorMessage = Constants.FailedMessage;
-                    return RedirectToAction("Summary");
+                else
+                {                   
+                    return RedirectToAction("HandleException","Error");
                 }                
             }
             else
@@ -243,6 +242,7 @@ namespace DVSRegister.Controllers
         [HttpGet]
         public async Task<IActionResult> ApplicationComplete()
         {
+            HttpContext?.Session.Clear();
             return View("ApplicationComplete");
         }
         #region

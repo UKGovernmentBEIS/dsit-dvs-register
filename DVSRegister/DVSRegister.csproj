@@ -30,7 +30,6 @@
     <None Remove="Validations\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Middleware\" />
     <Folder Include="wwwroot\css\settings\" />
     <Folder Include="wwwroot\css\components\" />
   </ItemGroup>

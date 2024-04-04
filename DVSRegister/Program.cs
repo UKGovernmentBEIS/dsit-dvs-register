@@ -36,6 +36,11 @@ if(app.Environment.IsDevelopment() || app.Environment.IsStaging())
 {
     app.UseMiddleware<BasicAuthMiddleware>();
 }
+else
+{
+    app.UseMiddleware<ExceptionHandlerMiddleware>();
+}
+
 
 
 app.UseHttpsRedirection();
