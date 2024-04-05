@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 
 namespace DVSRegister.Controllers
 {
+    [Route("pre-registration/start-your-application")]
     public class PreRegistrationController : Controller
     {
         private readonly ILogger<PreRegistrationController> logger;
@@ -27,13 +28,19 @@ namespace DVSRegister.Controllers
         /// Load - first screen
         /// </summary>
         /// <returns></returns>
+        [HttpGet("what-we-will-need-from-you")]
         public async Task<IActionResult> StartPage()
         {
             HttpContext?.Session.Set("IsFirstVisit", true);
             return View("StartPage");
         }
 
-        [HttpPost]
+       /// <summary>
+       /// Redirects to Select application sponsor page 
+       /// on continue button click
+       /// </summary>
+       /// <returns></returns>
+        [HttpPost("what-we-will-need-from-you")]
         public IActionResult Continue()
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
@@ -45,15 +52,20 @@ namespace DVSRegister.Controllers
         /// Select Application Sponsor or Not
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("who-sponsors-this-application")]
         public IActionResult SelectApplicationSponsor()
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             return View(summaryViewModel);
         }
 
-      
-        [HttpPost]
+        /// <summary>
+        /// Updates IsApplicationSponsor variable in session
+        /// and redirect based on IsApplicationSponsor
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        [HttpPost("who-sponsors-this-application")]
         public IActionResult SaveApplicationSponsorSelection(SummaryViewModel viewModel)
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
@@ -72,10 +84,10 @@ namespace DVSRegister.Controllers
         }
 
         /// <summary>
-        /// Load - Sponsor details
+        /// Sponsor details
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("provide-application-sponsor-details")]
         public IActionResult Sponsor(bool fromSummaryPage)
         {
             // Retrieve form validation and first visit info from Session
@@ -89,7 +101,13 @@ namespace DVSRegister.Controllers
             return View(summaryViewModel.SponsorViewModel);
         }
 
-        [HttpGet]
+        /// <summary>
+        ///Contact details of the user
+        /// </summary>
+        /// <param name="fromSummaryPage"></param>
+        /// <returns></returns>
+
+        [HttpGet("provide-your-contact-details")]
         public IActionResult Contact(bool fromSummaryPage)
         {
             // Retrieve form validation and first visit info from Session
@@ -100,7 +118,13 @@ namespace DVSRegister.Controllers
             return View(summaryViewModel.SponsorViewModel.ContactViewModel);
         }
 
-        [HttpPost]
+        /// <summary>
+        /// Save Sponsor details to session
+        /// </summary>
+        /// <param name="sponsorViewModel"></param>
+        /// <returns></returns>
+
+        [HttpPost("provide-application-sponsor-details")]
         public IActionResult SaveSponsor(SponsorViewModel sponsorViewModel)
         {
             bool fromSummaryPage = sponsorViewModel.FromSummaryPage;
@@ -129,7 +153,13 @@ namespace DVSRegister.Controllers
             return fromSummaryPage ? RedirectToAction("Summary") : RedirectToAction("Country");
         }
 
-        [HttpPost]
+
+        /// <summary>
+        /// Save sponsor and contact detailsto session
+        /// </summary>
+        /// <param name="contactViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("provide-your-contact-details")]
         public IActionResult SaveContact(ContactViewModel contactViewModel)
         {
             bool fromSummaryPage = contactViewModel.FromSummaryPage;
@@ -157,7 +187,14 @@ namespace DVSRegister.Controllers
             return fromSummaryPage? RedirectToAction("Summary") : RedirectToAction("Country");
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Load country list 
+        /// (fetched from database)
+        /// </summary>
+        /// <param name="fromSummaryPage"></param>
+        /// <returns></returns>
+
+        [HttpGet("countries-and-territories-your-company-currently-trades-in")]
         public async Task <IActionResult> Country(bool fromSummaryPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
@@ -169,7 +206,12 @@ namespace DVSRegister.Controllers
             return View(countryViewModel);
         }
 
-        [HttpPost]
+        /// <summary>
+        /// Save selected countries to session
+        /// </summary>
+        /// <param name="countryViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("countries-and-territories-your-company-currently-trades-in")]
         public IActionResult SaveCountry(CountryViewModel countryViewModel)
         {
             bool fromSummaryPage = countryViewModel.FromSummaryPage;
@@ -181,14 +223,24 @@ namespace DVSRegister.Controllers
             return fromSummaryPage ? RedirectToAction("Summary") : RedirectToAction("Company");
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Comapny details
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet("your-company-details")]
         public IActionResult Company()
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             return View(summaryViewModel.CompanyViewModel);
         }
 
-        [HttpPost]
+        /// <summary>
+        /// Save company details to session
+        /// </summary>
+        /// <param name="companyViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("your-company-details")]
         public IActionResult SaveCompany(CompanyViewModel companyViewModel)
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
@@ -197,13 +249,26 @@ namespace DVSRegister.Controllers
             return RedirectToAction("Summary");
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Method to reload summary page
+        /// based on Show All Hide All 
+        /// link click
+        /// </summary>
+        /// <param name="hideCountries"></param>
+        /// <returns></returns>
+        [HttpGet("show-hide-countries")]
         public ActionResult ShowHideCountries(bool hideCountries)
         {
             return RedirectToAction("Summary", new { hideCountries = hideCountries });
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Summary page displaying data saved in session
+        /// </summary>
+        /// <param name="hideCountries"></param>
+        /// <param name="confirmAccuracy"></param>
+        /// <returns></returns>
+        [HttpGet("check-your-answers")]
         public IActionResult Summary(bool hideCountries, bool confirmAccuracy = true)
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
@@ -212,7 +277,14 @@ namespace DVSRegister.Controllers
             return View(summaryViewModel);
         }
 
-        [HttpPost]
+        /// <summary>
+        /// Get data from session, convert to dto and save
+        /// to database on Confirm click
+        /// </summary>
+        /// <param name="summaryViewModel"></param>
+        /// <returns></returns>
+
+        [HttpPost("check-your-answers")]
         public async Task<IActionResult> SaveSummaryAndSubmit(SummaryViewModel summaryViewModel)
         {
             SummaryViewModel model = GetPreRegistrationSummary();
@@ -239,7 +311,12 @@ namespace DVSRegister.Controllers
             
         }
 
-        [HttpGet]
+        /// <summary>
+        /// Success screen
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet("application-submitted")]
         public async Task<IActionResult> ApplicationComplete()
         {
             HttpContext?.Session.Clear();

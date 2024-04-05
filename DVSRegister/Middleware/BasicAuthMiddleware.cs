@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
+using DVSRegister.CommonUtility;
 using Microsoft.Extensions.Options;
 
 namespace DVSRegister.Middleware
@@ -35,7 +36,7 @@ namespace DVSRegister.Middleware
             {
                 logger.LogError($"An unexpected error occurred: {ex}");
                 // Redirect to error page 
-                httpContext.Response.Redirect("/Error/HandleException");
+                httpContext.Response.Redirect(Constants.PreRegistrationErrorPath);
             }
         }
         private bool IsAuthorised(HttpContext httpContext)

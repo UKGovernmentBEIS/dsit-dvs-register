@@ -82,7 +82,7 @@
     <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
     <script type="module" src="~/js/govuk.js"></script>
     <script type="module">
-        import { initAll } from "../js/govuk.js";
+        import { initAll } from "/js/govuk.js";
         initAll();
     </script>
     @await RenderSectionAsync("Scripts", required: false)
