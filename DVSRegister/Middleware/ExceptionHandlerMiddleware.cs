@@ -1,4 +1,6 @@
-﻿namespace DVSRegister.Middleware
+﻿using DVSRegister.CommonUtility;
+
+namespace DVSRegister.Middleware
 {
     public class ExceptionHandlerMiddleware
     {
@@ -21,7 +23,7 @@
             {
                 logger.LogError($"An unexpected error occurred: {ex}");
                 // Redirect to error page 
-                context.Response.Redirect("/Error/HandleException");
+                context.Response.Redirect(Constants.PreRegistrationErrorPath);
             }
         }
     }
