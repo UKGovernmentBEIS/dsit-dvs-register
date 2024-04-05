@@ -212,15 +212,27 @@ namespace DVSRegister.Controllers
         /// <param name="countryViewModel"></param>
         /// <returns></returns>
         [HttpPost("countries-and-territories-your-company-currently-trades-in")]
-        public IActionResult SaveCountry(CountryViewModel countryViewModel)
+        public async Task<IActionResult> SaveCountry(CountryViewModel countryViewModel)
         {
             bool fromSummaryPage = countryViewModel.FromSummaryPage;
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
-            List<CountryDto> availableCountries = JsonConvert.DeserializeObject<List<CountryDto>>(HttpContext.Request.Form["AvailableCountries"]);            
+            List<CountryDto> availableCountries = JsonConvert.DeserializeObject<List<CountryDto>>(HttpContext.Request.Form["AvailableCountries"]);
+            if(availableCountries == null  || availableCountries.Count == 0)
+             availableCountries = await preRegistrationService.GetCountries();
+            countryViewModel.AvailableCountries = availableCountries;
+            countryViewModel.SelectedCountryIds =  countryViewModel.SelectedCountryIds??new List<int>();
+            if (countryViewModel.SelectedCountryIds.Count > 0 )
             summaryViewModel.CountryViewModel.SelectedCountries = availableCountries.Where(c => countryViewModel.SelectedCountryIds.Contains(c.Id)).ToList();
             summaryViewModel.CountryViewModel.FromSummaryPage = false;
-            HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
-            return fromSummaryPage ? RedirectToAction("Summary") : RedirectToAction("Company");
+            if (ModelState.IsValid)
+            {              
+                HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
+                return fromSummaryPage ? RedirectToAction("Summary") : RedirectToAction("Company"); 
+            }
+            else
+            {
+                return View("Country", countryViewModel);
+            }
         }
 
         /// <summary>
@@ -245,8 +257,16 @@ namespace DVSRegister.Controllers
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             summaryViewModel.CompanyViewModel = companyViewModel;
-            HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
-            return RedirectToAction("Summary");
+
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
+                return RedirectToAction("Summary"); 
+            }
+            else
+            {
+                return View("Company", companyViewModel);
+            }
         }
 
         /// <summary>
