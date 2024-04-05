@@ -319,8 +319,9 @@ namespace DVSRegister.Controllers
         [HttpGet("application-submitted")]
         public async Task<IActionResult> ApplicationComplete()
         {
+            SummaryViewModel model = GetPreRegistrationSummary();
             HttpContext?.Session.Clear();
-            return View("ApplicationComplete");
+            return View(model.SponsorViewModel);
         }
         #region
 
