@@ -6,9 +6,8 @@
 
 @using (Html.BeginForm("SaveSummaryAndSubmit", "PreRegistration", FormMethod.Post))
 {
-    bool hideCountries = ViewBag.HideCountries;
-    bool hasParentCompany = Convert.ToBoolean(@Model.CompanyViewModel.HasParentCompany);
-    bool confirmAccuracy = ViewBag.ConfirmAccuracy;
+    bool hideCountries = ViewBag.HideCountries??false;
+    bool hasParentCompany = Convert.ToBoolean(@Model.CompanyViewModel.HasParentCompany);  
     string hasParentCompanyValue = hasParentCompany ? "Yes" : "No";
     string redirectView = Model.IsApplicationSponsor ? "Contact" : "Sponsor";
     <div class="govuk-width-container">
@@ -272,36 +271,17 @@
                 </div>
             </div>
 
-            @if (confirmAccuracy)
-            {
-                <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                    <div class="govuk-checkboxes__item">
+            @Html.ValidationMessageFor(m => m.ConfirmAccuracy, "", new { @class = "govuk-error-message" })
+            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
 
-                        @Html.CheckBoxFor(m => m.ConfirmAccuracy, new { @class = "govuk-checkboxes__input", id = "confirm-accuracy" })
-                        <label class="govuk-label govuk-checkboxes__label" for="confirm-accuracy">
-                            By submitting this form, I confirm that to the best of my knowledge<br />
-                            the information I have provided is correct.
-                        </label>
-                    </div>
+                    @Html.CheckBoxFor(m => m.ConfirmAccuracy, new { @class = "govuk-checkboxes__input", id = "confirm-accuracy" })
+                    <label class="govuk-label govuk-checkboxes__label" for="confirm-accuracy">
+                        By submitting this form, I confirm that to the best of my knowledge<br />
+                        the information I have provided is correct.
+                    </label>
                 </div>
-            }
-            else
-            {               
-                <div class="govuk-form-group govuk-form-group--error">     
-                        <p id="confirm-error" class="govuk-error-message">
-                            <span class="govuk-visually-hidden"></span> Select to confirm that the information you have provided is correct.
-                        </p>
-                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                            <div class="govuk-checkboxes__item">
-                                @Html.CheckBoxFor(m => m.ConfirmAccuracy, new { @class = "govuk-checkboxes__input", id = "confirm-accuracy" })
-                                 <label class="govuk-label govuk-checkboxes__label" for="confirm-accuracy">
-                                    By submitting this form, I confirm that to the best of my knowledge<br />
-                                    the information I have provided is correct.
-                                </label>
-                            </div>                          
-                        </div>                 
-                </div>
-            }
+            </div>
            
             <div class="govuk-!-padding-top-6">
                 <button type="submit" data-prevent-double-click="true" class="govuk-button" data-module="govuk-button">
