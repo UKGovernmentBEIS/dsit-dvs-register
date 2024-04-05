@@ -308,11 +308,14 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveSummaryAndSubmit(SummaryViewModel summaryViewModel)
         {
             SummaryViewModel model = GetPreRegistrationSummary();
-            model.ConfirmAccuracy = summaryViewModel.ConfirmAccuracy;
-          
-            if (model.ConfirmAccuracy)
+            summaryViewModel.SponsorViewModel = model.SponsorViewModel;
+            summaryViewModel.CompanyViewModel = model.CompanyViewModel;
+            summaryViewModel.CountryViewModel = model.CountryViewModel;
+            summaryViewModel.IsApplicationSponsor = model.IsApplicationSponsor;
+
+            if (ModelState.IsValid)
             {               
-                PreRegistrationDto preRegistrationDto = MapViewModelToDto(model);
+                PreRegistrationDto preRegistrationDto = MapViewModelToDto(summaryViewModel);
                 GenericResponse genericResponse =  await preRegistrationService.SavePreRegistration(preRegistrationDto);
                 if(genericResponse.Success && genericResponse.EmailSent) 
                 {
@@ -325,8 +328,8 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                
-                return RedirectToAction("Summary", new { confirmAccuracy = model.ConfirmAccuracy });
+
+                return View("Summary", summaryViewModel);
             }
             
         }
