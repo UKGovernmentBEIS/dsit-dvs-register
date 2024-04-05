@@ -5,10 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
-
 <div class="govuk-width-container">
-
     @if (Model.IsApplicationSponsor == true)
     {
         <nav>@Html.ActionLink("Back", "Contact", "PreRegistration", null, new { @class = "govuk-back-link" })</nav>
@@ -17,44 +14,58 @@
     {
         <nav>@Html.ActionLink("Back", "Sponsor", "PreRegistration", null, new { @class = "govuk-back-link" })</nav>
     }
-    <h1 class="govuk-heading-xl">Country</h1>
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
 
-    @using (Html.BeginForm("SaveCountry", "PreRegistration", FormMethod.Post))
-    {
-        @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                @using (Html.BeginForm("SaveCountry", "PreRegistration", FormMethod.Post))
+                {
 
-        var groupedCountries = Model.AvailableCountries
-           .GroupBy(c => c.CountryName.Substring(0, 1).ToUpper())
-           .OrderBy(g => g.Key);
+                    var groupedCountries = Model.AvailableCountries
+                       .GroupBy(c => c.CountryName.Substring(0, 1).ToUpper())
+                       .OrderBy(g => g.Key);
 
-        @foreach (var group in groupedCountries)
-        {
 
-            <main class="govuk-main-wrapper">
-                <div class="govuk-grid-row">
-                    <div class="govuk-grid-column-two-thirds">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+                                <h1 class="govuk-fieldset__heading">
+                                    <span class="govuk-caption-l govuk-!-margin-bottom-3">
+                                        Page 3 of 5
+                                        <span class="govuk-visually-hidden"> of the pre registration application</span>
+                                    </span>
+                                    List all the countries and territories your company currently trades in
+                                </h1>
+                            </legend>
 
-                        <h2 class="govuk-heading-l">@group.Key</h2>
-                        <ul class="govuk-list govuk-list--bullet">
-                            @foreach (var country in group)
+                            @foreach (var group in groupedCountries)
                             {
-                                <li>
-                                    <input type="checkbox" name="SelectedCountryIds" value="@country.Id" id="country_@country.Id"
-                                           @(Model.SelectedCountryIds.Contains(country.Id) ? "checked" : "") />
-                                    <label for="country_@country.Id">@country.CountryName</label>
-                                </li>
+                                <h2 class="govuk-heading-xl">
+                                    <span class="govuk-visually-hidden">Countries starting with </span>@group.Key
+                                </h2>
+                                @foreach (var country in group)
+                                {
+                                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+
+                                        <div class="govuk-checkboxes__item">
+                                            <input class="govuk-checkboxes__input" type="checkbox" name="SelectedCountryIds" value="@country.Id" id="country_@country.Id"
+                                                   @(Model.SelectedCountryIds.Contains(country.Id) ? "checked" : "") />
+                                            <label class="govuk-label govuk-checkboxes__label" for="country_@country.Id">@country.CountryName</label>
+                                        </div>
+                                    </div>
+                                }
+                                <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
                             }
-                        </ul>
+
+                            @*DONOT Remove : Keeping AvailableCountries hidden variable to avoid db call to fetch countries after post*@
+                            @Html.Hidden("AvailableCountries", JsonConvert.SerializeObject(Model.AvailableCountries))
+                            <button type="submit" class="govuk-button" data-module="govuk-button">
+                                Save and continue
+                            </button>
+                        </fieldset>
                     </div>
-                </div>
-            </main>
-
-        }
-
-        //DONOT Remove : Keeping AvailableCountries hidden variable to avoid db call to fetch countries after post
-        @Html.Hidden("AvailableCountries", JsonConvert.SerializeObject(Model.AvailableCountries))
-        <button type="submit" class="govuk-button" data-module="govuk-button">
-            Save and continue
-        </button>
-    }
+                }
+            </div>
+        </div>
+    </main>
 </div>
