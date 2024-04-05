@@ -37,7 +37,7 @@
                                     List all the countries and territories your company currently trades in
                                 </h1>
                             </legend>
-
+                            @Html.ValidationMessageFor(m => m.SelectedCountryIds, "", new { @class = "govuk-error-message" })
                             @foreach (var group in groupedCountries)
                             {
                                 <h2 class="govuk-heading-xl">
