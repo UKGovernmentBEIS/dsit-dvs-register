@@ -31,287 +31,90 @@
                         <h2 class="govuk-heading-m">You confirmed that you are completing the application on behalf of the application sponsor</h2>
                         <span class="govuk-caption-l">Please provide both your and their details</span>
                     </div>
-                    @if (ViewBag.IsFirstVisit == "true")
-                    {
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-label--m" for="event-name">
-                                Full name of application sponsor
-                            </label>
-                            @Html.TextBoxFor(m => m.SponsorFullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                        </div>
-                    }
-                    else
-                    {
-                        @if (ViewBag.IsSponsorFullNameValid == "false")
-                        {
-                            <div class="govuk-form-group govuk-form-group--error">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Full name of application sponsor
-                                </label>
-                                <p id="event-name-error" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> Enter a valid name
-                                </p>
-                                @Html.TextBoxFor(m => m.SponsorFullName, new { @class = "govuk-input govuk-input--error", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Full name of application sponsor
-                                </label>
-                                @Html.TextBoxFor(m => m.SponsorFullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                    }
 
-                    @if (ViewBag.IsFirstVisit == "true")
-                    {
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-label--m" for="event-name">
-                                Job title of application sponsor
-                            </label>
-                            @Html.TextBoxFor(m => m.SponsorJobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                        </div>
-                    }
-                    else
-                    {
-                        @if (ViewBag.IsSponsorJobTitleValid == "false")
-                        {
-                            <div class="govuk-form-group govuk-form-group--error">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Job title of application sponsor
-                                </label>
-                                <p id="event-name-error" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> Enter a valid job title
-                                </p>
-                                @Html.TextBoxFor(m => m.SponsorJobTitle, new { @class = "govuk-input govuk-input--error", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Job title of application sponsor
-                                </label>
-                                @Html.TextBoxFor(m => m.SponsorJobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                    }
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("SponsorFullName") && Html.ViewData.ModelState["SponsorFullName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Full name of application sponsor
+                        </label>
+                        @Html.ValidationMessageFor(m => m.SponsorFullName, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.SponsorFullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                    </div>
 
-                    @if (ViewBag.IsFirstVisit == "true")
-                    {
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-label--m" for="event-name">
-                                Email address of application sponsor
-                            </label>
-                            @Html.TextBoxFor(m => m.SponsorEmail, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                        </div>
-                    }
-                    else
-                    {
-                        @if (ViewBag.IsSponsorEmailValid == "false")
-                        {
-                            <div class="govuk-form-group govuk-form-group--error">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Email address of application sponsor
-                                </label>
-                                <p id="event-name-error" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> Enter an email address in the correct format, like name@example.com
-                                </p>
-                                @Html.TextBoxFor(m => m.SponsorEmail, new { @class = "govuk-input govuk-input--error", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Email address of application sponsor
-                                </label>
-                                @Html.TextBoxFor(m => m.SponsorEmail, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                    }
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("SponsorJobTitle") && Html.ViewData.ModelState["SponsorJobTitle"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Job title of application sponsor
+                        </label>
+                        @Html.ValidationMessageFor(m => m.SponsorJobTitle, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.SponsorJobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                    </div>
 
-                    @if (ViewBag.IsFirstVisit == "true")
-                    {
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-label--m" for="event-name">
-                                Telephone number of application sponsor
-                            </label>
-                            @Html.TextBoxFor(m => m.SponsorTelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
-                        </div>
-                    }
-                    else
-                    {
-                        @if (ViewBag.IsSponsorPhoneNumberValid == "false")
-                        {
-                            <div class="govuk-form-group govuk-form-group--error">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Telephone number of application sponsor
-                                </label>
-                                <p id="event-name-error" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
-                                </p>
-                                @Html.TextBoxFor(m => m.SponsorTelephoneNumber, new { @class = "govuk-input govuk-input--width-10 govuk-input--error", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Telephone number of application sponsor
-                                </label>
-                                @Html.TextBoxFor(m => m.SponsorTelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                    }
+               
+
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("SponsorEmail") && Html.ViewData.ModelState["SponsorEmail"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Email address of application sponsor
+                        </label>
+                        @Html.ValidationMessageFor(m => m.SponsorEmail, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.SponsorEmail, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                    </div>
+                   
+
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("SponsorTelephoneNumber") && Html.ViewData.ModelState["SponsorTelephoneNumber"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Telephone number of application sponsor
+                        </label>
+                        @Html.ValidationMessageFor(m => m.SponsorTelephoneNumber, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.SponsorTelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
+                    </div>             
+
+
 
                     <div class="govuk-form-group">
                         <span class="govuk-caption-l">Please provide your contact details.</span>
                     </div>
 
-                    @if (ViewBag.IsFirstVisit == "true")
-                    {
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-label--m" for="event-name">
-                                Full name of application sponsor
-                            </label>
-                            @Html.TextBoxFor(m => m.ContactViewModel.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                        </div>
-                    }
-                    else
-                    {
-                        @if (ViewBag.IsFullNameValid == "false")
-                        {
-                            <div class="govuk-form-group govuk-form-group--error">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Full name of application sponsor
-                                </label>
-                                <p id="event-name-error" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> Enter a valid name
-                                </p>
-                                @Html.TextBoxFor(m => m.ContactViewModel.FullName, new { @class = "govuk-input govuk-input--error", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Full name of application sponsor
-                                </label>
-                                @Html.TextBoxFor(m => m.ContactViewModel.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                    }
 
 
-                    @if (ViewBag.IsFirstVisit == "true")
-                    {
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-label--m" for="event-name">
-                                Job title of application sponsor
-                            </label>
-                            @Html.TextBoxFor(m => m.ContactViewModel.JobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                        </div>
-                    }
-                    else
-                    {
-                        @if (ViewBag.IsJobTitleValid == "false")
-                        {
-                            <div class="govuk-form-group govuk-form-group--error">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Job title of application sponsor
-                                </label>
-                                <p id="event-name-error" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> Enter a valid job title
-                                </p>
-                                @Html.TextBoxFor(m => m.ContactViewModel.JobTitle, new { @class = "govuk-input govuk-input--error", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Job title of application sponsor
-                                </label>
-                                @Html.TextBoxFor(m => m.ContactViewModel.JobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                    }
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("FullName") && Html.ViewData.ModelState["FullName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Full name of application sponsor
+                        </label>
+                        @Html.ValidationMessageFor(m => m.ContactViewModel.FullName, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.ContactViewModel.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                    </div>
 
 
 
-                    @if (ViewBag.IsFirstVisit == "true")
-                    {
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-label--m" for="event-name">
-                                Email address of application sponsor
-                            </label>
-                            @Html.TextBoxFor(m => m.ContactViewModel.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                        </div>
-                    }
-                    else
-                    {
-                        @if (ViewBag.IsEmailValid == "false")
-                        {
-                            <div class="govuk-form-group govuk-form-group--error">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Email address of application sponsor
-                                </label>
-                                <p id="event-name-error" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> Enter an email address in the correct format, like name@example.com
-                                </p>
-                                @Html.TextBoxFor(m => m.ContactViewModel.Email, new { @class = "govuk-input govuk-input--error", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Email address of application sponsor
-                                </label>
-                                @Html.TextBoxFor(m => m.ContactViewModel.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                    }
+                   
 
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("JobTitle") && Html.ViewData.ModelState["JobTitle"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Job title of application sponsor
+                        </label>
+                        @Html.ValidationMessageFor(m => m.ContactViewModel.JobTitle, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.ContactViewModel.JobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                    </div>
 
+                 
 
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("Email") && Html.ViewData.ModelState["Email"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Email address of application sponsor
+                        </label>
+                        @Html.ValidationMessageFor(m => m.ContactViewModel.Email, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.ContactViewModel.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
+                    </div>
+                  
 
-                    @if (ViewBag.IsFirstVisit == "true")
-                    {
-                        <div class="govuk-form-group">
-                            <label class="govuk-label govuk-label--m" for="event-name">
-                                Telephone number of application sponsor
-                            </label>
-                            @Html.TextBoxFor(m => m.ContactViewModel.TelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
-                        </div>
-                    }
-                    else
-                    {
-                        @if (ViewBag.IsPhoneNumberValid == "false")
-                        {
-                            <div class="govuk-form-group govuk-form-group--error">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Telephone number of application sponsor
-                                </label>
-                                <p id="event-name-error" class="govuk-error-message">
-                                    <span class="govuk-visually-hidden">Error:</span> Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192
-                                </p>
-                                @Html.TextBoxFor(m => m.ContactViewModel.TelephoneNumber, new { @class = "govuk-input govuk-input--width-10 govuk-input--error", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="govuk-form-group">
-                                <label class="govuk-label govuk-label--m" for="event-name">
-                                    Telephone number of application sponsor
-                                </label>
-                                @Html.TextBoxFor(m => m.ContactViewModel.TelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
-                            </div>
-                        }
-                    }
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("TelephoneNumber") && Html.ViewData.ModelState["TelephoneNumber"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Telephone number of application sponsor
+                        </label>
+                        @Html.ValidationMessageFor(m => m.ContactViewModel.TelephoneNumber, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.ContactViewModel.TelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
+                    </div>               
+
+                   
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Continue
                     </button>

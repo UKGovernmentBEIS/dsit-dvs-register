@@ -93,13 +93,7 @@ namespace DVSRegister.Controllers
         /// <returns></returns>
         [HttpGet("provide-application-sponsor-details")]
         public IActionResult Sponsor(bool fromSummaryPage)
-        {
-            // Retrieve form validation and first visit info from Session
-            ViewBag.IsFirstVisit = HttpContext?.Session.GetString("IsFirstVisit");
-
-            ContactViewModelValidator.RetrieveAndSetValidationParametersForContactModel(ViewBag, HttpContext);
-
-            ContactViewModelValidator.RetrieveAndSetValidationParametersForSponsorModel(ViewBag, HttpContext);
+        {           
             ViewBag.fromSummaryPage = fromSummaryPage;
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             return View(summaryViewModel.SponsorViewModel);
@@ -113,10 +107,7 @@ namespace DVSRegister.Controllers
 
         [HttpGet("provide-your-contact-details")]
         public IActionResult Contact(bool fromSummaryPage)
-        {
-            // Retrieve form validation and first visit info from Session
-            ViewBag.IsFirstVisit = HttpContext?.Session.GetString("IsFirstVisit");
-            ContactViewModelValidator.RetrieveAndSetValidationParametersForContactModel(ViewBag, HttpContext);
+        {           
             ViewBag.fromSummaryPage = fromSummaryPage;
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             return View(summaryViewModel.SponsorViewModel.ContactViewModel);
@@ -135,26 +126,15 @@ namespace DVSRegister.Controllers
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             summaryViewModel.SponsorViewModel = sponsorViewModel;
             summaryViewModel.SponsorViewModel.FromSummaryPage = false;
-            HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
-
-            ContactViewModelValidator.ValidateSponsorViewModel(HttpContext, sponsorViewModel);
-            ContactViewModelValidator.ValidateContactViewModel(HttpContext, sponsorViewModel.ContactViewModel);
-
-            if (string.IsNullOrEmpty(HttpContext?.Session.GetString("IsFirstVisit")))
+            if (ModelState.IsValid)
             {
-                HttpContext?.Session.SetString("IsFirstVisit", "true");
+                HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
+                return fromSummaryPage ? RedirectToAction("Summary") : RedirectToAction("Country"); 
             }
             else
             {
-                HttpContext?.Session.SetString("IsFirstVisit", "false");
+                return View("Sponsor", sponsorViewModel);
             }
-
-            if (ContactViewModelValidator.IsContactModelValid(HttpContext) && ContactViewModelValidator.IsSponsorModelValid(HttpContext))
-            {
-                return RedirectToAction("Sponsor");
-            }
-
-            return fromSummaryPage ? RedirectToAction("Summary") : RedirectToAction("Country");
         }
 
 
@@ -170,25 +150,15 @@ namespace DVSRegister.Controllers
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             summaryViewModel.SponsorViewModel.ContactViewModel = contactViewModel;
             summaryViewModel.SponsorViewModel.ContactViewModel.FromSummaryPage = false;
-            HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
-
-            ContactViewModelValidator.ValidateContactViewModel(HttpContext, contactViewModel);
-            
-            if (string.IsNullOrEmpty(HttpContext?.Session.GetString("IsFirstVisit")))
+            if (ModelState.IsValid)
             {
-                HttpContext?.Session.SetString("IsFirstVisit", "true");
+                HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
+                return fromSummaryPage ? RedirectToAction("Summary") : RedirectToAction("Country"); 
             }
             else
             {
-                HttpContext?.Session.SetString("IsFirstVisit", "false");
+                return View("Contact", contactViewModel);
             }
-
-            if (ContactViewModelValidator.IsContactModelValid(HttpContext))
-            {
-                return RedirectToAction("Contact");
-            }
-
-            return fromSummaryPage? RedirectToAction("Summary") : RedirectToAction("Country");
         }
 
         /// <summary>
@@ -317,7 +287,8 @@ namespace DVSRegister.Controllers
             summaryViewModel.CountryViewModel = model.CountryViewModel;
             summaryViewModel.IsApplicationSponsor = model.IsApplicationSponsor;
 
-            if (ModelState.IsValid)
+            //Need to differentiate as the IsApplicationSponsor boolean field for last screen is also present in same view model
+            if (ModelState["ConfirmAccuracy"].Errors.Count == 0)
             {               
                 PreRegistrationDto preRegistrationDto = MapViewModelToDto(summaryViewModel);
                 GenericResponse genericResponse =  await preRegistrationService.SavePreRegistration(preRegistrationDto);
