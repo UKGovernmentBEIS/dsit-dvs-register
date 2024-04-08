@@ -1,11 +1,9 @@
 ﻿using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.BusinessLogic.Services.PreAssessment;
-using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
-using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
