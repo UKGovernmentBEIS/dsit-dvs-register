@@ -9,7 +9,8 @@
     bool hideCountries = ViewBag.HideCountries??false;
     bool hasParentCompany = Convert.ToBoolean(@Model.CompanyViewModel.HasParentCompany);  
     string hasParentCompanyValue = hasParentCompany ? "Yes" : "No";
-    string redirectView = Model.IsApplicationSponsor ? "Contact" : "Sponsor";
+    bool isApplicationSponsor = Convert.ToBoolean(Model.IsApplicationSponsor);
+    string redirectView = isApplicationSponsor ? "Contact" : "Sponsor";
     <div class="govuk-width-container">
         @Html.ActionLink("Back", "Company", "PreRegistration", null, new { @class = "govuk-back-link" })
         <main class="govuk-main-wrapper">
@@ -17,7 +18,7 @@
                 <div class="govuk-grid-column-two-thirds">
                     <h1 class="govuk-heading-xl">Check your answers before sending your application</h1>
 
-                    @if (!Model.IsApplicationSponsor)
+                    @if (!isApplicationSponsor)
                     {
                         <div class="govuk-summary-card">
                             <div class="govuk-summary-card__title-wrapper">

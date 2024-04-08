@@ -30,8 +30,7 @@ namespace DVSRegister.Controllers
         /// <returns></returns>
         [HttpGet("what-we-will-need-from-you")]
         public async Task<IActionResult> StartPage()
-        {
-            HttpContext?.Session.Set("IsFirstVisit", true);
+        {          
             return View("StartPage");
         }
 
@@ -70,17 +69,22 @@ namespace DVSRegister.Controllers
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             summaryViewModel.IsApplicationSponsor = viewModel.IsApplicationSponsor;
-            HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
-            if (summaryViewModel.IsApplicationSponsor)
-            {
-                //Provide Contact details
-                return RedirectToAction("Contact");
+            //Need to differentiate as the ConfirmAccuracy boolean field for last screen is also present in same view model
+            if (ModelState["IsApplicationSponsor"].Errors.Count == 0)
+            {              
+                HttpContext?.Session.Set("PreRegistrationSummary", summaryViewModel);
+                if (Convert.ToBoolean(summaryViewModel.IsApplicationSponsor))
+                {
+                    //Provide Contact details
+                    return RedirectToAction("Contact");
+                }
+                else
+                {
+                    //Provider sponser contact and the user's contact
+                    return RedirectToAction("Sponsor");
+                } 
             }
-            else
-            {
-                //Provider sponser contact and the user's contact
-                return RedirectToAction("Sponsor");
-            }
+            return View("SelectApplicationSponsor", viewModel);
         }
 
         /// <summary>
@@ -356,8 +360,7 @@ namespace DVSRegister.Controllers
         private SummaryViewModel GetPreRegistrationSummary()
         {
             SummaryViewModel model = HttpContext?.Session.Get<SummaryViewModel>("PreRegistrationSummary") ?? new SummaryViewModel
-            {
-                IsApplicationSponsor = false,
+            {               
                 SponsorViewModel = new SponsorViewModel { ContactViewModel = new ContactViewModel()},
                 CompanyViewModel = new CompanyViewModel(),
                 CountryViewModel = new CountryViewModel { SelectedCountries = new List<CountryDto>()},               
@@ -380,7 +383,7 @@ namespace DVSRegister.Controllers
                 preRegistrationCountryMappings.Add(new PreRegistrationCountryMappingDto { CountryId = item.Id });
             }
            
-            preRegistrationDto.IsApplicationSponsor = model.IsApplicationSponsor;
+            preRegistrationDto.IsApplicationSponsor =  Convert.ToBoolean(model.IsApplicationSponsor);
             preRegistrationDto.FullName =  model.SponsorViewModel.ContactViewModel.FullName;
             preRegistrationDto.JobTitle = model.SponsorViewModel.ContactViewModel.JobTitle;
             preRegistrationDto.Email = model.SponsorViewModel.ContactViewModel.Email;

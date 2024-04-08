@@ -36,7 +36,7 @@
                                 If you are completing this on behalf of the application sponsor, you will be asked to provide both your and their details
                             </div>
 
-
+                            @Html.ValidationMessageFor(m => m.IsApplicationSponsor, "", new { @class = "govuk-error-message" })
                             <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
                                 <div class="govuk-radios__item">
                                     @Html.RadioButtonFor(m => m.IsApplicationSponsor, true, new { @id = "applicationName-1", @class = "govuk-radios__input" })
