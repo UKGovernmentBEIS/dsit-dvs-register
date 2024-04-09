@@ -92,7 +92,7 @@
                                     </div>
                                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("ParentCompanyLocation") && Html.ViewData.ModelState["ParentCompanyLocation"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
                                         <label class="govuk-label govuk-label--m" for="event-name">
-                                            Location of parent company
+                                            Country of parent company
                                         </label>
                                         @Html.ValidationMessageFor(m => m.ParentCompanyLocation, "", new { @class = "govuk-error-message" })
 
