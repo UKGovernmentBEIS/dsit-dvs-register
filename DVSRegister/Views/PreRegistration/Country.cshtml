@@ -37,6 +37,9 @@
                                     List all the countries and territories your company currently trades in
                                 </h1>
                             </legend>
+
+                            <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+
                             @Html.ValidationMessageFor(m => m.SelectedCountryIds, "", new { @class = "govuk-error-message" })
                             @foreach (var group in groupedCountries)
                             {
