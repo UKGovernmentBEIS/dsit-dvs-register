@@ -17,7 +17,7 @@ namespace DVSRegister.Data.Repositories
         }
         public async Task<List<Country>> GetCountries()
         {
-            return await context.Country.ToListAsync();
+            return await context.Country.OrderBy(c => c.CountryName).ToListAsync();
         }
 
         public async Task<GenericResponse> SavePreRegistration(PreRegistration preRegistration)

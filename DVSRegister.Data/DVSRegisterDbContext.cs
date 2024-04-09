@@ -214,7 +214,23 @@ namespace DVSRegister.Data
              new Country { Id =195, CountryName = "Vietnam " },
              new Country { Id =196, CountryName = "Yemen " },
              new Country { Id =197, CountryName = "Zambia " },
-             new Country { Id =198, CountryName = "Zimbabwe " });
+             new Country { Id =198, CountryName = "Zimbabwe " },
+             //Territories
+            new Country { Id = 199, CountryName = "Akrotiri" },
+            new Country { Id = 200, CountryName = "Anguilla" },
+            new Country { Id = 201, CountryName = "Bermuda" },
+            new Country { Id = 202, CountryName = "British Antarctic Territory" },
+            new Country { Id = 203, CountryName = "British Indian Ocean Territory" },
+            new Country { Id = 204, CountryName = "British Virgin Islands" },
+            new Country { Id = 205, CountryName = "Cayman Islands" },
+            new Country { Id = 206, CountryName = "Dhekelia" },
+            new Country { Id = 207, CountryName = "Falkland Islands" },
+            new Country { Id = 208, CountryName = "Gibraltar" },
+            new Country { Id = 209, CountryName = "Montserrat" },
+            new Country { Id = 210, CountryName = "Pitcairn, Henderson, Ducie and Oeno Islands" },
+            new Country { Id = 211, CountryName = "St Helena, Ascension and Tristan da Cunha" },
+            new Country { Id = 212, CountryName = "South Georgia and South Sandwich Islands" },
+            new Country { Id = 213, CountryName = "Turks and Caicos Islands" });
 
         }
     }
