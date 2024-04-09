@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 
 namespace DVSRegister.Controllers
 {
+    [Route("")]
+    [Route("pre-registration")]
     [Route("pre-registration/start-your-application")]
     public class PreRegistrationController : Controller
     {
@@ -26,8 +28,9 @@ namespace DVSRegister.Controllers
         /// Load - first screen
         /// </summary>
         /// <returns></returns>
+        [Route("")]
         [HttpGet("what-we-will-need-from-you")]
-        public async Task<IActionResult> StartPage()
+        public IActionResult StartPage()
         {          
             return View("StartPage");
         }
