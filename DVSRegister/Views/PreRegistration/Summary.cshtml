@@ -215,7 +215,7 @@
                                         @Model.CompanyViewModel.RegisteredCompanyName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "Company", "PreRegistration", new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "Company", "PreRegistration",null, new { @class = "govuk-link" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -226,7 +226,7 @@
                                         @Model.CompanyViewModel.TradingName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "Company", "PreRegistration", new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "Company", "PreRegistration",null, new { @class = "govuk-link" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -237,7 +237,7 @@
                                         @hasParentCompanyValue
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "Company", "PreRegistration", new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "Company", "PreRegistration",null, new { @class = "govuk-link" })
                                     </dd>
                                 </div>
                                 @if (hasParentCompany)
@@ -255,7 +255,7 @@
                                     </div>
                                     <div class="govuk-summary-list__row">
                                         <dt class="govuk-summary-list__key">
-                                            Location of parent company
+                                            Country of parent company
                                         </dt>
                                         <dd class="govuk-summary-list__value">
                                             @Model.CompanyViewModel.ParentCompanyLocation
