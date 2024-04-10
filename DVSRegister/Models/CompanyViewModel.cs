@@ -14,8 +14,8 @@ namespace DVSRegister.Models
         public string TradingName { get; set; }
 
         [Required(ErrorMessage = "Enter a Companies House Number.")]
-        [AcceptedLength(8, ErrorMessage = "Your Companies House number must be 8 char long.")]
-        [MinLength(8, ErrorMessage = "Your Companies House number must be 8 char long.")]
+        [AcceptedLength(8, ErrorMessage = "Your Companies House number must be 8 characters long.")]
+        [MinLength(8, ErrorMessage = "Your Companies House number must be 8 characters long.")]
         [AcceptedCharacters(@"^[a-zA-Z0-9]*$", ErrorMessage = "Your Companies House number must contain only letters and numbers.")]
         public string CompanyRegistrationNumber { get; set; }
 
