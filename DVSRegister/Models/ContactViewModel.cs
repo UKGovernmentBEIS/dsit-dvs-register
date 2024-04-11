@@ -17,8 +17,8 @@ namespace DVSRegister.Models
         [AcceptedLength(255, ErrorMessage = "Enter an email address that is less than 255 characters.")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192")]
-        [UKPhoneNumber(ErrorMessage = "Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192")]       
+        [Required(ErrorMessage = "Enter a telephone number, like 01632 960000, 07700 900 000 or +44 20 7946 0000")]
+        [UKPhoneNumber(ErrorMessage = "Enter a telephone number, like 01632 960000, 07700 900 000 or +44 20 7946 0000")]       
         public string TelephoneNumber { get; set; }
         public bool FromSummaryPage { get; set; }
     }
