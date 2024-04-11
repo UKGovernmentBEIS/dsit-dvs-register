@@ -43,7 +43,7 @@
                             @Html.ValidationMessageFor(m => m.SelectedCountryIds, "", new { @class = "govuk-error-message" })
                             @foreach (var group in groupedCountries)
                             {
-                                <h2 class="govuk-heading-xl">
+                                <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">
                                     <span class="govuk-visually-hidden">Countries starting with </span>@group.Key
                                 </h2>
                                 @foreach (var country in group)
@@ -57,7 +57,7 @@
                                         </div>
                                     </div>
                                 }
-                                <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+                                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
                             }
 
                             @*DONOT Remove : Keeping AvailableCountries hidden variable to avoid db call to fetch countries after post*@
