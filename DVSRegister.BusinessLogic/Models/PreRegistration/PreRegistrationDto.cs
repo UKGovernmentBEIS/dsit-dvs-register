@@ -30,5 +30,7 @@ namespace DVSRegister.BusinessLogic.Models.PreRegistration
         public YesNoEnum ConfirmAccuracy { get; set; }
         public string? URN { get; set; }
         public PreRegistrationStatusEnum PreRegistrationStatus { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedDate { get; set; }
     }
 }

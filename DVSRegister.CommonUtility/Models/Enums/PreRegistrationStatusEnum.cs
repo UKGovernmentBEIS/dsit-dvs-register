@@ -4,9 +4,10 @@ namespace DVSRegister.CommonUtility.Models.Enums
 {
     public enum PreRegistrationStatusEnum
     {
-
+        [Description("NA")]
+        NotApplicable,
         [Description("RECEIVED")]
-        Received,
+        Received  ,
         [Description("IN REVIEW")]
         InReview,
         [Description("APPROVED")]

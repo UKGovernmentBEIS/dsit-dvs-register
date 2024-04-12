@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.Data.Entities
 {
-    public class PreRegistration
+    public class PreRegistration : BaseEntity
     {
         public PreRegistration() { }
 
@@ -53,5 +53,7 @@ namespace DVSRegister.Data.Entities
         public YesNoEnum ConfirmAccuracy { get; set; }
         public string? URN { get; set; }
         public PreRegistrationStatusEnum PreRegistrationStatus { get; set; }
+
+       
     }
 }
