@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DVSRegister.BusinessLogic.Extensions;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
@@ -15,11 +16,13 @@ namespace DVSRegister.BusinessLogic.Services.PreAssessment
         private readonly IEmailSender emailSender;
         private readonly ILogger<PreRegistrationService> logger;
 
-        public PreRegistrationService(IPreRegistrationRepository preRegistrationRepository, IMapper automapper, IEmailSender emailSender)
+        public PreRegistrationService(IPreRegistrationRepository preRegistrationRepository, IMapper automapper, IEmailSender emailSender, 
+         ILogger<PreRegistrationService> logger)
         {
             this.preRegistrationRepository = preRegistrationRepository;
             this.automapper = automapper;
             this.emailSender = emailSender;
+            this.logger = logger;
         }
         public async Task<List<CountryDto>> GetCountries()
         {
@@ -31,8 +34,11 @@ namespace DVSRegister.BusinessLogic.Services.PreAssessment
         {
             try
             {
-                 PreRegistration preRegistration = new PreRegistration();
-                automapper.Map(preRegistrationDto, preRegistration);                
+                PreRegistration preRegistration = new PreRegistration();
+                preRegistrationDto.URN = URNGenerator.GenerateURN(preRegistrationDto.RegisteredCompanyName,
+                Convert.ToDateTime( preRegistrationDto.CreatedDate), preRegistrationDto.FullName);
+                automapper.Map(preRegistrationDto, preRegistration);
+               
                 GenericResponse genericResponse = await preRegistrationRepository.SavePreRegistration(preRegistration);
                 genericResponse.EmailSent = await emailSender.SendEmailConfirmation(preRegistrationDto.Email, preRegistrationDto.FullName);
                 if (!string.IsNullOrEmpty(preRegistrationDto.SponsorEmail))

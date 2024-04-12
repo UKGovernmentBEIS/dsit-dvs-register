@@ -373,6 +373,8 @@ namespace DVSRegister.Controllers
             preRegistrationDto.ParentCompanyLocation = model.CompanyViewModel.ParentCompanyLocation;
             preRegistrationDto.ConfirmAccuracy = YesNoEnum.Yes;
             preRegistrationDto.PreRegistrationStatus = PreRegistrationStatusEnum.Received;
+            preRegistrationDto.CreatedBy = model.CompanyViewModel.CompanyRegistrationNumber;
+            preRegistrationDto.CreatedDate = DateTime.UtcNow;
             return preRegistrationDto;
 
         }
