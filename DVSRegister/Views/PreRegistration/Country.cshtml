@@ -46,17 +46,18 @@
                                 <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">
                                     <span class="govuk-visually-hidden">Countries starting with </span>@group.Key
                                 </h2>
-                                @foreach (var country in group)
-                                {
-                                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                <div class="govuk-checkboxes dsit-checkboxes-2-col" data-module="govuk-checkboxes">
+                                    @foreach (var country in group)
+                                    {
 
-                                        <div class="govuk-checkboxes__item">
+
+                                        <div class="govuk-checkboxes__item dsit-checkboxes-2-col__item">
                                             <input class="govuk-checkboxes__input" type="checkbox" name="SelectedCountryIds" value="@country.Id" id="country_@country.Id"
                                                    @(Model.SelectedCountryIds.Contains(country.Id) ? "checked" : "") />
                                             <label class="govuk-label govuk-checkboxes__label" for="country_@country.Id">@country.CountryName</label>
                                         </div>
-                                    </div>
-                                }
+                                    }
+                                </div>
                                 <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
                             }
 

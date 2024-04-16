@@ -7457,4 +7457,15 @@ x:-moz-any-link {
   margin-bottom: 0;
 }
 
+@media (min-width: 40.0625em) {
+  .dsit-checkboxes-2-col {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .dsit-checkboxes-2-col__item {
+    flex: 1 1 50%;
+    flex-wrap: nowrap;
+  }
+}
+
 /*# sourceMappingURL=main.css.map */
