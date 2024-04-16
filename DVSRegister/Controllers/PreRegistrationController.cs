@@ -304,7 +304,6 @@ namespace DVSRegister.Controllers
             }
             else
             {
-
                 return View("Summary", summaryViewModel);
             }
             

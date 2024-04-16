@@ -1,5 +1,6 @@
 ﻿using DVSRegister.BusinessLogic;
 using DVSRegister.BusinessLogic.Services.PreAssessment;
+using DVSRegister.BusinessLogic.Services.PreRegistration;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
@@ -64,6 +65,7 @@ namespace DVSRegister
         {
             services.AddScoped<IPreRegistrationRepository, PreRegistrationRepository>();
             services.AddScoped<IPreRegistrationService, PreRegistrationService>();
+            services.AddScoped<IURNService, URNService>();
         }
         public void ConfigureAutomapperServices(IServiceCollection services)
         {

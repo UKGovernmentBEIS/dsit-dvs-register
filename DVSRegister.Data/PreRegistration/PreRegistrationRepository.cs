@@ -40,7 +40,27 @@ namespace DVSRegister.Data.Repositories
             }
             return genericResponse;
         }
-        
-    
+
+        public async Task<GenericResponse> SaveURN(UniqueReferenceNumber uniqueReferenceNumber)
+        {
+            GenericResponse genericResponse = new GenericResponse();
+            using var transaction = context.Database.BeginTransaction();
+            try
+            {
+                await context.UniqueReferenceNumber.AddAsync(uniqueReferenceNumber);
+                context.SaveChanges();
+                transaction.Commit();
+                genericResponse.Success = true;
+            }
+            catch(Exception ex)
+            {
+                genericResponse.EmailSent = false;
+                genericResponse.Success = false;
+                transaction.Rollback();
+                logger.LogError(ex.Message);
+            }
+
+            return genericResponse;
+        }
     }
 }

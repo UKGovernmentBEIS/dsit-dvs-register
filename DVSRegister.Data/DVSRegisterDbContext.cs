@@ -12,6 +12,7 @@ namespace DVSRegister.Data
         public DbSet<PreRegistration> PreRegistration { get; set; }
         public DbSet<Country> Country { get; set; }
         public DbSet<PreRegistrationCountryMapping> PreRegistrationCountryMapping { get; set; }
+        public DbSet<UniqueReferenceNumber> UniqueReferenceNumber { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
