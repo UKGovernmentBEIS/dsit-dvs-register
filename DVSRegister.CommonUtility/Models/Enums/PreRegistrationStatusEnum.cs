@@ -4,17 +4,19 @@ namespace DVSRegister.CommonUtility.Models.Enums
 {
     public enum PreRegistrationStatusEnum
     {
+        //Donot change order of the enum as the ids are used to save in database
+        //New entries should be added at the last
         [Description("NA")]
         NotApplicable,
-        [Description("RECEIVED")]
+        [Description("Received")]
         Received  ,
-        [Description("IN REVIEW")]
+        [Description("In Review")]
         InReview,
-        [Description("APPROVED")]
+        [Description("Approved")]
         Approved,
-        [Description("REJECTED")]
+        [Description("Rejected")]
         Rejected,
-        [Description("REJECTED - ON APPEAL")]
+        [Description("Rejected - On Appeal")]
         RejectedOnAppeal
     }
 }

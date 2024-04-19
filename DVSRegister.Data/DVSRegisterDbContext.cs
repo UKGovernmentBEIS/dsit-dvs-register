@@ -14,10 +14,17 @@ namespace DVSRegister.Data
         public DbSet<PreRegistrationCountryMapping> PreRegistrationCountryMapping { get; set; }
         public DbSet<UniqueReferenceNumber> UniqueReferenceNumber { get; set; }
 
+        public DbSet<User> User { get; set; }
+        public DbSet<PreRegistrationReview> PreRegistrationReview { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //TODO: added users for dev purpose, to be removed once login is ready.
+            modelBuilder.Entity<User>().HasData(
+            new User { Id = 1, UserName = "Aiswarya", Email = "Aiswarya.Rajendran@dsit.gov.uk", CreatedDate = DateTime.UtcNow, CreatedBy = "Dev" },
+            new User { Id = 2, UserName = "Vishal", Email = "vishal.vishwanathan@ics.gov.uk", CreatedDate = DateTime.UtcNow, CreatedBy = "Dev" });
 
-            modelBuilder.Entity<Country>().HasData(
+                 modelBuilder.Entity<Country>().HasData(
                  new Country { Id =1, CountryName = "Afghanistan" },
                  new Country { Id =2, CountryName = "Albania" },
                  new Country { Id =3, CountryName = "Algeria" },
