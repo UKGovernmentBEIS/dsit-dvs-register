@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
+using DVSRegister.CommonUtility;
 using Microsoft.Extensions.Options;
 
 namespace DVSRegister.Middleware
@@ -7,25 +8,35 @@ namespace DVSRegister.Middleware
     // You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     public class BasicAuthMiddleware
     {
-        private readonly RequestDelegate _next;
+        private readonly RequestDelegate next;
         private readonly BasicAuthMiddlewareConfiguration configuration;
-
-        public BasicAuthMiddleware(RequestDelegate next, IOptions<BasicAuthMiddlewareConfiguration> options)
+        private readonly ILogger<ExceptionHandlerMiddleware> logger;
+        public BasicAuthMiddleware(RequestDelegate next, IOptions<BasicAuthMiddlewareConfiguration> options, ILogger<ExceptionHandlerMiddleware> logger)
         {
-            _next = next;
+            this.next = next;
+            this.logger = logger;
             configuration = options.Value;
         }
 
         public async Task Invoke(HttpContext httpContext)
         {
 
-            if (IsAuthorised(httpContext))
+            try
             {
-                await _next.Invoke(httpContext);
+                if (IsAuthorised(httpContext))
+                {
+                    await next.Invoke(httpContext);
+                }
+                else
+                {
+                    SendUnauthorisedResponse(httpContext);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                SendUnauthorisedResponse(httpContext);
+                logger.LogError($"An unexpected error occurred: {ex}");
+                // Redirect to error page 
+                httpContext.Response.Redirect(Constants.PreRegistrationErrorPath);
             }
         }
         private bool IsAuthorised(HttpContext httpContext)

@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewData["Title"] = "ServiceIssue";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">Sorry, the service is unavailable</h1>
+                <p class="govuk-body">
+                    Try again later.
+                </p>
+                <p class="govuk-body">
+                    Your answers have not been saved. When the service is available, you will have to
+                    @Html.ActionLink("start your application ", "StartPage", "PreRegistration", null, new { @class = "govuk-link" })again.
+                </p>
+               
+            </div>
+        </div>
+    </main>
+</div>
+

@@ -1,7 +1,11 @@
-﻿using DVSRegister.CommonUtility;
+﻿using DVSRegister.BusinessLogic;
+using DVSRegister.BusinessLogic.Services.PreAssessment;
+using DVSRegister.BusinessLogic.Services.PreRegistration;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data;
+using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
@@ -33,7 +37,12 @@ namespace DVSRegister
                 opt.UseNpgsql(connectionString));
 
             ConfigureGovUkNotify(services);
+            ConfigureSession(services);
+            ConfigureDvsRegisterServices(services);
+            ConfigureAutomapperServices(services);
         }
+
+       
 
         private void ConfigureGovUkNotify(IServiceCollection services)
         {
@@ -41,7 +50,27 @@ namespace DVSRegister
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
         }
+        private void ConfigureSession(IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30); // ToDo:Adjust the timeout
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+        }
 
+        public void ConfigureDvsRegisterServices(IServiceCollection services)
+        {
+            services.AddScoped<IPreRegistrationRepository, PreRegistrationRepository>();
+            services.AddScoped<IPreRegistrationService, PreRegistrationService>();
+            services.AddScoped<IURNService, URNService>();
+        }
+        public void ConfigureAutomapperServices(IServiceCollection services)
+        {
+            services.AddAutoMapper(typeof(AutoMapperProfile));
+        }
         public void ConfigureDatabaseHealthCheck(DVSRegisterDbContext? dbContext)
         {
             try

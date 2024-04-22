@@ -1,8 +1,10 @@
-﻿namespace DVSRegister.CommonUtility.Email
+﻿using DVSRegister.CommonUtility.Models;
+
+namespace DVSRegister.CommonUtility.Email
 {
     public interface IEmailSender
     {
-        //Add method definition for sending customized emails and implement in GovUkNotifyApi
+        public Task<bool> SendEmailConfirmation(string emailAddress, string recipientName);
 
     }
 }

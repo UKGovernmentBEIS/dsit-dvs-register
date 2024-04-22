@@ -5,6 +5,6 @@
         public const string ConfigSection = "GovUkNotify";
         public string ApiKey { get; set; }
 
-        //Add Email template as properties       
+        public EmailConfirmationTemplate EmailConfirmationTemplate { get; set; }
     }
 }

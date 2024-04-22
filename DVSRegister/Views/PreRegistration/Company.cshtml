@@ -1,0 +1,120 @@
+﻿@model DVSRegister.Models.CompanyViewModel
+@{
+    ViewData["Title"] = "Company";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "Country", "PreRegistration", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <span class="govuk-caption-l">
+                    Page 4 of 5
+                 <span class="govuk-visually-hidden"> of the pre registration application</span>
+                </span>
+                <h1 class="govuk-heading-xl">Provide an overview of your company</h1>
+                <p class="govuk-body">Please provide us with information about your company.</p>
+
+                <div class="alert">
+                    <h2 class="govuk-heading-s">
+                        Some of this information will be made public
+                    </h2>
+                    <p class="govuk-body">
+                        If your application is successful, your company’s registered name and trading name(s) will be publicly available on the register of digital identity and attribute service providers.
+                    </p>
+                </div>
+
+                @using (Html.BeginForm("SaveCompany", "PreRegistration", FormMethod.Post))
+                {
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("RegisteredCompanyName") && Html.ViewData.ModelState["RegisteredCompanyName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Registered name
+                        </label>
+                        <div id="event-name-hint" class="govuk-hint">
+                            For example, YOUR COMPANY UK SERVICES LTD
+                        </div>
+                        @Html.ValidationMessageFor(m => m.RegisteredCompanyName, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.RegisteredCompanyName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "event-name", name = "eventName" })
+                    </div>
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("TradingName") && Html.ViewData.ModelState["TradingName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Trading name(s)
+                        </label>
+                        <div id="event-name-hint" class="govuk-hint">
+                            For example, YOUR COMPANY UK SERVICES LTD
+                        </div>
+                        @Html.ValidationMessageFor(m => m.TradingName, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.TradingName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "trading-name", name = "tradingName" })
+                    </div>
+
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("CompanyRegistrationNumber") && Html.ViewData.ModelState["CompanyRegistrationNumber"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label govuk-label--m" for="event-name">
+                            Companies House or charity registration number
+                        </label>
+                        <div id="event-name-hint" class="govuk-hint">
+                            This number should allow for checks against Companies House.
+                        </div>
+                        <div id="event-name-hint" class="govuk-hint">
+                            In the UK it is 8 characters. For example, 01234567 or AC012345.
+                        </div>
+
+                        @Html.ValidationMessageFor(m => m.CompanyRegistrationNumber, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.CompanyRegistrationNumber, new { @class = "govuk-input govuk-input--width-10", id = "company-registration", name = "companyRegistration" })
+                    </div>
+
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("HasParentCompany") && Html.ViewData.ModelState["HasParentCompany"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <fieldset class="govuk-fieldset">
+                            @Html.ValidationMessageFor(m => m.HasParentCompany, "", new { @class = "govuk-error-message" })
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                Do you have a parent company outside the UK?
+                            </legend>
+
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                <div class="govuk-radios__item">
+                                    @Html.RadioButtonFor(m => m.HasParentCompany, true, new { @class = "govuk-radios__input", id = "parent-company-yes", @data_aria_controls = "conditional-contact" })
+                                    <label class="govuk-label govuk-radios__label" for="parent-company-yes">
+                                        Yes
+                                    </label>
+                                </div>
+                                <div class="govuk-radios__conditional" id="conditional-contact">
+                                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("ParentCompanyRegisteredName") && Html.ViewData.ModelState["ParentCompanyRegisteredName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                                        <label class="govuk-label govuk-label--m" for="event-name">
+                                            Registered name of parent company
+                                        </label>
+                                        <div id="event-name-hint" class="govuk-hint">
+                                            For example, YOUR COMPANY SERVICES LTD
+                                        </div>
+
+                                        @Html.ValidationMessageFor(m => m.ParentCompanyRegisteredName, "", new { @class = "govuk-error-message" })
+                                        @Html.TextBoxFor(m => m.ParentCompanyRegisteredName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "parent-company-registered-name", name = "parentCompanyRegisteredName" })
+                                    </div>
+                                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("ParentCompanyLocation") && Html.ViewData.ModelState["ParentCompanyLocation"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                                        <label class="govuk-label govuk-label--m" for="event-name">
+                                            Country of parent company
+                                        </label>
+                                        @Html.ValidationMessageFor(m => m.ParentCompanyLocation, "", new { @class = "govuk-error-message" })
+
+                                        @Html.TextBoxFor(m => m.ParentCompanyLocation, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "parent-company-location", @name = "parentCompanyLocation" })
+
+                                    </div>
+                                </div>
+                                <div class="govuk-radios__item">
+                                    @Html.RadioButtonFor(m => m.HasParentCompany, false, new { @class = "govuk-radios__input", id = "parent-company-no" })
+                                    <label class="govuk-label govuk-radios__label" for="parent-company-no">
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
+                        Save and continue
+                    </button>
+                }
+            </div>
+        </div>
+    </main>
+</div>

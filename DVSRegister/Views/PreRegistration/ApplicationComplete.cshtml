@@ -1,0 +1,50 @@
+﻿@model DVSRegister.Models.SponsorViewModel
+
+@{
+    ViewData["Title"] = "ApplicationComplete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-panel govuk-panel--confirmation">
+                    <h1 class="govuk-panel__title">
+                        Application complete
+                    </h1>
+                </div>
+                <p class="govuk-body">
+                    Your information has been submitted to the <a href="{URL}" class="govuk-link">Office for Digital Identities and Attributes (OfDIA)</a>.
+                </p>
+                <p class="govuk-body">
+                    We have sent a confirmation of your application to
+                    @if (!string.IsNullOrEmpty(Model.SponsorEmail))
+                    {
+                        <b>@Model.SponsorEmail</b>
+                        <span>and</span>
+                    }
+                    
+                    <b>@(Model.ContactViewModel.Email)</b>
+                </p>
+                <h2 class="govuk-heading-m">What happens next</h2>
+                <p class="govuk-body">
+                    We aim to contact you within 3 weeks about the outcome of your application.
+                </p>
+                <p class="govuk-body">
+                    If your application is successful, you will receive a unique reference number that you can take to an approved <a href="{URL}" class="govuk-link">Conformity Assessment Body</a> to start your certification process.
+                </p>
+                <p class="govuk-body">
+                    If your application is not successful, you can contact OfDIA at <a href="{URL}" class="govuk-link">ofdiaemail@gov.uk</a>  to request further information.
+                </p>
+                <h2 class="govuk-heading-m">If you need to change your application</h2>
+                <p class="govuk-body">
+                    If you need to change information in your application after you have sent it, contact OfDIA at <a href="{URL}" class="govuk-link">ofdiaemail@gov.uk</a>.
+                </p>
+                <p class="govuk-body">
+                    <a href="{URL}" class="govuk-link">What did you think of this service?</a> (takes 30 seconds)
+                </p>
+            </div>
+        </div>
+    </main>
+</div>
