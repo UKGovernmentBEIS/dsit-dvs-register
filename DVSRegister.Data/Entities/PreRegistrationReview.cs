@@ -29,7 +29,7 @@ namespace DVSRegister.Data.Entities
         public bool IsBannedPoliticalApproved { get; set; }
         public bool IsProvidersWebpageApproved {get;set;}
       
-        public ReviewProgressEnum ReviewProgress { get; set; }
+        public ApplicationReviewStatusEnum ApplicationReviewStatus { get; set; }
         public string? Comment { get; set; }
 
         [ForeignKey("User")]
