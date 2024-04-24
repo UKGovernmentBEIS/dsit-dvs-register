@@ -77,7 +77,7 @@
 
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("FullName") && Html.ViewData.ModelState["FullName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
                         <label class="govuk-label govuk-label--m" for="event-name">
-                            Full name of application sponsor
+                            Your full name
                         </label>
                         @Html.ValidationMessageFor(m => m.ContactViewModel.FullName, "", new { @class = "govuk-error-message" })
                         @Html.TextBoxFor(m => m.ContactViewModel.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
@@ -89,7 +89,7 @@
 
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("JobTitle") && Html.ViewData.ModelState["JobTitle"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
                         <label class="govuk-label govuk-label--m" for="event-name">
-                            Job title of application sponsor
+                           Your Job title
                         </label>
                         @Html.ValidationMessageFor(m => m.ContactViewModel.JobTitle, "", new { @class = "govuk-error-message" })
                         @Html.TextBoxFor(m => m.ContactViewModel.JobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
@@ -99,7 +99,7 @@
 
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("Email") && Html.ViewData.ModelState["Email"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
                         <label class="govuk-label govuk-label--m" for="event-name">
-                            Email address of application sponsor
+                            Your email address
                         </label>
                         @Html.ValidationMessageFor(m => m.ContactViewModel.Email, "", new { @class = "govuk-error-message" })
                         @Html.TextBoxFor(m => m.ContactViewModel.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
@@ -108,7 +108,7 @@
 
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("TelephoneNumber") && Html.ViewData.ModelState["TelephoneNumber"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
                         <label class="govuk-label govuk-label--m" for="event-name">
-                            Telephone number of application sponsor
+                           Your telephone number
                         </label>
                         @Html.ValidationMessageFor(m => m.ContactViewModel.TelephoneNumber, "", new { @class = "govuk-error-message" })
                         @Html.TextBoxFor(m => m.ContactViewModel.TelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
