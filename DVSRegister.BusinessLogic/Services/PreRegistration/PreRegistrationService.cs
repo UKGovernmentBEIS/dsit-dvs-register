@@ -3,6 +3,7 @@ using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.BusinessLogic.Services.PreRegistration;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
@@ -34,17 +35,25 @@ namespace DVSRegister.BusinessLogic.Services.PreAssessment
         public async Task<GenericResponse> SavePreRegistration(PreRegistrationDto preRegistrationDto)
         {
             try
-            {
-                DVSRegister.Data.Entities.PreRegistration preRegistration = new DVSRegister.Data.Entities.PreRegistration();
+            {              
 
-                URNDto UniqueReferenceNumberDTO = URNService.GenerateURN(preRegistrationDto);
-                DVSRegister.Data.Entities.UniqueReferenceNumber URN = new DVSRegister.Data.Entities.UniqueReferenceNumber() { URN = UniqueReferenceNumberDTO.URN};
+                URNDto UniqueReferenceNumberDTO = URNService.GenerateURN(preRegistrationDto);              
                 preRegistrationDto.URN = UniqueReferenceNumberDTO.URN;
 
+                DVSRegister.Data.Entities.PreRegistration preRegistration = new DVSRegister.Data.Entities.PreRegistration();
                 automapper.Map(preRegistrationDto, preRegistration);
-                automapper.Map(UniqueReferenceNumberDTO, URN);
-
                 GenericResponse genericResponse = await preRegistrationRepository.SavePreRegistration(preRegistration);
+
+
+
+                DVSRegister.Data.Entities.UniqueReferenceNumber URN = new DVSRegister.Data.Entities.UniqueReferenceNumber()
+                {
+                    URN = UniqueReferenceNumberDTO.URN,
+                    URNStatus = URNStatusEnum.Created,
+                    CreatedDate = DateTime.UtcNow,
+                    ModifiedDate = DateTime.UtcNow,
+                    PreRegistrationId = genericResponse.InstanceId
+                };
                 GenericResponse URNSaveResponse = await preRegistrationRepository.SaveURN(URN);
                 
 
