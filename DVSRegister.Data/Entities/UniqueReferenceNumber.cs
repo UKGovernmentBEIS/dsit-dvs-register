@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DVSRegister.CommonUtility.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DVSRegister.Data.Entities
@@ -10,6 +11,10 @@ namespace DVSRegister.Data.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
+        [ForeignKey("PreRegistration")]
+        public int? PreRegistrationId { get; set; }
+        public PreRegistration PreRegistration { get; set; }
 
         [Column(TypeName = "varchar(100)")]
         public required string URN { get; set; }
@@ -24,7 +29,8 @@ namespace DVSRegister.Data.Entities
 
         public int? Validity { get; set; }
 
-        public string? Status { get; set; }
+        public URNStatusEnum URNStatus { get; set; }
+       
 
     }
 }

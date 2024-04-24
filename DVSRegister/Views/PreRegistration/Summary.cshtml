@@ -231,6 +231,19 @@
                                 </div>
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
+                                        Companies House or
+                                        charity registration
+                                        number
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.CompanyViewModel.CompanyRegistrationNumber
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "Company", "PreRegistration", null, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
                                         Parent company outside the UK
                                     </dt>
                                     <dd class="govuk-summary-list__value">

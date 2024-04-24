@@ -28,7 +28,9 @@ namespace DVSRegister.Data.Entities
 
         public bool IsBannedPoliticalApproved { get; set; }
         public bool IsProvidersWebpageApproved {get;set;}
-      
+
+        public bool IsDirectorshipsApproved { get; set; }
+
         public ApplicationReviewStatusEnum ApplicationReviewStatus { get; set; }
         public string? Comment { get; set; }
 
