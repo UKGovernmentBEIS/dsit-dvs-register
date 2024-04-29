@@ -9,11 +9,11 @@ namespace DVSRegister.CommonUtility.Models.Enums
         [Description("Received")]
         Received = 1,
         [Description("In primary review")]
-        InPrimaryReview = 2,       
-        [Description("Primary check rejected")]
-        PrimaryCheckRejected = 3,
-        [Description("Primary check approved")]
-        PrimaryCheckApproved = 4,
+        InPrimaryReview = 2,
+        [Description("Primary check failed")]
+        PrimaryCheckFailed = 3,
+        [Description("Primary check passed")]
+        PrimaryCheckPassed = 4,
         [Description("Sent back by second reviewer")]
         SentBackBySecondReviewer = 5,
         [Description("Application rejected")]
