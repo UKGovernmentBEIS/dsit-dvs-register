@@ -34,6 +34,8 @@ namespace DVSRegister.Data.Entities
         public ApplicationReviewStatusEnum ApplicationReviewStatus { get; set; }
         public string? Comment { get; set; }
 
+        public RejectionReasonEnum? RejectionReason { get; set; }
+
         [ForeignKey("User")]
         public int PrimaryCheckUserId { get; set; }
 

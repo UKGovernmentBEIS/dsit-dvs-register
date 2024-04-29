@@ -10,8 +10,8 @@ namespace DVSRegister.CommonUtility.Models.Enums
         Created = 1,
         [Description("Rejected")]
         Rejected = 2,
-        [Description("Activated")]
-        Activated = 3,
+        [Description("Approved - CAB Validation pending")]
+        Approved = 3,
         [Description("Validated by CAB")]
         ValidatedByCAB = 4,
         [Description("Expired")]
