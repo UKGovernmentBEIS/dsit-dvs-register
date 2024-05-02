@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240426123756_PreRegReviewAddColumnRejectionReason")]
+    partial class PreRegReviewAddColumnRejectionReason
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1363,6 +1366,24 @@ namespace DVSRegister.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedBy = "Dev",
+                            CreatedDate = new DateTime(2024, 4, 26, 12, 37, 54, 593, DateTimeKind.Utc).AddTicks(4533),
+                            Email = "Aiswarya.Rajendran@dsit.gov.uk",
+                            UserName = "Aiswarya"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedBy = "Dev",
+                            CreatedDate = new DateTime(2024, 4, 26, 12, 37, 54, 593, DateTimeKind.Utc).AddTicks(4606),
+                            Email = "vishal.vishwanathan@ics.gov.uk",
+                            UserName = "Vishal"
+                        });
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistrationCountryMapping", b =>

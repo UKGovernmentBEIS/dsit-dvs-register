@@ -26,10 +26,11 @@ namespace DVSRegister.Data.Repositories
             using var transaction = context.Database.BeginTransaction();
             try
             {
-                await context.PreRegistration.AddAsync(preRegistration);
+                var entity = await context.PreRegistration.AddAsync(preRegistration);
                 context.SaveChanges();
                 transaction.Commit();
                 genericResponse.Success = true;
+                genericResponse.InstanceId = entity.Entity.Id;
             }
             catch (Exception ex)
             {

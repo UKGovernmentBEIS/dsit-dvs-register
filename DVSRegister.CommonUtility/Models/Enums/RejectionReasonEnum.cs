@@ -2,14 +2,13 @@
 
 namespace DVSRegister.CommonUtility.Models.Enums
 {
-    public enum ReviewStatusEnum
+    public enum RejectionReasonEnum
     {
         //Donot change order of the enum as the ids are used to save in database
         //New entries should be added at the last
-        [Description("Approved")]
-        Approved = 1,       
-        [Description("Rejected")]
-        Rejected
-
+        [Description("Failed due diligence check")]
+        DiligenceCheck,
+        [Description("Submitted incorrect information ")]
+        IncorrectInfo,
     }
 }

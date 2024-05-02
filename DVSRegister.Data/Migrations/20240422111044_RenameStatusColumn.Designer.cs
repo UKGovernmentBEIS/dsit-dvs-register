@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240422111044_RenameStatusColumn")]
+    partial class RenameStatusColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1229,9 +1232,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool>("IsDirectorshipsAndRelationApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsDirectorshipsApproved")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("IsECCheckApproved")
                         .HasColumnType("boolean");
 
@@ -1257,9 +1257,6 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("PrimaryCheckUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("RejectionReason")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("SecondaryCheckTime")
@@ -1306,28 +1303,23 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("PreRegistrationId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("RegisteredDIPName")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("ReleasedTimeStamp")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
+
                     b.Property<string>("URN")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
-
-                    b.Property<int>("URNStatus")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("Validity")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PreRegistrationId");
 
                     b.ToTable("UniqueReferenceNumber");
                 });
@@ -1363,6 +1355,24 @@ namespace DVSRegister.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedBy = "Dev",
+                            CreatedDate = new DateTime(2024, 4, 22, 11, 10, 43, 445, DateTimeKind.Utc).AddTicks(5384),
+                            Email = "Aiswarya.Rajendran@dsit.gov.uk",
+                            UserName = "Aiswarya"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedBy = "Dev",
+                            CreatedDate = new DateTime(2024, 4, 22, 11, 10, 43, 445, DateTimeKind.Utc).AddTicks(5437),
+                            Email = "vishal.vishwanathan@ics.gov.uk",
+                            UserName = "Vishal"
+                        });
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistrationCountryMapping", b =>
@@ -1407,15 +1417,6 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("PrimaryCheckUser");
 
                     b.Navigation("SecondaryCheckUser");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.UniqueReferenceNumber", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.PreRegistration", "PreRegistration")
-                        .WithMany()
-                        .HasForeignKey("PreRegistrationId");
-
-                    b.Navigation("PreRegistration");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistration", b =>
