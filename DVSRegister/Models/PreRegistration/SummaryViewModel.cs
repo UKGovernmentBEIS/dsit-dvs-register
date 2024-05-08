@@ -1,5 +1,4 @@
-﻿using DVSRegister.BusinessLogic.Models.PreRegistration;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.Models
 {
