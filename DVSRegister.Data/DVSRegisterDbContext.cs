@@ -13,13 +13,64 @@ namespace DVSRegister.Data
         public DbSet<Country> Country { get; set; }
         public DbSet<PreRegistrationCountryMapping> PreRegistrationCountryMapping { get; set; }
         public DbSet<UniqueReferenceNumber> UniqueReferenceNumber { get; set; }
-
         public DbSet<User> User { get; set; }
         public DbSet<PreRegistrationReview> PreRegistrationReview { get; set; }
+        public DbSet<CertificateInformation> CertificateInformation { get; set; }
+        public DbSet<Role> Role { get; set; }
+        public DbSet<CertificateInfoRoleMapping> CertificateInfoRoleMapping { get; set; }
+        public DbSet<IdentityProfile> IdentityProfile { get; set; }
+        public DbSet<CertificateInfoIdentityProfileMapping> CertificateInfoIdentityProfileMapping { get; set; }
+        public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }
+        public DbSet<CertificateInfoSupSchemeMapping> CertificateInfoSupSchemeMappings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           
+            //For all entities donot change ids, add new entries at the end only              
+
+                modelBuilder.Entity<Role>().HasData(
+                new Role { Id =1, RoleName = "Identity Service Provider (IDSP)" },
+                new Role { Id =2, RoleName = "Attribute Service Provider (ASP)" },
+                new Role { Id =3, RoleName = "Orchestration Service Provider (OSP)" });
+
+                modelBuilder.Entity<IdentityProfile>().HasData(
+                new IdentityProfile { Id =1, IdentityProfileName = "L1A " },
+                new IdentityProfile { Id =2, IdentityProfileName = "L1B " },
+                new IdentityProfile { Id =3, IdentityProfileName = "L1C " },
+                new IdentityProfile { Id =4, IdentityProfileName = "L2A " },
+                new IdentityProfile { Id =5, IdentityProfileName = "L2B " },
+                new IdentityProfile { Id =6, IdentityProfileName = "L3A " },
+                new IdentityProfile { Id =7, IdentityProfileName = "M1A " },
+                new IdentityProfile { Id =8, IdentityProfileName = "M1B " },
+                new IdentityProfile { Id =9, IdentityProfileName = "M1C " },
+                new IdentityProfile { Id =10, IdentityProfileName = "M1D " },
+                new IdentityProfile { Id =11, IdentityProfileName = "M2A " },
+                new IdentityProfile { Id =12, IdentityProfileName = "M2B " },
+                new IdentityProfile { Id =13, IdentityProfileName = "M2C " },
+                new IdentityProfile { Id =14, IdentityProfileName = "M3A " },
+                new IdentityProfile { Id =15, IdentityProfileName = "H1A " },
+                new IdentityProfile { Id =16, IdentityProfileName = "H1B " },
+                new IdentityProfile { Id =17, IdentityProfileName = "H1C " },
+                new IdentityProfile { Id =18, IdentityProfileName = "H2A " },
+                new IdentityProfile { Id =19, IdentityProfileName = "H2B " },
+                new IdentityProfile { Id =20, IdentityProfileName = "H2C " },
+                new IdentityProfile { Id =21, IdentityProfileName = "H2D " },
+                new IdentityProfile { Id =22, IdentityProfileName = "H2E " },
+                new IdentityProfile { Id =23, IdentityProfileName = "H3A " },
+                new IdentityProfile { Id =24, IdentityProfileName = "V1A " },
+                new IdentityProfile { Id =25, IdentityProfileName = "V1B " },
+                new IdentityProfile { Id =26, IdentityProfileName = "V1C " },
+                new IdentityProfile { Id =27, IdentityProfileName = "V1D " },
+                new IdentityProfile { Id =28, IdentityProfileName = "V2A " },
+                new IdentityProfile { Id =29, IdentityProfileName = "V2B " },
+                new IdentityProfile { Id =30, IdentityProfileName = "V2C " },
+                new IdentityProfile { Id =31, IdentityProfileName = "V2D " },
+                new IdentityProfile { Id =32, IdentityProfileName = "V3A " });
+
+                modelBuilder.Entity<SupplementaryScheme>().HasData(
+                new SupplementaryScheme { Id =1, SchemeName = "Right to Work" },
+                new SupplementaryScheme { Id =2, SchemeName = "Right to Rent" },
+                new SupplementaryScheme { Id =3, SchemeName = "Disclosure and Barring Service" });
+
                  modelBuilder.Entity<Country>().HasData(
                  new Country { Id =1, CountryName = "Afghanistan" },
                  new Country { Id =2, CountryName = "Albania" },
