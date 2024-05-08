@@ -1,10 +1,12 @@
 ﻿using DVSRegister.BusinessLogic;
+using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.PreAssessment;
 using DVSRegister.BusinessLogic.Services.PreRegistration;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data;
+using DVSRegister.Data.CAB;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
 using Microsoft.EntityFrameworkCore;
@@ -66,6 +68,8 @@ namespace DVSRegister
             services.AddScoped<IPreRegistrationRepository, PreRegistrationRepository>();
             services.AddScoped<IPreRegistrationService, PreRegistrationService>();
             services.AddScoped<IURNService, URNService>();
+            services.AddScoped<ICabService, CabService>();
+            services.AddScoped<ICabRepository, CabRepository>();
         }
         public void ConfigureAutomapperServices(IServiceCollection services)
         {

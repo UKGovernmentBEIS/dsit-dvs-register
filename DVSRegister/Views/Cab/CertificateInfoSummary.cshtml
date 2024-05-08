@@ -1,0 +1,228 @@
+﻿@model DVSRegister.Models.CAB.CertificateInfoSummaryViewModel
+@using DVSRegister.Extensions
+@{
+    ViewData["Title"] = "CertificateInfoSummary";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("SaveSummaryAndSubmit", "Cab", FormMethod.Post))
+{   
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "", "Cab", null, new { @class = "govuk-back-link" })
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl"> Check your answers before submitting your application</h1>
+                    <div class="govuk-warning-text">
+                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                        <strong class="govuk-warning-text__text">
+                            <span class="govuk-visually-hidden">Warning</span>
+                            If OfDIA approves this submission, the information you have
+                            provided below will be publicly available.
+                        </strong>
+                    </div>
+                </div>
+                <div class="govuk-grid-column-full">                 
+                  
+
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                            <h2 class="govuk-summary-card__title">
+                               Application details
+                            </h2>
+                        </div>
+                        <div class="govuk-summary-card__content">
+                            <dl class="govuk-summary-list">
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Registered name
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.RegisteredName
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Trading name(s)
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.TradingName
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Public contact email
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.PublicContactEmail
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Telephone number
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.TelephoneNumber
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Website address
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.WebsiteAddress
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Company address details
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.Address
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Name of service
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.ServiceName
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Name of role(s) certified
+                                        against
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @foreach (var item in Model.RoleViewModel.SelectedRoles)
+                                        {
+
+                                            @item.RoleName
+                                            <br>
+
+                                        }
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Identity profiles
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @foreach (var item in Model.IdentityProfileViewModel.SelectedIdentityProfiles)
+                                        {
+                                            @item.IdentityProfileName
+                                            <br>
+                                        }
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Supplementary schemes
+                                    </dt>
+
+                                    @if (Model.SupplementarySchemeViewModel!= null)
+                                    {
+                                        if (Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count>0)
+                                        {
+                                            <dd class="govuk-summary-list__value">
+                                                @foreach (var item in Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
+                                                {
+                                                    @item.SchemeName
+                                                    <br>
+                                                }
+                                            </dd>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <dd class="govuk-summary-list__value">
+                                           <div>None</div>
+                                        </dd>
+                                    }
+
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Service provider s certificate of conformity
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        <p class="govuk-body">
+                                            <a href="@Model.FileLink" class="govuk-link">@Model.FileName</a>
+                                        </p>
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Date of issue
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "MM/dd/yyyy")
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Date of expiry
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "MM/dd/yyyy")
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                    </dd>
+                                </div>
+
+                            </dl>
+                        </div>
+                    </div>
+                   
+                </div>
+            </div>     
+
+            <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                Confirm and Continue
+            </button>
+        </main>
+    </div>
+
+}
+

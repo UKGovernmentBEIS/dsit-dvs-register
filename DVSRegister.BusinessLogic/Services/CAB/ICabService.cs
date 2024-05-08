@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Models;
 
 namespace DVSRegister.BusinessLogic.Services.CAB
 {
-    internal class ICabService
+    public interface ICabService
     {
+        public Task<GenericResponse> SaveCertificateInformation(CertificateInfoDto certificateInfo);
     }
 }
