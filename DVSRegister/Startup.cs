@@ -35,6 +35,9 @@ namespace DVSRegister
             services.AddControllersWithViews();
             string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));
 
+
+            
+
             services.AddDbContext<DVSRegisterDbContext>(opt =>
                 opt.UseNpgsql(connectionString));
 
@@ -70,6 +73,15 @@ namespace DVSRegister
             services.AddScoped<IURNService, URNService>();
             services.AddScoped<ICabService, CabService>();
             services.AddScoped<ICabRepository, CabRepository>();
+            services.AddScoped<IBucketService, BucketService>(opt =>
+            {
+                string bucketName = string.Format(configuration.GetValue<string>("BucketName"));
+                string accessKey = string.Format(configuration.GetValue<string>("AWSAccessKey"));
+                string password = string.Format(configuration.GetValue<string>("AWSSecretPassword"));
+                return new BucketService(bucketName, accessKey, password);
+            });
+            services.AddScoped<IAVService, AVService>();
+
         }
         public void ConfigureAutomapperServices(IServiceCollection services)
         {
