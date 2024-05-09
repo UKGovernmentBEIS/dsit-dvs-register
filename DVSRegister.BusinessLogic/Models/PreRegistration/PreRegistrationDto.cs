@@ -5,7 +5,7 @@ namespace DVSRegister.BusinessLogic.Models.PreRegistration
     public class PreRegistrationDto
     {
         public bool IsApplicationSponsor { get; set; }
-
+        public int Id {  get; set; }
         public string FullName { get; set; }
         public string JobTitle { get; set; }      
         public string Email { get; set; }

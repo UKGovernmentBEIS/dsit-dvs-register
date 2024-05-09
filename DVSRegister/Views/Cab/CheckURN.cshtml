@@ -1,0 +1,44 @@
+﻿@model DVSRegister.Models.CAB.URNViewModel
+@{
+    ViewData["Title"] = "CheckURN";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "CheckURNStartPage", "Cab", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+               
+                <h1 class="govuk-heading-xl">
+                   Check unique reference number
+                </h1>
+                @if (ViewData.ModelState.ErrorCount >0)
+                {
+                    @await Html.PartialAsync("~/Views/Cab/PartialViews/_CheckURNErrorSummary.cshtml", Model)
+                }
+
+                @using (Html.BeginForm("ValidateURN", "Cab", FormMethod.Post))
+                {                    
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("URN") && Html.ViewData.ModelState["URN"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <h1 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--l" for="event-name">
+                                Unique reference number
+                            </label>
+                        </h1>
+                        <div id="event-name-hint" class="govuk-hint">
+                            For example, ‘URN12-1234567891-AB-123-45’
+                        </div>
+                        @Html.ValidationMessageFor(m => m.URN, "", new { @class = "govuk-error-message", id = "urn-error" })
+                        @Html.TextBoxFor(m => m.URN, new { @class = "govuk-input", id = "event-name", aria_describedby = "event-name-hint" })
+                      
+                    </div>
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
+                        Check URN
+                    </button>
+                }
+            </div>
+        </div>
+    </main>
+</div>
+
