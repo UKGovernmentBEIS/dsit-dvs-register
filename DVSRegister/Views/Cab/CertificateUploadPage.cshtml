@@ -1,0 +1,56 @@
+﻿@model DVSRegister.Models.CAB.CertificateFileViewModel
+
+@{
+    ViewData["Title"] = "CAB Service Portal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("SaveCertificate", "Cab", FormMethod.Post, new { enctype ="multipart/form-data"}))
+{
+
+    <div class="govuk-width-container">
+        <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="govuk-error-summary" data-module="govuk-error-summary">
+                            <div role="alert">
+                                <h2 class="govuk-error-summary__title">
+                                    There is a problem
+                                </h2>
+                                <div class="govuk-error-summary__body">
+                                    <ul class="govuk-list govuk-error-summary__list">
+                                        <li>
+                                            <a href="#">File Upload has failed. Please try again later</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <h1 class="govuk-heading-xl"> Upload the digital identity and attribute service provider’s certificate of conformity</h1>
+
+                    <p class="govuk-body">You must make sure that you name the file correctly. Please use the following standardised format: Certificate-DateOfIssue-TradingName-ServiceName. </p>
+
+                    <p class="govuk-body">If the date of issue of the certificate for is the 15 of June 2023, you should use a DDMMYY format and enter 150623.</p>
+
+                    <p class="govuk-body govuk-!-font-weight-bold">Upload the digital identity and attribute service provider’s certificate of conformity</p>
+
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("File") && Html.ViewData.ModelState["File"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <label class="govuk-label" for="file-upload-1">
+                            Upload a file
+                        </label>
+                        @Html.ValidationMessageFor(m => m.File, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.File, new { type = "file", @class = "govuk-file-upload" })
+                    </div>
+
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+}

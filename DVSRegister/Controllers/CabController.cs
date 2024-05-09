@@ -13,12 +13,17 @@ namespace DVSRegister.Controllers
     {
     
         private readonly ICabService cabService;
+        private readonly IBucketService bucketService;
+        private readonly IAVService avService;
 
-        public CabController(ICabService cabService)
+        public CabController(ICabService cabService, IAVService aVService, IBucketService bucketService)
         {           
             this.cabService = cabService;
+            this.bucketService = bucketService;
+            this.avService = aVService;
         }
 
+        [HttpGet("")]
         [HttpGet("landing-page")]
         public IActionResult LandingPage()
         {
@@ -26,6 +31,60 @@ namespace DVSRegister.Controllers
             return View();
         }
 
+        
+        [HttpGet("certificate-information")]
+        public IActionResult CertificateInformationStartPage()
+        {
+            return View();
+        }
+
+
+        [HttpGet("certificate-upload")]
+        public IActionResult CertificateUploadPage()
+        {
+            return View();
+        }
+
+        [HttpPost("upload-certificate")]
+        public async Task<IActionResult> SaveCertificate(CertificateFileViewModel certificateFileViewModel)
+        {
+            // Virus Scan
+            // Upload to S3
+
+            // Store the filename and link in Session
+            if (ModelState["File"].Errors.Count == 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+
+                    await certificateFileViewModel.File.CopyToAsync(memoryStream);
+                    GenericResponse avServiceResponse = avService.ScanFileForVirus(memoryStream);
+
+                    if(avServiceResponse.Success)
+                    {
+                        GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                        if (genericResponse.Success)
+                        {
+                            return Ok();
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("File", "Unable to upload the file provided");
+                            return View("CertificateUploadPage", certificateFileViewModel);
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("File", "Unable to upload the file provided");
+                        return View("CertificateUploadPage", certificateFileViewModel);
+                    }
+                }                
+            }
+            else
+            {   
+                return View("CertificateUploadPage", certificateFileViewModel);
+            }
+        }
         /// <summary>
         /// Summary page displaying data saved in session
         /// </summary>      
