@@ -1,6 +1,7 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Entities;
 using DVSRegister.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace DVSRegister.Data.CAB
@@ -35,6 +36,46 @@ namespace DVSRegister.Data.CAB
                 logger.LogError(ex.Message);
             }
             return genericResponse;
+        }
+
+        public async Task<UniqueReferenceNumber> GetURNDetails(string URN)
+        {
+            var uniqueReferenceNumber = await context.UniqueReferenceNumber.FirstOrDefaultAsync(e => e.URN == URN);
+            return uniqueReferenceNumber;
+        }
+
+        public async Task<PreRegistration> GetPreRegistrationDetails(string URN)
+        {
+            var preRegistration = await context.PreRegistration.FirstOrDefaultAsync(e => e.URN == URN);
+            return preRegistration;
+        }
+
+        public async Task<GenericResponse> UpdateURNStatus(UniqueReferenceNumber uniqueReferenceNumber)
+        {
+
+            GenericResponse genericResponse = new GenericResponse();
+            using var transaction = context.Database.BeginTransaction();
+            try
+            {
+                var existingEntity = await context.UniqueReferenceNumber.FirstOrDefaultAsync(e => e.URN == uniqueReferenceNumber.URN);
+                if (existingEntity != null)
+                {
+                    existingEntity.URNStatus = uniqueReferenceNumber.URNStatus;
+                    await context.SaveChangesAsync();
+                    transaction.Commit();
+                    genericResponse.Success = true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                genericResponse.EmailSent = false;
+                genericResponse.Success = false;
+                transaction.Rollback();
+                logger.LogError(ex.Message);
+            }
+            return genericResponse;
+
         }
     }
 }

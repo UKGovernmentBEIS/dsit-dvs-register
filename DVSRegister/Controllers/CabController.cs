@@ -5,6 +5,8 @@ using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.BusinessLogic.Models.PreRegistration;
+using DVSRegister.CommonUtility;
 
 namespace DVSRegister.Controllers
 {
@@ -31,7 +33,59 @@ namespace DVSRegister.Controllers
             return View();
         }
 
-        
+        #region Validate URN
+        /// <summary>
+        /// Loaded on 
+        /// Check Unique Number Link
+        /// clicked on landing page
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet("check-urn-start")]
+        public IActionResult CheckURNStartPage()
+        {
+            return View();
+        }
+
+        [HttpGet("check-urn")]
+        public IActionResult CheckURN()
+        {
+            return View();
+        }
+
+        [HttpPost("check-urn")]
+        public async Task<IActionResult> ValidateURN(URNViewModel urnViewModel)
+        {
+            if(!string.IsNullOrEmpty(urnViewModel.URN)) 
+            {
+                bool isValid = await cabService.ValidateURN(urnViewModel.URN);
+                if (!isValid)
+                    ModelState.AddModelError("URN", Constants.URNErrorMessage);
+            }
+           
+            if (ModelState.IsValid)
+            {
+                TempData["URN"] = urnViewModel.URN;
+                return RedirectToAction("ValidURNDetails");
+            }
+            else
+            {
+                return View("CheckURN", urnViewModel);
+            }
+        }
+
+        [HttpGet("valid-urn")]
+        public async Task<IActionResult> ValidURNDetails()
+        {
+            string URN = TempData["URN"] as string;
+            PreRegistrationDto preRegistrationDto = await cabService.GetPreRegistrationDetails(URN);
+            URNViewModel urnViewModel = MapDtoToViewModel(preRegistrationDto);
+            return View(urnViewModel);
+        }
+
+        #endregion
+
+
         [HttpGet("certificate-information")]
         public IActionResult CertificateInformationStartPage()
         {
@@ -148,10 +202,22 @@ namespace DVSRegister.Controllers
             CertificateInfoSummaryViewModel model = HttpContext?.Session.Get<CertificateInfoSummaryViewModel>("CertificateInfoSummary") ?? new CertificateInfoSummaryViewModel
             {
                 RoleViewModel = new RoleViewModel { SelectedRoles = new List<RoleDto>() },
-                IdentityProfileViewModel = new IdentityProfileViewModel { SelectedIdentityProfiles = new List<IdentityProfileDto>()},
+                IdentityProfileViewModel = new IdentityProfileViewModel { SelectedIdentityProfiles = new List<IdentityProfileDto>() },
                 SupplementarySchemeViewModel = new SupplementarySchemeViewModel { SelectedSupplementarySchemes = new List<SupplementarySchemeDto> { } }
             };
             return model;
+        }
+
+
+        private URNViewModel MapDtoToViewModel(PreRegistrationDto preRegistrationDto)
+        {
+            URNViewModel urnViewModel = new URNViewModel();
+            urnViewModel.PreregistrationId = preRegistrationDto.Id;
+            urnViewModel.TradingName = preRegistrationDto?.TradingName;
+            urnViewModel.RegisteredName = preRegistrationDto?.RegisteredCompanyName;
+            urnViewModel.URN = preRegistrationDto?.URN;
+            return urnViewModel;
+
         }
 
         private CertificateInfoDto MapViewModelToDto(CertificateInfoSummaryViewModel model)
