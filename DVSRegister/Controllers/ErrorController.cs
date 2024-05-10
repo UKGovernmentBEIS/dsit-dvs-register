@@ -12,6 +12,5 @@ namespace DVSRegister.Controllers
             HttpContext?.Session.Clear();
             return View("ServiceIssue");
         }
-
     }
 }

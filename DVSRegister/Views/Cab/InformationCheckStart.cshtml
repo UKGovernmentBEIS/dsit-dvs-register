@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "CAB Service Portal";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "URNData", "Cab", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+
+                <h1 class="govuk-heading-xl govuk-!-margin-top-8">Check that you have all the information </h1>
+
+                <p class="govuk-body">To complete this process, you will need the information and documents listed below. All details must be provided in a single session, as the application does not support saving and resuming at a later time. Make sure you have all the required documents ready before you start.</p>
+
+                <p class="govuk-body">You will need the following information from the digital identity and attribute service provider. </p>
+
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>Registered name</li>
+                    <li>Trading name</li>
+                    <li>Public contact email</li>
+                    <li>Telephone number</li>
+                    <li>Website address</li>
+                </ul>
+
+                <p class="govuk-body">You must also enter the information from the service provider’s certificate. It is important that the information you enter exactly matches the details on the certificate.</p>
+
+
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>Company address details</li>
+                    <li>Name of service</li>
+                    <li>Type of role(s) certified against</li>
+                    <li>Identity profiles</li>
+                    <li>Supplementary schemes</li>
+                    <li>All other relevant certifications</li>
+                    <li>Certificate of conformity</li>
+                    <li>Certificate of conformity issue date</li>
+                    <li>Certificate of conformity expiry date</li>
+                </ul>
+
+                <p class="govuk-body">Once OfDIA has approved this submission, the information you have provided will be publicly available on the register of digital identity and attribute service providers.</p>
+                @using (Html.BeginForm("RegisteredName", "Cab", FormMethod.Get))
+                {
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                }
+            </div>
+            <div class="govuk-grid-column-full">
+                <hr class="govuk-section-break govuk-section-break--visible">
+                <br />
+                <h3 class="govuk-heading-m">Explore the topic</h3>
+                <br />
+                <a href="#" class="govuk-link govuk-!-font-weight-bold">What are the steps to publishing a digital identity and attribute service provider to the register? </a>
+                <br /><br />
+                <a href="#" class="govuk-link govuk-!-font-weight-bold">What is the unique reference number?</a>
+            </div>
+        </div>
+    </main>
+</div>

@@ -1,0 +1,31 @@
+﻿@model DVSRegister.Models.CAB.CertificateInfoSummaryViewModel
+@{
+    ViewData["Title"] = "Trading Number";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+}
+@using (Html.BeginForm("TradingNameValidation", "Cab", FormMethod.Post))
+{
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "RegisteredName", "Cab", null, new { @class = "govuk-back-link" })
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s trading name  </h1>
+                    <p class="govuk-body">This trading name will be publicly displayed on the register of digital identity and attribute service providers. This should match the trading name on the certificate.</p>
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("TradingName") && Html.ViewData.ModelState["TradingName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <h1 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--m" for="account-number">
+                                Trading name
+                            </label>
+                        </h1>
+                        @Html.ValidationMessageFor(m => m.TradingName, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.TradingName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "event-name", name = "eventName" })
+                    </div>
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+}

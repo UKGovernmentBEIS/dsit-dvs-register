@@ -83,5 +83,12 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             }
             return valid;
         }
+
+        public async Task<DVSRegister.Data.Entities.PreRegistration> GetURNDetails(string URN)
+        {
+            DVSRegister.Data.Entities.PreRegistration preRegistration = await cabRepository.GetPreRegistrationDetails(URN);
+
+            return preRegistration;
+        }
     }
 }
