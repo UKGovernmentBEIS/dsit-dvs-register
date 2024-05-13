@@ -68,5 +68,23 @@ namespace DVSRegister.CommonUtility.Email
             return await SendEmail(emailModel);
         }
 
+        public async Task<bool> SendEmailConfirmationToOfdia(string expirationDate)
+        {
+            var template = govUkNotifyConfig.ApplicationReceivedTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.ExpirationDate, expirationDate  },
+                { template.LoginLink, govUkNotifyConfig.LoginLink }
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress =  govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
     }
 }
