@@ -1,0 +1,79 @@
+﻿@model DVSRegister.Models.CAB.MFARegistrationViewModel
+
+@{
+    ViewData["Title"] = "MFA Confirmation Check";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+    string qrCodeImageBase64 = DVSRegister.CommonUtility.Helper.GenerateQRCode(Model.SecretToken, Model.Email);
+
+}
+
+
+@using (Html.BeginForm("MFAConfirmationCheck", "Login", FormMethod.Post))
+{
+    <div class="govuk-width-container">
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="govuk-error-summary" data-module="govuk-error-summary">
+                            <div role="alert">
+                                <h2 class="govuk-error-summary__title">
+                                    There is a problem
+                                </h2>
+                                <div class="govuk-error-summary__body">
+                                    <ul class="govuk-list govuk-error-summary__list">
+                                        <li>
+                                            <a href="#">
+                                                Wrong MFA Code provided from the authenticator app. If Issue persists contact the team.
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <h1 class="govuk-heading-xl govuk-!-margin-top-8">Multi-factor authentication required</h1>
+
+                    <p class="govuk-body">To finish setting up your account, you need to use a multi-factor authenticator app. Below, you will find instructions on setting up the app so you can create your account.</p>
+
+                    <h2 class="govuk-heading-m">1. Download your authenticator app</h2>
+
+                    <p class="govuk-body">You can download an authenticator app on any smart device, such as a smart phone or tablet. Examples of authenticator apps are the Google Authenticator and Microsoft Authenticator.</p>
+
+                    <h2 class="govuk-heading-m">2. Use your authenticator app to register on the service</h2>
+
+                    <p class="govuk-body">After installing your authenticator app on your device, open it and scan the QR code or manually enter the provided code. Your authenticator app will be set up for the service.</p>
+
+                    <div class="govuk-inset-text">
+                        <img src="data:image/png;base64, @qrCodeImageBase64" alt="QR Code for MFA Code" style="max-width: 200px; width: 30vw; height: auto; min-width: 100px;" />
+
+                        <p class="govuk-body">Or you can use the following Secret Key to register</p>
+                        <p class="govuk-body"><b>@Model.SecretToken	</b></p>
+                    </div>
+
+                    <h2 class="govuk-heading-m">3. Enter on the service using the six-digit passcode that will appear in the authenticator app</h2>
+                    <p class="govuk-body">Once you have configured your authenticator app, a six-digit passcode will appear in the authenticator app which you can then enter on the service. This code will expire after 3 minutes. You can now use your authenticator app to sign in to your account.</p>
+
+                    <p class="govuk-body">
+                        <b>Enter the one time multi-factor authentication code on your phone:</b>
+                        <br />
+                        <span id="mfa-hint" class="govuk-hint">
+                            This is a six-digit passcode. For example, 123456
+                        </span>
+
+                    </p>
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("MFACode") && Html.ViewData.ModelState["MFACode"].Errors.Count > 0 ? "govuk-form-group--error" :"" )">
+
+                        @Html.ValidationMessageFor(m => m.MFACode, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.MFACode, new { @class = "govuk-input govuk-input--width-10", id = "mfa-code", name = "mfa-code", @aria_describedby = "mfa-hint" })
+                    </div>
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+}
