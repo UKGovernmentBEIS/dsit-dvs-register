@@ -50,6 +50,21 @@ namespace DVSRegister.Data.CAB
             return preRegistration;
         }
 
+        public async Task<List<Role>> GetRoles()
+        {
+            return await context.Role.OrderBy(c => c.RoleName).ToListAsync();
+        }
+
+        public async Task<List<IdentityProfile>> GetIdentityProfiles()
+        {
+            return await context.IdentityProfile.OrderBy(c => c.IdentityProfileName).ToListAsync();
+        }
+
+        public async Task<List<SupplementaryScheme>> GetSupplementarySchemes()
+        {
+            return await context.SupplementaryScheme.OrderBy(c => c.SchemeName).ToListAsync();
+        }
+
         public async Task<GenericResponse> UpdateURNStatus(UniqueReferenceNumber uniqueReferenceNumber)
         {
 

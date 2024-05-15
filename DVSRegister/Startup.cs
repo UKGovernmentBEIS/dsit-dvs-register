@@ -75,10 +75,12 @@ namespace DVSRegister
             services.AddScoped<ICabRepository, CabRepository>();
             services.AddScoped<IBucketService, BucketService>(opt =>
             {
-                string bucketName = string.Format(configuration.GetValue<string>("BucketName"));
-                string accessKey = string.Format(configuration.GetValue<string>("AWSAccessKey"));
-                string password = string.Format(configuration.GetValue<string>("AWSSecretPassword"));
-                return new BucketService(bucketName, accessKey, password);
+                // TODO: uncomment below lines once aws provisioned
+                //string bucketName = string.Format(configuration.GetValue<string>("BucketName"));
+                //string accessKey = string.Format(configuration.GetValue<string>("AWSAccessKey"));
+                //string password = string.Format(configuration.GetValue<string>("AWSSecretPassword"));
+                //return new BucketService(bucketName, accessKey, password);
+                return new BucketService("", "", ""); // TODO: remove this line once aws provisioned
             });
             services.AddScoped<IAVService, AVService>();
 

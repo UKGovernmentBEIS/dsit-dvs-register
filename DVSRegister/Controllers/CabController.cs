@@ -7,6 +7,7 @@ using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.CommonUtility;
+using Newtonsoft.Json;
 
 namespace DVSRegister.Controllers
 {
@@ -86,10 +87,185 @@ namespace DVSRegister.Controllers
         #endregion
 
 
+
         [HttpGet("certificate-information")]
         public IActionResult CertificateInformationStartPage()
         {
             return View();
+        }
+
+
+        [HttpGet("select-roles")]
+        public async Task<IActionResult> SelectRoles(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            RoleViewModel roleViewModel = new RoleViewModel();
+            roleViewModel.SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList();
+            roleViewModel.AvailableRoles = await cabService.GetRoles();
+            return View(roleViewModel);
+        }
+
+        /// <summary>
+        /// Save selected roles to session
+        /// </summary>
+        /// <param name="roleViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("select-roles")]
+        public async Task<IActionResult> SaveRoles(RoleViewModel roleViewModel)
+        {
+            bool fromSummaryPage = roleViewModel.FromSummaryPage;
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            List<RoleDto> availableRoles = JsonConvert.DeserializeObject<List<RoleDto>>(HttpContext.Request.Form["AvailableRoles"]);
+            if (availableRoles == null  || availableRoles.Count == 0)
+                availableRoles = await cabService.GetRoles();
+            roleViewModel.AvailableRoles = availableRoles;
+            roleViewModel.SelectedRoleIds =  roleViewModel.SelectedRoleIds??new List<int>();
+            if (roleViewModel.SelectedRoleIds.Count > 0)
+                summaryViewModel.RoleViewModel.SelectedRoles = availableRoles.Where(c => roleViewModel.SelectedRoleIds.Contains(c.Id)).ToList();
+            summaryViewModel.RoleViewModel.FromSummaryPage = false;
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("SelectIdentityProfiles");
+            }
+            else
+            {
+                return View("SelectRoles", roleViewModel);
+            }
+        }
+
+
+        /// <summary>
+        ///  select-identity-profiles
+        /// </summary>
+        /// <param name="fromSummaryPage"></param>
+        /// <returns></returns>
+
+        [HttpGet("select-identity-profiles")]
+        public async Task<IActionResult> SelectIdentityProfiles(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            IdentityProfileViewModel roleViewModel = new IdentityProfileViewModel();
+            roleViewModel.SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList();
+            roleViewModel.AvailableIdentityProfiles = await cabService.GetIdentityProfiles();
+            return View(roleViewModel);
+        }
+
+        /// <summary>
+        /// Save selected Identity Profiles to session
+        /// </summary>
+        /// <param name="identityProfileViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("select-identity-profiles")]
+        public async Task<IActionResult> SaveIdentityProfiles(IdentityProfileViewModel identityProfileViewModel)
+        {
+            bool fromSummaryPage = identityProfileViewModel.FromSummaryPage;
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            List<IdentityProfileDto> availableIdentityProfiles = JsonConvert.DeserializeObject<List<IdentityProfileDto>>(HttpContext.Request.Form["AvailableIdentityProfiles"]);
+            if (availableIdentityProfiles == null  || availableIdentityProfiles.Count == 0)
+                availableIdentityProfiles = await cabService.GetIdentityProfiles();
+            identityProfileViewModel.AvailableIdentityProfiles = availableIdentityProfiles;
+            identityProfileViewModel.SelectedIdentityProfileIds =  identityProfileViewModel.SelectedIdentityProfileIds??new List<int>();
+            if (identityProfileViewModel.SelectedIdentityProfileIds.Count > 0)
+                summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = availableIdentityProfiles.Where(c => identityProfileViewModel.SelectedIdentityProfileIds.Contains(c.Id)).ToList();
+            summaryViewModel.IdentityProfileViewModel.FromSummaryPage = false;
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("HasSupplementaryScheme");
+            }
+            else
+            {
+                return View("SelectIdentityProfiles", identityProfileViewModel);
+            }
+        }
+
+        [HttpGet("has-supplementary-scheme")]
+        public IActionResult HasSupplementaryScheme()
+        {
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            return View(summaryViewModel);
+        }
+
+        /// <summary>
+        /// Updates HasSupplementarySchemes variable in session
+        /// and redirect based on HasSupplementarySchemes value
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        [HttpPost("has-supplementary-scheme")]
+        public IActionResult SaveHasSupplementaryScheme(CertificateInfoSummaryViewModel viewModel)
+        {
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+
+            if (viewModel.HasSupplementarySchemes == null)
+                ModelState.AddModelError("HasSupplementarySchemes", Constants.SupplementarySchemeErrorMessage);
+            if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
+            {
+                summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
+                HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
+                if (Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
+                {
+                    //Provide Contact details
+                    return RedirectToAction("SelectSupplementarySchemes");
+                }
+                else
+                {
+
+                    return RedirectToAction("CertificateUploadPage");
+                }
+            }
+            return View("HasSupplementaryScheme", viewModel);
+        }
+
+
+        /// <summary>
+        /// select supplementary schemes
+        /// </summary>
+        /// <param name="fromSummaryPage"></param>
+        /// <returns></returns>
+
+        [HttpGet("select-supplementary-schemes")]
+        public async Task<IActionResult> SelectSupplementarySchemes(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            SupplementarySchemeViewModel supplementarySchemeViewModel = new SupplementarySchemeViewModel();
+            supplementarySchemeViewModel.SelectedSupplementarySchemeIds = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(c => c.Id).ToList();
+            supplementarySchemeViewModel.AvailableSchemes = await cabService.GetSupplementarySchemes();
+            return View(supplementarySchemeViewModel);
+        }
+
+        /// <summary>
+        /// Save selected supplementary schemes to session
+        /// </summary>
+        /// <param name="supplementarySchemeViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("select-supplementary-schemes")]
+        public async Task<IActionResult> SaveSupplementarySchemes(SupplementarySchemeViewModel supplementarySchemeViewModel)
+        {
+            bool fromSummaryPage = supplementarySchemeViewModel.FromSummaryPage;
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            List<SupplementarySchemeDto> availableSupplementarySchemes = JsonConvert.DeserializeObject<List<SupplementarySchemeDto>>(HttpContext.Request.Form["AvailableSchemes"]);
+            if (availableSupplementarySchemes == null  || availableSupplementarySchemes.Count == 0)
+                availableSupplementarySchemes = await cabService.GetSupplementarySchemes();
+            supplementarySchemeViewModel.AvailableSchemes = availableSupplementarySchemes;
+            supplementarySchemeViewModel.SelectedSupplementarySchemeIds =  supplementarySchemeViewModel.SelectedSupplementarySchemeIds??new List<int>();
+            if (supplementarySchemeViewModel.SelectedSupplementarySchemeIds.Count > 0)
+                summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = availableSupplementarySchemes.Where(c => supplementarySchemeViewModel.SelectedSupplementarySchemeIds.Contains(c.Id)).ToList();
+            summaryViewModel.SupplementarySchemeViewModel.FromSummaryPage = false;
+
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("CertificateInfoSummary");
+            }
+            else
+            {
+                return View("SelectSupplementarySchemes", supplementarySchemeViewModel);
+            }
         }
 
 
@@ -112,14 +288,22 @@ namespace DVSRegister.Controllers
                 {
 
                     await certificateFileViewModel.File.CopyToAsync(memoryStream);
-                    GenericResponse avServiceResponse = avService.ScanFileForVirus(memoryStream);
+                    //TODO:  uncomment service call once aws provisioned
+                    GenericResponse avServiceResponse = new GenericResponse { Success = true };
+                    // GenericResponse avServiceResponse = avService.ScanFileForVirus(memoryStream);
 
-                    if(avServiceResponse.Success)
+                    if (avServiceResponse.Success)
                     {
-                        GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                        //TODO:  uncomment service call once aws provisioned
+                        GenericResponse genericResponse = new GenericResponse { Success = true, Data = "YotiCertificate.pdf" };
+                        // GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
                         if (genericResponse.Success)
                         {
-                            return Ok();
+                            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+                            summaryViewModel.FileName = certificateFileViewModel.FileName;
+                            summaryViewModel.FileLink = certificateFileViewModel.FileUrl;
+                            HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
+                            return RedirectToAction("ConfirmityIssueDate");
                         }
                         else
                         {
@@ -139,6 +323,83 @@ namespace DVSRegister.Controllers
                 return View("CertificateUploadPage", certificateFileViewModel);
             }
         }
+
+        [HttpGet("confirmity-issue-date")]
+        public IActionResult ConfirmityIssueDate()
+        {
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            DateViewModel dateViewModel = new DateViewModel();
+            if (summaryViewModel.ConformityIssueDate != null)
+            {
+                dateViewModel = GetDayMonthYear(summaryViewModel.ConformityIssueDate);
+            }
+
+            return View(dateViewModel);
+        }
+
+
+
+        /// <summary>
+        /// Updates confirmity issue date variable in session 
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        [HttpPost("confirmity-issue-date")]
+        public IActionResult SaveConfirmityIssueDate(DateViewModel dateViewModel)
+        {
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            DateTime? conformityIssueDate = ValidateDate(dateViewModel);
+            if (ModelState.IsValid)
+            {
+                summaryViewModel.ConformityIssueDate =conformityIssueDate;
+                HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
+                return RedirectToAction("ConfirmityExpiryDate");
+            }
+            else
+            {
+                return View("ConfirmityIssueDate", dateViewModel);
+
+            }
+
+        }
+
+        [HttpGet("certificate-confirmity-expiry-date")]
+        public IActionResult ConfirmityExpiryDate()
+        {
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            DateViewModel dateViewModel = new DateViewModel();
+            if (summaryViewModel.ConformityExpiryDate != null)
+            {
+                dateViewModel = GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
+            }
+            return View(dateViewModel);
+        }
+
+        /// <summary>
+        /// Updates confirmity issue expiry date variable in session 
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        [HttpPost("confirmity-expiry-date")]
+        public IActionResult SaveConfirmityExpiryDate(DateViewModel dateViewModel)
+        {
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            DateTime? conformityExpiryDate = ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate));
+            if (ModelState.IsValid)
+            {
+                summaryViewModel.ConformityExpiryDate = conformityExpiryDate;
+                HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
+                return RedirectToAction("CertificateInfoSummary");
+            }
+            else
+            {
+                return View("ConfirmityExpiryDate", dateViewModel);
+
+            }
+        }
+
+
+
         /// <summary>
         /// Summary page displaying data saved in session
         /// </summary>      
@@ -258,6 +519,101 @@ namespace DVSRegister.Controllers
             certificateInfoDto.CertificateInfoStatus = CertificateInfoStatusEnum.Received;
             return certificateInfoDto;
 
+        }
+
+        private DateViewModel GetDayMonthYear(DateTime? dateTime)
+        {
+            DateViewModel dateViewModel = new DateViewModel();
+            DateTime conformityIssueDate = Convert.ToDateTime(dateTime);
+            dateViewModel.Day = conformityIssueDate.Day;
+            dateViewModel.Month = conformityIssueDate.Month;
+            dateViewModel.Year = conformityIssueDate.Year;
+            return dateViewModel;
+        }
+
+        private DateTime? ValidateDate(DateViewModel dateViewModel)
+        {
+            DateTime? date = null;
+            try
+            {
+                if (dateViewModel.Day == null || dateViewModel.Month == null ||dateViewModel.Year == null)
+                {
+                    if (dateViewModel.Day == null)
+                    {
+                        ModelState.AddModelError("Day", Constants.ConformityIssueDayError);
+                    }
+                    if (dateViewModel.Month == null)
+                    {
+                        ModelState.AddModelError("Month", Constants.ConformityIssueMonthError);
+                    }
+                    if (dateViewModel.Year == null)
+                    {
+                        ModelState.AddModelError("Year", Constants.ConformityIssueYearError);
+                    }
+                }
+                else
+                {
+                    date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
+                    if (date>DateTime.Today)
+                    {
+                        ModelState.AddModelError("ValidDate", Constants.ConformityIssuePastDateError);
+                    }
+                }
+
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("ValidDate", Constants.ConformityIssueDateInvalidError);
+
+            }
+            return date;
+        }
+
+        private DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate)
+        {
+            DateTime? date = null;
+            try
+            {
+                if (dateViewModel.Day == null || dateViewModel.Month == null ||dateViewModel.Year == null)
+                {
+                    if (dateViewModel.Day == null)
+                    {
+                        ModelState.AddModelError("Day", Constants.ConformityExpiryDayError);
+                    }
+                    if (dateViewModel.Month == null)
+                    {
+                        ModelState.AddModelError("Month", Constants.ConformityExpiryMonthError);
+                    }
+                    if (dateViewModel.Year == null)
+                    {
+                        ModelState.AddModelError("Year", Constants.ConformityExpiryYearError);
+                    }
+                }
+                else
+                {
+                    date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
+                    var maxExpiryDate = issueDate.AddYears(2);
+                    if (date <= DateTime.Today)
+                    {
+                        ModelState.AddModelError("ValidDate", Constants.ConformityExpiryPastDateError);
+                    }
+                    else if (date <= issueDate)
+                    {
+                        ModelState.AddModelError("ValidDate", Constants.ConformityIssueDateExpiryDateError);
+                    }
+                    else if (date > maxExpiryDate)
+                    {
+                        ModelState.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
+                    }
+                }
+
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("ValidDate", Constants.ConformityExpiryDateInvalidError);
+
+            }
+            return date;
         }
         #endregion
     }
