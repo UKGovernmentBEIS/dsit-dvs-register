@@ -2,13 +2,13 @@
 @using DVSRegister.Extensions
 @{
     ViewData["Title"] = "CertificateInfoSummary";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
 }
 
 @using (Html.BeginForm("SaveSummaryAndSubmit", "Cab", FormMethod.Post))
 {   
     <div class="govuk-width-container">
-        @Html.ActionLink("Back", "", "Cab", null, new { @class = "govuk-back-link" })
+        @Html.ActionLink("Back", "LandingPage", "Cab", null, new { @class = "govuk-back-link" })
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">

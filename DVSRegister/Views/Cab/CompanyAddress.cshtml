@@ -1,0 +1,43 @@
+﻿@model DVSRegister.Models.CAB.CertificateInfoSummaryViewModel
+@{
+    ViewData["Title"] = "Company Address";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+}
+@using (Html.BeginForm("CompanyAddressValidation", "Cab", FormMethod.Post))
+{
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "WebsiteAddress", "Cab", null, new { @class = "govuk-back-link" })
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl"> Company address details </h1>
+                    <p class="govuk-body">This address must match the address that appears on the certificate of conformity.</p>
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("Address") && Html.ViewData.ModelState["Address"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <h1 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--m" for="account-number">
+                                What is your address?
+                            </label>
+                        </h1>
+                        <div id="event-name-hint" class="govuk-hint">
+                            For example, ‘Reusable digital identities or attributes' or 'Delegated authority’
+                        </div>
+
+                        @if (Html.ViewData.ModelState.ContainsKey("Address") && Html.ViewData.ModelState["Address"].Errors.Count > 0)
+                        {
+                            <p id="more-detail-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> Enter a valid address
+                            </p>
+                        }
+                        @Html.TextAreaFor(m => m.Address, 5, 20, new { @class = "govuk-textarea", id = "event-name", name = "eventName" })
+
+
+
+                    </div>
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+}
