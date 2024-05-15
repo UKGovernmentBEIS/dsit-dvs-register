@@ -9,5 +9,9 @@ namespace DVSRegister.Data.CAB
         public Task<UniqueReferenceNumber> GetURNDetails(string URN);
         public Task<GenericResponse> UpdateURNStatus(UniqueReferenceNumber uniqueReferenceNumber);
         public Task<PreRegistration> GetPreRegistrationDetails(string URN);
+
+        public Task<List<Role>> GetRoles();
+        public Task<List<IdentityProfile>> GetIdentityProfiles();
+        public Task<List<SupplementaryScheme>> GetSupplementarySchemes();
     }
 }

@@ -26,6 +26,23 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             automapper.Map(preRegistration, preRegistrationDto);
             return preRegistrationDto;
         }
+        public async Task<List<RoleDto>> GetRoles()
+        {
+            var list = await cabRepository.GetRoles();
+            return automapper.Map<List<RoleDto>>(list);
+        }
+
+        public async Task<List<SupplementarySchemeDto>> GetSupplementarySchemes()
+        {
+            var list = await cabRepository.GetSupplementarySchemes();
+            return automapper.Map<List<SupplementarySchemeDto>>(list);
+        }
+        public async Task<List<IdentityProfileDto>> GetIdentityProfiles()
+        {
+            var list = await cabRepository.GetIdentityProfiles();
+            return automapper.Map<List<IdentityProfileDto>>(list);
+        }
+
 
 
         public async Task<GenericResponse> SaveCertificateInformation(CertificateInfoDto certificateInfo)
