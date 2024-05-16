@@ -11,6 +11,26 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <h1 class="govuk-heading-xl"> Enter the unique reference number of the digital identity and attribute service provider </h1>
+
+                    @if (Html.ViewData?.ModelState.ContainsKey("RegisteredName") == true && Html.ViewData.ModelState["RegisteredName"].Errors.Count > 0)
+                    {
+                        <div class="govuk-error-summary" data-module="govuk-error-summary">
+                            <div role="alert">
+                                <h2 class="govuk-error-summary__title">
+                                    There is a problem
+                                </h2>
+                                <div class="govuk-error-summary__body">
+                                    <ul class="govuk-list govuk-error-summary__list">
+                                        <li>
+                                            <a href="#"> Error in Registered Name</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+
                     <p class="govuk-body">This registered name will be publicly displayed on the register of digital identity and attribute service providers. This should match the registered name on the certificate.</p>
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("RegisteredName") && Html.ViewData.ModelState["RegisteredName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
                         <h1 class="govuk-label-wrapper">
