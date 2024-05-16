@@ -7,7 +7,17 @@
 
 @using (Html.BeginForm("SaveCertificate", "Cab", FormMethod.Post, new { enctype ="multipart/form-data"}))
 {
+    bool hasSchemes = ViewBag.HasSupplementarySchemes ?? false;
     <div class="govuk-width-container">
+        @if (hasSchemes == true)
+        {
+            <nav>@Html.ActionLink("Back", "SelectSupplementarySchemes", "Cab", null, new { @class = "govuk-back-link" })</nav>
+        }
+        else
+        {
+            <nav>@Html.ActionLink("Back", "HasSupplementaryScheme", "Cab", null, new { @class = "govuk-back-link" })</nav>
+        }
+
         <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -62,6 +72,7 @@
                                 </dd>
                             </div>
                         </dl>
+                        @Html.HiddenFor(m => m.FileUploadedSuccessfully)
                     }
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Continue

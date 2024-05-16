@@ -8,6 +8,7 @@ namespace DVSRegister.Data
     {
         public DVSRegisterDbContext(DbContextOptions<DVSRegisterDbContext> options) : base(options)
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         }
         public DbSet<PreRegistration> PreRegistration { get; set; }
         public DbSet<Country> Country { get; set; }

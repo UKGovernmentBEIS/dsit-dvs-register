@@ -46,8 +46,10 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> URNValidationForApplication(string urnNumber)
         {
             DVSRegister.Data.Entities.PreRegistration URNDetails = await cabService.GetURNDetails(urnNumber);
-
-            if(URNDetails != null)
+            CertificateInfoSummaryViewModel certificateInfoSummaryViewModel = GetCertificateInfoSummary();
+            certificateInfoSummaryViewModel.PreRegistrationId = URNDetails.Id;
+            HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoSummaryViewModel);
+            if (URNDetails != null)
             {
                 URNViewModel viewModel = new URNViewModel();
                 viewModel.RegisteredName = URNDetails.RegisteredCompanyName;
@@ -171,7 +173,7 @@ namespace DVSRegister.Controllers
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.PublicContactEmail = certificateInfoSummaryViewModel.PublicContactEmail;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("TelephoneNumber", certificateInfoSummaryViewModel);
+                return RedirectToAction("TelephoneNumber");
             }
             else
             {
@@ -190,7 +192,7 @@ namespace DVSRegister.Controllers
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.TelephoneNumber = certificateInfoSummaryViewModel.TelephoneNumber;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("WebsiteAddress", certificateInfoSummaryViewModel);
+                return RedirectToAction("WebsiteAddress");
             }
             else
             {
@@ -208,7 +210,7 @@ namespace DVSRegister.Controllers
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.WebsiteAddress = certificateInfoSummaryViewModel.WebsiteAddress;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("CompanyAddress", certificateInfoSummaryViewModel);
+                return RedirectToAction("CompanyAddress");
             }
             else
             {
@@ -226,7 +228,7 @@ namespace DVSRegister.Controllers
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.Address = certificateInfoSummaryViewModel.Address;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("ServiceName", certificateInfoSummaryViewModel);
+                return RedirectToAction("ServiceName");
             }
             else
             {
@@ -242,9 +244,9 @@ namespace DVSRegister.Controllers
             if (ModelState["ServiceName"].Errors.Count == 0 && certificateInfoSummaryViewModel.ServiceName != null)
             {
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
-                certificateInfoModelSoFar.Address = certificateInfoSummaryViewModel.Address;
+                certificateInfoModelSoFar.ServiceName = certificateInfoSummaryViewModel.ServiceName;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("SelectRoles", certificateInfoSummaryViewModel);
+                return RedirectToAction("SelectRoles");
             }
             else
             {
@@ -426,8 +428,7 @@ namespace DVSRegister.Controllers
                 summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
                 HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
                 if (Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
-                {
-                    //Provide Contact details
+                {                    
                     return RedirectToAction("SelectSupplementarySchemes");
                 }
                 else
@@ -479,7 +480,7 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
-                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("CertificateInfoSummary");
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("CertificateUploadPage");
             }
             else
             {
@@ -491,7 +492,10 @@ namespace DVSRegister.Controllers
         [HttpGet("certificate-upload")]
         public IActionResult CertificateUploadPage()
         {
+            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+            ViewBag.HasSupplementarySchemes = summaryViewModel.HasSupplementarySchemes;
             return View();
+
         }
 
         [HttpPost("upload-certificate")]
@@ -501,31 +505,39 @@ namespace DVSRegister.Controllers
             // Upload to S3
 
             // Store the filename and link in Session
-            if (ModelState["File"].Errors.Count == 0)
+            if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == false)
             {
-                using (var memoryStream = new MemoryStream())
+                if (ModelState["File"].Errors.Count == 0)
                 {
-
-                    await certificateFileViewModel.File.CopyToAsync(memoryStream);
-                    //TODO:  uncomment service call once aws provisioned
-                    GenericResponse avServiceResponse = new GenericResponse { Success = true };
-                    // GenericResponse avServiceResponse = avService.ScanFileForVirus(memoryStream);
-
-                    if (avServiceResponse.Success)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        //TODO:  uncomment service call once aws provisioned
-                        GenericResponse genericResponse = new GenericResponse { Success = true, Data = "YotiCertificate.pdf" };
-                        // GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
-                        if (genericResponse.Success)
-                        {
-                            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
-                            summaryViewModel.FileName = certificateFileViewModel.FileName;
-                            summaryViewModel.FileLink = certificateFileViewModel.FileUrl;
-                            
-                            certificateFileViewModel.FileUploadedSuccessfully = true;
-                            certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
-                            return View("CertificateUploadPage", certificateFileViewModel);
 
+                        await certificateFileViewModel.File.CopyToAsync(memoryStream);
+                        //TODO:  uncomment service call once aws provisioned
+                        GenericResponse avServiceResponse = new GenericResponse { Success = true };
+                        // GenericResponse avServiceResponse = avService.ScanFileForVirus(memoryStream);
+
+                        if (avServiceResponse.Success)
+                        {
+                            //TODO:  uncomment service call once aws provisioned
+                            GenericResponse genericResponse = new GenericResponse { Success = true, Data = "YotiCertificate.pdf" };
+                            // GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                            if (genericResponse.Success)
+                            {
+                                CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+                                summaryViewModel.FileName = certificateFileViewModel.File.FileName;
+                                summaryViewModel.FileLink = genericResponse.Data;
+
+                                certificateFileViewModel.FileUploadedSuccessfully = true;                               
+                                certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
+                                HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
+                                return View("CertificateUploadPage", certificateFileViewModel);
+                            }
+                            else
+                            {
+                                ModelState.AddModelError("File", "Unable to upload the file provided");
+                                return View("CertificateUploadPage", certificateFileViewModel);
+                            }
                         }
                         else
                         {
@@ -533,16 +545,15 @@ namespace DVSRegister.Controllers
                             return View("CertificateUploadPage", certificateFileViewModel);
                         }
                     }
-                    else
-                    {
-                        ModelState.AddModelError("File", "Unable to upload the file provided");
-                        return View("CertificateUploadPage", certificateFileViewModel);
-                    }
-                }                
+                }
+                else
+                {
+                    return View("CertificateUploadPage", certificateFileViewModel);
+                } 
             }
             else
-            {   
-                return View("CertificateUploadPage", certificateFileViewModel);
+            {
+                return RedirectToAction("ConfirmityIssueDate");
             }
         }
 
@@ -570,7 +581,7 @@ namespace DVSRegister.Controllers
         public IActionResult SaveConfirmityIssueDate(DateViewModel dateViewModel)
         {
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
-            DateTime? conformityIssueDate = ValidateDate(dateViewModel);
+            DateTime? conformityIssueDate = ValidateIssueDate(dateViewModel);
             if (ModelState.IsValid)
             {
                 summaryViewModel.ConformityIssueDate =conformityIssueDate;
@@ -754,7 +765,7 @@ namespace DVSRegister.Controllers
             return dateViewModel;
         }
 
-        private DateTime? ValidateDate(DateViewModel dateViewModel)
+        private DateTime? ValidateIssueDate(DateViewModel dateViewModel)
         {
             DateTime? date = null;
             try
