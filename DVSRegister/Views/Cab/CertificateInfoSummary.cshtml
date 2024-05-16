@@ -41,7 +41,8 @@
                                         @Model.RegisteredName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "RegisteredName", "Cab", new { fromSummaryPage = true },
+                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s registered name" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -52,7 +53,8 @@
                                         @Model.TradingName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "TradingName", "Cab", new { fromSummaryPage = true },
+                                         new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s trading name" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -63,7 +65,8 @@
                                         @Model.PublicContactEmail
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "PublicContactEmail", "Cab", new { fromSummaryPage = true },
+                                        new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s public contact email" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -74,7 +77,8 @@
                                         @Model.TelephoneNumber
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "TelephoneNumber", "Cab", new { fromSummaryPage = true },
+                                        new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s telephone number" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -85,7 +89,8 @@
                                         @Model.WebsiteAddress
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "WebsiteAddress", "Cab", new { fromSummaryPage = true },
+                                        new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -93,10 +98,11 @@
                                         Company address details
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @Model.Address
+                                        @HtmlExtensions.ToStringWithLineBreaks(Model.Address)
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "CompanyAddress", "Cab", new { fromSummaryPage = true },
+                                        new { @class = "govuk-link", @aria_label = "Change company address details" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -107,7 +113,8 @@
                                         @Model.ServiceName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "ServiceName", "Cab", new { fromSummaryPage = true },
+                                        new { @class = "govuk-link", @aria_label = "Change service provider certified against any supplementary schemes on their certificate" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -125,7 +132,8 @@
                                         }
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "SelectRoles", "Cab", new { fromSummaryPage = true },
+                                        new { @class = "govuk-link", @aria_label = "Change the role(s) from the UK digital identity and attributes trust framework that apply to the provider's service" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -140,7 +148,8 @@
                                         }
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "SelectIdentityProfiles", "Cab", new { fromSummaryPage = true },
+                                         new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
                                     </dd>
                                 </div>
 
@@ -149,7 +158,7 @@
                                         Supplementary schemes
                                     </dt>
 
-                                    @if (Model.SupplementarySchemeViewModel!= null)
+                                    @if (Model.SupplementarySchemeViewModel!= null && Convert.ToBoolean(Model.HasSupplementarySchemes))
                                     {
                                         if (Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count>0)
                                         {
@@ -160,6 +169,10 @@
                                                     <br>
                                                 }
                                             </dd>
+                                            <dd class="govuk-summary-list__actions">
+                                                @Html.ActionLink("Change", "SelectSupplementarySchemes", "Cab", new { fromSummaryPage = true },
+                                             new { @class = "govuk-link", @aria_label = "Change relevant supplementary schemes" })
+                                            </dd>
                                         }
                                     }
                                     else
@@ -167,16 +180,18 @@
                                         <dd class="govuk-summary-list__value">
                                            <div>None</div>
                                         </dd>
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "HasSupplementaryScheme", "Cab", new { fromSummaryPage = true },
+                                          new { @class = "govuk-link", @aria_label = "Change has supplementary scheme" })
+                                        </dd>
                                     }
 
-                                    <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
-                                    </dd>
+                                   
                                 </div>
 
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
-                                        Service provider s certificate of conformity
+                                        Service provider's certificate of conformity
                                     </dt>
                                     <dd class="govuk-summary-list__value">
                                         <p class="govuk-body">
@@ -184,7 +199,8 @@
                                         </p>
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "CertificateUploadPage", "Cab", new { fromSummaryPage = true },
+                                         new { @class = "govuk-link", @aria_label = "Change service provider's certificate of conformity" })
                                     </dd>
                                 </div>
 
@@ -193,10 +209,11 @@
                                         Date of issue
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "MM/dd/yyyy")
+                                        @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "ConfirmityIssueDate", "Cab",
+                                         new { fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change date of issue" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -204,10 +221,10 @@
                                         Date of expiry
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "MM/dd/yyyy")
+                                        @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMM yyyy")
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "ConfirmityExpiryDate", "Cab", new { fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change date of expiry" })
                                     </dd>
                                 </div>
 

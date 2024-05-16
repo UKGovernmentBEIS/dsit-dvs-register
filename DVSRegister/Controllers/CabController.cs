@@ -71,8 +71,9 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("registered-name")]
-        public IActionResult RegisteredName()
+        public IActionResult RegisteredName(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel certificateInfoSummaryViewModel = GetCertificateInfoSummary();
             return View("RegisteredName", certificateInfoSummaryViewModel);
         }
@@ -85,43 +86,49 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("trading-name")]
-        public IActionResult TradingName()
+        public IActionResult TradingName(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel certificateInfoSummaryViewModel = GetCertificateInfoSummary();
             return View("TradingName", certificateInfoSummaryViewModel);
         }
 
         [HttpGet("public-contact-email")]
-        public IActionResult PublicContactEmail()
+        public IActionResult PublicContactEmail(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel certificateInfoSummaryViewModel = GetCertificateInfoSummary();
             return View("PublicContactEmail", certificateInfoSummaryViewModel);
         }
 
         [HttpGet("telephone-number")]
-        public IActionResult TelephoneNumber()
+        public IActionResult TelephoneNumber(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel certificateInfoSummaryViewModel = GetCertificateInfoSummary();
             return View("TelephoneNumber", certificateInfoSummaryViewModel);
         }
 
         [HttpGet("website-address")]
-        public IActionResult WebsiteAddress()
+        public IActionResult WebsiteAddress(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel certificateInfoSummaryViewModel = GetCertificateInfoSummary();
             return View("WebsiteAddress", certificateInfoSummaryViewModel);
         }
 
         [HttpGet("company-address")]
-        public IActionResult CompanyAddress()
+        public IActionResult CompanyAddress(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel certificateInfoSummaryViewModel = GetCertificateInfoSummary();
             return View("CompanyAddress", certificateInfoSummaryViewModel);
         }
 
         [HttpGet("service-name")]
-        public IActionResult ServiceName()
+        public IActionResult ServiceName(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel certificateInfoSummaryViewModel = GetCertificateInfoSummary();
             return View("ServiceName", certificateInfoSummaryViewModel);
         }
@@ -129,14 +136,15 @@ namespace DVSRegister.Controllers
         [HttpPost("registered-name-validation")]
         public IActionResult RegisteredNameValidation(CertificateInfoSummaryViewModel certificateInfoSummaryViewModel)
         {
-            
+            bool fromSummaryPage = certificateInfoSummaryViewModel.FromSummaryPage;           
             ModelState.Remove(nameof(certificateInfoSummaryViewModel.TradingName));
+            certificateInfoSummaryViewModel.FromSummaryPage = false;
             if (certificateInfoSummaryViewModel.RegisteredName != null)
             {
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.RegisteredName = certificateInfoSummaryViewModel.RegisteredName;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("TradingName");
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("TradingName");                
             }
             else
             {
@@ -148,14 +156,16 @@ namespace DVSRegister.Controllers
         [HttpPost("trading-name-validation")]
         public IActionResult TradingNameValidation(CertificateInfoSummaryViewModel certificateInfoSummaryViewModel)
         {
+            bool fromSummaryPage = certificateInfoSummaryViewModel.FromSummaryPage;
             ModelState.Remove(nameof(certificateInfoSummaryViewModel.PublicContactEmail));
-            
-            if(certificateInfoSummaryViewModel.TradingName != null)
+            certificateInfoSummaryViewModel.FromSummaryPage = false;
+            if (certificateInfoSummaryViewModel.TradingName != null)
             {
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.TradingName = certificateInfoSummaryViewModel.TradingName;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("PublicContactEmail");
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("PublicContactEmail");
+               
             }
             else
             {
@@ -167,13 +177,15 @@ namespace DVSRegister.Controllers
         [HttpPost("public-email-validation")]
         public IActionResult PublicContactEmailValidation(CertificateInfoSummaryViewModel certificateInfoSummaryViewModel)
         {
+            bool fromSummaryPage = certificateInfoSummaryViewModel.FromSummaryPage;
             ModelState.Remove(nameof(CertificateInfoSummaryViewModel.TelephoneNumber));
-            if(ModelState["PublicContactEmail"].Errors.Count == 0 && certificateInfoSummaryViewModel.PublicContactEmail != null)
+            certificateInfoSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["PublicContactEmail"].Errors.Count == 0 && certificateInfoSummaryViewModel.PublicContactEmail != null)
             {
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.PublicContactEmail = certificateInfoSummaryViewModel.PublicContactEmail;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("TelephoneNumber");
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("TelephoneNumber");               
             }
             else
             {
@@ -186,13 +198,14 @@ namespace DVSRegister.Controllers
         [HttpPost("telephone-number-validation")]
         public IActionResult TelephoneNumberValidation(CertificateInfoSummaryViewModel certificateInfoSummaryViewModel)
         {
-            
+            bool fromSummaryPage = certificateInfoSummaryViewModel.FromSummaryPage;
+            certificateInfoSummaryViewModel.FromSummaryPage = false;
             if (ModelState["TelephoneNumber"].Errors.Count ==0 && certificateInfoSummaryViewModel.TelephoneNumber != null)
             {
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.TelephoneNumber = certificateInfoSummaryViewModel.TelephoneNumber;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("WebsiteAddress");
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("WebsiteAddress");               
             }
             else
             {
@@ -204,13 +217,15 @@ namespace DVSRegister.Controllers
         [HttpPost("website-address-validation")]
         public IActionResult WebsiteAddressValidation(CertificateInfoSummaryViewModel certificateInfoSummaryViewModel)
         {
+            bool fromSummaryPage = certificateInfoSummaryViewModel.FromSummaryPage;
+            certificateInfoSummaryViewModel.FromSummaryPage = false;
             ModelState.Remove(nameof(CertificateInfoSummaryViewModel.Address));
             if (ModelState["WebsiteAddress"].Errors.Count == 0 && certificateInfoSummaryViewModel.WebsiteAddress != null)
             {
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.WebsiteAddress = certificateInfoSummaryViewModel.WebsiteAddress;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("CompanyAddress");
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("CompanyAddress");                
             }
             else
             {
@@ -222,13 +237,14 @@ namespace DVSRegister.Controllers
         [HttpPost("company-address-validation")]
         public IActionResult CompanyAddressValidation(CertificateInfoSummaryViewModel certificateInfoSummaryViewModel)
         {
-
+            bool fromSummaryPage = certificateInfoSummaryViewModel.FromSummaryPage;
+            certificateInfoSummaryViewModel.FromSummaryPage = false;
             if (ModelState["Address"].Errors.Count == 0 && certificateInfoSummaryViewModel.Address != null)
             {
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.Address = certificateInfoSummaryViewModel.Address;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("ServiceName");
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("ServiceName");               
             }
             else
             {
@@ -240,13 +256,14 @@ namespace DVSRegister.Controllers
         [HttpPost("service-name-validation")]
         public IActionResult ServiceNameValidation(CertificateInfoSummaryViewModel certificateInfoSummaryViewModel)
         {
-
+            bool fromSummaryPage = certificateInfoSummaryViewModel.FromSummaryPage;
+            certificateInfoSummaryViewModel.FromSummaryPage = false;
             if (ModelState["ServiceName"].Errors.Count == 0 && certificateInfoSummaryViewModel.ServiceName != null)
             {
                 CertificateInfoSummaryViewModel certificateInfoModelSoFar = GetCertificateInfoSummary();
                 certificateInfoModelSoFar.ServiceName = certificateInfoSummaryViewModel.ServiceName;
                 HttpContext?.Session.Set("CertificateInfoSummary", certificateInfoModelSoFar);
-                return RedirectToAction("SelectRoles");
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("SelectRoles");               
             }
             else
             {
@@ -404,8 +421,9 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("has-supplementary-scheme")]
-        public IActionResult HasSupplementaryScheme()
+        public IActionResult HasSupplementaryScheme(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
             return View(summaryViewModel);
         }
@@ -420,7 +438,7 @@ namespace DVSRegister.Controllers
         public IActionResult SaveHasSupplementaryScheme(CertificateInfoSummaryViewModel viewModel)
         {
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
-
+            bool fromSummaryPage = viewModel.FromSummaryPage;
             if (viewModel.HasSupplementarySchemes == null)
                 ModelState.AddModelError("HasSupplementarySchemes", Constants.SupplementarySchemeErrorMessage);
             if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
@@ -429,12 +447,11 @@ namespace DVSRegister.Controllers
                 HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
                 if (Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
                 {                    
-                    return RedirectToAction("SelectSupplementarySchemes");
+                    return RedirectToAction("SelectSupplementarySchemes", new { fromSummaryPage = fromSummaryPage });
                 }
                 else
                 {
-
-                    return RedirectToAction("CertificateUploadPage");
+                    return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("CertificateUploadPage");                  
                 }
             }
             return View("HasSupplementaryScheme", viewModel);
@@ -490,8 +507,9 @@ namespace DVSRegister.Controllers
 
 
         [HttpGet("certificate-upload")]
-        public IActionResult CertificateUploadPage()
+        public IActionResult CertificateUploadPage(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
             ViewBag.HasSupplementarySchemes = summaryViewModel.HasSupplementarySchemes;
             return View();
@@ -503,7 +521,8 @@ namespace DVSRegister.Controllers
         {
             // Virus Scan
             // Upload to S3
-
+            bool fromSummaryPage = certificateFileViewModel.FromSummaryPage;
+            certificateFileViewModel.FromSummaryPage = false;
             // Store the filename and link in Session
             if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == false)
             {
@@ -553,13 +572,15 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("ConfirmityIssueDate");
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("ConfirmityIssueDate");
+               
             }
         }
 
         [HttpGet("confirmity-issue-date")]
-        public IActionResult ConfirmityIssueDate()
+        public IActionResult ConfirmityIssueDate(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
             DateViewModel dateViewModel = new DateViewModel();
             if (summaryViewModel.ConformityIssueDate != null)
@@ -580,25 +601,26 @@ namespace DVSRegister.Controllers
         [HttpPost("confirmity-issue-date")]
         public IActionResult SaveConfirmityIssueDate(DateViewModel dateViewModel)
         {
+            bool fromSummaryPage = dateViewModel.FromSummaryPage;
+            dateViewModel.FromSummaryPage = false;
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
             DateTime? conformityIssueDate = ValidateIssueDate(dateViewModel);
             if (ModelState.IsValid)
             {
                 summaryViewModel.ConformityIssueDate =conformityIssueDate;
                 HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
-                return RedirectToAction("ConfirmityExpiryDate");
+                return fromSummaryPage ? RedirectToAction("CertificateInfoSummary") : RedirectToAction("ConfirmityExpiryDate");
             }
             else
             {
                 return View("ConfirmityIssueDate", dateViewModel);
-
             }
 
         }
 
         [HttpGet("certificate-confirmity-expiry-date")]
         public IActionResult ConfirmityExpiryDate()
-        {
+        {           
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
             DateViewModel dateViewModel = new DateViewModel();
             if (summaryViewModel.ConformityExpiryDate != null)

@@ -7,6 +7,7 @@
 
 @using (Html.BeginForm("SaveCertificate", "Cab", FormMethod.Post, new { enctype ="multipart/form-data"}))
 {
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     bool hasSchemes = ViewBag.HasSupplementarySchemes ?? false;
     <div class="govuk-width-container">
         @if (hasSchemes == true)
@@ -22,7 +23,7 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
 
-                    @if (!ViewData.ModelState.IsValid)
+                    @if (ViewData.ModelState["File"]!= null && ViewData?.ModelState["File"]?.Errors.Count>0)
                     {
                         <div class="govuk-error-summary" data-module="govuk-error-summary">
                             <div role="alert">

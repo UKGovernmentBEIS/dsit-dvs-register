@@ -38,5 +38,7 @@ namespace DVSRegister.Models.CAB
         public string? FileLink { get; set; }
         public DateTime? ConformityIssueDate { get; set; }
         public DateTime? ConformityExpiryDate { get; set; }
+
+        public bool FromSummaryPage { get;set; }
     }
 }

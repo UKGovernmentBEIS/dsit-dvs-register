@@ -6,5 +6,6 @@
         public int? Month { get; set; }
         public int? Year { get; set; }
         public string? ValidDate { get; set; }
+        public bool FromSummaryPage { get; set; }
     }
 }

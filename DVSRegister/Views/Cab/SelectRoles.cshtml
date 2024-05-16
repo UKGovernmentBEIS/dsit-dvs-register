@@ -15,6 +15,7 @@
                 </h1>
                 @using (Html.BeginForm("SaveRoles", "Cab", FormMethod.Post))
                 {
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                     @if (ViewData.ModelState.ErrorCount >0)
                     {
                         @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
