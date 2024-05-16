@@ -28,14 +28,9 @@ namespace DVSRegister.Models.CAB
         public string? WebsiteAddress { get; set; }
 
         [Required(ErrorMessage ="Enter a valid address")]
-        public string? Address { get; set; }
-
-        
+        public string? Address { get; set; }        
         public string? ServiceName { get; set; }
-
         public bool? HasSupplementarySchemes { get; set; }
-
-
         public SupplementarySchemeViewModel? SupplementarySchemeViewModel { get; set; }
         public IdentityProfileViewModel? IdentityProfileViewModel { get; set; }
         public RoleViewModel? RoleViewModel { get; set; }
