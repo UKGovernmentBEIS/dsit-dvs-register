@@ -20,7 +20,7 @@
 
                 @using (Html.BeginForm("SaveConfirmityIssueDate", "Cab", FormMethod.Post))
                 {
-
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                     <p class="govuk-body">This must match the information on the certificate.</p> 
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("ValidDate") && Html.ViewData.ModelState["ValidDate"].Errors.Count > 0 
                         ||Html.ViewData.ModelState.ContainsKey("Day") && Html.ViewData.ModelState["Day"].Errors.Count > 0

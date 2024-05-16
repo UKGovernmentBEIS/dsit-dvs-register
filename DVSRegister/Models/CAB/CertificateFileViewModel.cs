@@ -13,6 +13,8 @@ namespace DVSRegister.Models.CAB
         public string? FileUrl { get; set; }
 
         public bool? FileUploadedSuccessfully { get; set; }
+        public bool FromSummaryPage { get; set; }
+
     }
 }
 
