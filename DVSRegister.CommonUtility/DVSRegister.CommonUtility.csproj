@@ -10,6 +10,7 @@
     <PackageReference Include="GovukNotify" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    <PackageReference Include="QRCoder" Version="1.5.1" />
   </ItemGroup>
 
 </Project>
