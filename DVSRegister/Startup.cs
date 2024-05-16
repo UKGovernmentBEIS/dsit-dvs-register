@@ -1,4 +1,6 @@
-﻿using DVSRegister.BusinessLogic;
+﻿using DVSAdmin.BusinessLogic.Services;
+using DVSRegister.BusinessLogic;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.PreAssessment;
 using DVSRegister.BusinessLogic.Services.PreRegistration;
@@ -72,6 +74,7 @@ namespace DVSRegister
             services.AddScoped<IPreRegistrationService, PreRegistrationService>();
             services.AddScoped<IURNService, URNService>();
             services.AddScoped<ICabService, CabService>();
+            services.AddScoped<ISignUpService, SignUpService>();
             services.AddScoped<ICabRepository, CabRepository>();
             services.AddScoped<IBucketService, BucketService>(opt =>
             {
@@ -83,6 +86,13 @@ namespace DVSRegister
                 return new BucketService("", "", ""); // TODO: remove this line once aws provisioned
             });
             services.AddScoped<IAVService, AVService>();
+            services.AddScoped(opt =>
+            {
+                string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));
+                string clientId = string.Format(configuration.GetValue<string>("ClientId")); ;
+                string region = string.Format(configuration.GetValue<string>("Region"));
+                return new CognitoClient(userPoolId, clientId, region);
+            });
 
         }
         public void ConfigureAutomapperServices(IServiceCollection services)

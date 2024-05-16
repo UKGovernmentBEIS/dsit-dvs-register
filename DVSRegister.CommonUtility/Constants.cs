@@ -27,5 +27,6 @@
         public const string ConformityExpiryDateInvalidError = "The certificate of confirmity expiry date must be a real date";
         public const string ConformityIssueDateExpiryDateError = "The certificate of confirmity expiry date cannot be before issue date";
         public const string ConformityExpiryPastDateError = "The certificate of confirmity expiry date must be in future";
+        public const string IncorrectPassword = "Incorrect Password";
     }
 }
