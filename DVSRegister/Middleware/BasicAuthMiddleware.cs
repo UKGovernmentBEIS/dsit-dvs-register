@@ -20,7 +20,7 @@ namespace DVSRegister.Middleware
 
         public async Task Invoke(HttpContext httpContext)
         {
-
+            string requestPath = httpContext.Request.Path.ToString().ToLower();
             try
             {
                 if (IsAuthorised(httpContext))
@@ -36,7 +36,12 @@ namespace DVSRegister.Middleware
             {
                 logger.LogError($"An unexpected error occurred: {ex}");
                 // Redirect to error page 
-                httpContext.Response.Redirect(Constants.PreRegistrationErrorPath);
+                if (requestPath.Contains("pre-registration"))
+                    httpContext.Response.Redirect(Constants.PreRegistrationErrorPath);
+                else if (requestPath.Contains("cab-registration"))
+                    httpContext.Response.Redirect(Constants.CabRegistrationErrorPath);
+                else
+                    httpContext.Response.Redirect(Constants.CommonErrorPath);
             }
         }
         private bool IsAuthorised(HttpContext httpContext)

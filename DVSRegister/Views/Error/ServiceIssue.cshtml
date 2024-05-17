@@ -1,4 +1,4 @@
-﻿
+﻿@model DVSRegister.Models.Error.ErrorViewModel
 @{
     ViewData["Title"] = "ServiceIssue";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -12,11 +12,28 @@
                 <p class="govuk-body">
                     Try again later.
                 </p>
-                <p class="govuk-body">
-                    Your answers have not been saved. When the service is available, you will have to
-                    @Html.ActionLink("start your application ", "StartPage", "PreRegistration", null, new { @class = "govuk-link" })again.
-                </p>
-               
+
+                @if (Model.ApplicationType == "cab")
+                {
+                    <p class="govuk-body">
+                        Your answers have not been saved. When the service is available, you will have to
+                        @Html.ActionLink("application creation ", "LandingPage", "Cab", null, new { @class = "govuk-link" })again.
+                    </p>
+                    @using (Html.BeginForm("ReturnToService", "Cab", FormMethod.Post))
+                    {
+                        <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                            Return to service
+                        </button>
+                    }
+                }
+                else if (Model.ApplicationType == "pre-reg")
+                {
+                    <p class="govuk-body">
+                        Your answers have not been saved. When the service is available, you will have to
+                        @Html.ActionLink("start your application ", "StartPage", "PreRegistration", null, new { @class = "govuk-link" })again.
+                    </p>
+                }
+
             </div>
         </div>
     </main>

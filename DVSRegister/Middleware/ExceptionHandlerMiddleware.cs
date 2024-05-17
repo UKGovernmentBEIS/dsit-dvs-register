@@ -15,6 +15,7 @@ namespace DVSRegister.Middleware
 
         public async Task Invoke(HttpContext context)
         {
+            string requestPath = context.Request.Path.ToString().ToLower();
             try
             {
                 await next(context);
@@ -23,7 +24,12 @@ namespace DVSRegister.Middleware
             {
                 logger.LogError($"An unexpected error occurred: {ex}");
                 // Redirect to error page 
-                context.Response.Redirect(Constants.PreRegistrationErrorPath);
+                if (requestPath.Contains("pre-registration"))
+                    context.Response.Redirect(Constants.PreRegistrationErrorPath);
+                else if (requestPath.Contains("cab-registration"))
+                    context.Response.Redirect(Constants.CabRegistrationErrorPath);
+                else
+                    context.Response.Redirect(Constants.CommonErrorPath);
             }
         }
     }

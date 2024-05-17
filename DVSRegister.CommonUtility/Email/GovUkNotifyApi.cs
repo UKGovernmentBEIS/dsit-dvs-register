@@ -85,6 +85,75 @@ namespace DVSRegister.CommonUtility.Email
             };
             return await SendEmail(emailModel);
         }
+        public async Task<bool> SendEmailCabSignUpActivation(string emailAddress, string recipientName)
+        {
+            var template = govUkNotifyConfig.CabSignUpActivationTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientName, recipientName  },
+                { template.CabSignUpLink, govUkNotifyConfig.CabSignUpLink }
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress =  emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> SendEmailCabAccountCreated(string emailAddress, string recipientName)
+        {
+            var template = govUkNotifyConfig.CabAccountCreatedTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientName, recipientName  },
+                { template.CabLoginLink, govUkNotifyConfig.CabLoginLink }
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress =  emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> SendEmailCabFailedLoginAttempt(string emailAddress, string timestamp)
+        {
+            var template = govUkNotifyConfig.CabFailedLoginAttemptTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.Timestamp, timestamp  }
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress =  emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> SendEmailCabInformationSubmitted(string emailAddress, string recipientName)
+        {
+            var template = govUkNotifyConfig.CabInformationSubmittedTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientName, recipientName  }
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress =  emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
 
     }
 }
