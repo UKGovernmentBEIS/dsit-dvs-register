@@ -7,29 +7,35 @@ namespace DVSRegister.Models.CAB
     {
         public int? PreRegistrationId { get; set; }
 
-        [Required(ErrorMessage = "Enter the registered name of your company.")]
-        [AcceptedLength(160, ErrorMessage = "Your company's registered name must be less than 161 characters.")]
-        [AcceptedCharacters(@"^[A-Za-z0-9 &@£$€¥#.,:;-]+$", ErrorMessage = "Your company's registered name must contain only letters, numbers and accepted characters.")]
+        [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
+        [AcceptedLength(160, ErrorMessage = "The company's registered name must be less than 161 characters.")]
+        [AcceptedCharacters(@"^[A-Za-z0-9 &@£$€¥#.,:;-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters.")]
         public string? RegisteredName { get; set; }
 
-        [Required(ErrorMessage = "Enter the trading name of your company.")]
+        [Required(ErrorMessage = "Enter the digital identity and attribute provider's trading name")]
         public string? TradingName { get; set; }
 
-        [RegularExpression(@"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$", ErrorMessage = "Invalid email address")]
-        [Required(ErrorMessage ="Email field is mandatory")]
+        
+        [Required(ErrorMessage ="Enter an email address in the correct format")]
+        [EmailAddress(ErrorMessage = "Enter an email address in the correct format, like name@example.com.")]
+        [AcceptedLength(255, ErrorMessage = "Enter an email address that is less than 255 characters.")]
         public string? PublicContactEmail { get; set; }
 
         [Required(ErrorMessage = "Enter a telephone number, like 01632 960000, 07700 900 000 or +44 20 7946 0000")]
         [UKPhoneNumber(ErrorMessage = "Enter a telephone number, like 01632 960000, 07700 900 000 or +44 20 7946 0000")]
         public string? TelephoneNumber { get; set; }
 
-        [Required(ErrorMessage ="Enter a website address")]
-        [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Invalid website address.")]
+        [Required(ErrorMessage = "Enter the digital identity and attribute provider's website address")]       
+        [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address.")]
         public string? WebsiteAddress { get; set; }
 
-        [Required(ErrorMessage ="Enter a valid address")]
-        public string? Address { get; set; }        
+        [Required(ErrorMessage ="Enter the company address")]
+        public string? Address { get; set; }
+
+        [Required(ErrorMessage = "Enter the name of the service")]
         public string? ServiceName { get; set; }
+
+        [Required(ErrorMessage = "Select if the digital identity and attribute service provider is certified against any supplementary schemes on their certificate")]
         public bool? HasSupplementarySchemes { get; set; }
         public SupplementarySchemeViewModel? SupplementarySchemeViewModel { get; set; }
         public IdentityProfileViewModel? IdentityProfileViewModel { get; set; }

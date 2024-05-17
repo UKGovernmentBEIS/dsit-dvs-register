@@ -15,7 +15,7 @@ namespace DVSRegister.Controllers
             return View("ServiceIssue", errorViewModel);
         }
 
-        [HttpGet("cab-registration/service-error")]
+        [HttpGet("cab-service/service-error")]
         public IActionResult CabHandleException()
         {
             ErrorViewModel errorViewModel = new ErrorViewModel { ApplicationType = "cab" };

@@ -14,24 +14,26 @@
                 <div class="govuk-grid-column-two-thirds">
                     <h1 class="govuk-heading-xl form-title">Is the service provider certified against any supplementary schemes on their certificate?
                     </h1>
-                    @if (ViewData.ModelState.ErrorCount >0)
+                    @if (Html.ViewData?.ModelState.ContainsKey("HasSupplementarySchemes") == true && Html.ViewData.ModelState["HasSupplementarySchemes"].Errors.Count > 0)
                     {
-                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("RegisteredName", Html.ViewData.ModelState["HasSupplementarySchemes"]?.Errors))
+
                     }
-                    <div class="govuk-form-group">
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("HasSupplementarySchemes") && Html.ViewData.ModelState["HasSupplementarySchemes"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
                         <fieldset class="govuk-fieldset" aria-describedby="hassupplementaryschemes-hint">
 
                             @Html.ValidationMessageFor(m => m.HasSupplementarySchemes, "", new { @class = "govuk-error-message", id = "hassupplementaryschemes-error" })
                             <div class="govuk-radios" data-module="govuk-radios">
                                 <div class="govuk-radios__item">
-                                    @Html.RadioButtonFor(m => m.HasSupplementarySchemes, true, new { @id = "hassupplementaryschemes-1", @class = "govuk-radios__input" })
-                                    <label class="govuk-label govuk-radios__label" for="hassupplementaryschemes-1">
+                                    @Html.RadioButtonFor(m => m.HasSupplementarySchemes, true, new { @id = "hassupplementaryschemes-yes", @class = "govuk-radios__input" })
+                                    <label class="govuk-label govuk-radios__label" for="hassupplementaryschemes-yes">
                                         Yes
                                     </label>
                                 </div>
                                 <div class="govuk-radios__item">
-                                    @Html.RadioButtonFor(m => m.HasSupplementarySchemes, false, new { @id = "hassupplementaryschemes-2", @class = "govuk-radios__input" })
-                                    <label class="govuk-label govuk-radios__label" for="hassupplementaryschemes-2">
+                                    @Html.RadioButtonFor(m => m.HasSupplementarySchemes, false, new { @id = "hassupplementaryschemes-no", @class = "govuk-radios__input" })
+                                    <label class="govuk-label govuk-radios__label" for="hassupplementaryschemes-no">
                                         No
                                     </label>
                                 </div>

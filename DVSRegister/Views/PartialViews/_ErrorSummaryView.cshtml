@@ -3,7 +3,7 @@
 @{
     var modelState = ViewData.ModelState;
 }
-
+@* For displaying error summary of all fields in a view model *@
 @if (modelState != null && modelState.Any(m => m.Value.Errors.Any()))
 {
     <div class="govuk-error-summary" data-module="govuk-error-summary">
@@ -17,7 +17,7 @@
                     {
                         foreach (var error in entry.Value.Errors)
                         {
-                            <li>
+                            <li>                                
                                 <a href="#@(entry.Key.ToLower())-error">@error.ErrorMessage</a>
                             </li>
                         }

@@ -1,4 +1,5 @@
-﻿@{
+﻿@model DVSRegister.Models.CAB.URNViewModel
+@{
     ViewData["Title"] = "Validate URN For Application";
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
 }
@@ -10,7 +11,11 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <h1 class="govuk-heading-xl"> Enter the unique reference number of the digital identity and attribute service provider </h1>
-                    <div class="govuk-form-group">
+                    @if (ViewData.ModelState.ErrorCount >0)
+                    {
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                    }
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("URN") && Html.ViewData.ModelState["URN"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
                         <h1 class="govuk-label-wrapper">
                             <label class="govuk-label govuk-label--m" for="account-number">
                                 Unique reference number
@@ -19,7 +24,9 @@
                         <div id="account-number-hint" class="govuk-hint">
                             For example, ‘URN12-1234567891-AB-123-45’
                         </div>
-                        <input class="govuk-input govuk-input--width-50" id="urn-number" name="urnNumber" type="text" spellcheck="false">
+                        @Html.ValidationMessageFor(m => m.URN, "", new { @class = "govuk-error-message", id = "urn-error" })
+                        @Html.TextBoxFor(m => m.URN, new { @class = "govuk-input govuk-input--width-50", id = "urn-number", aria_describedby = "urn-number-hint" })
+                        
                     </div>
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Continue
