@@ -9,10 +9,11 @@
         public const string ConfirmationMessage = "Confirm if the information you've provided is correct";
         public const string FailedMessage = "Failed";
         public const string PreRegistrationErrorPath = "/pre-registration/service-error";
-        public const string CabRegistrationErrorPath = "/cab-registration/service-error";
+        public const string CabRegistrationErrorPath = "/cab-service/service-error";
         public const string CommonErrorPath = "/service-error";
 
         public const int URNExpiryDays = 60;
+        public const string URNRequiredError = "Enter a unique reference number";
         public const string URNErrorMessage = "Invalid unique reference number. Please try again. If you are still \r\nexperiencing issues, please reach out to the digital identity and \r\nattribute service provider to confirm the correct data.";      
         public const int DaysLeftToComplete = 21;
         public const string SupplementarySchemeErrorMessage = "Select if the digital identity and attribute service provider is certified against any supplementary schemes on their certificate";
@@ -31,5 +32,6 @@
         public const string ConformityIssueDateExpiryDateError = "The certificate of confirmity expiry date cannot be before issue date";
         public const string ConformityExpiryPastDateError = "The certificate of confirmity expiry date must be in future";
         public const string IncorrectPassword = "Incorrect Password";
+       
     }
 }

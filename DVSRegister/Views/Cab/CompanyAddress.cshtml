@@ -14,20 +14,8 @@
                     <h1 class="govuk-heading-xl"> Company address details </h1>
                     @if (Html.ViewData?.ModelState.ContainsKey("Address") == true && Html.ViewData.ModelState["Address"].Errors.Count > 0)
                     {
-                        <div class="govuk-error-summary" data-module="govuk-error-summary">
-                            <div role="alert">
-                                <h2 class="govuk-error-summary__title">
-                                    There is a problem
-                                </h2>
-                                <div class="govuk-error-summary__body">
-                                    <ul class="govuk-list govuk-error-summary__list">
-                                        <li>
-                                            <a href="#"> Error in Company address</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("Address", Html.ViewData.ModelState["Address"]?.Errors))
                     }
                     <p class="govuk-body">This address must match the address that appears on the certificate of conformity.</p>
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("Address") && Html.ViewData.ModelState["Address"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
@@ -40,15 +28,9 @@
                             For example, ‘Reusable digital identities or attributes' or 'Delegated authority’
                         </div>
 
-                        @if (Html.ViewData.ModelState.ContainsKey("Address") && Html.ViewData.ModelState["Address"].Errors.Count > 0)
-                        {
-                            <p id="more-detail-error" class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> Enter a valid address
-                            </p>
-                        }
+                        
+                        @Html.ValidationMessageFor(m => m.Address, "", new { @class = "govuk-error-message" })
                         @Html.TextAreaFor(m => m.Address, 5, 20, new { @class = "govuk-textarea", id = "event-name", name = "eventName" })
-
-
 
                     </div>
                     <button type="submit" class="govuk-button" data-module="govuk-button">

@@ -15,20 +15,9 @@
 
                     @if (Html.ViewData?.ModelState.ContainsKey("RegisteredName") == true && Html.ViewData.ModelState["RegisteredName"].Errors.Count > 0)
                     {
-                        <div class="govuk-error-summary" data-module="govuk-error-summary">
-                            <div role="alert">
-                                <h2 class="govuk-error-summary__title">
-                                    There is a problem
-                                </h2>
-                                <div class="govuk-error-summary__body">
-                                    <ul class="govuk-list govuk-error-summary__list">
-                                        <li>
-                                            <a href="#"> Error in Registered Name</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                       new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("RegisteredName", Html.ViewData.ModelState["RegisteredName"]?.Errors))
+                        
                     }
 
 
@@ -39,8 +28,8 @@
                                 Registered Name
                             </label>
                         </h1>
-                        @Html.ValidationMessageFor(m => m.RegisteredName, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.RegisteredName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "event-name", name = "eventName" })
+                        @Html.ValidationMessageFor(m => m.RegisteredName, "", new { @class = "govuk-error-message", id = "registeredname-error" })
+                        @Html.TextBoxFor(m => m.RegisteredName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "registered-name", name = "registered-name" })
                     </div>
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Continue

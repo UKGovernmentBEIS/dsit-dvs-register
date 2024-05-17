@@ -15,5 +15,6 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<List<IdentityProfileDto>> GetIdentityProfiles();
         public Task<List<SupplementarySchemeDto>> GetSupplementarySchemes();
         public Task<DVSRegister.Data.Entities.PreRegistration> GetURNDetails(string URN);
+        public Task<bool> CheckURNValidatedByCab(string URN);
     }
 }

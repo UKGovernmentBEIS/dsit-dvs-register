@@ -84,6 +84,23 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return valid;
         }
 
+        public async Task<bool> CheckURNValidatedByCab(string URN)
+        {
+            bool valid = false;
+            UniqueReferenceNumber uniqueReferenceNumber = await cabRepository.GetURNDetails(URN);
+            //URN is valid only if the status is Validated by cab           
+
+
+            if (uniqueReferenceNumber != null)
+            {
+                if (uniqueReferenceNumber.URNStatus == URNStatusEnum.ValidatedByCAB)
+                {
+                    valid = true;
+                }
+            }
+            return valid;
+        }
+
         public async Task<DVSRegister.Data.Entities.PreRegistration> GetURNDetails(string URN)
         {
             DVSRegister.Data.Entities.PreRegistration preRegistration = await cabRepository.GetPreRegistrationDetails(URN);

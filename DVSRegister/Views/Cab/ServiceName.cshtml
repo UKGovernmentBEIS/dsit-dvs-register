@@ -14,20 +14,9 @@
                     <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s name of service </h1>
                     @if (Html.ViewData?.ModelState.ContainsKey("ServiceName") == true && Html.ViewData.ModelState["ServiceName"].Errors.Count > 0)
                     {
-                        <div class="govuk-error-summary" data-module="govuk-error-summary">
-                            <div role="alert">
-                                <h2 class="govuk-error-summary__title">
-                                    There is a problem
-                                </h2>
-                                <div class="govuk-error-summary__body">
-                                    <ul class="govuk-list govuk-error-summary__list">
-                                        <li>
-                                            <a href="#"> Error in Service Name</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ServiceName", Html.ViewData.ModelState["ServiceName"]?.Errors))
+
                     }
                     <p class="govuk-body">This must match the service name on the certificate.</p>
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("ServiceName") && Html.ViewData.ModelState["ServiceName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
