@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
 }
 
-@using (Html.BeginForm("EnterCode", "Login", FormMethod.Post))
+@using (Html.BeginForm("EnterCodeValidation", "Login", FormMethod.Post))
 {
     <div class="govuk-width-container">
         <main class="govuk-main-wrapper">
@@ -30,7 +30,9 @@
                         @Html.TextBoxFor(m => m.Code, new { @class = "govuk-input govuk-input--width-10", id = "code", name = "code", @aria_DescribedBy = "enter-code-hint" })
                     </div>
 
-                    <a href="~/sign-up" class="govuk-button">Confirm</a>
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
+                        Confirm
+                    </button>
 
                     <br />
                     <a href="~/login" class="govuk-button govuk-button--secondary">Send code again</a>
