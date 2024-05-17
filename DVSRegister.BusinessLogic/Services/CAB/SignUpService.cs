@@ -1,5 +1,4 @@
-﻿using System;
-using DVSAdmin.BusinessLogic.Services;
+﻿using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.CommonUtility.Models;
 
 namespace DVSRegister.BusinessLogic.Services
@@ -18,19 +17,20 @@ namespace DVSRegister.BusinessLogic.Services
             return await _cognitoClient.ConfirmMFAToken(session, email, token);
         }
 
-        public Task<GenericResponse> ConfirmPassword(string email, string password, string oneTimePassword)
+        public async Task<GenericResponse> ConfirmPassword(string email, string password, string oneTimePassword)
         {
-            throw new NotImplementedException();
+            return await _cognitoClient.ConfirmPasswordAndGenerateMFAToken(email, password, oneTimePassword);
         }
 
-        public Task<string> ForgotPassword(string email)
+        public async Task<string> ForgotPassword(string email)
         {
-            throw new NotImplementedException();
+            return await _cognitoClient.ForgotPassword(email);
         }
 
-        public Task<string> MFAConfirmation(string email, string password, string mfaCode)
+        public async Task<string> MFAConfirmation(string email, string password, string mfaCode)
         {
-            throw new NotImplementedException();
+            string response = await _cognitoClient.MFARegistrationConfirmation(email, password, mfaCode);
+            return response;  
         }
 
         public async Task<string> SignInAndWaitForMfa(string email, string password)
