@@ -8,6 +8,7 @@ using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.CommonUtility;
 using Newtonsoft.Json;
+using DVSRegister.CommonUtility.Email;
 
 
 namespace DVSRegister.Controllers
@@ -19,12 +20,14 @@ namespace DVSRegister.Controllers
         private readonly ICabService cabService;
         private readonly IBucketService bucketService;
         private readonly IAVService avService;
+        private readonly IEmailSender emailSender;
 
-        public CabController(ICabService cabService, IAVService aVService, IBucketService bucketService)
+        public CabController(ICabService cabService, IAVService aVService, IBucketService bucketService, IEmailSender emailSender)
         {           
             this.cabService = cabService;
             this.bucketService = bucketService;
             this.avService = aVService;
+            this.emailSender = emailSender;
         }
 
         [HttpGet("")]
@@ -35,6 +38,7 @@ namespace DVSRegister.Controllers
         }
 
         #region Validate URN
+
         /// <summary>
         /// Loaded on 
         /// Check Unique Number Link
@@ -42,24 +46,35 @@ namespace DVSRegister.Controllers
         /// </summary>
         /// <returns></returns>
 
-        [HttpGet("check-urn-start")]
+        [HttpGet("check-unique-reference-number")]
         public IActionResult CheckURNStartPage()
         {
             return View();
         }
 
-        [HttpGet("check-urn")]
+        /// <summary>
+        /// Enter URN to validate
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("check-unique-reference-number/enter-number")]
         public IActionResult CheckURN()
-        {
+        {            
             return View();
         }
 
-        [HttpPost("check-urn")]
+        /// <summary>
+        /// Validate the URN and update status 
+        /// to Validated by Cab
+        /// </summary>
+        /// <param name="urnViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("check-unique-reference-number/enter-number")]
         public async Task<IActionResult> ValidateURN(URNViewModel urnViewModel)
         {
             if (!string.IsNullOrEmpty(urnViewModel.URN))
             {
-                bool isValid = await cabService.ValidateURN(urnViewModel.URN);
+                string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+                bool isValid = await cabService.ValidateURN(urnViewModel.URN, email);
                 if (!isValid)
                     ModelState.AddModelError("URN", Constants.URNErrorMessage);
             }
@@ -75,7 +90,11 @@ namespace DVSRegister.Controllers
             }
         }
 
-        [HttpGet("valid-urn")]
+        /// <summary>
+        /// Display valid urn details
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("check-unique-reference-number/number-validated")]
         public async Task<IActionResult> ValidURNDetails()
         {
             string URN = TempData["URN"] as string;
@@ -88,6 +107,7 @@ namespace DVSRegister.Controllers
 
 
         #region Submit certificate info
+
         [HttpGet("submit-certificate-information")]
         public IActionResult CertificateInformationStartPage()
         {
@@ -95,12 +115,21 @@ namespace DVSRegister.Controllers
         }
 
 
+        /// <summary>
+        /// Validate urn before submitting application
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("submit-certificate-information/enter-unique-reference-number")]
         public IActionResult ValidateURNForApplication()
         {
             return View();
         }
 
+        /// <summary>
+        /// Check if the URN status is validated by CAB
+        /// </summary>
+        /// <param name="urnViewModel"></param>
+        /// <returns></returns>
         [HttpPost("submit-certificate-information/enter-unique-reference-number")]
         public async Task<IActionResult> URNValidationForApplication(URNViewModel urnViewModel)
         {
@@ -709,10 +738,14 @@ namespace DVSRegister.Controllers
         /// </summary>       
         /// <returns></returns>
         [HttpGet("submit-certificate-information/information-submitted")]
-        public IActionResult InformationSubmitted()
+        public async Task<IActionResult> InformationSubmitted()
         {
-            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
-            return View(summaryViewModel);
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+            ViewBag.Email = email;
+            bool emailSent = await emailSender.SendEmailCabInformationSubmitted(email, email);
+            if (emailSent)
+                return View();
+            else return RedirectToAction(Constants.CabRegistrationErrorPath);
         }
 
         /// <summary>

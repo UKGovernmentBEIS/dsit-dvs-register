@@ -1,14 +1,13 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic.Services.CAB
 {
     public interface ICabService
     {
         public Task<GenericResponse> SaveCertificateInformation(CertificateInfoDto certificateInfo);
-        public Task<bool> ValidateURN(string URN);
+        public Task<bool> ValidateURN(string URN, string cabUserId);
         public Task<PreRegistrationDto> GetPreRegistrationDetails(string URN);
 
         public Task<List<RoleDto>> GetRoles();

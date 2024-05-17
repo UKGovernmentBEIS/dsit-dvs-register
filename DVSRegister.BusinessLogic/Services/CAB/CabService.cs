@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Extensions;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
+using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CAB;
@@ -12,12 +13,14 @@ namespace DVSRegister.BusinessLogic.Services.CAB
     public class CabService : ICabService
     {
         private readonly ICabRepository cabRepository;
-        private readonly IMapper automapper;      
+        private readonly IMapper automapper;
+        private readonly IEmailSender emailSender;
 
-        public CabService(ICabRepository cabRepository, IMapper automapper)
+        public CabService(ICabRepository cabRepository, IMapper automapper, IEmailSender emailSender)
         {
             this.cabRepository = cabRepository;
-            this.automapper = automapper;           
+            this.automapper = automapper;
+            this.emailSender = emailSender;
         }
         public async Task<PreRegistrationDto> GetPreRegistrationDetails(string URN)
         {
@@ -54,7 +57,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return genericResponse;
         }
 
-        public async Task<bool> ValidateURN(string URN)
+        public async Task<bool> ValidateURN(string URN, string cabUserId)
         {
             bool valid = false;
             UniqueReferenceNumber uniqueReferenceNumber = await cabRepository.GetURNDetails(URN);
@@ -71,12 +74,16 @@ namespace DVSRegister.BusinessLogic.Services.CAB
                         valid = true;
                         // if valid change status to verified by cab
                         uniqueReferenceNumber.URNStatus = URNStatusEnum.ValidatedByCAB;
+                        uniqueReferenceNumber.CheckedByCAB = cabUserId;
+                        uniqueReferenceNumber.ModifiedBy = cabUserId;
+                        uniqueReferenceNumber.ModifiedDate = DateTime.UtcNow;
                         await cabRepository.UpdateURNStatus(uniqueReferenceNumber);
                     }
                     else
                     {
                         valid = false;
                         uniqueReferenceNumber.URNStatus = URNStatusEnum.Expired;
+                        uniqueReferenceNumber.ModifiedBy = cabUserId;
                         await cabRepository.UpdateURNStatus(uniqueReferenceNumber);
                     }
                 }               
