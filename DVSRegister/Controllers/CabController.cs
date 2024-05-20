@@ -134,8 +134,7 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> URNValidationForApplication(URNViewModel urnViewModel)
         {
             if (string.IsNullOrEmpty(urnViewModel.URN))
-            {
-                ModelState.AddModelError("URN", Constants.URNRequiredError);
+            {                
                 return View("ValidateURNForApplication");
             }
             else

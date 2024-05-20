@@ -4,6 +4,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@{
+    bool hasError = false;
+    bool hasDayError = false;
+    bool hasMonthError = false;
+    bool hasYearError = false;
+}
+
 
 <div class="govuk-width-container">
     @Html.ActionLink("Back", "ConfirmityIssueDate", "Cab", null, new { @class = "govuk-back-link" })
@@ -16,63 +23,158 @@
                 </h1>
                 @if (ViewData.ModelState.ErrorCount >0)
                 {
+                    hasError = true;
                     @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                    if ((Html.ViewData.ModelState.ContainsKey("ValidDate") && Html.ViewData.ModelState["ValidDate"].Errors.Count > 0))
+                    {
+                        hasDayError = true; hasMonthError = true; hasYearError = true;
+                    }
+                     if ((Html.ViewData.ModelState.ContainsKey("Day") && Html.ViewData.ModelState["Day"].Errors.Count > 0))
+                    {
+                        hasDayError = true;
+                    }
+
+                     if ((Html.ViewData.ModelState.ContainsKey("Month") && Html.ViewData.ModelState["Month"].Errors.Count > 0))
+                    {
+                        hasMonthError = true;
+                    }
+                     if ((Html.ViewData.ModelState.ContainsKey("Year") && Html.ViewData.ModelState["Year"].Errors.Count > 0))
+                    {
+                        hasYearError = true;
+                    }
                 }
 
                 @using (Html.BeginForm("SaveConfirmityExpiryDate", "Cab", FormMethod.Post))
                 {
-
                     <p class="govuk-body">
                         This must match the information on the certificate. We do not accept
                         certificates with an expiry date of more than 2 years after the date of issue
                     </p>
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("ValidDate") && Html.ViewData.ModelState["ValidDate"].Errors.Count > 0
-                        ||Html.ViewData.ModelState.ContainsKey("Day") && Html.ViewData.ModelState["Day"].Errors.Count > 0
-                        || Html.ViewData.ModelState.ContainsKey("Month") && Html.ViewData.ModelState["Month"].Errors.Count > 0
-                        || Html.ViewData.ModelState.ContainsKey("Year") && Html.ViewData.ModelState["Year"].Errors.Count > 0
-                        ? "govuk-form-group--error" : "")">
-                        <fieldset class="govuk-fieldset" role="group" aria-describedby="conformity-issue-date-hint">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                                <h1 class="govuk-fieldset__heading">
-                                    Certificate of conformity expiry date
-                                </h1>
-                            </legend>
-                            <div id="issuedate-hint" class="govuk-hint">
-                                Expiry date cannot be more than 2 years after the date of issue
-                            </div>
-                            @Html.ValidationMessageFor(m => m.ValidDate, "", new { @class = "govuk-error-message", id = "validdate-error" })
-                            @Html.ValidationMessageFor(m => m.Day, "", new { @class = "govuk-error-message", id = "day-error" })
-                            @Html.ValidationMessageFor(m => m.Month, "", new { @class = "govuk-error-message", id = "month-error" })
-                            @Html.ValidationMessageFor(m => m.Year, "", new { @class = "govuk-error-message", id = "year-error" })
-                            <div class="govuk-date-input" id="conformity-expiry-date">
-                                <div class="govuk-date-input__item">
-                                    <div class="govuk-form-group">
-                                        <label class="govuk-label govuk-date-input__label" for="conformity-expiry-day">
-                                            Day
-                                        </label>
-                                        @Html.TextBoxFor(model => model.Day, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2" })
-                                    </div>
-                                </div>
-                                <div class="govuk-date-input__item">
-                                    <div class="govuk-form-group">
-                                        <label class="govuk-label govuk-date-input__label" for="conformity-expiry-month">
-                                            Month
-                                        </label>
-                                        @Html.TextBoxFor(model => model.Month, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2" })
-                                    </div>
-                                </div>
-                                <div class="govuk-date-input__item">
-                                    <div class="govuk-form-group">
-                                        <label class="govuk-label govuk-date-input__label" for="conformity-expiry-year">
-                                            Year
-                                        </label>
-                                        @Html.TextBoxFor(model => model.Year, new { @class = "govuk-input govuk-date-input__input govuk-input--width-4" })
-                                    </div>
-                                </div>
-                            </div>
-                        </fieldset>
-                    </div>
 
+                   @if(hasError)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <fieldset class="govuk-fieldset" role="group" aria-describedby="conformity-issue-date-hint">
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                    <h1 class="govuk-fieldset__heading">
+                                        Certificate of conformity expiry date
+                                    </h1>
+                                </legend>
+                                <div id="issuedate-hint" class="govuk-hint">
+                                    Expiry date cannot be more than 2 years after the date of issue
+                                </div>
+                                <p id="validdate-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.ValidDate, "", new { @class = "govuk-error-message" })
+                                </p>                             
+
+                                <p id="day-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.Day, "", new { @class = "govuk-error-message" })
+                                </p>                               
+                                <p id="month-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.Month, "", new { @class = "govuk-error-message" })
+                                </p>                              
+
+                                <p id="year-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.Year, "", new { @class = "govuk-error-message" })
+                                </p>                                
+                                <div class="govuk-date-input" id="conformity-expiry-date">
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-expiry-day">
+                                                Day
+                                            </label>
+                                            @if(hasDayError )
+                                            {
+                                                @Html.TextBoxFor(model => model.Day, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--width-2 govuk-input--error", id = "day" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.Day, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2", id = "day" })
+                                            }
+
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-expiry-month">
+                                                Month
+                                            </label>
+                                            @if (hasMonthError)
+                                            {
+                                                @Html.TextBoxFor(model => model.Month, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--width-2 govuk-input--error", id = "month" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.Month, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2", id = "month" })
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-expiry-year">
+                                                Year
+                                            </label>
+                                            @if (hasYearError)
+                                            {
+                                                @Html.TextBoxFor(model => model.Year, new { @class = "govuk-input govuk-date-input__input govuk-input--width-4 govuk-input--width-4 govuk-input--error", id = "year" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.Year, new { @class = "govuk-input govuk-date-input__input govuk-input--width-4", id = "year" })
+                                            }
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                    }  
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <fieldset class="govuk-fieldset" role="group" aria-describedby="conformity-issue-date-hint">
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                    <h1 class="govuk-fieldset__heading">
+                                        Certificate of conformity expiry date
+                                    </h1>
+                                </legend>
+                                <div id="issuedate-hint" class="govuk-hint">
+                                    Expiry date cannot be more than 2 years after the date of issue
+                                </div>                              
+                                <div class="govuk-date-input" id="conformity-expiry-date">
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-expiry-day">
+                                                Day
+                                            </label>
+                                            @Html.TextBoxFor(model => model.Day, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2", id = "day" })
+
+
+                                        </div>
+                                    </div>
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-expiry-month">
+                                                Month
+                                            </label>
+                                            @Html.TextBoxFor(model => model.Month, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2", id = "month" })
+                                        </div>
+                                    </div>
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-expiry-year">
+                                                Year
+                                            </label>
+                                            @Html.TextBoxFor(model => model.Year, new { @class = "govuk-input govuk-date-input__input govuk-input--width-4", id = "year" })
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    }
                     <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
                         Continue
                     </button>
