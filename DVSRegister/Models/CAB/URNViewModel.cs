@@ -4,7 +4,8 @@ namespace DVSRegister.Models.CAB
 {
     public class URNViewModel
     {
-      
+
+        [Required (ErrorMessage = "Enter a unique reference number")]
         public string? URN { get; set; }
         public int PreregistrationId { get; set; }
 
