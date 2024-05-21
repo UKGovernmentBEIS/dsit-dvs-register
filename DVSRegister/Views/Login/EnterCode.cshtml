@@ -14,7 +14,7 @@
 
                     <h1 class="govuk-heading-xl govuk-!-margin-top-8">Enter the code</h1>
 
-                    <p class="govuk-body">We have sent a code to: <strong> user@email.com</strong></p>
+                    <p class="govuk-body">We have sent a code to: <strong>@(Model.Email) </strong></p>
                     <p class="govuk-body">It might take a few minutes to arrive. The code will expire in 60 minutes.</p>
 
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("code") && Html.ViewData.ModelState["code"].Errors.Count > 0 ? "govuk-form-group--error" :"" )">

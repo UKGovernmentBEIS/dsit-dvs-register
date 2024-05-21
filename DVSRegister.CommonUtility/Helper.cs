@@ -13,7 +13,7 @@ namespace DVSRegister.CommonUtility
         }
         public static string GenerateQRCode(string secretKey, string email)
         {
-            string qrCodeDataString = $"otpauth://totp/cognito-client:{email}?secret={secretKey}&issuer=OfDIA-Platform";
+            string qrCodeDataString = $"otpauth://totp/cognito-client:{email}?secret={secretKey}&issuer=CAB-Service-Platform";
 
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrCodeDataString, QRCodeGenerator.ECCLevel.Q);
