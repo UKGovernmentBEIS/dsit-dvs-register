@@ -30,7 +30,10 @@ namespace DVSRegister.Controllers
         [HttpGet("enter-code")]
         public IActionResult EnterCode()
         {
-            return View("EnterCode");
+            string Email = HttpContext?.Session.Get<string>("Email");
+            EnterCodeViewModel enterCodeViewModel = new EnterCodeViewModel();
+            enterCodeViewModel.Email = Email;
+            return View("EnterCode", enterCodeViewModel);
         }
 
         [HttpGet("mfa-registration")]
