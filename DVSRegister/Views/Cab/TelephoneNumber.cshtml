@@ -3,6 +3,9 @@
     ViewData["Title"] = "Telephone Number";
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
 }
+@{
+    bool isValid = true;
+}
 @using (Html.BeginForm("TelephoneNumberValidation", "Cab", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
@@ -14,19 +17,40 @@
                     <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s telephone number   </h1>
                     @if (Html.ViewData?.ModelState.ContainsKey("TelephoneNumber") == true && Html.ViewData.ModelState["TelephoneNumber"].Errors.Count > 0)
                     {
+                        isValid = false;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
                                  new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("TelephoneNumber", Html.ViewData.ModelState["TelephoneNumber"]?.Errors))
                     }
                     <p class="govuk-body">This telephone number will be publicly displayed on the register of digital identity and attribute service providers.</p>
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("TelephoneNumber") && Html.ViewData.ModelState["TelephoneNumber"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
-                        <h1 class="govuk-label-wrapper">
-                            <label class="govuk-label govuk-label--m" for="account-number">
-                                Telephone number
-                            </label>
-                        </h1>
-                        @Html.ValidationMessageFor(m => m.TelephoneNumber, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.TelephoneNumber, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "event-name", name = "eventName" })
-                    </div>
+                    @if(!isValid)
+                    {                       
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <h1 class="govuk-label-wrapper">
+                                <label class="govuk-label govuk-label--m" for="telephonenumber">
+                                    Telephone number
+                                </label>
+                            </h1>
+                            <p id="telephonenumber-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>  @Html.ValidationMessageFor(m => m.TelephoneNumber, "", new { @class = "govuk-error-message" })
+                            </p>
+
+                            @Html.TextBoxFor(m => m.TelephoneNumber, new { @class = "govuk-input govuk-input--error govuk-input govuk-!-width-three-quarters", id = "telephonenumber", name = "telephonenumber-name", aria_describedby = "telephonenumber-error" })
+                        </div>
+                    }
+                    else
+                    {
+                       
+                        <div class="govuk-form-group">
+                            <h1 class="govuk-label-wrapper">
+                                <label class="govuk-label govuk-label--m" for="telephonenumber">
+                                    Telephone number
+                                </label>
+                            </h1>
+                            @Html.TextBoxFor(m => m.TelephoneNumber, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "telephonenumber", name = "telephonenumber-name" })
+                        </div>
+                    }
+
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Continue
                     </button>

@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
 }
 @{
-    bool hasError = false;
+    bool isValid = true;
 }
 @using (Html.BeginForm("CompanyAddressValidation", "Cab", FormMethod.Post))
 {
@@ -17,13 +17,14 @@
                     <h1 class="govuk-heading-xl"> Company address details </h1>
                     @if (Html.ViewData?.ModelState.ContainsKey("Address") == true && Html.ViewData.ModelState["Address"].Errors.Count > 0)
                     {
-                        hasError = true;
+                        isValid = false;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
                                  new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("Address", Html.ViewData.ModelState["Address"]?.Errors))
                     }
                     <p class="govuk-body">This address must match the address that appears on the certificate of conformity.</p>
 
-                    @if (hasError)
+                    @if (!isValid)
                     {
                         <div class="govuk-form-group govuk-form-group--error">
                             <h1 class="govuk-label-wrapper">
@@ -34,7 +35,7 @@
                             <p id="address-error" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.Address, "", new { @class = "govuk-error-message" })
                             </p>
-                            @Html.TextAreaFor(m => m.Address, 5, 20, new { @class = "govuk-textarea govuk-textarea--error", id = "address", name = "address-name" })
+                            @Html.TextAreaFor(m => m.Address, 5, 20, new { @class = "govuk-textarea govuk-textarea--error", id = "address", name = "address-name", aria_describedby = "address-error" })
                            
                         </div>
                     }

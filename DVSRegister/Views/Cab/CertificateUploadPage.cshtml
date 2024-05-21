@@ -29,6 +29,7 @@
                     @if (Html.ViewData?.ModelState.ContainsKey("File") == true && Html.ViewData.ModelState["File"].Errors.Count > 0)
                     {
                         hasError = true;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
                                  new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("File", Html.ViewData.ModelState["File"]?.Errors))
                     }
