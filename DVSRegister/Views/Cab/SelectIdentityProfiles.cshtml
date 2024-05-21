@@ -1,0 +1,147 @@
+﻿@model DVSRegister.Models.CAB.IdentityProfileViewModel
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "SelectIdentityProfiles";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "SelectRoles", "Cab", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">
+                    List the identity profiles for the digital identity and attribute service provider
+                </h1>
+                @using (Html.BeginForm("SaveIdentityProfiles", "Cab", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @if (ViewData.ModelState.ErrorCount >0)
+                    {
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                    }
+                    var lowConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "L")
+                    .OrderBy(c => c.IdentityProfileName);
+
+                    var meduimConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "M")
+                    .OrderBy(c => c.IdentityProfileName);
+
+                    var highConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "H")
+                    .OrderBy(c => c.IdentityProfileName);
+
+                    var veryHighConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "V")
+                    .OrderBy(c => c.IdentityProfileName);
+
+                    
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    <p class="govuk-body">
+                        This must match the information on the certificate
+                    </p>
+
+                    @* ---------Low confidence ----------- *@  
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("SelectedIdentityProfileIds") && Html.ViewData.ModelState["SelectedIdentityProfileIds"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                <h1 class="govuk-fieldset__heading">
+                                   Low confidence
+                                </h1>
+                            </legend>
+                           
+                            @Html.ValidationMessageFor(m => m.SelectedIdentityProfileIds, "", new { @class = "govuk-error-message", id = "selectedidentityprofileids-error" })
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                @foreach (var item in lowConfidenceList)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedIdentityProfileIds" value="@item.Id" id="role_@item.Id"
+                                        @(Model.SelectedIdentityProfileIds.Contains(item.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@item.Id">@item.IdentityProfileName</label>
+                                    </div>
+                                }
+                            </div>
+                     
+
+                        </fieldset>
+                        </div>
+
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+                        @* ---------Medium confidence ----------- *@
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("SelectedIdentityProfileIds") && Html.ViewData.ModelState["SelectedIdentityProfileIds"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                <h1 class="govuk-fieldset__heading">
+                                    Meduim confidence
+                                </h1>
+                            </legend>                           
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                @foreach (var item in meduimConfidenceList)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedIdentityProfileIds" value="@item.Id" id="role_@item.Id"
+                                        @(Model.SelectedIdentityProfileIds.Contains(item.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@item.Id">@item.IdentityProfileName</label>
+                                    </div>
+                                }
+                            </div>
+
+                        </fieldset>
+                        </div>
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                        @* ---------High confidence ----------- *@
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("SelectedIdentityProfileIds") && Html.ViewData.ModelState["SelectedIdentityProfileIds"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                <h1 class="govuk-fieldset__heading">
+                                    High confidence
+                                </h1>
+                            </legend>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                @foreach (var item in highConfidenceList)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedIdentityProfileIds" value="@item.Id" id="role_@item.Id"
+                                        @(Model.SelectedIdentityProfileIds.Contains(item.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@item.Id">@item.IdentityProfileName</label>
+                                    </div>
+                                }
+                            </div>
+                        </fieldset>
+                        </div>
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                        @* ---------Very high confidence ----------- *@
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("SelectedIdentityProfileIds") && Html.ViewData.ModelState["SelectedIdentityProfileIds"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                <h1 class="govuk-fieldset__heading">
+                                    Very high confidence
+                                </h1>
+                            </legend>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                @foreach (var item in veryHighConfidenceList)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedIdentityProfileIds" value="@item.Id" id="role_@item.Id"
+                                        @(Model.SelectedIdentityProfileIds.Contains(item.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@item.Id">@item.IdentityProfileName</label>
+                                    </div>
+                                }
+                            </div>
+                        </fieldset>                       
+                    </div>
+
+                  
+                    @*DONOT Remove : Keeping AvailableIdentityProfiles hidden variable to avoid db call to fetch IdentityProfiles after post*@
+                    @Html.Hidden("AvailableIdentityProfiles", JsonConvert.SerializeObject(Model.AvailableIdentityProfiles))
+                    <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                       Continue
+                    </button>
+                }
+            </div>
+        </div>
+    </main>
+</div>
+

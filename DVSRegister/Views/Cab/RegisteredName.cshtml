@@ -1,0 +1,41 @@
+﻿@model DVSRegister.Models.CAB.CertificateInfoSummaryViewModel
+@{
+    ViewData["Title"] ="Registered Company Name";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+}
+@using (Html.BeginForm("RegisteredNameValidation", "Cab", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "CheckInformation", "Cab", null, new { @class = "govuk-back-link" })
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl"> Enter the unique reference number of the digital identity and attribute service provider </h1>
+
+                    @if (Html.ViewData?.ModelState.ContainsKey("RegisteredName") == true && Html.ViewData.ModelState["RegisteredName"].Errors.Count > 0)
+                    {
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                       new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("RegisteredName", Html.ViewData.ModelState["RegisteredName"]?.Errors))
+                        
+                    }
+
+
+                    <p class="govuk-body">This registered name will be publicly displayed on the register of digital identity and attribute service providers. This should match the registered name on the certificate.</p>
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("RegisteredName") && Html.ViewData.ModelState["RegisteredName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <h1 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--m" for="account-number">
+                                Registered Name
+                            </label>
+                        </h1>
+                        @Html.ValidationMessageFor(m => m.RegisteredName, "", new { @class = "govuk-error-message", id = "registeredname-error" })
+                        @Html.TextBoxFor(m => m.RegisteredName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "registered-name", name = "registered-name" })
+                    </div>
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+}

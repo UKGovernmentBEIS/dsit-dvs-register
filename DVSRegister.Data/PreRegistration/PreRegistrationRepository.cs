@@ -27,7 +27,7 @@ namespace DVSRegister.Data.Repositories
             try
             {
                 var entity = await context.PreRegistration.AddAsync(preRegistration);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 transaction.Commit();
                 genericResponse.Success = true;
                 genericResponse.InstanceId = entity.Entity.Id;
@@ -49,7 +49,7 @@ namespace DVSRegister.Data.Repositories
             try
             {
                 await context.UniqueReferenceNumber.AddAsync(uniqueReferenceNumber);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 transaction.Commit();
                 genericResponse.Success = true;
             }

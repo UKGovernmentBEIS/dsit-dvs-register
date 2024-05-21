@@ -22,6 +22,153 @@ namespace DVSRegister.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoIdentityProfileMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CertificateInformationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdentityProfileId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CertificateInformationId");
+
+                    b.HasIndex("IdentityProfileId");
+
+                    b.ToTable("CertificateInfoIdentityProfileMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoRoleMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CertificateInformationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CertificateInformationId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("CertificateInfoRoleMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoSupSchemeMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CertificateInformationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SupplementarySchemeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CertificateInformationId");
+
+                    b.HasIndex("SupplementarySchemeId");
+
+                    b.ToTable("CertificateInfoSupSchemeMappings");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInformation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CertificateInfoStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ConformityExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ConformityIssueDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FileLink")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("HasSupplementarySchemes")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PreRegistrationId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PublicContactEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RegisteredName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ServiceName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TelephoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TradingName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("WebsiteAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PreRegistrationId");
+
+                    b.ToTable("CertificateInformation");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.Country", b =>
                 {
                     b.Property<int>("Id")
@@ -1091,6 +1238,185 @@ namespace DVSRegister.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.IdentityProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IdentityProfileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IdentityProfile");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IdentityProfileName = "L1A "
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IdentityProfileName = "L1B "
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IdentityProfileName = "L1C "
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IdentityProfileName = "L2A "
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IdentityProfileName = "L2B "
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IdentityProfileName = "L3A "
+                        },
+                        new
+                        {
+                            Id = 7,
+                            IdentityProfileName = "M1A "
+                        },
+                        new
+                        {
+                            Id = 8,
+                            IdentityProfileName = "M1B "
+                        },
+                        new
+                        {
+                            Id = 9,
+                            IdentityProfileName = "M1C "
+                        },
+                        new
+                        {
+                            Id = 10,
+                            IdentityProfileName = "M1D "
+                        },
+                        new
+                        {
+                            Id = 11,
+                            IdentityProfileName = "M2A "
+                        },
+                        new
+                        {
+                            Id = 12,
+                            IdentityProfileName = "M2B "
+                        },
+                        new
+                        {
+                            Id = 13,
+                            IdentityProfileName = "M2C "
+                        },
+                        new
+                        {
+                            Id = 14,
+                            IdentityProfileName = "M3A "
+                        },
+                        new
+                        {
+                            Id = 15,
+                            IdentityProfileName = "H1A "
+                        },
+                        new
+                        {
+                            Id = 16,
+                            IdentityProfileName = "H1B "
+                        },
+                        new
+                        {
+                            Id = 17,
+                            IdentityProfileName = "H1C "
+                        },
+                        new
+                        {
+                            Id = 18,
+                            IdentityProfileName = "H2A "
+                        },
+                        new
+                        {
+                            Id = 19,
+                            IdentityProfileName = "H2B "
+                        },
+                        new
+                        {
+                            Id = 20,
+                            IdentityProfileName = "H2C "
+                        },
+                        new
+                        {
+                            Id = 21,
+                            IdentityProfileName = "H2D "
+                        },
+                        new
+                        {
+                            Id = 22,
+                            IdentityProfileName = "H2E "
+                        },
+                        new
+                        {
+                            Id = 23,
+                            IdentityProfileName = "H3A "
+                        },
+                        new
+                        {
+                            Id = 24,
+                            IdentityProfileName = "V1A "
+                        },
+                        new
+                        {
+                            Id = 25,
+                            IdentityProfileName = "V1B "
+                        },
+                        new
+                        {
+                            Id = 26,
+                            IdentityProfileName = "V1C "
+                        },
+                        new
+                        {
+                            Id = 27,
+                            IdentityProfileName = "V1D "
+                        },
+                        new
+                        {
+                            Id = 28,
+                            IdentityProfileName = "V2A "
+                        },
+                        new
+                        {
+                            Id = 29,
+                            IdentityProfileName = "V2B "
+                        },
+                        new
+                        {
+                            Id = 30,
+                            IdentityProfileName = "V2C "
+                        },
+                        new
+                        {
+                            Id = 31,
+                            IdentityProfileName = "V2D "
+                        },
+                        new
+                        {
+                            Id = 32,
+                            IdentityProfileName = "V3A "
+                        });
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistration", b =>
                 {
                     b.Property<int>("Id")
@@ -1280,6 +1606,74 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("PreRegistrationReview");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Role");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            RoleName = "Identity Service Provider (IDSP)"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            RoleName = "Attribute Service Provider (ASP)"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            RoleName = "Orchestration Service Provider (OSP)"
+                        });
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.SupplementaryScheme", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("SchemeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SupplementaryScheme");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            SchemeName = "Right to Work"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            SchemeName = "Right to Rent"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            SchemeName = "Disclosure and Barring Service"
+                        });
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.UniqueReferenceNumber", b =>
                 {
                     b.Property<int>("Id")
@@ -1365,6 +1759,74 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoIdentityProfileMapping", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.CertificateInformation", "CertificateInformation")
+                        .WithMany("CertificateInfoIdentityProfileMappings")
+                        .HasForeignKey("CertificateInformationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.IdentityProfile", "IdentityProfile")
+                        .WithMany()
+                        .HasForeignKey("IdentityProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CertificateInformation");
+
+                    b.Navigation("IdentityProfile");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoRoleMapping", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.CertificateInformation", "CertificateInformation")
+                        .WithMany("CertificateInfoRoleMappings")
+                        .HasForeignKey("CertificateInformationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CertificateInformation");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoSupSchemeMapping", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.CertificateInformation", "CertificateInformation")
+                        .WithMany("CertificateInfoSupSchemeMappings")
+                        .HasForeignKey("CertificateInformationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.SupplementaryScheme", "SupplementaryScheme")
+                        .WithMany()
+                        .HasForeignKey("SupplementarySchemeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CertificateInformation");
+
+                    b.Navigation("SupplementaryScheme");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInformation", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.PreRegistration", "PreRegistration")
+                        .WithMany()
+                        .HasForeignKey("PreRegistrationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PreRegistration");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistrationCountryMapping", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.Country", "Country")
@@ -1416,6 +1878,15 @@ namespace DVSRegister.Data.Migrations
                         .HasForeignKey("PreRegistrationId");
 
                     b.Navigation("PreRegistration");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInformation", b =>
+                {
+                    b.Navigation("CertificateInfoIdentityProfileMappings");
+
+                    b.Navigation("CertificateInfoRoleMappings");
+
+                    b.Navigation("CertificateInfoSupSchemeMappings");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistration", b =>

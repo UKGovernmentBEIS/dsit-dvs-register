@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "CAB Service Portal";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-breadcrumbs">
+                    <ol class="govuk-breadcrumbs__list">
+                        <li class="govuk-breadcrumbs__list-item">                          
+                            @Html.ActionLink("Home", "LandingPage", "Cab", null, new { @class = "govuk-breadcrumbs__link" })
+                        </li>
+                        <li class="govuk-breadcrumbs__list-item">
+                            @Html.ActionLink("Submit certificate information", "CertificateInformationStartPage", "Cab", null, new { @class = "govuk-breadcrumbs__link" })                           
+                        </li>
+                    </ol>
+                </div>
+                <h1 class="govuk-heading-xl govuk-!-margin-top-8">Submit certificate information</h1>
+
+                <p class="govuk-body">This service is to submit certificate information for a digital identity and attribute service provider to be on the register of digital identity and attribute service providers.</p>
+
+                <p class="govuk-body">Before proceeding, please ensure that the service provider has successfully passed the pre-registration stage. To verify this, the service provider must have had their unique reference number (URN) validated through the Conformity Assessment Bodies Service.</p>
+
+                <p class="govuk-body">To start using this service, please have the following details ready: </p>
+
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>URN provided by the service provider</li>
+                </ul>
+
+
+                <a href="@Url.Action("ValidateURNForApplication", "Cab")" role="button" draggable="false" class="govuk-button govuk-button--start" aria-label="Start submit certificate information" data-module="govuk-button">
+                    Start now
+                    <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
+                        <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z" />
+                    </svg>
+                </a>             
+
+
+            </div>
+            <div class="govuk-grid-column-full">
+                <hr class="govuk-section-break govuk-section-break--visible">
+                <br/>
+                <h3 class="govuk-heading-m">Explore the topic</h3>
+                <br />
+                <a href="#" class="govuk-link govuk-!-font-weight-bold">What are the steps to publishing a digital identity and attribute service provider to the register? </a>
+                <br /><br />
+                <a href="#" class="govuk-link govuk-!-font-weight-bold">What is the unique reference number?</a>
+            </div>
+        </div>
+    </main>
+</div>

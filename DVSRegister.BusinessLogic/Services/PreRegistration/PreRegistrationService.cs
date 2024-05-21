@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.BusinessLogic.Services.PreRegistration;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
@@ -35,9 +36,8 @@ namespace DVSRegister.BusinessLogic.Services.PreAssessment
         public async Task<GenericResponse> SavePreRegistration(PreRegistrationDto preRegistrationDto)
         {
             try
-            {              
-
-                URNDto UniqueReferenceNumberDTO = URNService.GenerateURN(preRegistrationDto);              
+            {
+                URNDto UniqueReferenceNumberDTO = URNService.GenerateURN(preRegistrationDto);
                 preRegistrationDto.URN = UniqueReferenceNumberDTO.URN;
 
                 DVSRegister.Data.Entities.PreRegistration preRegistration = new DVSRegister.Data.Entities.PreRegistration();
@@ -55,13 +55,16 @@ namespace DVSRegister.BusinessLogic.Services.PreAssessment
                     PreRegistrationId = genericResponse.InstanceId
                 };
                 GenericResponse URNSaveResponse = await preRegistrationRepository.SaveURN(URN);
-                
+
 
                 genericResponse.EmailSent = await emailSender.SendEmailConfirmation(preRegistrationDto.Email, preRegistrationDto.FullName);
                 if (!string.IsNullOrEmpty(preRegistrationDto.SponsorEmail))
                 {
                     genericResponse.EmailSent = await emailSender.SendEmailConfirmation(preRegistrationDto.SponsorEmail, preRegistrationDto.SponsorFullName);
                 }
+                //Sent email to Ofdia common mail box
+                DateTime expirationdate = Convert.ToDateTime(preRegistrationDto.CreatedDate).AddDays(Constants.DaysLeftToComplete);
+                genericResponse.EmailSent = await emailSender.SendEmailConfirmationToOfdia(expirationdate.ToLocalTime().ToString("d MMM yyyy h:mm tt"));
                 return genericResponse;
             }
             catch (Exception ex)

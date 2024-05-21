@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "InformationSubmitted";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-panel govuk-panel--confirmation">
+                    <h1 class="govuk-panel__title">
+                       Information submitted
+                    </h1>
+                </div>
+                <p class="govuk-body">
+                    Your information from the service provider’s certificate has been submitted to
+                    the Office for Digital Identities and Attributes (OfDIA).
+                </p>
+                <p class="govuk-body">
+                    We have sent a confirmation of your submitted information to the following
+                    email address: 
+
+                    <b> @ViewBag.Email </b>
+                </p>
+                <h2 class="govuk-heading-m">What happens next</h2>
+                <p class="govuk-body">
+                    OfDIA will now start the review process on the certificate information you
+                    have submitted. A decision will be communicated to you within 1 week.
+                </p>
+                <p class="govuk-body">
+                    If you need help, you can contact OfDIA at <a href="{URL}" class="govuk-link">ofdiaemail@gov.uk</a>
+                </p>
+                <p class="govuk-body">
+                    You can close this page now.
+                </p>
+              
+            </div>
+        </div>
+        @using (Html.BeginForm("ReturnToService", "Cab", FormMethod.Post))
+        {
+        <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+            Return to service
+        </button>
+        }
+    </main>
+</div>
+

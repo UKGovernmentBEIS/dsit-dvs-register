@@ -1,0 +1,180 @@
+﻿@model DVSRegister.Models.CAB.DateViewModel
+@{
+    ViewData["Title"] = "CertificateConfirmityIssueDate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    bool hasError = false;
+    bool hasDayError = false;
+    bool hasMonthError = false;
+    bool hasYearError = false;
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "CertificateUploadPage", "Cab", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                <h1 class="govuk-heading-xl">
+                    Certificate of conformity issue date
+                </h1>
+                @if (ViewData.ModelState.ErrorCount >0)
+                {
+                    hasError = true;
+                    @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                    if ((Html.ViewData.ModelState.ContainsKey("ValidDate") && Html.ViewData.ModelState["ValidDate"].Errors.Count > 0))
+                    {
+                        hasDayError = true; hasMonthError = true; hasYearError = true;
+                    }
+                    if ((Html.ViewData.ModelState.ContainsKey("Day") && Html.ViewData.ModelState["Day"].Errors.Count > 0))
+                    {
+                        hasDayError = true;
+                    }
+
+                    if ((Html.ViewData.ModelState.ContainsKey("Month") && Html.ViewData.ModelState["Month"].Errors.Count > 0))
+                    {
+                        hasMonthError = true;
+                    }
+                    if ((Html.ViewData.ModelState.ContainsKey("Year") && Html.ViewData.ModelState["Year"].Errors.Count > 0))
+                    {
+                        hasYearError = true;
+                    }
+                }
+
+                @using (Html.BeginForm("SaveConfirmityIssueDate", "Cab", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    <p class="govuk-body">This must match the information on the certificate.</p> 
+
+                    @if(hasError)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <fieldset class="govuk-fieldset" role="group" aria-describedby="conformity-issue-date-hint">
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                    <h1 class="govuk-fieldset__heading">
+                                        Certificate of conformity issue date
+                                    </h1>
+                                </legend>
+                                <div id="issuedate-hint" class="govuk-hint">
+                                    Issue date cannot be greater than today
+                                </div>
+                                <p id="validdate-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.ValidDate, "", new { @class = "govuk-error-message" })
+                                </p>
+
+                                <p id="day-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.Day, "", new { @class = "govuk-error-message" })
+                                </p>
+                                <p id="month-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.Month, "", new { @class = "govuk-error-message" })
+                                </p>
+
+                                <p id="year-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.Year, "", new { @class = "govuk-error-message" })
+                                </p>
+
+                                <div class="govuk-date-input" id="conformity-issue-date">
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-issue-day">
+                                                Day
+                                            </label>
+                                            @if (hasDayError)
+                                            {
+                                                @Html.TextBoxFor(model => model.Day, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--width-2 govuk-input--error", id = "day" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.Day, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2", id = "day" })
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-issue-month">
+                                                Month
+                                            </label>
+                                            @if (hasMonthError)
+                                            {
+                                                @Html.TextBoxFor(model => model.Month, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--width-2 govuk-input--error", id = "month" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.Month, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2", id = "month" })
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-issue-year">
+                                                Year
+                                            </label>
+                                            @if (hasYearError)
+                                            {
+                                                @Html.TextBoxFor(model => model.Year, new { @class = "govuk-input govuk-date-input__input govuk-input--width-4 govuk-input--width-4 govuk-input--error", id = "year" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(model => model.Year, new { @class = "govuk-input govuk-date-input__input govuk-input--width-4", id = "year" })
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <fieldset class="govuk-fieldset" role="group" aria-describedby="conformity-issue-date-hint">
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                    <h1 class="govuk-fieldset__heading">
+                                        Certificate of conformity issue date
+                                    </h1>
+                                </legend>
+                                <div id="issuedate-hint" class="govuk-hint">
+                                    Issue date cannot be greater than today
+                                </div>                                
+
+                                <div class="govuk-date-input" id="conformity-issue-date">
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-issue-day">
+                                                Day
+                                            </label>
+                                            @Html.TextBoxFor(model => model.Day, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2", id = "day" })
+                                        </div>
+                                    </div>
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-issue-month">
+                                                Month
+                                            </label>
+                                            @Html.TextBoxFor(model => model.Month, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2", id = "month" })
+                                        </div>
+                                    </div>
+                                    <div class="govuk-date-input__item">
+                                        <div class="govuk-form-group">
+                                            <label class="govuk-label govuk-date-input__label" for="conformity-issue-year">
+                                                Year
+                                            </label>
+                                            @Html.TextBoxFor(model => model.Year, new { @class = "govuk-input govuk-date-input__input govuk-input--width-4", id = "year" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    }                    
+               
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
+                        Continue
+                    </button>
+                }
+            </div>
+        </div>
+    </main>
+</div>
+

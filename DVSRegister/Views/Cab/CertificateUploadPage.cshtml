@@ -1,0 +1,93 @@
+﻿@model DVSRegister.Models.CAB.CertificateFileViewModel
+
+@{
+    ViewData["Title"] = "CAB Service Portal";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+}
+@{
+    bool hasError = false;
+}
+
+@using (Html.BeginForm("SaveCertificate", "Cab", FormMethod.Post, new { enctype ="multipart/form-data"}))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    bool hasSchemes = ViewBag.HasSupplementarySchemes ?? false;
+    <div class="govuk-width-container">
+        @if (hasSchemes == true)
+        {
+            <nav>@Html.ActionLink("Back", "SelectSupplementarySchemes", "Cab", null, new { @class = "govuk-back-link" })</nav>
+        }
+        else
+        {
+            <nav>@Html.ActionLink("Back", "HasSupplementaryScheme", "Cab", null, new { @class = "govuk-back-link" })</nav>
+        }
+
+        <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                   
+                    @if (Html.ViewData?.ModelState.ContainsKey("File") == true && Html.ViewData.ModelState["File"].Errors.Count > 0)
+                    {
+                        hasError = true;
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("File", Html.ViewData.ModelState["File"]?.Errors))
+                    }
+                    <h1 class="govuk-heading-xl"> Upload the digital identity and attribute service provider’s certificate of conformity</h1>
+
+                    <p class="govuk-body">You must make sure that you name the file correctly. Please use the following standardised format: Certificate-DateOfIssue-TradingName-ServiceName. </p>
+
+                    <p class="govuk-body">If the date of issue of the certificate for is the 15 of June 2023, you should use a DDMMYY format and enter 150623.</p>
+
+                    <p class="govuk-body govuk-!-font-weight-bold">Upload the digital identity and attribute service provider’s certificate of conformity</p>
+
+                    @if (hasError)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <label class="govuk-label" for="file-upload">
+                                Upload a file
+                            </label>
+                            <p id="file-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.File, "", new { @class = "govuk-error-message" })
+                            </p>
+
+                            @Html.TextBoxFor(m => m.File, new { type = "file", @class = "govuk-file-upload", id = "file", name = "file-name" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <label class="govuk-label" for="file-upload">
+                                Upload a file
+                            </label>
+                            @Html.TextBoxFor(m => m.File, new { type = "file", @class = "govuk-file-upload", id = "file", name = "file-name" })
+                        </div>
+                    }
+
+
+                    @if (ViewData.Model?.FileUploadedSuccessfully == true)
+                    {
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    1 document
+                                </dt>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dd class="govuk-summary-list__value">
+                                    @Model.FileName
+                                </dd>
+                                <dd class="govuk-summary-list__actions">
+                                    <a class="govuk-link" href="#">Remove<span class="govuk-visually-hidden"> name</span></a>
+                                </dd>
+                            </div>
+                        </dl>
+                        @Html.HiddenFor(m => m.FileUploadedSuccessfully)
+                    }
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+}

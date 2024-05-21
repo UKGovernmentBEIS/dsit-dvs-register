@@ -1,10 +1,14 @@
-﻿using DVSRegister.BusinessLogic;
+﻿using DVSAdmin.BusinessLogic.Services;
+using DVSRegister.BusinessLogic;
+using DVSRegister.BusinessLogic.Services;
+using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.PreAssessment;
 using DVSRegister.BusinessLogic.Services.PreRegistration;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data;
+using DVSRegister.Data.CAB;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +36,9 @@ namespace DVSRegister
             }
             services.AddControllersWithViews();
             string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));
+
+
+            
 
             services.AddDbContext<DVSRegisterDbContext>(opt =>
                 opt.UseNpgsql(connectionString));
@@ -66,6 +73,27 @@ namespace DVSRegister
             services.AddScoped<IPreRegistrationRepository, PreRegistrationRepository>();
             services.AddScoped<IPreRegistrationService, PreRegistrationService>();
             services.AddScoped<IURNService, URNService>();
+            services.AddScoped<ICabService, CabService>();
+            services.AddScoped<ISignUpService, SignUpService>();
+            services.AddScoped<ICabRepository, CabRepository>();
+            services.AddScoped<IBucketService, BucketService>(opt =>
+            {
+                // TODO: uncomment below lines once aws provisioned
+                //string bucketName = string.Format(configuration.GetValue<string>("BucketName"));
+                //string accessKey = string.Format(configuration.GetValue<string>("AWSAccessKey"));
+                //string password = string.Format(configuration.GetValue<string>("AWSSecretPassword"));
+                //return new BucketService(bucketName, accessKey, password);
+                return new BucketService("", "", ""); // TODO: remove this line once aws provisioned
+            });
+            services.AddScoped<IAVService, AVService>();
+            services.AddScoped(opt =>
+            {
+                string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));
+                string clientId = string.Format(configuration.GetValue<string>("ClientId")); ;
+                string region = string.Format(configuration.GetValue<string>("Region"));
+                return new CognitoClient(userPoolId, clientId, region);
+            });
+
         }
         public void ConfigureAutomapperServices(IServiceCollection services)
         {
