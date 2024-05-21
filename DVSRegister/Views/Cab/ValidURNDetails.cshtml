@@ -55,10 +55,10 @@
                 </p>
                 <p class="govuk-body">
                     When you have completed the certification process please return to this
-                    portal to <a href="{URL}" class="govuk-link"> submit certificate information for a digital identity and attribute service provider </a>
+                    portal to  @Html.ActionLink("submit certificate information for a digital identity and attribute service provider", "LandingPage", "Cab", null, new { @class = "govuk-link" }) 
+                    submit certificate information for a digital identity and attribute service provider </a>
                     to be on the register of digital identity and attribute service providers.
-                </p>
-                
+                </p>                
 
                 <a href="@Url.Action("LandingPage", "Cab")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                    Return to service
