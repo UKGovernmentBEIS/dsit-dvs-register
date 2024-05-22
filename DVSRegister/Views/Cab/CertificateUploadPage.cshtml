@@ -29,6 +29,7 @@
                     @if (Html.ViewData?.ModelState.ContainsKey("File") == true && Html.ViewData.ModelState["File"].Errors.Count > 0)
                     {
                         hasError = true;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
                                  new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("File", Html.ViewData.ModelState["File"]?.Errors))
                     }
@@ -44,7 +45,7 @@
                     {
                         <div class="govuk-form-group govuk-form-group--error">
                             <label class="govuk-label" for="file-upload">
-                                Upload a file
+                                This file should be in PDF format and no bigger than 25MB
                             </label>
                             <p id="file-error" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.File, "", new { @class = "govuk-error-message" })
@@ -57,7 +58,7 @@
                     {
                         <div class="govuk-form-group">
                             <label class="govuk-label" for="file-upload">
-                                Upload a file
+                                This file should be in PDF format and no bigger than 25MB
                             </label>
                             @Html.TextBoxFor(m => m.File, new { type = "file", @class = "govuk-file-upload", id = "file", name = "file-name" })
                         </div>
@@ -77,7 +78,8 @@
                                     @Model.FileName
                                 </dd>
                                 <dd class="govuk-summary-list__actions">
-                                    <a class="govuk-link" href="#">Remove<span class="govuk-visually-hidden"> name</span></a>
+                                    <a class="govuk-link" href="#" aria-label="Remove service provider’s certificate of conformity ">Remove<span class="govuk-visually-hidden"> name</span></a>
+                                    
                                 </dd>
                             </div>
                         </dl>

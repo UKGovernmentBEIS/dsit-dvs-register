@@ -3,6 +3,9 @@
     ViewData["Title"] = "Service Name";
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
 }
+@{
+    bool isValid = true;
+}
 @using (Html.BeginForm("ServiceNameValidation", "Cab", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
@@ -14,23 +17,47 @@
                     <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s name of service </h1>
                     @if (Html.ViewData?.ModelState.ContainsKey("ServiceName") == true && Html.ViewData.ModelState["ServiceName"].Errors.Count > 0)
                     {
+                        isValid = false;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
                                  new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ServiceName", Html.ViewData.ModelState["ServiceName"]?.Errors))
 
                     }
                     <p class="govuk-body">This must match the service name on the certificate.</p>
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("ServiceName") && Html.ViewData.ModelState["ServiceName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
-                        <h1 class="govuk-label-wrapper">
-                            <label class="govuk-label govuk-label--m" for="account-number">
-                                Name of service
-                            </label>
-                        </h1>
-                        <div id="event-name-hint" class="govuk-hint">
-                            Identity Verification
+                    @if(!isValid)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <h1 class="govuk-label-wrapper">
+                                <label class="govuk-label govuk-label--m" for="servicename">
+                                    Name of service
+                                </label>
+                            </h1>
+                            <div id="servicename-hint" class="govuk-hint">
+                                Identity Verification
+                            </div>
+                            <p id="servicename-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.ServiceName, "", new { @class = "govuk-error-message" })
+                            </p>
+                            @Html.TextBoxFor(m => m.ServiceName, new { @class = "govuk-input govuk-input--error govuk-input govuk-!-width-three-quarters", id = "servicename", name = "servicename-name", aria_describedby = "servicename-error" })
                         </div>
-                        @Html.ValidationMessageFor(m => m.ServiceName, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.ServiceName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "event-name", name = "eventName" })
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <h1 class="govuk-label-wrapper">
+                                <label class="govuk-label govuk-label--m" for="servicename">
+                                    Name of service
+                                </label>
+                            </h1>
+                            <div id="servicename-hint" class="govuk-hint">
+                                Identity Verification
+                            </div>
+
+                            @Html.TextBoxFor(m => m.ServiceName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "servicename", name = "servicename-name", aria_describedby = "servicename-hint" })
+                        </div>
+                    }
+
+                    
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Continue
                     </button>

@@ -9,6 +9,7 @@ using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.CommonUtility;
 using Newtonsoft.Json;
 using DVSRegister.CommonUtility.Email;
+using DVSRegister.Models;
 
 
 namespace DVSRegister.Controllers
@@ -476,9 +477,7 @@ namespace DVSRegister.Controllers
         public IActionResult SaveHasSupplementaryScheme(CertificateInfoSummaryViewModel viewModel)
         {
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
-            bool fromSummaryPage = viewModel.FromSummaryPage;
-            //if (viewModel.HasSupplementarySchemes == null)
-            //    ModelState.AddModelError("HasSupplementarySchemes", Constants.SupplementarySchemeErrorMessage);
+            bool fromSummaryPage = viewModel.FromSummaryPage;           
             if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
             {
                 summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
@@ -738,13 +737,23 @@ namespace DVSRegister.Controllers
         /// <returns></returns>
         [HttpGet("submit-certificate-information/information-submitted")]
         public async Task<IActionResult> InformationSubmitted()
-        {
+        {            
             string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+           
+            HttpContext?.Session.Remove("CertificateInfoSummary");
+            if(string.IsNullOrEmpty(email))
+            {
+                email = "user@dsit.gov.uk";
+            }
             ViewBag.Email = email;
-            bool emailSent = await emailSender.SendEmailCabInformationSubmitted(email, email);
-            if (emailSent)
-                return View();
-            else return RedirectToAction(Constants.CabRegistrationErrorPath);
+            await emailSender.SendEmailCabInformationSubmitted(email, email);
+            return View();
+            //TODO: uncomment after audit check
+            //bool emailSent = true;
+            ////bool emailSent = await emailSender.SendEmailCabInformationSubmitted(email, email);
+            //if (emailSent)
+            //    return View();
+            //else return RedirectToAction(Constants.CabRegistrationErrorPath);
         }
 
         /// <summary>

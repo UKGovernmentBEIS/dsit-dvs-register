@@ -3,6 +3,9 @@
     ViewData["Title"] = "HasSupplementaryScheme";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+@{
+    bool isvalid = true;
+}
 
 @using (Html.BeginForm("SaveHasSupplementaryScheme", "Cab", FormMethod.Post))
 {
@@ -16,30 +19,60 @@
                     </h1>
                     @if (Html.ViewData?.ModelState.ContainsKey("HasSupplementarySchemes") == true && Html.ViewData.ModelState["HasSupplementarySchemes"].Errors.Count > 0)
                     {
+                        isvalid = false;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
                                  new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("RegisteredName", Html.ViewData.ModelState["HasSupplementarySchemes"]?.Errors))
 
                     }
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("HasSupplementarySchemes") && Html.ViewData.ModelState["HasSupplementarySchemes"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
-                        <fieldset class="govuk-fieldset" aria-describedby="hassupplementaryschemes-hint">
 
-                            @Html.ValidationMessageFor(m => m.HasSupplementarySchemes, "", new { @class = "govuk-error-message", id = "hassupplementaryschemes-error" })
-                            <div class="govuk-radios" data-module="govuk-radios">
-                                <div class="govuk-radios__item">
-                                    @Html.RadioButtonFor(m => m.HasSupplementarySchemes, true, new { @id = "hassupplementaryschemes-yes", @class = "govuk-radios__input" })
-                                    <label class="govuk-label govuk-radios__label" for="hassupplementaryschemes-yes">
-                                        Yes
-                                    </label>
+                    @if(!isvalid)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <fieldset class="govuk-fieldset">
+
+                                <p id="hassupplementaryschemes-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.HasSupplementarySchemes, "", new { @class = "govuk-error-message" })
+                                </p>                              
+                                <div class="govuk-radios" data-module="govuk-radios">
+                                    <div class="govuk-radios__item">
+                                        @Html.RadioButtonFor(m => m.HasSupplementarySchemes, true, new { @id = "hassupplementaryschemes-yes", @class = "govuk-radios__input", @aria_describedby = "hassupplementaryschemes-error" })
+                                        <label class="govuk-label govuk-radios__label" for="hassupplementaryschemes-yes">
+                                            Yes
+                                        </label>
+                                    </div>
+                                    <div class="govuk-radios__item">
+                                        @Html.RadioButtonFor(m => m.HasSupplementarySchemes, false, new { @id = "hassupplementaryschemes-no", @class = "govuk-radios__input", @aria_describedby = "hassupplementaryschemes-error" })
+                                        <label class="govuk-label govuk-radios__label" for="hassupplementaryschemes-no">
+                                            No
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="govuk-radios__item">
-                                    @Html.RadioButtonFor(m => m.HasSupplementarySchemes, false, new { @id = "hassupplementaryschemes-no", @class = "govuk-radios__input" })
-                                    <label class="govuk-label govuk-radios__label" for="hassupplementaryschemes-no">
-                                        No
-                                    </label>
+                            </fieldset>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <fieldset class="govuk-fieldset" aria-describedby="hassupplementaryschemes-hint">                               
+                                <div class="govuk-radios" data-module="govuk-radios">
+                                    <div class="govuk-radios__item">
+                                        @Html.RadioButtonFor(m => m.HasSupplementarySchemes, true, new { @id = "hassupplementaryschemes-yes", @class = "govuk-radios__input" })
+                                        <label class="govuk-label govuk-radios__label" for="hassupplementaryschemes-yes">
+                                            Yes
+                                        </label>
+                                    </div>
+                                    <div class="govuk-radios__item">
+                                        @Html.RadioButtonFor(m => m.HasSupplementarySchemes, false, new { @id = "hassupplementaryschemes-no", @class = "govuk-radios__input" })
+                                        <label class="govuk-label govuk-radios__label" for="hassupplementaryschemes-no">
+                                            No
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                        </fieldset>
-                    </div>
+                            </fieldset>
+                        </div>
+                    }
+
                     <button type="submit" class="govuk-button govuk-!-margin-top-2">Continue</button>
                 </div>
             </div>
