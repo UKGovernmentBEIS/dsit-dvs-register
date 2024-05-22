@@ -18,7 +18,7 @@
                         foreach (var error in entry.Value.Errors)
                         {
                             <li>                                
-                                <a href="#@(entry.Key.ToLower())-error"><span class="govuk-visually-hidden">Error: </span> @error.ErrorMessage</a>
+                                <a href="#@(entry.Key.ToLower())-error"><span class="govuk-visually-hidden">Error: </span>@error.ErrorMessage</a>
                             </li>
                         }
                     }
