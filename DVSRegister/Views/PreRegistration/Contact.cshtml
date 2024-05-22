@@ -1,6 +1,6 @@
 ﻿@model DVSRegister.Models.ContactViewModel
 @{
-    ViewData["Title"] = "Contact";
+    ViewData["Title"] = "Provide contact details of the application sponsor";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -11,6 +11,11 @@
     <div class="govuk-width-container">
 
         @Html.ActionLink("Back", "SelectApplicationSponsor", "PreRegistration", null, new { @class = "govuk-back-link" })
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            ViewData["Title"] = "Error: " + ViewData["Title"];
+            @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+        }
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -27,44 +32,99 @@
                         </div>
                     </details>
 
+                    @if (Html.ViewData.ModelState.ContainsKey("FullName") && Html.ViewData.ModelState["FullName"].Errors.Count > 0)
+                    {
 
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("FullName") && Html.ViewData.ModelState["FullName"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
-                        <label class="govuk-label govuk-label--m" for="event-name">
-                            Full name of application sponsor
-                        </label>
-                        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.FullName, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                    </div>
-                  
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <label class="govuk-label govuk-label--m" for="fullname">
+                                Full name of application sponsor
+                            </label>
+                            <p class="govuk-error-message" id="fullname-error">
+                                <span class="govuk-visually-hidden">Error: </span>@Html.ValidationMessageFor(m => m.FullName, "", new { @class = "govuk-error-message" })
+                            </p>
+                            @Html.TextBoxFor(m => m.FullName, new { @class = "govuk-input govuk-input--error", id = "fullname", name = "eventName", aria_describedby = "fullname-error" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <label class="govuk-label govuk-label--m" for="fullname">
+                                Full name of application sponsor
+                            </label>
+
+                            @Html.TextBoxFor(m => m.FullName, new { @class = "govuk-input", id = "sfullname", name = "eventName" })
+                        </div>
+                    }
+
+                    @if (Html.ViewData.ModelState.ContainsKey("JobTitle") && Html.ViewData.ModelState["JobTitle"].Errors.Count > 0)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <label class="govuk-label govuk-label--m" for="jobtitle">
+                                Job title of application sponsor
+                            </label>
+                            <p class="govuk-error-message" id="jobtitle-error">
+                                <span class="govuk-visually-hidden">Error: </span>@Html.ValidationMessageFor(m => m.JobTitle, "", new { @class = "govuk-error-message" })
+                            </p>
+                            @Html.TextBoxFor(m => m.JobTitle, new { @class = "govuk-input govuk-input--error", id = "jobtitle", name = "eventName", aria_describedby = "jobtitle-error" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <label class="govuk-label govuk-label--m" for="jobtitle">
+                                Job title of application sponsor
+                            </label>
+
+                            @Html.TextBoxFor(m => m.JobTitle, new { @class = "govuk-input", id = "jobtitle", name = "eventName" })
+                        </div>
+                    }
 
 
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("JobTitle") && Html.ViewData.ModelState["JobTitle"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
-                        <label class="govuk-label govuk-label--m" for="event-name">
-                            Job title of application sponsor
-                        </label>
-                        @Html.ValidationMessageFor(m => m.JobTitle, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.JobTitle, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                    </div>
+                    @if (Html.ViewData.ModelState.ContainsKey("Email") && Html.ViewData.ModelState["Email"].Errors.Count > 0)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <label class="govuk-label govuk-label--m" for="email">
+                                Email address of application sponsor
+                            </label>
+                            <p class="govuk-error-message" id="email-error">
+                                <span class="govuk-visually-hidden">Error: </span>@Html.ValidationMessageFor(m => m.Email, "", new { @class = "govuk-error-message" })
+                            </p>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input govuk-input--error", id = "email", name = "eventName", aria_describedby = "email-error" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <label class="govuk-label govuk-label--m" for="email">
+                                Email address of application sponsor
+                            </label>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input", id = "email", name = "eventName" })
+                        </div>
+                    }
 
 
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("Email") && Html.ViewData.ModelState["Email"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
-                        <label class="govuk-label govuk-label--m" for="event-name">
-                            Email address of application sponsor
-                        </label>
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input", id = "event-name", name = "eventName" })
-                    </div>
-                  
+                    @if (Html.ViewData.ModelState.ContainsKey("TelephoneNumber") && Html.ViewData.ModelState["TelephoneNumber"].Errors.Count > 0)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <label class="govuk-label govuk-label--m" for="telephonenumber">
+                                Telephone number of application sponsor
+                            </label>
+                            <p class="govuk-error-message" id="telephonenumber-error">
+                                <span class="govuk-visually-hidden">Error: </span>@Html.ValidationMessageFor(m => m.TelephoneNumber, "", new { @class = "govuk-error-message" })
+                            </p>
+                            @Html.TextBoxFor(m => m.TelephoneNumber, new { @class = "govuk-input govuk-input--error govuk-input--width-10", id = "telephonenumber", name = "eventName", aria_describedby = "telephonenumber-error" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <label class="govuk-label govuk-label--m" for="telephonenumber">
+                                Telephone number of application sponsor
+                            </label>
 
-
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("TelephoneNumber") && Html.ViewData.ModelState["TelephoneNumber"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
-                        <label class="govuk-label govuk-label--m" for="event-name">
-                            Telephone number of application sponsor
-                        </label>
-                        @Html.ValidationMessageFor(m => m.TelephoneNumber, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.TelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "event-name", name = "eventName" })
-                    </div>
-                
+                            @Html.TextBoxFor(m => m.TelephoneNumber, new { @class = "govuk-input govuk-input--width-10", id = "telephonenumber", name = "eventName" })
+                        </div>
+                    }
 
 
                     <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
