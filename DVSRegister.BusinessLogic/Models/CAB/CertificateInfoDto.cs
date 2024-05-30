@@ -24,7 +24,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime ConformityIssueDate { get; set; }
         public DateTime ConformityExpiryDate { get; set; }
         public CertificateInfoStatusEnum CertificateInfoStatus { get; set; }
-        public DateTime? CreatedDate { get; set; }        
-        public DateTime? ModifiedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? ModifiedDate { get; set; }      
     }
 }

@@ -1,20 +1,21 @@
-﻿using DVSRegister.Extensions;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Models.PreRegistration;
+using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Email;
+using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
-using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.CommonUtility.Models;
-using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.BusinessLogic.Models.PreRegistration;
-using DVSRegister.CommonUtility;
 using Newtonsoft.Json;
-using DVSRegister.CommonUtility.Email;
-using DVSRegister.Models;
+using System.Security.Claims;
 
 
 namespace DVSRegister.Controllers
 {
     [Route("cab-service")]
+    [ValidCognitoToken]
     public class CabController : Controller
     {
     
@@ -49,7 +50,7 @@ namespace DVSRegister.Controllers
 
         [HttpGet("check-unique-reference-number")]
         public IActionResult CheckURNStartPage()
-        {
+        {           
             return View();
         }
 
@@ -718,7 +719,12 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveSummaryAndSubmit()
         {
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
-            CertificateInfoDto certificateInfoDto = MapViewModelToDto(summaryViewModel);
+            string cab = string.Empty;
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
+            if(profileClaim != null)
+                cab = profileClaim.Value;
+            CertificateInfoDto certificateInfoDto = MapViewModelToDto(summaryViewModel, cab);
             GenericResponse genericResponse = await cabService.SaveCertificateInformation(certificateInfoDto);
             if (genericResponse.Success)
             {
@@ -737,23 +743,13 @@ namespace DVSRegister.Controllers
         /// <returns></returns>
         [HttpGet("submit-certificate-information/information-submitted")]
         public async Task<IActionResult> InformationSubmitted()
-        {            
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
-           
-            HttpContext?.Session.Remove("CertificateInfoSummary");
-            if(string.IsNullOrEmpty(email))
-            {
-                email = "user@dsit.gov.uk";
-            }
+        {
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;            
+            HttpContext?.Session.Remove("CertificateInfoSummary");           
             ViewBag.Email = email;
             await emailSender.SendEmailCabInformationSubmitted(email, email);
             return View();
-            //TODO: uncomment after audit check
-            //bool emailSent = true;
-            ////bool emailSent = await emailSender.SendEmailCabInformationSubmitted(email, email);
-            //if (emailSent)
-            //    return View();
-            //else return RedirectToAction(Constants.CabRegistrationErrorPath);
+           
         }
 
         /// <summary>
@@ -792,7 +788,7 @@ namespace DVSRegister.Controllers
 
         }
 
-        private CertificateInfoDto MapViewModelToDto(CertificateInfoSummaryViewModel model)
+        private CertificateInfoDto MapViewModelToDto(CertificateInfoSummaryViewModel model, string cab)
         {
             CertificateInfoDto certificateInfoDto = new CertificateInfoDto();
             ICollection<CertificateInfoRoleMappingDto> certificateInfoRoleMappings = new List<CertificateInfoRoleMappingDto>();
@@ -828,6 +824,7 @@ namespace DVSRegister.Controllers
             certificateInfoDto.ConformityExpiryDate = Convert.ToDateTime(model.ConformityExpiryDate);
             certificateInfoDto.CreatedDate = DateTime.UtcNow;
             certificateInfoDto.CertificateInfoStatus = CertificateInfoStatusEnum.Received;
+            certificateInfoDto.CreatedBy = cab;
             return certificateInfoDto;
 
         }
