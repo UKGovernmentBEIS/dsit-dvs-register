@@ -1,7 +1,9 @@
-﻿using DVSAdmin.BusinessLogic.Services;
+﻿using Amazon.CognitoIdentityProvider.Model;
+using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
+using static QRCoder.PayloadGenerator;
 
 namespace DVSRegister.BusinessLogic.Services
 {
@@ -16,7 +18,7 @@ namespace DVSRegister.BusinessLogic.Services
             _emailSender = emailSender;
 		}
 
-        public async Task<string> ConfirmMFAToken(string session, string email, string token)
+        public async Task<AuthenticationResultType> ConfirmMFAToken(string session, string email, string token)
         {
             return await _cognitoClient.ConfirmMFAToken(session, email, token);
         }
@@ -49,6 +51,11 @@ namespace DVSRegister.BusinessLogic.Services
                 await _emailSender.SendEmailCabFailedLoginAttempt(email, Helper.GetLocalDateTime(DateTime.UtcNow, "dd MMM yyyy h:mm tt"));
             }
             return response;
+        }
+
+        public async void SignOut(string accesssToken)
+        {
+            await _cognitoClient.SignOutUserAsync(accesssToken);
         }
     }
 }

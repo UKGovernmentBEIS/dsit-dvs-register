@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using DVSAdmin.BusinessLogic.Services;
 using System.Reflection.Metadata;
 using DVSRegister.CommonUtility;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace DVSRegister.Controllers
 {
@@ -106,9 +107,10 @@ namespace DVSRegister.Controllers
                 string Email = HttpContext?.Session.Get<string>("Email");
                 var mfaConfirmationCheckResponse = await _signUpService.ConfirmMFAToken(Session, Email, loginPageViewModel.MFACode);
 
-                if (mfaConfirmationCheckResponse.Length > 0)
+                if (mfaConfirmationCheckResponse.IdToken.Length > 0)
                 {
-                    HttpContext?.Session.Set("IdToken", mfaConfirmationCheckResponse);
+                    HttpContext?.Session.Set("IdToken", mfaConfirmationCheckResponse.IdToken);
+                    HttpContext?.Session.Set("AccessToken", mfaConfirmationCheckResponse.AccessToken);
                     return RedirectToAction("LandingPage", "Cab");
                 }
                 else
@@ -211,6 +213,15 @@ namespace DVSRegister.Controllers
                 return View("MFARegistration", viewModel);
             }
             
+        }
+
+        [HttpGet("sign-out")]
+        public async Task<IActionResult> CabSignOut()
+        {
+            string accesstoken = HttpContext?.Session.Get<string>("AccessToken");
+            HttpContext?.Session.Clear();
+            _signUpService.SignOut(accesstoken);        
+            return RedirectToAction("LoginPage", "Login");
         }
     }
 }

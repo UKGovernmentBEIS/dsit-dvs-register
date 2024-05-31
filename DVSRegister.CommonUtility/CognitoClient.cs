@@ -175,7 +175,7 @@ public class CognitoClient
         }
     }
 
-    public async Task<string> ConfirmMFAToken(string session, string email, string token)
+    public async Task<AuthenticationResultType> ConfirmMFAToken(string session, string email, string token)
     {
         var challengeResponse = new RespondToAuthChallengeRequest
         {
@@ -193,12 +193,12 @@ public class CognitoClient
         {
             var response = await _provider.RespondToAuthChallengeAsync(challengeResponse);
 
-            return response.AuthenticationResult.IdToken;
+            return response.AuthenticationResult;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error in logging in {ex.Message} ");
-            return "";
+            return null;
         }
     }
 
