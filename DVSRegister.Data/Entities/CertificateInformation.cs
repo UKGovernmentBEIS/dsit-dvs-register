@@ -32,5 +32,6 @@ namespace DVSRegister.Data.Entities
         public DateTime ConformityIssueDate { get; set; }
         public DateTime ConformityExpiryDate { get; set; }
         public CertificateInfoStatusEnum CertificateInfoStatus { get;set; }
+        public string? SubmittedCAB { get; set; }
     }
 }

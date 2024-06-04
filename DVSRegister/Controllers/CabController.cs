@@ -718,13 +718,14 @@ namespace DVSRegister.Controllers
         [HttpPost("submit-certificate-information/check-your-answers")]
         public async Task<IActionResult> SaveSummaryAndSubmit()
         {
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
             string cab = string.Empty;
-            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            var identity = HttpContext?.User.Identity as ClaimsIdentity;
             var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
             if(profileClaim != null)
                 cab = profileClaim.Value;
-            CertificateInfoDto certificateInfoDto = MapViewModelToDto(summaryViewModel, cab);
+            CertificateInfoDto certificateInfoDto = MapViewModelToDto(summaryViewModel, cab, email);
             GenericResponse genericResponse = await cabService.SaveCertificateInformation(certificateInfoDto);
             if (genericResponse.Success)
             {
@@ -788,7 +789,7 @@ namespace DVSRegister.Controllers
 
         }
 
-        private CertificateInfoDto MapViewModelToDto(CertificateInfoSummaryViewModel model, string cab)
+        private CertificateInfoDto MapViewModelToDto(CertificateInfoSummaryViewModel model, string cab, string email)
         {
             CertificateInfoDto certificateInfoDto = new CertificateInfoDto();
             ICollection<CertificateInfoRoleMappingDto> certificateInfoRoleMappings = new List<CertificateInfoRoleMappingDto>();
@@ -824,7 +825,8 @@ namespace DVSRegister.Controllers
             certificateInfoDto.ConformityExpiryDate = Convert.ToDateTime(model.ConformityExpiryDate);
             certificateInfoDto.CreatedDate = DateTime.UtcNow;
             certificateInfoDto.CertificateInfoStatus = CertificateInfoStatusEnum.Received;
-            certificateInfoDto.CreatedBy = cab;
+            certificateInfoDto.CreatedBy = email;
+            certificateInfoDto.SubmittedCAB = cab;
             return certificateInfoDto;
 
         }
