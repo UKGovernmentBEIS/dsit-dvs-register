@@ -12,7 +12,7 @@ namespace DVSRegister.Data.Entities
 
         [ForeignKey("CetificateReview")]
         public int CetificateReviewId { get; set; }
-        public CetificateReview CetificateReview { get; set; }
+        public CertificateReview CetificateReview { get; set; }
 
         [ForeignKey("CertificateReviewRejectionReason")]
         public int CertificateReviewRejectionReasonId { get; set; }

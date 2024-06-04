@@ -4,9 +4,9 @@ using DVSRegister.CommonUtility.Models.Enums;
 
 namespace DVSRegister.Data.Entities
 {
-    public class CetificateReview : BaseEntity
+    public class CertificateReview : BaseEntity
     {
-        public CetificateReview() { }
+        public CertificateReview() { }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
