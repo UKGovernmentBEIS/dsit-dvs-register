@@ -24,7 +24,7 @@ namespace DVSRegister.Data
         public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }
         public DbSet<CertificateInfoSupSchemeMapping> CertificateInfoSupSchemeMappings { get; set; }
 
-        public DbSet<CetificateReview> CetificateReview { get; set; }
+        public DbSet<CertificateReview> CertificateReview { get; set; }
         public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; }
         public DbSet<CertificateReviewRejectionReasonMappings> CertificateReviewRejectionReasonMappings { get; set; }
 
