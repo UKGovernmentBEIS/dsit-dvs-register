@@ -35,6 +35,12 @@ namespace DVSRegister.Middleware
             catch (Exception ex)
             {
                 logger.LogError($"An unexpected error occurred: {ex}");
+                logger.LogError($"Stacktrace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("Inner Exception");
+                    Console.WriteLine(String.Concat(ex.InnerException.StackTrace, ex.InnerException.Message));
+                }
                 // Redirect to error page 
                 if (requestPath.Contains("pre-registration"))
                     httpContext.Response.Redirect(Constants.PreRegistrationErrorPath);
