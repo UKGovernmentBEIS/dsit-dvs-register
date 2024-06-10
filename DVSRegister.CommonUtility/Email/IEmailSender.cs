@@ -10,6 +10,7 @@ namespace DVSRegister.CommonUtility.Email
         public Task<bool> SendEmailCabAccountCreated(string emailAddress, string recipientName);
         public Task<bool> SendEmailCabFailedLoginAttempt(string emailAddress, string timestamp);
         public Task<bool> SendEmailCabInformationSubmitted(string emailAddress, string recipientName);
+        public Task<bool> SendCertificateInfoSubmittedToDSIT();
 
     }
 }

@@ -155,5 +155,22 @@ namespace DVSRegister.CommonUtility.Email
             return await SendEmail(emailModel);
         }
 
+        public async Task<bool> SendCertificateInfoSubmittedToDSIT()
+        {
+            var template = govUkNotifyConfig.CabSubmittedDSITEmailTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.LoginLink,  govUkNotifyConfig.LoginLink}
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                TemplateId = template.Id,
+                EmailAddress =  govUkNotifyConfig.OfDiaEmailId,
+                Personalisation = personalisation
+
+            };
+            return await SendEmail(emailModel);
+        }
     }
 }
