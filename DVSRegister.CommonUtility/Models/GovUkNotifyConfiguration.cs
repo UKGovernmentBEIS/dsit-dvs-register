@@ -15,6 +15,7 @@
         public CabFailedLoginAttemptTemplate CabFailedLoginAttemptTemplate { get; set; }
 
         public CabInformationSubmittedTemplate CabInformationSubmittedTemplate { get; set; }
-        public CabSignUpActivationTemplate CabSignUpActivationTemplate { get; set; }    
+        public CabSignUpActivationTemplate CabSignUpActivationTemplate { get; set; }  
+        public CabSubmittedDSITEmailTemplate CabSubmittedDSITEmailTemplate { get; set; }
     }
 }

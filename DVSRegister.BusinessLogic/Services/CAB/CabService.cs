@@ -54,6 +54,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             CertificateInformation certificateInformation = new CertificateInformation();
             automapper.Map(certificateInfo, certificateInformation);
             GenericResponse genericResponse = await cabRepository.SaveCertificateInformation(certificateInformation);
+            genericResponse.EmailSent = await emailSender.SendCertificateInfoSubmittedToDSIT();
             return genericResponse;
         }
 
