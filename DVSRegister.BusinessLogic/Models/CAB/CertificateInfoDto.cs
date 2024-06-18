@@ -5,14 +5,9 @@ namespace DVSRegister.BusinessLogic.Models.CAB
     public class CertificateInfoDto
     {       
         public int Id { get; set; }
-      
-        public int PreRegistrationId { get; set; }       
-        public string RegisteredName { get; set; }
-        public string TradingName { get; set; }
-        public string PublicContactEmail { get; set; }
-        public string TelephoneNumber { get; set; }
-        public string WebsiteAddress { get; set; }
-        public string Address { get; set; }
+
+        public int ProviderId { get; set; }
+        public ProviderDto Provider { get; set; }
         public string ServiceName { get; set; }
         public ICollection<CertificateInfoRoleMappingDto> CertificateInfoRoleMappings { get; set; }
         public ICollection<CertificateInfoIdentityProfileMappingDto> CertificateInfoIdentityProfileMappings { get; set; }

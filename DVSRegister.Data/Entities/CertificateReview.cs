@@ -19,6 +19,10 @@ namespace DVSRegister.Data.Entities
         public int CertificateInformationId { get; set; }
         public CertificateInformation CertificateInformation { get; set; }
 
+        [ForeignKey("Provider")]
+        public int ProviderId { get; set; }
+        public Provider Provider { get; set; }
+
         public bool IsCabLogoCorrect { get; set; }
         public bool IsCabDetailsCorrect { get; set; }
         public bool IsProviderDetailsCorrect { get; set; }

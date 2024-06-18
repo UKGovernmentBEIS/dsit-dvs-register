@@ -27,6 +27,7 @@ namespace DVSRegister.Data
         public DbSet<CertificateReview> CertificateReview { get; set; }
         public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; }
         public DbSet<CertificateReviewRejectionReasonMappings> CertificateReviewRejectionReasonMappings { get; set; }
+        public DbSet<Provider> Provider { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
