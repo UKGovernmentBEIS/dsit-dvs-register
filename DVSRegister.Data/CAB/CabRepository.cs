@@ -16,18 +16,40 @@ namespace DVSRegister.Data.CAB
             this.context = context;
             this.logger=logger;
         }
-        public async Task<GenericResponse> SaveCertificateInformation(CertificateInformation certificateInformation)
+        public async Task<GenericResponse> SaveCertificateInformation(Provider provider)
         {
 
             GenericResponse genericResponse = new GenericResponse();
             using var transaction = context.Database.BeginTransaction();
             try
             {
-                var entity = await context.CertificateInformation.AddAsync(certificateInformation);
-                await context.SaveChangesAsync();
+                var existingProvider = await context.Provider.Include(p => p.CertificateInformation)
+               .FirstOrDefaultAsync(p => p.PreRegistrationId == provider.PreRegistrationId);
+
+                if (existingProvider !=null)
+                {
+                    existingProvider.RegisteredName  = provider.RegisteredName;
+                    existingProvider.TradingName = provider.TradingName;
+                    existingProvider.PublicContactEmail = provider.PublicContactEmail;
+                    existingProvider.TelephoneNumber = provider.TelephoneNumber;
+                    existingProvider.WebsiteAddress = provider.WebsiteAddress;
+                    existingProvider.Address = provider.Address;                  
+                    // at a time only one certificate info is passed from UI
+                    existingProvider.CertificateInformation.Add(provider.CertificateInformation.ToList()[0]);
+                    existingProvider.ModifiedTime = DateTime.UtcNow;
+                    await context.SaveChangesAsync();
+                    genericResponse.InstanceId = existingProvider.Id;
+                }
+                else
+                {
+                    provider.CreatedTime = DateTime.UtcNow;
+                    var entity = await context.Provider.AddAsync(provider);
+                    await context.SaveChangesAsync();
+                    genericResponse.InstanceId = entity.Entity.Id;
+                }
                 transaction.Commit();
                 genericResponse.Success = true;
-                genericResponse.InstanceId = entity.Entity.Id;
+              
             }
             catch (Exception ex)
             {               

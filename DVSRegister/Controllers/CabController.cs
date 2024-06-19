@@ -725,8 +725,8 @@ namespace DVSRegister.Controllers
             var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
             if(profileClaim != null)
                 cab = profileClaim.Value;
-            CertificateInfoDto certificateInfoDto = MapViewModelToDto(summaryViewModel, cab, email);
-            GenericResponse genericResponse = await cabService.SaveCertificateInformation(certificateInfoDto);
+            ProviderDto providerDto = MapViewModelToDto(summaryViewModel, cab, email);
+            GenericResponse genericResponse = await cabService.SaveCertificateInformation(providerDto);
             if (genericResponse.Success)
             {
                 return RedirectToAction("InformationSubmitted");
@@ -789,8 +789,17 @@ namespace DVSRegister.Controllers
 
         }
 
-        private CertificateInfoDto MapViewModelToDto(CertificateInfoSummaryViewModel model, string cab, string email)
+        private ProviderDto MapViewModelToDto(CertificateInfoSummaryViewModel model, string cab, string email)
         {
+            ProviderDto providerDto = new ProviderDto();
+            providerDto.RegisteredName = model.RegisteredName??string.Empty;
+            providerDto.TradingName = model.TradingName??string.Empty;
+            providerDto.PublicContactEmail = model.PublicContactEmail??string.Empty;
+            providerDto.TelephoneNumber = model.TelephoneNumber??string.Empty;
+            providerDto.WebsiteAddress = model.WebsiteAddress??string.Empty;
+            providerDto.Address = model.Address??string.Empty;            
+            providerDto.ProviderStatus = ProviderStatusEnum.Received;
+            providerDto.PreRegistrationId = Convert.ToInt32(model.PreRegistrationId);
             CertificateInfoDto certificateInfoDto = new CertificateInfoDto();
             ICollection<CertificateInfoRoleMappingDto> certificateInfoRoleMappings = new List<CertificateInfoRoleMappingDto>();
             ICollection<CertificateInfoIdentityProfileMappingDto> certificateInfoIdentityProfileMappings = new List<CertificateInfoIdentityProfileMappingDto>();
@@ -807,13 +816,7 @@ namespace DVSRegister.Controllers
             {
                 certificateInfoSupSchemeMappings.Add(new CertificateInfoSupSchemeMappingDto { SupplementarySchemeId = item.Id });
             }
-            certificateInfoDto.PreRegistrationId= Convert.ToInt32(model.PreRegistrationId);
-            certificateInfoDto.RegisteredName = model.RegisteredName??string.Empty;
-            certificateInfoDto.TradingName = model.TradingName??string.Empty;
-            certificateInfoDto.PublicContactEmail = model.PublicContactEmail??string.Empty;
-            certificateInfoDto.TelephoneNumber = model.TelephoneNumber??string.Empty;
-            certificateInfoDto.WebsiteAddress = model.WebsiteAddress??string.Empty;
-            certificateInfoDto.Address = model.Address??string.Empty;
+           
             certificateInfoDto.ServiceName = model.ServiceName??string.Empty;
             certificateInfoDto.CertificateInfoRoleMappings = certificateInfoRoleMappings;
             certificateInfoDto.CertificateInfoIdentityProfileMappings = certificateInfoIdentityProfileMappings;
@@ -827,7 +830,10 @@ namespace DVSRegister.Controllers
             certificateInfoDto.CertificateInfoStatus = CertificateInfoStatusEnum.Received;
             certificateInfoDto.CreatedBy = email;
             certificateInfoDto.SubmittedCAB = cab;
-            return certificateInfoDto;
+            ICollection<CertificateInfoDto> certificateInfoList = new List<CertificateInfoDto>();
+            certificateInfoList.Add(certificateInfoDto);
+            providerDto.CertificateInformation = certificateInfoList;
+            return providerDto;
 
         }
 
