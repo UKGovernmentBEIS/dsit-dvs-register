@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "dart-sass": "^1.25.0",
-    "govuk-frontend": "^5.1.0",
+    "govuk-frontend": "^5.4.0",
     "sass": "^1.70.0"
   }
 }
