@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace DVSRegister.BusinessLogic.Services.PreRegistration
 {
@@ -21,7 +22,9 @@ namespace DVSRegister.BusinessLogic.Services.PreRegistration
 
         public string CreateBlock2(DateTime Date)
         {
-            return Date.ToString("ddMMyy");
+            DateTime utcDate = Date.ToUniversalTime();
+            long secondsSinceUnixEpoch = (long)(utcDate - new DateTime(1970, 1, 1)).TotalSeconds;
+            return secondsSinceUnixEpoch.ToString();
         }
 
         public string CreateBlock3(string FullName)
