@@ -23,6 +23,8 @@ namespace DVSRegister.Models
         public bool? HasParentCompany { get; set; }
 
         [RequiredIf("HasParentCompany", true, ErrorMessage = "Enter the registered name of your parent company.")]
+        [AcceptedLength(160, ErrorMessage = "Your company's registered name must be less than 161 characters.")]
+        [AcceptedCharacters(@"^[A-Za-z0-9 &@£$€¥#.,:;-]+$", ErrorMessage = "Your company's registered name must contain only letters, numbers and accepted characters.")]
         public string? ParentCompanyRegisteredName { get; set; }
 
         [RequiredIf("HasParentCompany", true, ErrorMessage = "Enter the location of your parent company.")]
