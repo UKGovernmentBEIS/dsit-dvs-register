@@ -23,5 +23,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? SubmittedCAB { get; set; }
+        public List<RoleDto> Roles { get; set; }
+        public List<IdentityProfileDto> IdentityProfiles { get; set; }
+        public List<SupplementarySchemeDto>? SupplementarySchemes { get; set; }
     }
 }

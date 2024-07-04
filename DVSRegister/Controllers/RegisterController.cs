@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Services;
+using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
@@ -16,10 +17,16 @@ namespace DVSRegister.Controllers
 
         }
         [HttpGet("register-search")]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
+        {           
+            return View("Register");
+        }
+
+        [HttpGet("apply-filter")]
+        public async Task<IActionResult> ApplyFilter(List<int> roles, List<int> schemes, string searchText= "" )
         {
-            //ToDO: call service GetProviders
-            //registerService
+           RegisterListViewModel registerListViewModel = new RegisterListViewModel();   
+           registerListViewModel.Registers = await registerService.GetProviders(roles, schemes, searchText);
             return View("Register");
         }
 
