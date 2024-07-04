@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using DVSRegister.CommonUtility.Models.Enums;
+using NpgsqlTypes;
 
 namespace DVSRegister.Data.Entities
 {
@@ -24,6 +25,7 @@ namespace DVSRegister.Data.Entities
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get;set; }
         public ICollection<CertificateInformation> CertificateInformation { get; set; }
+        public NpgsqlTsVector SearchVector { get; set; }
 
     }
 }
