@@ -33,7 +33,10 @@ namespace DVSRegister.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //For all entities donot change ids, add new entries at the end only              
+             modelBuilder.Entity<Provider>()
+            .HasGeneratedTsVectorColumn( p => p.SearchVector,  "english", p => new { p.RegisteredName, p.TradingName })  
+            .HasIndex(p => p.SearchVector)
+            .HasMethod("GIN"); 
 
             modelBuilder.Entity<CertificateReviewRejectionReason>().HasData(
             new CertificateReviewRejectionReason { Id =1, Reason = "Information is missing from the certificate" },
