@@ -76,6 +76,8 @@ namespace DVSRegister
             services.AddScoped<ICabService, CabService>();
             services.AddScoped<ISignUpService, SignUpService>();
             services.AddScoped<ICabRepository, CabRepository>();
+            services.AddScoped<IRegisterRepository, RegisterRepository>();
+            services.AddScoped<IRegisterService, RegisterService>();
             services.AddScoped<IBucketService, BucketService>(opt =>
             {
                 // TODO: uncomment below lines once aws provisioned
