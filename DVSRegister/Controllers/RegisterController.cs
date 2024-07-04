@@ -1,4 +1,5 @@
-﻿using DVSRegister.BusinessLogic.Services;
+﻿using DVSRegister.BusinessLogic.Models.Register;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,6 +29,13 @@ namespace DVSRegister.Controllers
            RegisterListViewModel registerListViewModel = new RegisterListViewModel();   
            registerListViewModel.Registers = await registerService.GetProviders(roles, schemes, searchText);
             return View("Register");
+        }
+
+        [HttpGet("publish-logs")]
+        public async Task<ActionResult<List<RegisterPublishLogDto>>> GetRegisterPublishLogs()
+        {
+            var logs = await registerService.GetRegisterPublishLogs();
+            return Ok(logs);
         }
 
 

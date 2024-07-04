@@ -34,5 +34,10 @@ namespace DVSRegister.Data
              ));
             return await providerQuery.ToListAsync();
         }
+
+        public async Task<List<RegisterPublishLog>> GetRegisterPublishLogs()
+        {
+            return await context.RegisterPublishLog.ToListAsync();
+        }
     }
 }
