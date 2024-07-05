@@ -6,7 +6,15 @@ namespace DVSRegister.CommonUtility.Models.Enums
     {
         //Donot change order of the enum as the ids are used to save in database
         //New entries should be added at the last
-        [Description("Received")]
-        Received = 1
+        [Description("Unpublished")]
+        Unpublished = 1,
+        [Description("Action required")]
+        ActionRequired = 2,
+        [Description("Removed from register")]
+        RemovedFromRegister = 3,
+        [Description("Published")]
+        Published = 4,
+        [Description("Published - action required")]
+        PublishedActionRequired = 5
     }
 }

@@ -9,6 +9,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public int ProviderId { get; set; }
         public ProviderDto Provider { get; set; }
         public string ServiceName { get; set; }
+        public int ServiceNumber { get; set; }
         public ICollection<CertificateInfoRoleMappingDto> CertificateInfoRoleMappings { get; set; }
         public ICollection<CertificateInfoIdentityProfileMappingDto> CertificateInfoIdentityProfileMappings { get; set; }
         public bool HasSupplementarySchemes { get; set; }
@@ -23,5 +24,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? SubmittedCAB { get; set; }
+        public List<RoleDto> Roles { get; set; }
+        public List<IdentityProfileDto> IdentityProfiles { get; set; }
+        public List<SupplementarySchemeDto>? SupplementarySchemes { get; set; }
     }
 }

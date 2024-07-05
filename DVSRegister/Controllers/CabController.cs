@@ -798,7 +798,7 @@ namespace DVSRegister.Controllers
             providerDto.TelephoneNumber = model.TelephoneNumber??string.Empty;
             providerDto.WebsiteAddress = model.WebsiteAddress??string.Empty;
             providerDto.Address = model.Address??string.Empty;            
-            providerDto.ProviderStatus = ProviderStatusEnum.Received;
+            providerDto.ProviderStatus = ProviderStatusEnum.Unpublished;
             providerDto.PreRegistrationId = Convert.ToInt32(model.PreRegistrationId);
             CertificateInfoDto certificateInfoDto = new CertificateInfoDto();
             ICollection<CertificateInfoRoleMappingDto> certificateInfoRoleMappings = new List<CertificateInfoRoleMappingDto>();

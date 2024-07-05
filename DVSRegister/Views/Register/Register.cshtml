@@ -1,0 +1,176 @@
+﻿@using DVSRegister.CommonUtility.Models.Enums;
+@model RegisterListViewModel
+@{
+    ViewData["Title"] = "Find certified digital identity and attribute services";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+        <h1 class="govuk-heading-xl">
+            Register of digital identity and attribute services
+        </h1>
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+        <p class="govuk-body govuk-!-margin-bottom-7">Last updated @Model.LastUpdated  <a href="#" class="govuk-link">See all updates</a></p>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-third">
+                <search>
+                    <div class="govuk-form-group">
+                        <h2 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--m" for="search-register">
+                                Search for a service provider or service
+                            </label>
+                        </h2>
+                        <input class="govuk-input govuk-!-margin-bottom-4" id="search-register" name="searchRegister" type="text">
+
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button" data-module="govuk-button">
+                                Search
+                            </button>
+                            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                                Clear search
+                            </button>
+                        </div>
+                    </div>
+                    <h2 class="govuk-heading-m">Filters</h2>
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                <h3 class="govuk-fieldset__heading">
+                                    Role types
+                                </h3>
+                            </legend>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id" aria-describedby="selectedroleids-error"
+                                        @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@role.Id">@Enum.GetName((RoleEnum)@role.Id) </label>
+                                    </div>
+                                }
+                            </div>
+                        </fieldset>
+                    </div>
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                <h3 class="govuk-fieldset__heading">
+                                    Supplementary schemes
+                                </h3>
+                            </legend>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+
+                                @foreach (var item in Model.AvailableSchemes)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id" id="role_@item.Id"
+                                        @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@item.Id">@item.SchemeName</label>
+                                    </div>
+                                }
+
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" data-module="govuk-button">
+                            Apply filters
+                        </button>
+                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                            Clear filters
+                        </button>
+                    </div>
+                </search>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+                @* <h2 class="govuk-heading-s govuk-!-margin-bottom-2"><span class="govuk-visually-hidden">Search results</span> Showing 1 - 20 of 43 result</h2> *@
+                <div class="dsit-search-filter-box">
+                    <h3 class="govuk-heading-s govuk-!-margin-right-3">Containing <span class="govuk-visually-hidden">the following filters:</span></h3>
+                    <ul class="dsit-search-filter-box__tags">
+
+                        <li><a class="dsit-search-filter-box__tag" href="/path/to/remove/this"><span class="govuk-visually-hidden">Remove this filter</span> Blue</a></li>
+
+                        <li><a class="dsit-search-filter-box__tag" href="/path/to/remove/this"><span class="govuk-visually-hidden">Remove this filter</span> Yellow</a></li>
+
+                    </ul>
+                </div>
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                <ul role="list" class="govuk-list govuk-!-margin-bottom-7">
+
+                    @foreach (var provider in Model.Providers)
+                    {
+                        <li>
+                            <h3 class="govuk-heading-m"><a href="#">@provider.TradingName</a></h3>
+                            <p class="govuk-body govuk-!-margin-bottom-2">Registered name: @provider.RegisteredName</p>
+                            <p class="govuk-body-s dsit-secondary-text-colour">Address: @provider.Address</p>
+                            <ul role="list" class="govuk-list">
+
+                                @foreach(var service in provider.CertificateInformation)
+                                {
+                                    <li>
+                                        <p class="govuk-body govuk-!-margin-bottom-2">Service @service.ServiceNumber: @service.ServiceName</p>
+                                        <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(",", service.Roles.Select(x => @Enum.GetName((RoleEnum)x.Id)).ToList())</p>
+                                        @if (@service.SupplementarySchemes != null && @service.SupplementarySchemes.Any())
+                                        {
+                                            <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes:   @string.Join( ",",service.SupplementarySchemes.Select(x => x.SchemeName).ToList())</p>
+                                        }
+                                        
+                                    </li>
+                                }                              
+                                
+                            </ul>
+                            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                        </li>                       
+                    }
+
+                   
+                </ul>
+             @*    <p class="govuk-body govuk-!-font-weight-bold">Showing 1 - 20 of 43 results</p>
+                <nav class="govuk-pagination" aria-label="Pagination">
+                    <div class="govuk-pagination__prev">
+                        <a class="govuk-link govuk-pagination__link" href="#" rel="prev">
+                            <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                                <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+                            </svg>
+                            <span class="govuk-pagination__link-title">
+                                Previous<span class="govuk-visually-hidden"> page</span>
+                            </span>
+                        </a>
+                    </div>
+                    <ul class="govuk-pagination__list">
+                        <li class="govuk-pagination__item">
+                            <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 1">
+                                1
+                            </a>
+                        </li>
+                        <li class="govuk-pagination__item govuk-pagination__item--current">
+                            <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 2" aria-current="page">
+                                2
+                            </a>
+                        </li>
+                        <li class="govuk-pagination__item">
+                            <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 3">
+                                3
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="govuk-pagination__next">
+                        <a class="govuk-link govuk-pagination__link" href="#" rel="next">
+                            <span class="govuk-pagination__link-title">
+                                Next<span class="govuk-visually-hidden"> page</span>
+                            </span>
+                            <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+                                <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </nav> *@
+            </div>
+        </div>
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+        <p class="govuk-body govuk-!-margin-bottom-7">Last updated @Model.LastUpdated —  <a href="#" class="govuk-link">See all updates</a></p>
+    </main>
+</div>

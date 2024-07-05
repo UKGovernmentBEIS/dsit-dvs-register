@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
+using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic
@@ -46,6 +47,8 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.CertificateInfoSupSchemeMappings, opt => opt.MapFrom(src => src.CertificateInfoSupSchemeMappings))
              .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
 
+            CreateMap<RegisterPublishLog, RegisterPublishLogDto>();
+            CreateMap<RegisterPublishLogDto, RegisterPublishLog>();
         }
     }
 }
