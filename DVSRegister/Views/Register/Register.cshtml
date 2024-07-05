@@ -1,4 +1,5 @@
-﻿
+﻿@using DVSRegister.CommonUtility.Models.Enums;
+@model RegisterListViewModel
 @{
     ViewData["Title"] = "Find certified digital identity and attribute services";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -10,7 +11,7 @@
             Register of digital identity and attribute services
         </h1>
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-        <p class="govuk-body govuk-!-margin-bottom-7">Last updated 18 June 2024 —  <a href="#" class="govuk-link">See all updates</a></p>
+        <p class="govuk-body govuk-!-margin-bottom-7">Last updated @Model.LastUpdated  <a href="#" class="govuk-link">See all updates</a></p>
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-third">
                 <search>
@@ -21,6 +22,7 @@
                             </label>
                         </h2>
                         <input class="govuk-input govuk-!-margin-bottom-4" id="search-register" name="searchRegister" type="text">
+
                         <div class="govuk-button-group">
                             <button type="submit" class="govuk-button" data-module="govuk-button">
                                 Search
@@ -40,24 +42,14 @@
                                 </h3>
                             </legend>
                             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" id="identity" name="roletype" type="checkbox" value="identity">
-                                    <label class="govuk-label govuk-checkboxes__label" for="identity">
-                                        Identity
-                                    </label>
-                                </div>
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" id="attribute" name="roletype" type="checkbox" value="attribute">
-                                    <label class="govuk-label govuk-checkboxes__label" for="attribute">
-                                        Attribute
-                                    </label>
-                                </div>
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" id="orchestration" name="roletype" type="checkbox" value="orchestration">
-                                    <label class="govuk-label govuk-checkboxes__label" for="orchestration">
-                                        Orchestration
-                                    </label>
-                                </div>
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id" aria-describedby="selectedroleids-error"
+                                        @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@role.Id">@Enum.GetName((RoleEnum)@role.Id) </label>
+                                    </div>
+                                }
                             </div>
                         </fieldset>
                     </div>
@@ -70,25 +62,16 @@
                                 </h3>
                             </legend>
                             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" id="right-to-work" name="schemes" type="checkbox" value="rightToWork">
-                                    <label class="govuk-label govuk-checkboxes__label" for="right-to-work">
-                                        Right to Work
-                                    </label>
-                                </div>
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" id="right-to-rent" name="schemes" type="checkbox" value="rightToRent">
-                                    <label class="govuk-label govuk-checkboxes__label" for="right-to-rent">
-                                        Right to Rent
-                                    </label>
-                                </div>
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" id="disclosure-service" name="schemes" type="checkbox" value="disclosure-barring">
-                                    <label class="govuk-label govuk-checkboxes__label" for="disclosure-service">
-                                        Disclosure and Barring
-                                        Service
-                                    </label>
-                                </div>
+
+                                @foreach (var item in Model.AvailableSchemes)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id" id="role_@item.Id"
+                                        @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@item.Id">@item.SchemeName</label>
+                                    </div>
+                                }
+
                             </div>
                         </fieldset>
                     </div>
@@ -103,7 +86,7 @@
                 </search>
             </div>
             <div class="govuk-grid-column-two-thirds">
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-2"><span class="govuk-visually-hidden">Search results</span> Showing 1 - 20 of 43 result</h2>
+                @* <h2 class="govuk-heading-s govuk-!-margin-bottom-2"><span class="govuk-visually-hidden">Search results</span> Showing 1 - 20 of 43 result</h2> *@
                 <div class="dsit-search-filter-box">
                     <h3 class="govuk-heading-s govuk-!-margin-right-3">Containing <span class="govuk-visually-hidden">the following filters:</span></h3>
                     <ul class="dsit-search-filter-box__tags">
@@ -116,42 +99,36 @@
                 </div>
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                 <ul role="list" class="govuk-list govuk-!-margin-bottom-7">
-                    <li>
-                        <h3 class="govuk-heading-m"><a href="#">Northrow</a></h3>
-                        <p class="govuk-body govuk-!-margin-bottom-2">Registered name: Northrow Limited</p>
-                        <p class="govuk-body-s dsit-secondary-text-colour">Address: 85 Great Portland Street, London, W1W 7LT, United Kingdom</p>
-                        <ul role="list" class="govuk-list">
-                            <li>
-                                <p class="govuk-body govuk-!-margin-bottom-2">Service 1: Secure ID</p>
-                                <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: Identity, Attribute</p>
-                                <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes: Right to Work</p>
-                            </li>
-                            <li>
-                                <p class="govuk-body govuk-!-margin-bottom-2">Service 2: Carousel Identity</p>
-                                <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes: Right to Rent</p>
-                            </li>
-                        </ul>
-                        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                    </li>
-                    <li>
-                        <h3 class="govuk-heading-m"><a href="#">Verify Sphere</a></h3>
-                        <p class="govuk-body govuk-!-margin-bottom-2">Registered name: Sphere Technologies</p>
-                        <p class="govuk-body-s dsit-secondary-text-colour">Address: 85 Great Portland Street, London, W1W 7LT, United Kingdom</p>
-                        <ul role="list" class="govuk-list">
-                            <li>
-                                <p class="govuk-body govuk-!-margin-bottom-2">Service 1: Secure ID</p>
-                                <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: Identity, Attribute</p>
-                                <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes: Right to Work</p>
-                            </li>
-                            <li>
-                                <p class="govuk-body govuk-!-margin-bottom-2">Service 2: Carousel Identity</p>
-                                <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes: Right to Rent</p>
-                            </li>
-                        </ul>
-                        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                    </li>
+
+                    @foreach (var provider in Model.Providers)
+                    {
+                        <li>
+                            <h3 class="govuk-heading-m"><a href="#">@provider.TradingName</a></h3>
+                            <p class="govuk-body govuk-!-margin-bottom-2">Registered name: @provider.RegisteredName</p>
+                            <p class="govuk-body-s dsit-secondary-text-colour">Address: @provider.Address</p>
+                            <ul role="list" class="govuk-list">
+
+                                @foreach(var service in provider.CertificateInformation)
+                                {
+                                    <li>
+                                        <p class="govuk-body govuk-!-margin-bottom-2">Service @service.ServiceNumber: @service.ServiceName</p>
+                                        <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(",", service.Roles.Select(x => @Enum.GetName((RoleEnum)x.Id)).ToList())</p>
+                                        @if (@service.SupplementarySchemes != null && @service.SupplementarySchemes.Any())
+                                        {
+                                            <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes:   @string.Join( ",",service.SupplementarySchemes.Select(x => x.SchemeName).ToList())</p>
+                                        }
+                                        
+                                    </li>
+                                }                              
+                                
+                            </ul>
+                            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                        </li>                       
+                    }
+
+                   
                 </ul>
-                <p class="govuk-body govuk-!-font-weight-bold">Showing 1 - 20 of 43 results</p>
+             @*    <p class="govuk-body govuk-!-font-weight-bold">Showing 1 - 20 of 43 results</p>
                 <nav class="govuk-pagination" aria-label="Pagination">
                     <div class="govuk-pagination__prev">
                         <a class="govuk-link govuk-pagination__link" href="#" rel="prev">
@@ -190,10 +167,10 @@
                             </svg>
                         </a>
                     </div>
-                </nav>
+                </nav> *@
             </div>
         </div>
         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-        <p class="govuk-body govuk-!-margin-bottom-7">Last updated 18 June 2024 —  <a href="#" class="govuk-link">See all updates</a></p>
+        <p class="govuk-body govuk-!-margin-bottom-7">Last updated @Model.LastUpdated —  <a href="#" class="govuk-link">See all updates</a></p>
     </main>
 </div>

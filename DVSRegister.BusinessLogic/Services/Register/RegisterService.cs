@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.Data;
-using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic.Services
 {
@@ -38,8 +36,10 @@ namespace DVSRegister.BusinessLogic.Services
             //to populate roles, identity profiles, schemes
             foreach (var item in providerDtos)
             {
+                int serviceNumber = 0;
                 foreach(var service in item.CertificateInformation)
                 {
+                    service.ServiceNumber = ++serviceNumber;
                     var roleIds = service.CertificateInfoRoleMappings.Select(mapping => mapping.RoleId);
                     service.Roles = roleDtos.Where(x => roleIds.Contains(x.Id)).ToList();
 

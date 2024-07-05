@@ -9,6 +9,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public int ProviderId { get; set; }
         public ProviderDto Provider { get; set; }
         public string ServiceName { get; set; }
+        public int ServiceNumber { get; set; }
         public ICollection<CertificateInfoRoleMappingDto> CertificateInfoRoleMappings { get; set; }
         public ICollection<CertificateInfoIdentityProfileMappingDto> CertificateInfoIdentityProfileMappings { get; set; }
         public bool HasSupplementarySchemes { get; set; }
