@@ -51,10 +51,11 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("publish-logs")]
-        public async Task<ActionResult<List<RegisterPublishLogDto>>> GetRegisterPublishLogs()
+        public async Task<IActionResult> GetRegisterPublishLogs()
         {
-            var logs = await registerService.GetRegisterPublishLogs();
-            return Ok(logs);
+            RegisterPublishLogsViewModel registerPublishLogsViewModel = new RegisterPublishLogsViewModel();
+            registerPublishLogsViewModel.RegisterPublishLog = await registerService.GetRegisterPublishLogs();
+            return View("Updates", registerPublishLogsViewModel);
         }
     }
 }
