@@ -1,11 +1,11 @@
-﻿using DVSRegister.BusinessLogic.Models;
-using DVSRegister.BusinessLogic.Models.Register;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Models.Register;
 
 namespace DVSRegister.BusinessLogic.Services
 {
