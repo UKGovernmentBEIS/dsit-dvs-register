@@ -18,13 +18,37 @@ namespace DVSRegister.BusinessLogic.Services
             this.registerRepository = registerRepository;
             this.automapper = automapper;
             this.cabService = cabService;
-    }
+         }
         public async Task<List<ProviderDto>> GetProviders(List<int> roles, List<int> schemes,string searchText = "")
         {
-            var list = await registerRepository.GetProviders(roles,schemes, searchText);
+            var list = await registerRepository.GetProviders(roles, schemes, searchText);
             var providerList = list.Where(item => item.CertificateInformation != null && item.CertificateInformation.Any()).ToList();
-            List<ProviderDto>  providerDtos =  automapper.Map<List<ProviderDto>>(providerList);
+            List<ProviderDto> providerDtos = automapper.Map<List<ProviderDto>>(providerList);
 
+            await PopulateRolesIdentityProfilesSchemes(providerDtos);
+            return providerDtos;
+        }        
+
+        public async Task<ProviderDto> GetProviderWithServiceDeatils(int providerId)
+        {
+            var provider = await registerRepository.GetProviderDetails(providerId);
+            ProviderDto providerDto = automapper.Map<ProviderDto>(provider);
+
+            // assigning as list to reuse the private method PopulateRolesIdentityProfilesSchemes
+            List<ProviderDto> providerDtos = new List<ProviderDto> { providerDto }; 
+            await PopulateRolesIdentityProfilesSchemes(providerDtos);
+            return providerDtos[0];
+        }
+
+        public async Task<List<RegisterPublishLogDto>> GetRegisterPublishLogs()
+        {
+            var list = await registerRepository.GetRegisterPublishLogs();
+            return automapper.Map<List<RegisterPublishLogDto>>(list);
+        }
+
+        #region Private methods
+        private async Task PopulateRolesIdentityProfilesSchemes(List<ProviderDto> providerDtos)
+        {
             var rolesList = await cabService.GetRoles();
             List<RoleDto> roleDtos = automapper.Map<List<RoleDto>>(rolesList);
 
@@ -37,7 +61,7 @@ namespace DVSRegister.BusinessLogic.Services
             foreach (var item in providerDtos)
             {
                 int serviceNumber = 0;
-                foreach(var service in item.CertificateInformation)
+                foreach (var service in item.CertificateInformation)
                 {
                     service.ServiceNumber = ++serviceNumber;
                     var roleIds = service.CertificateInfoRoleMappings.Select(mapping => mapping.RoleId);
@@ -51,13 +75,7 @@ namespace DVSRegister.BusinessLogic.Services
                         service.SupplementarySchemes = supplementarySchemeDtos.Where(x => schemeids.Contains(x.Id)).ToList();
                 }
             }
-            return providerDtos;
         }
-
-        public async Task<List<RegisterPublishLogDto>> GetRegisterPublishLogs()
-        {
-            var list = await registerRepository.GetRegisterPublishLogs();
-            return automapper.Map<List<RegisterPublishLogDto>>(list);
-        }
+        #endregion
     }
 }

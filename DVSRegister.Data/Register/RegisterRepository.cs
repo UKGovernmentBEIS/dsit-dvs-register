@@ -39,5 +39,17 @@ namespace DVSRegister.Data
         {
             return await context.RegisterPublishLog.OrderByDescending(p => p.CreatedTime).ToListAsync();
         }
+
+        public async Task<Provider> GetProviderDetails(int providerId)
+        {
+            Provider provider = new Provider();
+            provider = await context.Provider.Include(p => p.PreRegistration)
+           .Include(p => p.CertificateInformation).ThenInclude(x => x.CertificateInfoRoleMappings)
+           .Include(p => p.CertificateInformation).ThenInclude(x => x.CertificateInfoIdentityProfileMappings)
+           .Include(p => p.CertificateInformation).ThenInclude(x => x.CertificateInfoSupSchemeMappings)
+           .Where(p => p.Id == providerId  && p.CertificateInformation.Any(ci => ci.CertificateInfoStatus == CertificateInfoStatusEnum.Published))
+           . OrderBy(c => c.ModifiedTime).FirstOrDefaultAsync() ?? new Provider();
+            return provider;
+        }
     }
 }
