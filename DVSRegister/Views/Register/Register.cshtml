@@ -3,7 +3,7 @@
 @model RegisterListViewModel
 @{
     ViewData["Title"] = "Find certified digital identity and attribute services";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout_Register.cshtml";
 }
 
 <div class="govuk-width-container">
@@ -135,7 +135,7 @@
                             @foreach (var provider in Model.Providers)
                             {
                                 <li>
-                                    <h3 class="govuk-heading-m"><a href="provider-details?providerId=@provider.Id">@provider.TradingName</a></h3>
+                                    <h3 class="govuk-heading-m"><a href="provider-details?providerId=@provider.Id" class="govuk-link">@provider.TradingName</a></h3>
                                     <p class="govuk-body govuk-!-margin-bottom-2">Registered name: @provider.RegisteredName</p>
                                     <p class="govuk-body-s dsit-secondary-text-colour">Address: @provider.Address</p>
                                     <ul role="list" class="govuk-list">
