@@ -581,8 +581,8 @@ namespace DVSRegister.Controllers
                         if (avServiceResponse.Success)
                         {
                             //TODO:  uncomment service call once aws provisioned
-                            GenericResponse genericResponse = new GenericResponse { Success = true, Data = "YotiCertificate.pdf" };
-                            // GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                            //   GenericResponse genericResponse = new GenericResponse { Success = true, Data = "YotiCertificate.pdf" };                            
+                            GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
                             if (genericResponse.Success)
                             {
                                 CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
@@ -751,6 +751,32 @@ namespace DVSRegister.Controllers
             await emailSender.SendEmailCabInformationSubmitted(email, email);
             return View();
            
+        }
+
+        /// <summary>
+        /// download from s3
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+
+        [HttpGet("download-certificate")]
+        public async Task<IActionResult> DownloadCertificate(string key, string filename)
+        {
+            try
+            {
+                byte[]? fileContent = await bucketService.DownloadFileAsync(key);
+
+                if (fileContent == null || fileContent.Length == 0)
+                {
+                    return RedirectToAction(Constants.CabRegistrationErrorPath);
+                }
+                string contentType = "application/octet-stream";
+                return File(fileContent, contentType, filename);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(Constants.CabRegistrationErrorPath);
+            }
         }
 
         /// <summary>

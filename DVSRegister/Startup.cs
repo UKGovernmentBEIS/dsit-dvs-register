@@ -1,4 +1,6 @@
-﻿using DVSAdmin.BusinessLogic.Services;
+﻿using Amazon;
+using Amazon.S3;
+using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.BusinessLogic;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
@@ -47,6 +49,8 @@ namespace DVSRegister
             ConfigureSession(services);
             ConfigureDvsRegisterServices(services);
             ConfigureAutomapperServices(services);
+            ConfigureS3Client(services);
+            ConfigureS3FileWriter(services);
         }
 
        
@@ -77,16 +81,7 @@ namespace DVSRegister
             services.AddScoped<ISignUpService, SignUpService>();
             services.AddScoped<ICabRepository, CabRepository>();
             services.AddScoped<IRegisterRepository, RegisterRepository>();
-            services.AddScoped<IRegisterService, RegisterService>();
-            services.AddScoped<IBucketService, BucketService>(opt =>
-            {
-                // TODO: uncomment below lines once aws provisioned
-                //string bucketName = string.Format(configuration.GetValue<string>("BucketName"));
-                //string accessKey = string.Format(configuration.GetValue<string>("AWSAccessKey"));
-                //string password = string.Format(configuration.GetValue<string>("AWSSecretPassword"));
-                //return new BucketService(bucketName, accessKey, password);
-                return new BucketService("", "", ""); // TODO: remove this line once aws provisioned
-            });
+            services.AddScoped<IRegisterService, RegisterService>();           
             services.AddScoped<IAVService, AVService>();
             services.AddScoped(opt =>
             {
@@ -116,6 +111,22 @@ namespace DVSRegister
                 Console.WriteLine(Constants.DbConnectionFailed + ex.Message);
                 throw;
             }
+        }
+
+        private void ConfigureS3Client(IServiceCollection services)
+        {
+            var s3Config = new S3Configuration();
+            configuration.GetSection(S3Configuration.ConfigSection).Bind(s3Config);
+            services.AddScoped(_ => new AmazonS3Client(RegionEndpoint.GetBySystemName(s3Config.Region)));
+           
+        }
+
+        private void ConfigureS3FileWriter(IServiceCollection services)
+        {
+            services.Configure<S3Configuration>(
+                configuration.GetSection(S3Configuration.ConfigSection));
+            services.AddScoped<IBucketService, BucketService>();
+            services.AddScoped<S3FileKeyGenerator>();
         }
     }
 }

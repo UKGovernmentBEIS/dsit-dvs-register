@@ -188,21 +188,21 @@
 
                                    
                                 </div>
-                               @*  TODo: uncomment after S3 ready *@
-                             @*    <div class="govuk-summary-list__row">
+                             
+                                <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
                                         Service provider's certificate of conformity
                                     </dt>
                                     <dd class="govuk-summary-list__value">
                                         <p class="govuk-body">
-                                            <a href="@Model.FileLink" class="govuk-link">@Model.FileName</a>
+                                            <a href="/cab-service/download-certificate?key=@Model.FileLink&filename=@Model.FileName" class="govuk-link" target="_blank">@Model.FileName</a>
                                         </p>
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "CertificateUploadPage", "Cab", new { fromSummaryPage = true },
                                          new { @class = "govuk-link", @aria_label = "Change service provider's certificate of conformity" })
                                     </dd>
-                                </div> *@
+                                </div>
 
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
