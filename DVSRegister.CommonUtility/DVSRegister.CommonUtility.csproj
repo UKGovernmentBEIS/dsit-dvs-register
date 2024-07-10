@@ -15,8 +15,4 @@
     <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.305.4" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="AWS\" />
-  </ItemGroup>
-
 </Project>

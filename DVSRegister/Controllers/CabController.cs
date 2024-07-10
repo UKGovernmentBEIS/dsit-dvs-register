@@ -579,9 +579,7 @@ namespace DVSRegister.Controllers
                         // GenericResponse avServiceResponse = avService.ScanFileForVirus(memoryStream);
 
                         if (avServiceResponse.Success)
-                        {
-                            //TODO:  uncomment service call once aws provisioned
-                            //   GenericResponse genericResponse = new GenericResponse { Success = true, Data = "YotiCertificate.pdf" };                            
+                        {                        
                             GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
                             if (genericResponse.Success)
                             {
