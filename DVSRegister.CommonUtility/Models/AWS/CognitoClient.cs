@@ -58,6 +58,39 @@ public class CognitoClient
         }
     }
 
+    public async Task<GenericResponse> ConfirmPasswordReset(string email, string password, string oneTimePassCode)
+    {
+       GenericResponse genericResponse = new GenericResponse();
+        var confirmForgotPasswordRequest = new ConfirmForgotPasswordRequest
+        {
+            ClientId = _clientId,
+            Username = email,
+            Password = password,
+            ConfirmationCode = oneTimePassCode
+        };
+        try
+        {
+            ConfirmForgotPasswordResponse confirmForgotPasswordResponse=  await _provider.ConfirmForgotPasswordAsync(confirmForgotPasswordRequest);
+            if(confirmForgotPasswordResponse != null && confirmForgotPasswordResponse.HttpStatusCode == System.Net.HttpStatusCode.OK) 
+            { 
+                genericResponse .Success = true;
+            }
+            else
+            {
+                genericResponse.Success = false;
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error resetting password : {ex.Message}");
+            genericResponse.Success = false;
+            genericResponse.Data = "Error while resetting password, please try again later";          
+        }
+        return genericResponse;
+
+
+    }
     public async Task<GenericResponse> ConfirmPasswordAndGenerateMFAToken(string email, string password, string oneTimePassCode)
     {
         GenericResponse genericResponse = new GenericResponse();
