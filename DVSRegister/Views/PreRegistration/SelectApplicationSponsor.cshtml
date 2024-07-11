@@ -1,15 +1,20 @@
 ﻿@model DVSRegister.Models.SummaryViewModel
 @{
-    ViewData["Title"] = "Digital Verifications Services Register - Pre Assessment";
+    ViewData["Title"] = "Provide contact details of the application sponsor";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
 @using (Html.BeginForm("SaveApplicationSponsorSelection", "PreRegistration", FormMethod.Post))
 {
-
     <div class="govuk-width-container">
         @Html.ActionLink("Back", "StartPage", "PreRegistration", null, new { @class = "govuk-back-link" })
+        @if (Html.ViewData?.ModelState.ContainsKey("IsApplicationSponsor") == true && Html.ViewData.ModelState["IsApplicationSponsor"].Errors.Count > 0)
+        {
+            ViewData["Title"] = "Error: " + ViewData["Title"];
+            @await Html.PartialAsync("~/Views/PartialViews/_PreRegSpecificErrorsView.cshtml",
+                    new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("IsApplicationSponsor", Html.ViewData.ModelState["IsApplicationSponsor"]?.Errors))
+        }
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -26,7 +31,7 @@
                         </div>
                     </details>
                     <div class="govuk-form-group">
-                        <fieldset class="govuk-fieldset" aria-describedby="applicationName-hint">
+                        <fieldset class="govuk-fieldset" aria-describedby="applicationSponsor-hint">
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                                 Are you the application sponsor?
                             </legend>
@@ -34,17 +39,17 @@
                                 If you are completing this on behalf of the application sponsor, you will be asked to provide both your and their details
                             </div>
 
-                            @Html.ValidationMessageFor(m => m.IsApplicationSponsor, "", new { @class = "govuk-error-message" })
+                            @Html.ValidationMessageFor(m => m.IsApplicationSponsor, "", new { @class = "govuk-error-message", id = "isapplicationsponsor-error" })
                             <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
                                 <div class="govuk-radios__item">
-                                    @Html.RadioButtonFor(m => m.IsApplicationSponsor, true, new { @id = "applicationName-1", @class = "govuk-radios__input" })
-                                    <label class="govuk-label govuk-radios__label" for="applicationName-1">
+                                    @Html.RadioButtonFor(m => m.IsApplicationSponsor, true, new { @id = "isapplicationsponsor", @class = "govuk-radios__input" })
+                                    <label class="govuk-label govuk-radios__label" for="isapplicationsponsor">
                                         Yes
                                     </label>
                                 </div>
                                 <div class="govuk-radios__item">
-                                    @Html.RadioButtonFor(m => m.IsApplicationSponsor, false, new { @id = "applicationName-2", @class = "govuk-radios__input" })
-                                    <label class="govuk-label govuk-radios__label" for="applicationName-2">
+                                    @Html.RadioButtonFor(m => m.IsApplicationSponsor, false, new { @id = "isapplicationsponsor-1", @class = "govuk-radios__input" })
+                                    <label class="govuk-label govuk-radios__label" for="isapplicationsponsor-1">
                                         No
                                     </label>
                                 </div>

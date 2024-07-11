@@ -12,7 +12,7 @@
                     @foreach (var error in Model.Item2)
                     {
                         <li>
-                            <a href="#@(Model.Item1.ToLower())-error"><span class="govuk-visually-hidden">Error: </span>@error.ErrorMessage</a>
+                            <a href="#@(Model.Item1.ToLower())"><span class="govuk-visually-hidden">Error: </span>@error.ErrorMessage</a>
                         </li>
                     }
                 </ul>
