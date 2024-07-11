@@ -198,8 +198,9 @@
                         <strong class="govuk-warning-text__text">
                             <span class="govuk-visually-hidden">Warning</span>
                             If your application is successful, your company’s registered name and trading
-                            name(s) will be publicly available on the register of digital identity and attribute
-                            service providers.
+                            names will be publicly available on the register of digital identity and attribute
+                            services.
+
                         </strong>
                     </div>
 
@@ -215,7 +216,7 @@
                             <dl class="govuk-summary-list">
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
-                                        Registered Name
+                                        Registered name
                                     </dt>
                                     <dd class="govuk-summary-list__value">
                                         @Model.CompanyViewModel.RegisteredCompanyName
@@ -226,7 +227,7 @@
                                 </div>
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
-                                        Trading name(s)
+                                        Trading names
                                     </dt>
                                     <dd class="govuk-summary-list__value">
                                         @Model.CompanyViewModel.TradingName
@@ -288,10 +289,14 @@
                             </dl>
                         </div>
                     </div>
+                    <p class="govuk-body">
+                        You will not be able to view your answers once you’ve submitted your application, so you should make a note of the information if required.
+                    </p>
                 </div>
             </div>
 
             @Html.ValidationMessageFor(m => m.ConfirmAccuracy, "", new { @class = "govuk-error-message", id = "confirmaccuracy-error" })
+            
             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                 <div class="govuk-checkboxes__item">
 
@@ -304,7 +309,7 @@
             </div>
 
             <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
-                Confirm and Continue
+                Confirm and continue
             </button>
         </main>
     </div>
