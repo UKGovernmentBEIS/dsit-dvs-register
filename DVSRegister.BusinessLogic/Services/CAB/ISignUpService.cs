@@ -17,5 +17,6 @@ namespace DVSAdmin.BusinessLogic.Services
 
         public Task<AuthenticationResultType> ConfirmMFAToken(string session, string email, string token);
         public void SignOut(string accesssToken);
+        public Task<GenericResponse> ResetPassword(string email, string password, string oneTimePassword);
     }
 }

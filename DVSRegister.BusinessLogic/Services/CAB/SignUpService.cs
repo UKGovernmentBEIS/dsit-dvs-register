@@ -3,11 +3,10 @@ using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
-using static QRCoder.PayloadGenerator;
 
 namespace DVSRegister.BusinessLogic.Services
 {
-	public class SignUpService : ISignUpService
+    public class SignUpService : ISignUpService
 	{
         private CognitoClient _cognitoClient;
         private readonly IEmailSender _emailSender;
@@ -21,6 +20,11 @@ namespace DVSRegister.BusinessLogic.Services
         public async Task<AuthenticationResultType> ConfirmMFAToken(string session, string email, string token)
         {
             return await _cognitoClient.ConfirmMFAToken(session, email, token);
+        }
+
+        public async Task<GenericResponse> ResetPassword(string email, string password, string oneTimePassword)
+        {
+            return await _cognitoClient.ConfirmPasswordReset(email, password, oneTimePassword);
         }
 
         public async Task<GenericResponse> ConfirmPassword(string email, string password, string oneTimePassword)
