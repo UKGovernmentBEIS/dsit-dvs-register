@@ -9,11 +9,11 @@
 {
     <div class="govuk-width-container">
         @Html.ActionLink("Back", "StartPage", "PreRegistration", null, new { @class = "govuk-back-link" })
-        @if (Html.ViewData?.ModelState.ContainsKey("isapplicationsponsor") == true && Html.ViewData.ModelState["isapplicationsponsor"].Errors.Count > 0)
+        @if (Html.ViewData?.ModelState.ContainsKey("IsApplicationSponsor") == true && Html.ViewData.ModelState["IsApplicationSponsor"].Errors.Count > 0)
         {
             ViewData["Title"] = "Error: " + ViewData["Title"];
-            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
-                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("isapplicationsponsor", Html.ViewData.ModelState["isapplicationsponsor"]?.Errors))
+            @await Html.PartialAsync("~/Views/PartialViews/_PreRegSpecificErrorsView.cshtml",
+                    new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("IsApplicationSponsor", Html.ViewData.ModelState["IsApplicationSponsor"]?.Errors))
         }
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
@@ -42,14 +42,14 @@
                             @Html.ValidationMessageFor(m => m.IsApplicationSponsor, "", new { @class = "govuk-error-message", id = "isapplicationsponsor-error" })
                             <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
                                 <div class="govuk-radios__item">
-                                    @Html.RadioButtonFor(m => m.IsApplicationSponsor, true, new { @id = "applicationName-1", @class = "govuk-radios__input" })
-                                    <label class="govuk-label govuk-radios__label" for="applicationName-1">
+                                    @Html.RadioButtonFor(m => m.IsApplicationSponsor, true, new { @id = "isapplicationsponsor", @class = "govuk-radios__input" })
+                                    <label class="govuk-label govuk-radios__label" for="isapplicationsponsor">
                                         Yes
                                     </label>
                                 </div>
                                 <div class="govuk-radios__item">
-                                    @Html.RadioButtonFor(m => m.IsApplicationSponsor, false, new { @id = "applicationName-2", @class = "govuk-radios__input" })
-                                    <label class="govuk-label govuk-radios__label" for="applicationName-2">
+                                    @Html.RadioButtonFor(m => m.IsApplicationSponsor, false, new { @id = "isapplicationsponsor-1", @class = "govuk-radios__input" })
+                                    <label class="govuk-label govuk-radios__label" for="isapplicationsponsor-1">
                                         No
                                     </label>
                                 </div>

@@ -237,7 +237,7 @@
                                         @if (Html.ViewData.ModelState.ContainsKey("ParentCompanyRegisteredName") && Html.ViewData.ModelState["ParentCompanyRegisteredName"].Errors.Count > 0)
                                         {
                                             <div class="govuk-form-group govuk-form-group--error">
-                                                <label class="govuk-label govuk-label--m" for="parent-company-registered-name">
+                                                <label class="govuk-label govuk-label--m" for="parentcompanyregisteredname">
                                                     Registered name of parent company
                                                 </label>
                                                 <div id="parent-company-hint" class="govuk-hint">
@@ -247,45 +247,45 @@
                                                 <p class="govuk-error-message" id="parentcompanyregisteredname-error">
                                                     <span class="govuk-visually-hidden">Error: </span>@Html.ValidationMessageFor(m => m.ParentCompanyRegisteredName, "", new { @class = "govuk-error-message" })
                                                 </p>
-                                                @Html.TextBoxFor(m => m.ParentCompanyRegisteredName, new { @class = "govuk-input govuk-input--error govuk-!-width-three-quarters", id = "parent-company-registered-name", name = "parentCompanyRegisteredName", aria_describedby = "parent-company-hint parentcompanyregisteredname-error" })
+                                                @Html.TextBoxFor(m => m.ParentCompanyRegisteredName, new { @class = "govuk-input govuk-input--error govuk-!-width-three-quarters", id = "parentcompanyregisteredname", name = "parentCompanyRegisteredName", aria_describedby = "parentcompanyregisteredname-error" })
                                             </div>
                                         }
                                         else
                                         {
                                             <div class="govuk-form-group">
-                                                <label class="govuk-label govuk-label--m" for="parent-company-registered-name">
+                                                <label class="govuk-label govuk-label--m" for="parentcompanyregisteredname">
                                                     Registered name of parent company
                                                 </label>
                                                 <div id="parent-company-hint" class="govuk-hint">
                                                     For example, YOUR COMPANY SERVICES LTD
                                                 </div>
 
-                                                @Html.TextBoxFor(m => m.ParentCompanyRegisteredName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "parent-company-registered-name", name = "parentCompanyRegisteredName", aria_describedby = "parent-company-hint" })
+                                                @Html.TextBoxFor(m => m.ParentCompanyRegisteredName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "parentcompanyregisteredname", name = "parentCompanyRegisteredName", aria_describedby = "parent-company-hint" })
                                             </div>
                                         }
 
                                         @if (Html.ViewData.ModelState.ContainsKey("ParentCompanyLocation") && Html.ViewData.ModelState["ParentCompanyLocation"].Errors.Count > 0)
                                         {
                                             <div class="govuk-form-group govuk-form-group--error">
-                                                <label class="govuk-label govuk-label--m" for="parent-company-location">
+                                                <label class="govuk-label govuk-label--m" for="parentcompanylocation">
                                                     Country of parent company
                                                 </label>
                                                 <p class="govuk-error-message" id="parentcompanylocation-error">
                                                     <span class="govuk-visually-hidden">Error: </span>@Html.ValidationMessageFor(m => m.ParentCompanyLocation, "", new { @class = "govuk-error-message" })
                                                 </p>
 
-                                                @Html.TextBoxFor(m => m.ParentCompanyLocation, new { @class = "govuk-input govuk-input--error govuk-!-width-three-quarters", id = "parent-company-location", @name = "parentCompanyLocation", aria_describedby = "parentcompanylocation-error" })
+                                                @Html.TextBoxFor(m => m.ParentCompanyLocation, new { @class = "govuk-input govuk-input--error govuk-!-width-three-quarters", id = "parentcompanylocation", @name = "parentCompanyLocation", aria_describedby = "parentcompanylocation-error" })
 
                                             </div>
                                         }
                                         else
                                         {
                                             <div class="govuk-form-group">
-                                                <label class="govuk-label govuk-label--m" for="parent-company-location">
+                                                <label class="govuk-label govuk-label--m" for="parentcompanylocation">
                                                     Country of parent company
                                                 </label>
 
-                                                @Html.TextBoxFor(m => m.ParentCompanyLocation, new { @class = "govuk-input govuk-!-width-three-quarters", id = "parent-company-location", @name = "parentCompanyLocation" })
+                                                @Html.TextBoxFor(m => m.ParentCompanyLocation, new { @class = "govuk-input govuk-!-width-three-quarters", id = "parentcompanylocation", @name = "parentCompanyLocation" })
 
                                             </div>
                                         }
