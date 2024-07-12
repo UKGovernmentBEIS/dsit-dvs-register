@@ -163,7 +163,7 @@ namespace DVSRegister.Controllers
                 string Email = HttpContext?.Session.Get<string>("Email");
                 var mfaConfirmationCheckResponse = await _signUpService.ConfirmMFAToken(Session, Email, loginPageViewModel.MFACode);
 
-                if (mfaConfirmationCheckResponse.IdToken.Length > 0)
+                if (mfaConfirmationCheckResponse!=null && mfaConfirmationCheckResponse.IdToken.Length > 0)
                 {
                     HttpContext?.Session.Set("IdToken", mfaConfirmationCheckResponse.IdToken);
                     HttpContext?.Session.Set("AccessToken", mfaConfirmationCheckResponse.AccessToken);
@@ -171,7 +171,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("MFACode", "Wrong MFA Code Provided from Authenticator App");
+                    ModelState.AddModelError("MFACode", "Wrong MFA Code provided from Authenticator App");
                     return View("MFAConfirmation", loginPageViewModel);
                 }
             }
