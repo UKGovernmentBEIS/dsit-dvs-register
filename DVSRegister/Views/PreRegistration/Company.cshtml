@@ -24,12 +24,12 @@
                 <h1 class="govuk-heading-xl">Provide an overview of your company</h1>
                 <p class="govuk-body">Please provide us with information about your company.</p>
 
-                <div class="alert">
+                <div class="alert"> 
                     <h2 class="govuk-heading-s">
                         Some of this information will be made public
                     </h2>
                     <p class="govuk-body">
-                        If your application is successful, your company’s registered name and trading name(s) will be publicly available on the register of digital identity and attribute service providers.
+                        If your application is successful, your company’s registered name and trading names will be publicly available on the register of digital identity and attribute services.
                     </p>
                 </div>
 
@@ -68,10 +68,10 @@
                     {
                         <div class="govuk-form-group govuk-form-group--error">
                             <label class="govuk-label govuk-label--m" for="tradingname">
-                                Trading name(s)
+                                Trading names
                             </label>
                             <div id="trading-name-hint" class="govuk-hint">
-                                For example, YOUR COMPANY UK SERVICES LTD
+                                For example, YOUR COMPANY EXPRESS. If the trading name is the same as the registered name, enter it again here.
                             </div>
                             <p class="govuk-error-message" id="tradingname-error">
                                 <span class="govuk-visually-hidden">Error: </span>@Html.ValidationMessageFor(m => m.TradingName, "", new { @class = "govuk-error-message" })
@@ -83,10 +83,10 @@
                     {
                         <div class="govuk-form-group">
                             <label class="govuk-label govuk-label--m" for="tradingname">
-                                Trading name(s)
+                                Trading names
                             </label>
                             <div id="trading-name-hint" class="govuk-hint">
-                                For example, YOUR COMPANY UK SERVICES LTD
+                                For example, YOUR COMPANY EXPRESS. If the trading name is the same as the registered name, enter it again here.
                             </div>
                             @Html.TextBoxFor(m => m.TradingName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "tradingname", name = "tradingName", aria_describedby = "trading-name-hint" })
                         </div>
