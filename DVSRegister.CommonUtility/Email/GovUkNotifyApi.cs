@@ -127,11 +127,12 @@ namespace DVSRegister.CommonUtility.Email
 
             var personalisation = new Dictionary<string, dynamic>
             {
-                { template.Timestamp, timestamp  }
+                { template.Timestamp, timestamp },
+                { template.Email , emailAddress}
             };
             var emailModel = new GovUkNotifyEmailModel
             {
-                EmailAddress =  emailAddress,
+                EmailAddress =  govUkNotifyConfig.OfDiaEmailId,
                 TemplateId = template.Id,
                 Personalisation = personalisation
             };
