@@ -53,13 +53,12 @@ namespace DVSRegister.Controllers
                 else
                 {
                     ModelState.AddModelError("Email", "Incorrect Email provided");
-                    return View("SignUp");
+                    return View("EnterEmail");
                 }
             }
-
             else
             {
-                return View("SignUp");
+                return View("EnterEmail");
             };
         }
 
