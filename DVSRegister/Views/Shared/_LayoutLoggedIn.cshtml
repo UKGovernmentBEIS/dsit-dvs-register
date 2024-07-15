@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body class="govuk-frontend-supported govuk-template__body">
+    @{
+        ViewData["ServiceName"] = "Conformity Assessment Body Service";
+        await Html.RenderPartialAsync("_CookieBanner");
+    }
     <header>
         <div class="govuk-header hmrc-header hmrc-header--with-additional-navigation" data-module="govuk-header">
             <div class="govuk-header__container govuk-width-container">
