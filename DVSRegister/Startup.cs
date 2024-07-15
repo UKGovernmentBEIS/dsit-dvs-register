@@ -2,7 +2,7 @@
 using Amazon.S3;
 using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.BusinessLogic;
-using DVSRegister.BusinessLogic.Services;
+using DVSRegister.BusinessLogic.Services.Cookies;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.PreAssessment;
 using DVSRegister.BusinessLogic.Services.PreRegistration;
@@ -14,7 +14,12 @@ using DVSRegister.Data.CAB;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
+using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.Cookies;
 using System.Data.Common;
+using DVSRegister.BusinessLogic.Services;
 
 namespace DVSRegister
 {
@@ -49,6 +54,9 @@ namespace DVSRegister
             ConfigureSession(services);
             ConfigureDvsRegisterServices(services);
             ConfigureAutomapperServices(services);
+            ConfigureCookieService(services);
+            //ConfigureGoogleAnalyticsService(services);
+
             ConfigureS3Client(services);
             ConfigureS3FileWriter(services);
         }
@@ -69,6 +77,7 @@ namespace DVSRegister
                 options.IdleTimeout = TimeSpan.FromMinutes(30); // ToDo:Adjust the timeout
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
         }
 
@@ -81,8 +90,10 @@ namespace DVSRegister
             services.AddScoped<ISignUpService, SignUpService>();
             services.AddScoped<ICabRepository, CabRepository>();
             services.AddScoped<IRegisterRepository, RegisterRepository>();
-            services.AddScoped<IRegisterService, RegisterService>();           
+            services.AddScoped<IRegisterService, RegisterService>();
+            services.AddScoped<IBucketService, BucketService>();
             services.AddScoped<IAVService, AVService>();
+            services.AddSingleton<CookieService>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));
@@ -127,6 +138,21 @@ namespace DVSRegister
                 configuration.GetSection(S3Configuration.ConfigSection));
             services.AddScoped<IBucketService, BucketService>();
             services.AddScoped<S3FileKeyGenerator>();
+        }
+
+        private void ConfigureCookieService(IServiceCollection services)
+        {
+            services.Configure<CookieServiceConfiguration>(
+                configuration.GetSection(CookieServiceConfiguration.ConfigSection));
+
+            // Change the default antiforgery cookie name so it doesn't include Asp.Net for security reasons
+            services.AddAntiforgery(options =>
+            {
+                options.Cookie.Name = "Antiforgery";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
+            services.AddScoped<ICookieService, CookieService>();
         }
     }
 }
