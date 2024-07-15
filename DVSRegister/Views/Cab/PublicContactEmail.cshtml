@@ -1,7 +1,10 @@
 ﻿@model DVSRegister.Models.CAB.CertificateInfoSummaryViewModel
 @{
     ViewData["Title"] = "Public Contact Email";
-    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool isValid = true;
 }
 @using (Html.BeginForm("PublicContactEmailValidation", "Cab", FormMethod.Post))
 {
@@ -14,22 +17,53 @@
                     <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s public contact email </h1>
                     @if (Html.ViewData?.ModelState.ContainsKey("PublicContactEmail") == true && Html.ViewData.ModelState["PublicContactEmail"].Errors.Count > 0)
                     {
+                        isValid = false;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
                                  new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("PublicContactEmail", Html.ViewData.ModelState["PublicContactEmail"]?.Errors))
                     }
                     <p class="govuk-body">This email address will be publicly displayed on the register of digital identity and attribute service providers.</p>
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("PublicContactEmail") && Html.ViewData.ModelState["PublicContactEmail"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
-                        <h1 class="govuk-label-wrapper">
-                            <label class="govuk-label govuk-label--m" for="account-number">
-                                Public contact email
-                            </label>
-                        </h1>
-                        <div id="event-name-hint" class="govuk-hint">
-                            For example, sales@yourcompanyexpress.co.uk
+                    @if(!isValid)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <h1 class="govuk-label-wrapper">
+                                <label class="govuk-label govuk-label--m" for="publiccontactemail">
+                                    Public contact email
+                                </label>
+                            </h1>
+                            <div id="publiccontactemail-hint" class="govuk-hint">
+                                For example, sales@yourcompanyexpress.co.uk
+                            </div>
+                            <p id="publiccontactemail-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>  @Html.ValidationMessageFor(m => m.PublicContactEmail, "", new { @class = "govuk-error-message" })
+                            </p>
+
+                            @Html.TextBoxFor(m => m.PublicContactEmail, new { @class = "govuk-input govuk-input--error govuk-input govuk-!-width-three-quarters",
+                            id = "publiccontactemail",
+                            name = "publiccontactemail-name",
+                            aria_describedby = "publiccontactemail-error"
+                            })
                         </div>
-                        @Html.ValidationMessageFor(m => m.PublicContactEmail, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.PublicContactEmail, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "event-name", name = "eventName" })
-                    </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <h1 class="govuk-label-wrapper">
+                                <label class="govuk-label govuk-label--m" for="publiccontactemail">
+                                    Public contact email
+                                </label>
+                            </h1>
+                            <div id="publiccontactemail-hint" class="govuk-hint">
+                                For example, sales@yourcompanyexpress.co.uk
+                            </div>
+                            @Html.TextBoxFor(m => m.PublicContactEmail, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters",
+                            id = "publiccontactemail",
+                            name = "publiccontactemail-name",
+                            aria_describedby = "publiccontactemail-hint"
+                            })
+                        </div>
+                    }
+
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Continue
                     </button>

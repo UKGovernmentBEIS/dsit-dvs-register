@@ -1,19 +1,21 @@
-﻿using DVSRegister.Extensions;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Models.PreRegistration;
+using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Email;
+using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
-using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.CommonUtility.Models;
-using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.BusinessLogic.Models.PreRegistration;
-using DVSRegister.CommonUtility;
 using Newtonsoft.Json;
-using DVSRegister.CommonUtility.Email;
+using System.Security.Claims;
 
 
 namespace DVSRegister.Controllers
 {
     [Route("cab-service")]
+    [ValidCognitoToken]
     public class CabController : Controller
     {
     
@@ -48,7 +50,7 @@ namespace DVSRegister.Controllers
 
         [HttpGet("check-unique-reference-number")]
         public IActionResult CheckURNStartPage()
-        {
+        {           
             return View();
         }
 
@@ -476,9 +478,7 @@ namespace DVSRegister.Controllers
         public IActionResult SaveHasSupplementaryScheme(CertificateInfoSummaryViewModel viewModel)
         {
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
-            bool fromSummaryPage = viewModel.FromSummaryPage;
-            //if (viewModel.HasSupplementarySchemes == null)
-            //    ModelState.AddModelError("HasSupplementarySchemes", Constants.SupplementarySchemeErrorMessage);
+            bool fromSummaryPage = viewModel.FromSummaryPage;           
             if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
             {
                 summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
@@ -579,10 +579,8 @@ namespace DVSRegister.Controllers
                         // GenericResponse avServiceResponse = avService.ScanFileForVirus(memoryStream);
 
                         if (avServiceResponse.Success)
-                        {
-                            //TODO:  uncomment service call once aws provisioned
-                            GenericResponse genericResponse = new GenericResponse { Success = true, Data = "YotiCertificate.pdf" };
-                            // GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                        {                        
+                            GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
                             if (genericResponse.Success)
                             {
                                 CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
@@ -718,9 +716,15 @@ namespace DVSRegister.Controllers
         [HttpPost("submit-certificate-information/check-your-answers")]
         public async Task<IActionResult> SaveSummaryAndSubmit()
         {
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
-            CertificateInfoDto certificateInfoDto = MapViewModelToDto(summaryViewModel);
-            GenericResponse genericResponse = await cabService.SaveCertificateInformation(certificateInfoDto);
+            string cab = string.Empty;
+            var identity = HttpContext?.User.Identity as ClaimsIdentity;
+            var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
+            if(profileClaim != null)
+                cab = profileClaim.Value;
+            ProviderDto providerDto = MapViewModelToDto(summaryViewModel, cab, email);
+            GenericResponse genericResponse = await cabService.SaveCertificateInformation(providerDto);
             if (genericResponse.Success)
             {
                 return RedirectToAction("InformationSubmitted");
@@ -739,12 +743,38 @@ namespace DVSRegister.Controllers
         [HttpGet("submit-certificate-information/information-submitted")]
         public async Task<IActionResult> InformationSubmitted()
         {
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;            
+            HttpContext?.Session.Remove("CertificateInfoSummary");           
             ViewBag.Email = email;
-            bool emailSent = await emailSender.SendEmailCabInformationSubmitted(email, email);
-            if (emailSent)
-                return View();
-            else return RedirectToAction(Constants.CabRegistrationErrorPath);
+            await emailSender.SendEmailCabInformationSubmitted(email, email);
+            return View();
+           
+        }
+
+        /// <summary>
+        /// download from s3
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+
+        [HttpGet("download-certificate")]
+        public async Task<IActionResult> DownloadCertificate(string key, string filename)
+        {
+            try
+            {
+                byte[]? fileContent = await bucketService.DownloadFileAsync(key);
+
+                if (fileContent == null || fileContent.Length == 0)
+                {
+                    return RedirectToAction(Constants.CabRegistrationErrorPath);
+                }
+                string contentType = "application/octet-stream";
+                return File(fileContent, contentType, filename);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(Constants.CabRegistrationErrorPath);
+            }
         }
 
         /// <summary>
@@ -783,8 +813,17 @@ namespace DVSRegister.Controllers
 
         }
 
-        private CertificateInfoDto MapViewModelToDto(CertificateInfoSummaryViewModel model)
+        private ProviderDto MapViewModelToDto(CertificateInfoSummaryViewModel model, string cab, string email)
         {
+            ProviderDto providerDto = new ProviderDto();
+            providerDto.RegisteredName = model.RegisteredName??string.Empty;
+            providerDto.TradingName = model.TradingName??string.Empty;
+            providerDto.PublicContactEmail = model.PublicContactEmail??string.Empty;
+            providerDto.TelephoneNumber = model.TelephoneNumber??string.Empty;
+            providerDto.WebsiteAddress = model.WebsiteAddress??string.Empty;
+            providerDto.Address = model.Address??string.Empty;            
+            providerDto.ProviderStatus = ProviderStatusEnum.Unpublished;
+            providerDto.PreRegistrationId = Convert.ToInt32(model.PreRegistrationId);
             CertificateInfoDto certificateInfoDto = new CertificateInfoDto();
             ICollection<CertificateInfoRoleMappingDto> certificateInfoRoleMappings = new List<CertificateInfoRoleMappingDto>();
             ICollection<CertificateInfoIdentityProfileMappingDto> certificateInfoIdentityProfileMappings = new List<CertificateInfoIdentityProfileMappingDto>();
@@ -801,13 +840,7 @@ namespace DVSRegister.Controllers
             {
                 certificateInfoSupSchemeMappings.Add(new CertificateInfoSupSchemeMappingDto { SupplementarySchemeId = item.Id });
             }
-            certificateInfoDto.PreRegistrationId= Convert.ToInt32(model.PreRegistrationId);
-            certificateInfoDto.RegisteredName = model.RegisteredName??string.Empty;
-            certificateInfoDto.TradingName = model.TradingName??string.Empty;
-            certificateInfoDto.PublicContactEmail = model.PublicContactEmail??string.Empty;
-            certificateInfoDto.TelephoneNumber = model.TelephoneNumber??string.Empty;
-            certificateInfoDto.WebsiteAddress = model.WebsiteAddress??string.Empty;
-            certificateInfoDto.Address = model.Address??string.Empty;
+           
             certificateInfoDto.ServiceName = model.ServiceName??string.Empty;
             certificateInfoDto.CertificateInfoRoleMappings = certificateInfoRoleMappings;
             certificateInfoDto.CertificateInfoIdentityProfileMappings = certificateInfoIdentityProfileMappings;
@@ -819,7 +852,12 @@ namespace DVSRegister.Controllers
             certificateInfoDto.ConformityExpiryDate = Convert.ToDateTime(model.ConformityExpiryDate);
             certificateInfoDto.CreatedDate = DateTime.UtcNow;
             certificateInfoDto.CertificateInfoStatus = CertificateInfoStatusEnum.Received;
-            return certificateInfoDto;
+            certificateInfoDto.CreatedBy = email;
+            certificateInfoDto.SubmittedCAB = cab;
+            ICollection<CertificateInfoDto> certificateInfoList = new List<CertificateInfoDto>();
+            certificateInfoList.Add(certificateInfoDto);
+            providerDto.CertificateInformation = certificateInfoList;
+            return providerDto;
 
         }
 

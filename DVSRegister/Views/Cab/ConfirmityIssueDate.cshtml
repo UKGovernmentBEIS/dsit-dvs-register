@@ -1,7 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.DateViewModel
 @{
-    ViewData["Title"] = "CertificateConfirmityIssueDate";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Certificate Confirmity Issue Date";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
 @{
@@ -23,6 +23,7 @@
                 @if (ViewData.ModelState.ErrorCount >0)
                 {
                     hasError = true;
+                    ViewData["Title"] = "Error: " + ViewData["Title"];
                     @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                     if ((Html.ViewData.ModelState.ContainsKey("ValidDate") && Html.ViewData.ModelState["ValidDate"].Errors.Count > 0))
                     {

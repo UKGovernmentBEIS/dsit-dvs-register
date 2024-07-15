@@ -10,6 +10,8 @@ namespace DVSRegister.Models.CAB
         public string Code { get; set; }
 
         public string? Email { get; set; }
+
+        public bool? PasswordReset { get; set; }
     }
 }
 

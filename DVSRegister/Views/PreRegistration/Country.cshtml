@@ -1,7 +1,7 @@
 ﻿@model DVSRegister.Models.CountryViewModel
 @using Newtonsoft.Json
 @{
-    ViewData["Title"] = "Country";
+    ViewData["Title"] = "List all the countries and territories your company currently trades in";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -13,6 +13,11 @@
     else
     {
         <nav>@Html.ActionLink("Back", "Sponsor", "PreRegistration", null, new { @class = "govuk-back-link" })</nav>
+    }
+    @if (ViewData.ModelState.ErrorCount > 0)
+    {
+        ViewData["Title"] = "Error: " + ViewData["Title"];
+        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
     }
     <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
@@ -27,7 +32,7 @@
 
 
                     <div class="govuk-form-group">
-                        <fieldset class="govuk-fieldset">
+                        <fieldset class="govuk-fieldset" id="selectedcountryids">
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
                                 <span class="govuk-caption-l">
                                     Page 3 of 5
@@ -40,7 +45,7 @@
 
                             <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
 
-                            @Html.ValidationMessageFor(m => m.SelectedCountryIds, "", new { @class = "govuk-error-message" })
+                            @Html.ValidationMessageFor(m => m.SelectedCountryIds, "", new { @class = "govuk-error-message", id = "selectedcountryids-error" })
                             @foreach (var group in groupedCountries)
                             {
                                 <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">

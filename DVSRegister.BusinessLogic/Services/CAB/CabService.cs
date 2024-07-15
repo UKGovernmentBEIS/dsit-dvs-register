@@ -48,12 +48,12 @@ namespace DVSRegister.BusinessLogic.Services.CAB
 
 
 
-        public async Task<GenericResponse> SaveCertificateInformation(CertificateInfoDto certificateInfo)
+        public async Task<GenericResponse> SaveCertificateInformation(ProviderDto providerDto)
         {
-
-            CertificateInformation certificateInformation = new CertificateInformation();
-            automapper.Map(certificateInfo, certificateInformation);
-            GenericResponse genericResponse = await cabRepository.SaveCertificateInformation(certificateInformation);
+            Provider provider = new Provider();
+            automapper.Map(providerDto, provider);
+            GenericResponse genericResponse = await cabRepository.SaveCertificateInformation(provider);
+            genericResponse.EmailSent = await emailSender.SendCertificateInfoSubmittedToDSIT();
             return genericResponse;
         }
 

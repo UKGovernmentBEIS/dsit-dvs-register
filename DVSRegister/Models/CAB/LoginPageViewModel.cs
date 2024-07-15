@@ -18,5 +18,6 @@ namespace DVSRegister.Models.CAB
         [Required]
         [RegularExpression("^[0-9]{6}$", ErrorMessage = "The MFA code must be a 6-digit number.")]
         public string MFACode { get; set; }
+        public bool? PasswordReset { get; set; }
     }
 }

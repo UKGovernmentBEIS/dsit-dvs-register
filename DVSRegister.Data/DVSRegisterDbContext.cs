@@ -24,11 +24,27 @@ namespace DVSRegister.Data
         public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }
         public DbSet<CertificateInfoSupSchemeMapping> CertificateInfoSupSchemeMappings { get; set; }
 
+        public DbSet<CertificateReview> CertificateReview { get; set; }
+        public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; }
+        public DbSet<CertificateReviewRejectionReasonMappings> CertificateReviewRejectionReasonMappings { get; set; }
+        public DbSet<Provider> Provider { get; set; }
+        public DbSet<ConsentToken> ConsentToken { get; set; }
+        public DbSet<RegisterPublishLog> RegisterPublishLog { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //For all entities donot change ids, add new entries at the end only              
+             modelBuilder.Entity<Provider>()
+            .HasGeneratedTsVectorColumn( p => p.SearchVector,  "english", p => new { p.RegisteredName, p.TradingName })  
+            .HasIndex(p => p.SearchVector)
+            .HasMethod("GIN"); 
 
-                modelBuilder.Entity<Role>().HasData(
+            modelBuilder.Entity<CertificateReviewRejectionReason>().HasData(
+            new CertificateReviewRejectionReason { Id =1, Reason = "Information is missing from the certificate" },
+            new CertificateReviewRejectionReason { Id =2, Reason = "The certificate contains invalid information" },
+            new CertificateReviewRejectionReason { Id =3, Reason = "The information submitted does not match the information on the certificate" },
+            new CertificateReviewRejectionReason { Id =4, Reason = "The certificate or information submitted contains errors" },
+            new CertificateReviewRejectionReason { Id =5, Reason = "Other" });
+            modelBuilder.Entity<Role>().HasData(
                 new Role { Id =1, RoleName = "Identity Service Provider (IDSP)" },
                 new Role { Id =2, RoleName = "Attribute Service Provider (ASP)" },
                 new Role { Id =3, RoleName = "Orchestration Service Provider (OSP)" });

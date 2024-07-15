@@ -1,0 +1,159 @@
+﻿@model ProviderDetailsViewModel
+@using DVSRegister.Extensions;
+@{
+    ViewData["Title"] = "Provider details";
+    Layout = "~/Views/Shared/_Layout_Register.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "Register", "Register", new { FromDeatilsPage  = true}, new { @class = "govuk-back-link" })
+   
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">@Model.Provider.TradingName</h1>
+                <h2 class="govuk-heading-m">Registered Name:@Model.Provider.TradingName</h2>
+                <p class="govuk-body govuk-!-margin-bottom-7">  Last updated @Model.LastUpdated </p>
+
+                <h2 class="govuk-heading-m">Basic information</h2>
+                <hr class="govuk-section-break govuk-section-break--visible">
+                <dl class="govuk-summary-list govuk-!-margin-bottom-8">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Public contact email
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.Provider.PublicContactEmail
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Telephone number
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.Provider.TelephoneNumber
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Website address
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.Provider.WebsiteAddress
+                        </dd>
+                    </div>
+                </dl>
+
+
+                @foreach (var service in Model.Provider.CertificateInformation)
+                {
+                    
+                    <h2 class="govuk-heading-m">Service @service.ServiceNumber: @service.ServiceName</h2>
+                    <hr class="govuk-section-break govuk-section-break--visible">
+                    <dl class="govuk-summary-list govuk-!-margin-bottom-8">
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Company address details
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @HtmlExtensions.ToStringWithLineBreaks(Model.Provider.Address)
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Name of service
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @service.ServiceName
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Role(s) certified against
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @foreach (var item in service.Roles)
+                                {
+                                    <div>@item.RoleName</div>
+                                }
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Identity profiles
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @foreach (var item in service.IdentityProfiles)
+                                {
+                                    <div>@item.IdentityProfileName</div>
+                                }
+                            </dd>
+                        </div>
+
+                        @if (service.HasSupplementarySchemes && service.SupplementarySchemes!=null)
+                        {
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Supplementary schemes
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @foreach (var item in service.SupplementarySchemes)
+                                    {
+                                        <div>@item.SchemeName</div>
+                                    }
+                                </dd>
+                            </div>
+
+                        }
+                    
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Certificate of conformity's date of expiry
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @DateTimeExtensions.FormatDateTime(@service.ConformityExpiryDate, "dd MMMM yyyy")
+                            </dd>
+                        </div>
+                    </dl>
+
+
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-two-thirds">
+                            <h2 class="govuk-heading-m">Service @service.ServiceNumber certificate of conformity</h2>                           
+                            <p class="govuk-body govuk-!-margin-bottom-2">
+                                <span class="govuk-hint">
+                                    PDF, 19.5 KB, 1 page
+                                </span>
+                            </p>
+                            <p class="govuk-body">
+                                <span class="govuk-hint">
+                                    This file may not be suitable for users of assistive technology.
+                                </span>
+                            </p>
+
+                            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="downloadCertificate">
+                                Download certificate of conformity
+                            </button>
+                        </div>
+                    </div>
+
+                    <hr class="govuk-section-break govuk-section-break--m">
+                }
+
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-7">
+                <h3 class="govuk-heading-m">Explore the topic</h3>
+                <ul class="govuk-list">
+                    <li><a href="{URL}" class="govuk-link">Role type</a></li>
+                    <li><a href="{URL}" class="govuk-link">Identity profiles</a></li>
+                    <li><a href="{URL}" class="govuk-link">Supplementary schemes</a></li>
+                </ul>
+
+            </div>
+        </div>
+    </main>
+
+</div>
+
+

@@ -7,6 +7,8 @@
 
 @using (Html.BeginForm("EnterCodeValidation", "Login", FormMethod.Post))
 {
+    @Html.HiddenFor(m=>m.PasswordReset)
+   
     <div class="govuk-width-container">
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
@@ -35,7 +37,7 @@
                     </button>
 
                     <br />
-                    <a href="~/login" class="govuk-button govuk-button--secondary">Send code again</a>
+                    <a href="~/cab-application-registration/enter-email" class="govuk-button govuk-button--secondary">Send code again</a>
 
                     <details class="govuk-details">
                         <summary class="govuk-details__summary">

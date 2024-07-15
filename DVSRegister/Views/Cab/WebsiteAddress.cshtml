@@ -1,7 +1,10 @@
 ﻿@model DVSRegister.Models.CAB.CertificateInfoSummaryViewModel
 @{
     ViewData["Title"] = "Website Address";
-    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool isValid = true;
 }
 @using (Html.BeginForm("WebsiteAddressValidation", "Cab", FormMethod.Post))
 {
@@ -14,22 +17,44 @@
                     <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s website address </h1>
                     @if (Html.ViewData?.ModelState.ContainsKey("WebsiteAddress") == true && Html.ViewData.ModelState["WebsiteAddress"].Errors.Count > 0)
                     {
+                        isValid = false;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
                                  new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("WebsiteAddress", Html.ViewData.ModelState["WebsiteAddress"]?.Errors))
                     }
                     <p class="govuk-body">This website address will be publicly displayed on the register of digital identity and attribute service providers.</p>
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("WebsiteAddress") && Html.ViewData.ModelState["WebsiteAddress"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                    @if(!isValid)
+                    {
+                    <div class="govuk-form-group govuk-form-group--error">
                         <h1 class="govuk-label-wrapper">
-                            <label class="govuk-label govuk-label--m" for="account-number">
+                            <label class="govuk-label govuk-label--m" for="websiteaddress">
                                 Website address
                             </label>
                         </h1>
-                        <div id="event-name-hint" class="govuk-hint">
+                        <div id="websiteaddress-hint" class="govuk-hint">
                             For example, www.yourcompanyexpress.co.uk
                         </div>
-                        @Html.ValidationMessageFor(m => m.WebsiteAddress, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.WebsiteAddress, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "event-name", name = "eventName" })
+                        <p id="websiteaddress-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span>  @Html.ValidationMessageFor(m => m.WebsiteAddress, "", new { @class = "govuk-error-message" })
+                        </p>
+                        @Html.TextBoxFor(m => m.WebsiteAddress, new { @class = "govuk-input govuk-input--error govuk-input govuk-!-width-three-quarters", id = "websiteaddress", name = "websiteaddress-name", aria_describedby = "websiteaddress-error" })
                     </div>
+                    }
+                    else
+                    {
+                         <div class="govuk-form-group">
+                        <h1 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--m" for="websiteaddress">
+                                Website address
+                            </label>
+                        </h1>
+                        <div id="websiteaddress-hint" class="govuk-hint">
+                            For example, www.yourcompanyexpress.co.uk
+                        </div>                        
+                        @Html.TextBoxFor(m => m.WebsiteAddress, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters", id = "websiteaddress", name = "websiteaddress-name", aria_describedby = "websiteaddress-hint" })
+                    </div>
+                    }
+                   
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Continue
                     </button>

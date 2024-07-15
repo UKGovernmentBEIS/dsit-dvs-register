@@ -1,13 +1,13 @@
 ﻿@model DVSRegister.Models.CAB.LoginPageViewModel
 @{
-    ViewData["Title"] = "Sign Up";
+    ViewData["Title"] = "Enter email";
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
 }
 
 
 @using (Html.BeginForm("EnterEmail", "Login", FormMethod.Post))
 {
-
+   @Html.HiddenFor(m=>m.PasswordReset)
     <div class="govuk-width-container">
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">

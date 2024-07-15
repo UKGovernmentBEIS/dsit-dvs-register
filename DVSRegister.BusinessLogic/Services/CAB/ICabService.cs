@@ -6,7 +6,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
 {
     public interface ICabService
     {
-        public Task<GenericResponse> SaveCertificateInformation(CertificateInfoDto certificateInfo);
+        public Task<GenericResponse> SaveCertificateInformation(ProviderDto providerDto);
         public Task<bool> ValidateURN(string URN, string cabUserId);
         public Task<PreRegistrationDto> GetPreRegistrationDetails(string URN);
 

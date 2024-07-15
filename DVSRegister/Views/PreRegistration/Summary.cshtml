@@ -1,18 +1,24 @@
 ﻿@model DVSRegister.Models.SummaryViewModel
 @{
-    ViewData["Title"] = "Summary";
+    ViewData["Title"] = "Check your answers before sending your application";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @using (Html.BeginForm("SaveSummaryAndSubmit", "PreRegistration", FormMethod.Post))
 {
-    bool hideCountries = ViewBag.HideCountries??false;
-    bool hasParentCompany = Convert.ToBoolean(@Model.CompanyViewModel.HasParentCompany);  
+    bool hideCountries = ViewBag.HideCountries ?? false;
+    bool hasParentCompany = Convert.ToBoolean(@Model.CompanyViewModel.HasParentCompany);
     string hasParentCompanyValue = hasParentCompany ? "Yes" : "No";
     bool isApplicationSponsor = Convert.ToBoolean(Model.IsApplicationSponsor);
     string redirectView = isApplicationSponsor ? "Contact" : "Sponsor";
     <div class="govuk-width-container">
         @Html.ActionLink("Back", "Company", "PreRegistration", null, new { @class = "govuk-back-link" })
+        @if (Html.ViewData?.ModelState.ContainsKey("ConfirmAccuracy") == true && Html.ViewData.ModelState["ConfirmAccuracy"].Errors.Count > 0)
+        {
+            ViewData["Title"] = "Error: " + ViewData["Title"];
+            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ConfirmAccuracy", Html.ViewData.ModelState["ConfirmAccuracy"]?.Errors))
+        }
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -36,7 +42,7 @@
                                             @Model.SponsorViewModel.SponsorFullName
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "Sponsor", "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                            @Html.ActionLink("Change", "Sponsor", "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link", aria_label = "change application sponsor full name" })
                                         </dd>
                                     </div>
                                     <div class="govuk-summary-list__row">
@@ -47,7 +53,7 @@
                                             @Model.SponsorViewModel.SponsorJobTitle
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "Sponsor", "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                            @Html.ActionLink("Change", "Sponsor", "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link", aria_label = "change application sponsor job title" })
                                         </dd>
                                     </div>
                                     <div class="govuk-summary-list__row">
@@ -58,7 +64,7 @@
                                             @Model.SponsorViewModel.SponsorEmail
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "Sponsor", "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                            @Html.ActionLink("Change", "Sponsor", "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link", aria_label = "change application sponsor email" })
                                         </dd>
                                     </div>
                                     <div class="govuk-summary-list__row">
@@ -69,7 +75,7 @@
                                             @Model.SponsorViewModel.SponsorTelephoneNumber
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "Sponsor", "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                            @Html.ActionLink("Change", "Sponsor", "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link", aria_label = "change application sponsor telephone number" })
                                         </dd>
                                     </div>
                                 </dl>
@@ -93,7 +99,7 @@
                                         @Model?.SponsorViewModel?.ContactViewModel?.FullName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", redirectView, "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", redirectView, "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link", aria_label = "change your full name" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -104,7 +110,7 @@
                                         @Model?.SponsorViewModel?.ContactViewModel?.JobTitle
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", redirectView, "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", redirectView, "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link", aria_label = "change your job title" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -115,7 +121,7 @@
                                         @Model?.SponsorViewModel?.ContactViewModel?.Email
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", redirectView, "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", redirectView, "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link", aria_label = "change your email" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -126,7 +132,7 @@
                                         @Model?.SponsorViewModel?.ContactViewModel?.TelephoneNumber
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", redirectView, "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", redirectView, "PreRegistration", new { fromSummaryPage = true }, new { @class = "govuk-link", aria_label = "change your telephone number" })
                                     </dd>
                                 </div>
                             </dl>
@@ -134,7 +140,7 @@
                     </div>
 
 
-                    @if (Model.CountryViewModel.SelectedCountries.Count<=15)
+                    @if (Model.CountryViewModel.SelectedCountries.Count <= 15)
                     {
                         <div class="govuk-summary-card">
                             <div class="govuk-summary-card__title-wrapper">
@@ -159,11 +165,11 @@
                                     <li class="govuk-summary-card__action">
                                         @if (!hideCountries)
                                         {
-                                            @Html.ActionLink("Show All", "ShowHideCountries", "PreRegistration", new { hideCountries = true }, new { @class = "govuk-link" })
+                                            @Html.ActionLink("Show All", "ShowHideCountries", "PreRegistration", new { hideCountries = true }, new { @class = "govuk-link", aria_label = "Show all countries selected" })
                                         }
                                         else
                                         {
-                                            @Html.ActionLink("Hide All", "ShowHideCountries", "PreRegistration", new { hideCountries = false }, new { @class = "govuk-link" })
+                                            @Html.ActionLink("Hide All", "ShowHideCountries", "PreRegistration", new { hideCountries = false }, new { @class = "govuk-link", aria_label = "Hide all countries selected" })
                                         }
 
 
@@ -192,8 +198,9 @@
                         <strong class="govuk-warning-text__text">
                             <span class="govuk-visually-hidden">Warning</span>
                             If your application is successful, your company’s registered name and trading
-                            name(s) will be publicly available on the register of digital identity and attribute
-                            service providers.
+                            names will be publicly available on the register of digital identity and attribute
+                            services.
+
                         </strong>
                     </div>
 
@@ -209,24 +216,24 @@
                             <dl class="govuk-summary-list">
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
-                                        Registered Name
+                                        Registered name
                                     </dt>
                                     <dd class="govuk-summary-list__value">
                                         @Model.CompanyViewModel.RegisteredCompanyName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "Company", "PreRegistration",null, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "Company", "PreRegistration", null, new { @class = "govuk-link", aria_label = "change you company's registered name" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
-                                        Trading name(s)
+                                        Trading names
                                     </dt>
                                     <dd class="govuk-summary-list__value">
                                         @Model.CompanyViewModel.TradingName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "Company", "PreRegistration",null, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "Company", "PreRegistration", null, new { @class = "govuk-link", aria_label = "change you company's trading name(s)" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -239,7 +246,7 @@
                                         @Model.CompanyViewModel.CompanyRegistrationNumber
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "Company", "PreRegistration", null, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "Company", "PreRegistration", null, new { @class = "govuk-link", aria_label = "change you company's Companies House or charity registration number" })
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -250,7 +257,7 @@
                                         @hasParentCompanyValue
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "Company", "PreRegistration",null, new { @class = "govuk-link" })
+                                        @Html.ActionLink("Change", "Company", "PreRegistration", null, new { @class = "govuk-link", aria_label = "change option for your parent company" })
                                     </dd>
                                 </div>
                                 @if (hasParentCompany)
@@ -263,7 +270,7 @@
                                             @Model.CompanyViewModel.ParentCompanyRegisteredName
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "Company", "PreRegistration", new { @class = "govuk-link" })
+                                            @Html.ActionLink("Change", "Company", "PreRegistration", null, new { @class = "govuk-link", aria_label = "change registered name of parent company" })
                                         </dd>
                                     </div>
                                     <div class="govuk-summary-list__row">
@@ -274,7 +281,7 @@
                                             @Model.CompanyViewModel.ParentCompanyLocation
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "Company", "PreRegistration", new { @class = "govuk-link" })
+                                            @Html.ActionLink("Change", "Company", "PreRegistration", null, new { @class = "govuk-link", aria_label = "change country of parent company" })
                                         </dd>
                                     </div>
                                 }
@@ -282,23 +289,27 @@
                             </dl>
                         </div>
                     </div>
+                    <p class="govuk-body">
+                        You will not be able to view your answers once you’ve submitted your application, so you should make a note of the information if required.
+                    </p>
                 </div>
             </div>
 
-            @Html.ValidationMessageFor(m => m.ConfirmAccuracy, "", new { @class = "govuk-error-message" })
+            @Html.ValidationMessageFor(m => m.ConfirmAccuracy, "", new { @class = "govuk-error-message", id = "confirmaccuracy-error" })
+            
             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                 <div class="govuk-checkboxes__item">
 
-                    @Html.CheckBoxFor(m => m.ConfirmAccuracy, new { @class = "govuk-checkboxes__input", id = "confirm-accuracy" })
+                    @Html.CheckBoxFor(m => m.ConfirmAccuracy, new { @class = "govuk-checkboxes__input", id = "confirm-accuracy", aria_describedby = "confirmaccuracy-error" })
                     <label class="govuk-label govuk-checkboxes__label" for="confirm-accuracy">
                         By submitting this form, I confirm that to the best of my knowledge<br />
                         the information I have provided is correct.
                     </label>
                 </div>
             </div>
-           
+
             <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
-                Confirm and Continue
+                Confirm and continue
             </button>
         </main>
     </div>

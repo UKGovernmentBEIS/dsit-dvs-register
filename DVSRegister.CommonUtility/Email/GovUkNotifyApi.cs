@@ -127,11 +127,12 @@ namespace DVSRegister.CommonUtility.Email
 
             var personalisation = new Dictionary<string, dynamic>
             {
-                { template.Timestamp, timestamp  }
+                { template.Timestamp, timestamp },
+                { template.Email , emailAddress}
             };
             var emailModel = new GovUkNotifyEmailModel
             {
-                EmailAddress =  emailAddress,
+                EmailAddress =  govUkNotifyConfig.OfDiaEmailId,
                 TemplateId = template.Id,
                 Personalisation = personalisation
             };
@@ -155,5 +156,22 @@ namespace DVSRegister.CommonUtility.Email
             return await SendEmail(emailModel);
         }
 
+        public async Task<bool> SendCertificateInfoSubmittedToDSIT()
+        {
+            var template = govUkNotifyConfig.CabSubmittedDSITEmailTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.LoginLink,  govUkNotifyConfig.LoginLink}
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                TemplateId = template.Id,
+                EmailAddress =  govUkNotifyConfig.OfDiaEmailId,
+                Personalisation = personalisation
+
+            };
+            return await SendEmail(emailModel);
+        }
     }
 }

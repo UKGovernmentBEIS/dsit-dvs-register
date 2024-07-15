@@ -12,15 +12,9 @@ namespace DVSRegister.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("PreRegistration")]
-        public int PreRegistrationId { get; set; }
-        public PreRegistration PreRegistration { get; set; }
-        public string RegisteredName { get; set; }
-        public string TradingName { get; set; }
-        public string PublicContactEmail { get; set; }
-        public string TelephoneNumber { get; set; }
-        public string WebsiteAddress { get; set; }
-        public string Address { get; set; }
+        [ForeignKey("Provider")]
+        public int ProviderId { get; set; }
+        public Provider Provider { get; set; }
         public string ServiceName { get; set; }
         public ICollection<CertificateInfoRoleMapping> CertificateInfoRoleMappings { get; set; }
         public ICollection<CertificateInfoIdentityProfileMapping> CertificateInfoIdentityProfileMappings { get; set; }
@@ -32,5 +26,6 @@ namespace DVSRegister.Data.Entities
         public DateTime ConformityIssueDate { get; set; }
         public DateTime ConformityExpiryDate { get; set; }
         public CertificateInfoStatusEnum CertificateInfoStatus { get;set; }
+        public string? SubmittedCAB { get; set; }
     }
 }

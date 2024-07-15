@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>b1586965-8e26-47e7-95b9-39870821933f</UserSecretsId>
+    <ScopedCssEnabled>false</ScopedCssEnabled>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
@@ -16,9 +17,11 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.6.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
     <PackageReference Include="libphonenumber-csharp" Version="8.13.33" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DVSRegister.BusinessLogic\DVSRegister.BusinessLogic.csproj" />
@@ -32,10 +35,12 @@
   <ItemGroup>
     <Folder Include="wwwroot\css\settings\" />
     <Folder Include="wwwroot\css\components\" />
+    <Folder Include="wwwroot\css\utilities\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\css\settings\" />
     <Content Remove="wwwroot\css\components\" />
+    <Content Remove="wwwroot\css\utilities\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Views\PartialViews\_ErrorSummaryView.cshtml" />
