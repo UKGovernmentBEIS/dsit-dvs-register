@@ -3,6 +3,7 @@ using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
+using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,28 +32,28 @@ namespace DVSRegister.Controllers
         {
             if(passwordReset) 
             {
-                LoginPageViewModel loginPageViewModel = new LoginPageViewModel();
-                loginPageViewModel.PasswordReset = passwordReset;
-                return View("EnterEmail", loginPageViewModel);
+                EnterEmailViewModel enterEmailViewModel = new EnterEmailViewModel();
+                enterEmailViewModel.PasswordReset = passwordReset;
+                return View("EnterEmail", enterEmailViewModel);
             }
             return View("EnterEmail");
         }
 
         [HttpPost("enter-email")]
-        public async Task<IActionResult> EnterEmailAsync(LoginPageViewModel loginPageViewModel)
+        public async Task<IActionResult> EnterEmailAsync(EnterEmailViewModel enterEmailViewModel)
         {
             if (ModelState["Email"].Errors.Count == 0)
             {
-                var forgotPasswordResponse = await _signUpService.ForgotPassword(loginPageViewModel.Email);
+                var forgotPasswordResponse = await _signUpService.ForgotPassword(enterEmailViewModel.Email);
 
                 if (forgotPasswordResponse == "OK")
                 {
-                    HttpContext.Session?.Set("Email", loginPageViewModel.Email);
-                    return RedirectToAction("EnterCode", "Login", new { passwordReset = loginPageViewModel.PasswordReset});
+                    HttpContext.Session?.Set("Email", enterEmailViewModel.Email);
+                    return RedirectToAction("EnterCode", "Login", new { passwordReset = enterEmailViewModel.PasswordReset});
                 }
                 else
                 {
-                    ModelState.AddModelError("Email", "Incorrect Email provided");
+                    ModelState.AddModelError("Email", forgotPasswordResponse);
                     return View("EnterEmail");
                 }
             }

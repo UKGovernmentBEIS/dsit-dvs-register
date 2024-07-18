@@ -2,12 +2,8 @@
 
 namespace DVSRegister.Models.CAB
 {
-    public class LoginPageViewModel
-    {
-        [Required(ErrorMessage = "Enter an email address in the correct format, like name@example.com.")]
-        [EmailAddress(ErrorMessage = "Enter an email address in the correct format, like name@example.com.")]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid email address")]
-        public string Email { get; set; }
+    public class LoginPageViewModel :EnterEmailViewModel
+    {      
 
 
         [Required(ErrorMessage = "Enter a valid password")]
@@ -18,6 +14,6 @@ namespace DVSRegister.Models.CAB
         [Required]
         [RegularExpression("^[0-9]{6}$", ErrorMessage = "The MFA code must be a 6-digit number.")]
         public string MFACode { get; set; }
-        public bool? PasswordReset { get; set; }
+      
     }
 }

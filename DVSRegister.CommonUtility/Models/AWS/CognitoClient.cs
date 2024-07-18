@@ -51,10 +51,19 @@ public class CognitoClient
             var forgotPasswordResponse = await _provider.ForgotPasswordAsync(forgotPasswordRequest);
             return forgotPasswordResponse.HttpStatusCode.ToString();
         }
-        catch (Exception e)
+        catch (UserNotFoundException)
         {
-            Console.WriteLine($"{e.Message}");
-            return "KO";
+            return ("Enter a valid email address");
+        }
+        catch (LimitExceededException)
+        {
+            // Handle limit exceeded error
+            return ("Attempt limit exceeded, please try after some time.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return ("An error occurred");
         }
     }
 
