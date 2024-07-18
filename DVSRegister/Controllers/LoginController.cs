@@ -1,9 +1,7 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
-using DVSAdmin.BusinessLogic.Services;
+﻿using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
-using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
 
@@ -84,7 +82,6 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                ModelState.AddModelError("Code", "Incorrect Code entered");
                 return View("EnterCode", enterCodeViewModel);
             }
         }
@@ -133,8 +130,8 @@ namespace DVSRegister.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError("ErrorMessage", "Error in confirming password");
-                        return View("ConfirmPassword", confirmPasswordViewModel);
+                        ModelState.AddModelError("ErrorMessage", confirmPasswordResponse.ErrorMessage);
+                        return View("CreatePassword", confirmPasswordViewModel);
                     }
                 }
 
