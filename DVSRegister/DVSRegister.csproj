@@ -21,6 +21,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
     <PackageReference Include="libphonenumber-csharp" Version="8.13.40" />
+    <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DVSRegister.BusinessLogic\DVSRegister.BusinessLogic.csproj" />
