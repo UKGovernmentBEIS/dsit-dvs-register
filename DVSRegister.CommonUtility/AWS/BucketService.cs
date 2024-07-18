@@ -35,9 +35,14 @@ namespace DVSRegister.CommonUtility
             var keyName = keyGenerator.GetS3Key(fileName);
             try
             {
-                var fileTransferUtility = new TransferUtility(s3Client);
-                await fileTransferUtility.UploadAsync(fileStream, config.BucketName, keyName);
-                logger.LogInformation("Upload Success");
+                var putRequest = new PutObjectRequest
+                {
+                    InputStream = fileStream,
+                    BucketName = config.BucketName,
+                    Key = keyName
+                };
+
+                var response = await s3Client.PutObjectAsync(putRequest);
                 return new GenericResponse { Success = true, Data = keyName };
             }
             catch (AmazonS3Exception e)
