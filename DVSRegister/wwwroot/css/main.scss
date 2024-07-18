@@ -1,1 +1,9 @@
 ﻿@import "../../node_modules/govuk-frontend/dist/govuk/all";
+//settings
+@import "./settings/_colors";
+//components
+@import "./components/alert";
+@import "./components/checkbox";
+@import "./components/search-filter-box";
+//utilities
+@import "./utilities/utils.scss";

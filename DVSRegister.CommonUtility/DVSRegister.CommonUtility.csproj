@@ -7,9 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GovukNotify" Version="7.0.0" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.310.6" />
+    <PackageReference Include="GovukNotify" Version="7.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    <PackageReference Include="QRCoder" Version="1.6.0" />
+    <PackageReference Include="AWSSDK.CognitoIdentityProvider" Version="3.7.306.13" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,58 @@
+﻿@model DVSRegister.Models.CAB.SupplementarySchemeViewModel
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "SelectSupplementarySchemes";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "HasSupplementaryScheme", "Cab", new { fromSummaryPage = ViewBag.fromSummaryPage }, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">
+                    Select all relevant supplementary schemes
+                </h1>
+                @using (Html.BeginForm("SaveSupplementarySchemes", "Cab", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @if (ViewData.ModelState.ErrorCount >0)
+                    {
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                    }
+                    
+                    <p class="govuk-body">
+                        Select all supplementary schemes that the digital identity and attribute
+                        service provider is certified against on their certificate.
+                    </p>
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("SelectedSupplementarySchemeIds") && Html.ViewData.ModelState["SelectedSupplementarySchemeIds"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
+                        <fieldset class="govuk-fieldset">                            
+                            <div id="role-hint" class="govuk-hint">
+                                Select all that apply
+                            </div>
+                            @Html.ValidationMessageFor(m => m.SelectedSupplementarySchemeIds, "", new { @class = "govuk-error-message", id = "selectedsupplementaryschemeids-error" })
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                @foreach (var item in Model.AvailableSchemes)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id" id="role_@item.Id"
+                                        @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@item.Id">@item.SchemeName</label>
+                                    </div>
+                                }
+                            </div>
+
+                        </fieldset>
+                    </div>
+                    @*DONOT Remove : Keeping AvailableSchemes hidden variable to avoid db call to fetch schemes after post*@
+                    @Html.Hidden("AvailableSchemes", JsonConvert.SerializeObject(Model.AvailableSchemes))
+                    <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                        Continue
+                    </button>
+                }
+            </div>
+        </div>
+    </main>
+</div>
+

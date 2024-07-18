@@ -1,0 +1,13 @@
+﻿.dsit-checkboxes-2-col {
+
+    @include govuk-media-query($from: tablet) {
+        display: flex;
+        flex-wrap: wrap;
+
+        &__item {
+            flex: 1 1 50%;
+            flex-wrap: nowrap;
+        }
+    }
+
+}

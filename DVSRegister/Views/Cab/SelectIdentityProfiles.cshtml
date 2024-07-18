@@ -1,0 +1,98 @@
+﻿@model DVSRegister.Models.CAB.IdentityProfileViewModel
+@using DVSRegister.BusinessLogic.Models;
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "SelectIdentityProfiles";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool isValid = true;
+}
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "SelectRoles", "Cab", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">
+                    List the identity profiles for the digital identity and attribute service provider
+                </h1>
+                @using (Html.BeginForm("SaveIdentityProfiles", "Cab", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @if (ViewData.ModelState.ErrorCount >0)
+                    {
+                        isValid = false;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                    }
+                    var lowConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "L")
+                    .OrderBy(c => c.IdentityProfileName);
+
+                    var meduimConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "M")
+                    .OrderBy(c => c.IdentityProfileName);
+
+                    var highConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "H")
+                    .OrderBy(c => c.IdentityProfileName);
+
+                    var veryHighConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "V")
+                    .OrderBy(c => c.IdentityProfileName);
+
+                    
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    <p class="govuk-body">
+                        This must match the information on the certificate
+                    </p>
+                  
+                        @if(!isValid)
+                        {
+                        @await Html.PartialAsync("~/Views/Cab/PartialViews/_IdentityProfilesErrorView.cshtml",
+                         new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>>("Low confidence", Model, lowConfidenceList))
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                        @await Html.PartialAsync("~/Views/Cab/PartialViews/_IdentityProfilesErrorView.cshtml",
+                         new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>>("Medium confidence", Model, meduimConfidenceList))
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                        @await Html.PartialAsync("~/Views/Cab/PartialViews/_IdentityProfilesErrorView.cshtml",
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>>("High confidence", Model, highConfidenceList))
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                        @await Html.PartialAsync("~/Views/Cab/PartialViews/_IdentityProfilesErrorView.cshtml",
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>>("Very high confidence", Model, veryHighConfidenceList))
+
+
+                         }
+                        else
+                        {
+                         @await Html.PartialAsync("~/Views/Cab/PartialViews/_IdentityProfilesView.cshtml",
+                         new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>>("Low confidence", Model, lowConfidenceList))
+
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+                        @await Html.PartialAsync("~/Views/Cab/PartialViews/_IdentityProfilesView.cshtml",
+                         new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>>("Medium confidence", Model, meduimConfidenceList))
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+                        @await Html.PartialAsync("~/Views/Cab/PartialViews/_IdentityProfilesView.cshtml",
+                         new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>>("High confidence", Model, highConfidenceList))
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+                        @await Html.PartialAsync("~/Views/Cab/PartialViews/_IdentityProfilesView.cshtml",
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>>("Very high confidence", Model, veryHighConfidenceList))
+                        }                      
+
+                    
+
+                  
+                    @*DONOT Remove : Keeping AvailableIdentityProfiles hidden variable to avoid db call to fetch IdentityProfiles after post*@
+                    @Html.Hidden("AvailableIdentityProfiles", JsonConvert.SerializeObject(Model.AvailableIdentityProfiles))
+                    <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                       Continue
+                    </button>
+                }
+            </div>
+        </div>
+    </main>
+</div>
+

@@ -18,16 +18,19 @@ namespace DVSRegister.CommonUtility.Email
             client = new NotificationClient(govUkNotifyConfig.ApiKey);
             this.logger = logger;
         }
-        private void SendEmail(GovUkNotifyEmailModel emailModel)
+
+
+        private async Task<bool> SendEmail(GovUkNotifyEmailModel emailModel)
         {
             try
             {
-                client.SendEmail(
+                await client.SendEmailAsync(
                     emailModel.EmailAddress,
                     emailModel.TemplateId,
                     emailModel.Personalisation,
                     emailModel.Reference,
                     emailModel.EmailReplyToId);
+                    return true;
             }
             catch (NotifyClientException e)
             {
@@ -44,8 +47,131 @@ namespace DVSRegister.CommonUtility.Email
                 {
                     logger.LogError(e, "GOV.UK Notify returned an error");
                 }
+                return false;
             }
         }
-      
+
+
+        public async Task<bool> SendEmailConfirmation(string emailAddress, string recipientName)
+        {
+            var template = govUkNotifyConfig.EmailConfirmationTemplate;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientNamePlaceholder, recipientName }                
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> SendEmailConfirmationToOfdia(string expirationDate)
+        {
+            var template = govUkNotifyConfig.ApplicationReceivedTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.ExpirationDate, expirationDate  },
+                { template.LoginLink, govUkNotifyConfig.LoginLink }
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress =  govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+        public async Task<bool> SendEmailCabSignUpActivation(string emailAddress, string recipientName)
+        {
+            var template = govUkNotifyConfig.CabSignUpActivationTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientName, recipientName  },
+                { template.CabSignUpLink, govUkNotifyConfig.CabSignUpLink }
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress =  emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> SendEmailCabAccountCreated(string emailAddress, string recipientName)
+        {
+            var template = govUkNotifyConfig.CabAccountCreatedTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientName, recipientName  },
+                { template.CabLoginLink, govUkNotifyConfig.CabLoginLink }
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress =  emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> SendEmailCabFailedLoginAttempt(string emailAddress, string timestamp)
+        {
+            var template = govUkNotifyConfig.CabFailedLoginAttemptTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.Timestamp, timestamp },
+                { template.Email , emailAddress}
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress =  govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> SendEmailCabInformationSubmitted(string emailAddress, string recipientName)
+        {
+            var template = govUkNotifyConfig.CabInformationSubmittedTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientName, recipientName  }
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress =  emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> SendCertificateInfoSubmittedToDSIT()
+        {
+            var template = govUkNotifyConfig.CabSubmittedDSITEmailTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.LoginLink,  govUkNotifyConfig.LoginLink}
+            };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                TemplateId = template.Id,
+                EmailAddress =  govUkNotifyConfig.OfDiaEmailId,
+                Personalisation = personalisation
+
+            };
+            return await SendEmail(emailModel);
+        }
     }
 }

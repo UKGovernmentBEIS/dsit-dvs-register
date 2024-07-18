@@ -1,0 +1,69 @@
+﻿@model DVSRegister.Models.CAB.LoginPageViewModel
+@{
+
+    ViewData["Title"] = "MFA Confirmation";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+}
+
+@using (Html.BeginForm("ConfirmMFACodeLogin", "Login", FormMethod.Post))
+{
+    <div class="govuk-width-container">
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="govuk-error-summary" data-module="govuk-error-summary">
+                            <div role="alert">
+                                <h2 class="govuk-error-summary__title">
+                                    There is a problem
+                                </h2>
+                                <div class="govuk-error-summary__body">
+                                    <ul class="govuk-list govuk-error-summary__list">
+                                        <li>
+                                            <a href="#">There is a problem with your MFA Code</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <h1 class="govuk-heading-xl govuk-!-margin-top-8">Multi-factor authentication required</h1>
+
+                    <p class="govuk-body">Please confirm the six-digit passcode from your authenticator app, to access your account.</p>
+
+                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("MFACode") && Html.ViewData.ModelState["MFACode"].Errors.Count > 0 ? "govuk-form-group--error" :"" )">
+                        <h1 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--s" for="event-name">
+                                Enter the one time multi factor authentication code
+                            </label>
+                        </h1>
+                        <div id="event-name-hint" class="govuk-hint">
+                            This is a six-digit passcode. For example, 623452
+                        </div>
+                        @Html.TextBoxFor(m => m.MFACode, new { @class = "govuk-input govuk-input--width-10", id = "one-time-password", name = "one-time-password" })
+                        @Html.ValidationMessageFor(m => m.MFACode, "", new { @class = "govuk-error-message" })
+                    </div>
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
+                        Confirm
+                    </button>
+
+                    <details class="govuk-details">
+                        <summary class="govuk-details__summary">
+                            <span class="govuk-details__summary-text">
+                                Where to find your multi-factor authentication code
+                            </span>
+                        </summary>
+                        <div class="govuk-details__text">
+                            <p class="govuk-body">
+                                Open the authenticator app on your smart device to retrieve the six-digit multi-factor authentication code
+                            </p>
+                           
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </main>
+    </div>
+}

@@ -1,0 +1,73 @@
+﻿@model DVSRegister.Models.CAB.URNViewModel
+@{
+    ViewData["Title"] = "ValidURNDetails";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-panel govuk-panel--confirmation">
+                    <h1 class="govuk-panel__title">
+                        Valid URN
+                    </h1>
+                    <div class="govuk-panel__body">
+                        Unique reference number<br><strong>@Model.URN</strong>
+                    </div>
+                </div>
+                <p class="govuk-body">
+                    We have checked the unique reference number (URN) and can confirm that it
+                    is associated with the following digital identity and attribute service provider:
+                </p>
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                           Unique reference number
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.URN
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Registered name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.RegisteredName
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                           Trading name(s)
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.TradingName
+                        </dd>
+                    </div>
+                   
+                </dl>
+                <h2 class="govuk-heading-m">What happens next</h2>
+                <p class="govuk-body">
+                    Now that you have confirmed that the service provider has passed the pre
+                    registration stage, you can start the certification process.
+                </p>
+                <p class="govuk-body">
+                    When you have completed the certification process please return to this
+                    portal to  @Html.ActionLink("submit certificate information for a digital identity and attribute service provider", "LandingPage", "Cab", null, new { @class = "govuk-link" }) 
+                    submit certificate information for a digital identity and attribute service provider </a>
+                    to be on the register of digital identity and attribute service providers.
+                </p>                
+
+                <a href="@Url.Action("LandingPage", "Cab")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                   Return to service
+                   
+                </a>
+               
+            </div>
+        </div>
+    </main>
+</div>
+
+

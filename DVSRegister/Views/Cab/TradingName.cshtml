@@ -1,0 +1,65 @@
+﻿@model DVSRegister.Models.CAB.CertificateInfoSummaryViewModel
+@using DVSRegister.Controllers
+@{
+    ViewData["Title"] = "Trading Number";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool isValid = true;
+}
+@using (Html.BeginForm(nameof(CabController.TradingNameValidation), "Cab", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "RegisteredName", "Cab", null, new { @class = "govuk-back-link" })
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s trading name  </h1>
+                    @if (Html.ViewData?.ModelState.ContainsKey("TradingName") == true && Html.ViewData.ModelState["TradingName"].Errors.Count > 0)
+                    {
+                        isValid = false;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("TradingName", Html.ViewData.ModelState["TradingName"]?.Errors))
+                    }
+                    <p class="govuk-body">This trading name will be publicly displayed on the register of digital identity and attribute service providers. This should match the trading name on the certificate.</p>
+                    @if(!isValid)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <h1 class="govuk-label-wrapper">
+                                <label class="govuk-label govuk-label--m" for="tradingname">
+                                    Trading name
+                                </label>
+                            </h1>
+                            <p id="tradingname-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>  @Html.ValidationMessageFor(m => m.RegisteredName, "", new { @class = "govuk-error-message" })
+                            </p>
+                            @Html.TextBoxFor(m => m.TradingName, new { @class = "govuk-input govuk-input--error govuk-input govuk-!-width-three-quarters",
+                            id = "tradingname", 
+                            name = "trading-name",
+                            aria_describedby = "tradingname-error" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <h1 class="govuk-label-wrapper">
+                                <label class="govuk-label govuk-label--m" for="trading-name">
+                                    Trading name
+                                </label>
+                            </h1>
+                            @Html.TextBoxFor(m => m.TradingName, new { @class = "govuk-input govuk-input govuk-!-width-three-quarters",
+                            id = "tradingname", name = "trading-name" })
+                        </div>
+                    }
+
+                  
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+}

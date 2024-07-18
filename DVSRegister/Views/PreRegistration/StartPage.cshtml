@@ -1,0 +1,47 @@
+﻿
+@{
+    ViewData["Title"] = "What we will need from you";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@using (Html.BeginForm("Continue", "PreRegistration", FormMethod.Post))
+{
+
+    <div>
+        <div class="govuk-width-container">
+            <main class="govuk-main-wrapper">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+
+
+                        <h1 class="govuk-heading-xl govuk-!-margin-top-2">What we will need from you</h1>
+                        <p class="govuk-body">You will need to provide the following information to start your application:</p>
+                        <ul class="govuk-list govuk-list--bullet">
+                            <li>Application sponsor details (name, role, email address and telephone number)</li>
+                            <li>Optional additional contact person details (name, role, email address and telephone number)</li>
+                            <li>Countries your company currently trades in</li>
+                            <li>Registered name of your company</li>
+                            <li>Companies House registration number</li>
+                            <li>If applicable, the registered name and location of your parent company outside the UK</li>
+                        </ul>
+
+                        <h2 class="govuk-heading-l">Who needs to sponsor this application</h2>
+
+                        <p class="govuk-body">The application sponsor must be an individual within your company who understands the requirements of being a registered digital identity and attribute service provider and is authorised to approve this application. They must have knowledge of the services that will be undergoing certification and the <a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version#full-publication-update-history">UK digital identity and attributes trust framework (1.0 publication)</a>.</p>
+                        <p class="govuk-body">Application sponsor details will only be used for contacting purposes and will not be shared publicly.</p>
+                        <button type="submit" class="govuk-button govuk-!-margin-top-4" data-module="govuk-button">
+                            Continue
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+}
+
+
+
+

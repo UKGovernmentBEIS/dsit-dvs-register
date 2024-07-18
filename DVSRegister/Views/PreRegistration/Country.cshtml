@@ -1,0 +1,80 @@
+﻿@model DVSRegister.Models.CountryViewModel
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "List all the countries and territories your company currently trades in";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="govuk-width-container">
+    @if (Model.IsApplicationSponsor == true)
+    {
+        <nav>@Html.ActionLink("Back", "Contact", "PreRegistration", null, new { @class = "govuk-back-link" })</nav>
+    }
+    else
+    {
+        <nav>@Html.ActionLink("Back", "Sponsor", "PreRegistration", null, new { @class = "govuk-back-link" })</nav>
+    }
+    @if (ViewData.ModelState.ErrorCount > 0)
+    {
+        ViewData["Title"] = "Error: " + ViewData["Title"];
+        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+    }
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                @using (Html.BeginForm("SaveCountry", "PreRegistration", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    var groupedCountries = Model.AvailableCountries
+                       .GroupBy(c => c.CountryName.Substring(0, 1).ToUpper())
+                       .OrderBy(g => g.Key);
+
+
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset" id="selectedcountryids">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+                                <span class="govuk-caption-l">
+                                    Page 3 of 5
+                                    <span class="govuk-visually-hidden"> of the pre registration application</span>
+                                </span>
+                                <h1 class="govuk-fieldset__heading">
+                                    List all the countries and territories your company currently trades in
+                                </h1>
+                            </legend>
+
+                            <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+
+                            @Html.ValidationMessageFor(m => m.SelectedCountryIds, "", new { @class = "govuk-error-message", id = "selectedcountryids-error" })
+                            @foreach (var group in groupedCountries)
+                            {
+                                <h2 class="govuk-heading-xl govuk-!-margin-bottom-2">
+                                    <span class="govuk-visually-hidden">Countries starting with </span>@group.Key
+                                </h2>
+                                <div class="govuk-checkboxes dsit-checkboxes-2-col" data-module="govuk-checkboxes">
+                                    @foreach (var country in group)
+                                    {
+
+
+                                        <div class="govuk-checkboxes__item dsit-checkboxes-2-col__item">
+                                            <input class="govuk-checkboxes__input" type="checkbox" name="SelectedCountryIds" value="@country.Id" id="country_@country.Id"
+                                                   @(Model.SelectedCountryIds.Contains(country.Id) ? "checked" : "") />
+                                            <label class="govuk-label govuk-checkboxes__label" for="country_@country.Id">@country.CountryName</label>
+                                        </div>
+                                    }
+                                </div>
+                                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                            }
+
+                            @*DONOT Remove : Keeping AvailableCountries hidden variable to avoid db call to fetch countries after post*@
+                            @Html.Hidden("AvailableCountries", JsonConvert.SerializeObject(Model.AvailableCountries))
+                            <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
+                                Save and continue
+                            </button>
+                        </fieldset>
+                    </div>
+                }
+            </div>
+        </div>
+    </main>
+</div>

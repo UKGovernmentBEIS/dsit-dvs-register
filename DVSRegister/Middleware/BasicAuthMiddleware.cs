@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
+using DVSRegister.CommonUtility;
 using Microsoft.Extensions.Options;
 
 namespace DVSRegister.Middleware
@@ -7,49 +8,75 @@ namespace DVSRegister.Middleware
     // You may need to install the Microsoft.AspNetCore.Http.Abstractions package into your project
     public class BasicAuthMiddleware
     {
-        private readonly RequestDelegate _next;
+        private readonly RequestDelegate next;
         private readonly BasicAuthMiddlewareConfiguration configuration;
-
-        public BasicAuthMiddleware(RequestDelegate next, IOptions<BasicAuthMiddlewareConfiguration> options)
+        private readonly ILogger<ExceptionHandlerMiddleware> logger;
+        public BasicAuthMiddleware(RequestDelegate next, IOptions<BasicAuthMiddlewareConfiguration> options, ILogger<ExceptionHandlerMiddleware> logger)
         {
-            _next = next;
+            this.next = next;
+            this.logger = logger;
             configuration = options.Value;
         }
 
         public async Task Invoke(HttpContext httpContext)
         {
-
-            if (IsAuthorised(httpContext))
+            string requestPath = httpContext.Request.Path.ToString().ToLower();
+            try
             {
-                await _next.Invoke(httpContext);
+                if (IsAuthorised(httpContext))
+                {
+                    await next.Invoke(httpContext);
+                }
+                else
+                {
+                    SendUnauthorisedResponse(httpContext);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                SendUnauthorisedResponse(httpContext);
+                logger.LogError($"An unexpected error occurred: {ex}");
+                logger.LogError($"Stacktrace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("Inner Exception");
+                    Console.WriteLine(String.Concat(ex.InnerException.StackTrace, ex.InnerException.Message));
+                }
+                // Redirect to error page 
+                if (requestPath.Contains("pre-registration"))
+                    httpContext.Response.Redirect(Constants.PreRegistrationErrorPath);
+                else if (requestPath.Contains("cab-registration"))
+                    httpContext.Response.Redirect(Constants.CabRegistrationErrorPath);
+                else
+                    httpContext.Response.Redirect(Constants.CommonErrorPath);
             }
         }
         private bool IsAuthorised(HttpContext httpContext)
         {
             try
             {
-                var authHeader = AuthenticationHeaderValue.Parse(httpContext.Request.Headers["Authorization"]);
-                var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
-                var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
-                var username = credentials[0];
-                var password = credentials[1];
+                bool returnValue = false;
+                bool hasAuthorizationHeader = httpContext.Request.Headers.ContainsKey("Authorization");
+                if (hasAuthorizationHeader)
+                {
+                    var authHeader = AuthenticationHeaderValue.Parse(httpContext.Request.Headers["Authorization"]);
+                    var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
+                    var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
+                    var username = credentials[0];
+                    var password = credentials[1];
 
-                var returnValue = configuration.Username == username
-                       && configuration.Password == password;
-                Console.WriteLine("Configuration Username and Password: "+configuration.Username+"-"+configuration.Password);
-                Console.WriteLine("Given Username and Password: " + username + "-" + password);
-                Console.WriteLine("Computed Return Value: " +returnValue);
-
+                    returnValue = configuration.Username == username
+                           && configuration.Password == password;  
+                    if(!returnValue ) 
+                    {
+                        Console.WriteLine("Basic Auth Details Entered Wrong ");
+                    }
+                }
                 return returnValue;
             }
             catch(Exception ex)
             {
                 // Default to denying access if anything goes wrong
-                Console.WriteLine("Basic Auth Details Entered Wrong " + ex.Message);
+                Console.WriteLine("Basic Auth Details Entered Wrong " + ex);
                 return false;
             }
         }
