@@ -3,7 +3,7 @@
 namespace DVSRegister.Models.CAB
 {
     public class SignUpViewModel :EnterEmailViewModel
-    {      
+    {    
 
 
         [Required(ErrorMessage = "Enter a valid password")]
