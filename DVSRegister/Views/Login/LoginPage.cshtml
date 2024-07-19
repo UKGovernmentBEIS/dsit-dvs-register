@@ -1,4 +1,4 @@
-﻿@model DVSRegister.Models.CAB.LoginPageViewModel
+﻿@model DVSRegister.Models.CAB.LoginViewModel
 @{
     ViewData["Title"] = "Login to CAB Platform";
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
@@ -13,24 +13,12 @@
 
                     @if (!ViewData.ModelState.IsValid)
                     {
-                        <div class="govuk-error-summary" data-module="govuk-error-summary">
-                            <div role="alert">
-                                <h2 class="govuk-error-summary__title">
-                                    There is a problem
-                                </h2>
-                                <div class="govuk-error-summary__body">
-                                    <ul class="govuk-list govuk-error-summary__list">
-                                        <li>
-                                            <a href="#">Incorrect email or password</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                     }
 
                     <h1 class="govuk-heading-xl govuk-!-margin-top-8">Sign into your account</h1>
-
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "govuk-error-message" })
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("Email") && Html.ViewData.ModelState["Email"].Errors.Count > 0 ? "govuk-form-group--error" :"" )">
                         <h1 class="govuk-label-wrapper">
                             <label class="govuk-label govuk-label--s" for="event-name">
@@ -38,9 +26,9 @@
                             </label>
                         </h1>
                         @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input govuk-input--width-20", id = "email", name = "email" })
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "govuk-error-message" })
+                      
                     </div>
-
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "govuk-error-message" })
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("Password") && Html.ViewData.ModelState["Password"].Errors.Count >0 ? "govuk-form-group--error": "" )">
                         <h1 class="govuk-label-wrapper">
                             <label class="govuk-label govuk-label--s" for="event-name">
@@ -48,7 +36,7 @@
                             </label>
                         </h1>
                         @Html.TextBoxFor(m => m.Password, new { @class = "govuk-input govuk-input--width-20", id = "password", name = "password", type = "password" })
-                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "govuk-error-message" })
+                        
                     </div>
 
                     <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">

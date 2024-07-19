@@ -2,7 +2,7 @@
 
 namespace DVSRegister.Models.CAB
 {
-    public class LoginPageViewModel :EnterEmailViewModel
+    public class SignUpViewModel :EnterEmailViewModel
     {      
 
 

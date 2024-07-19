@@ -1,4 +1,4 @@
-﻿@model DVSRegister.Models.CAB.LoginPageViewModel
+﻿@model DVSRegister.Models.CAB.SignUpViewModel
 @{
 
     ViewData["Title"] = "MFA Confirmation";
@@ -14,25 +14,17 @@
 
                     @if (!ViewData.ModelState.IsValid)
                     {
-                        <div class="govuk-error-summary" data-module="govuk-error-summary">
-                            <div role="alert">
-                                <h2 class="govuk-error-summary__title">
-                                    There is a problem
-                                </h2>
-                                <div class="govuk-error-summary__body">
-                                    <ul class="govuk-list govuk-error-summary__list">
-                                        <li>
-                                            <a href="#">There is a problem with your MFA Code</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            ViewData["Title"] = "Error: " + ViewData["Title"];
+                            @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                        }
                     }
                     <h1 class="govuk-heading-xl govuk-!-margin-top-8">Multi-factor authentication required</h1>
 
                     <p class="govuk-body">Please confirm the six-digit passcode from your authenticator app, to access your account.</p>
 
+                    @Html.ValidationMessageFor(m => m.MFACode, "", new { @class = "govuk-error-message" })
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("MFACode") && Html.ViewData.ModelState["MFACode"].Errors.Count > 0 ? "govuk-form-group--error" :"" )">
                         <h1 class="govuk-label-wrapper">
                             <label class="govuk-label govuk-label--s" for="event-name">
@@ -42,8 +34,8 @@
                         <div id="event-name-hint" class="govuk-hint">
                             This is a six-digit passcode. For example, 623452
                         </div>
-                        @Html.TextBoxFor(m => m.MFACode, new { @class = "govuk-input govuk-input--width-10", id = "one-time-password", name = "one-time-password" })
-                        @Html.ValidationMessageFor(m => m.MFACode, "", new { @class = "govuk-error-message" })
+                        @Html.TextBoxFor(m => m.MFACode, new { @class = "govuk-input govuk-input--width-10", id = "onetimepassword", name = "one-time-password" })
+                        
                     </div>
                     <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
                         Confirm

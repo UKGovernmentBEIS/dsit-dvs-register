@@ -152,14 +152,14 @@ namespace DVSRegister.Controllers
             return View("MFARegistration", MFARegistrationViewModel);
         }
 
-        [HttpPost("confirm-mfa-code-login")]
-        public async Task<IActionResult> ConfirmMFACodeLogin(LoginPageViewModel loginPageViewModel)
+        [HttpPost("confirm-mfa-code")]
+        public async Task<IActionResult> ConfirmMFACodeLogin(SignUpViewModel signUpViewModel)
         {
             if (ModelState["MFACode"].Errors.Count == 0)
             {
                 string Session = HttpContext?.Session.Get<string>("Session");
                 string Email = HttpContext?.Session.Get<string>("Email");
-                var mfaConfirmationCheckResponse = await _signUpService.ConfirmMFAToken(Session, Email, loginPageViewModel.MFACode);
+                var mfaConfirmationCheckResponse = await _signUpService.ConfirmMFAToken(Session, Email, signUpViewModel.MFACode);
 
                 if (mfaConfirmationCheckResponse!=null && mfaConfirmationCheckResponse.IdToken.Length > 0)
                 {
@@ -170,7 +170,7 @@ namespace DVSRegister.Controllers
                 else
                 {
                     ModelState.AddModelError("MFACode", "Wrong MFA Code provided from Authenticator App");
-                    return View("MFAConfirmation", loginPageViewModel);
+                    return View("MFAConfirmation", signUpViewModel);
                 }
             }
             else
@@ -203,22 +203,29 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("login-validation")]
-        public async Task<IActionResult> LoginToAccountAsync(LoginPageViewModel loginPageViewModel)
+        public async Task<IActionResult> LoginToAccountAsync(LoginViewModel loginViewModel)
         {
-            ModelState.Remove(nameof(LoginPageViewModel.MFACode));
+         
             if (ModelState["Email"].Errors.Count ==0 && ModelState["Password"].Errors.Count ==0)
             {
-                var loginResponse = await _signUpService.SignInAndWaitForMfa(loginPageViewModel.Email, loginPageViewModel.Password);
-                if (loginResponse.Length > 0 && loginResponse != Constants.IncorrectPassword)
+                var loginResponse = await _signUpService.SignInAndWaitForMfa(loginViewModel.Email, loginViewModel.Password);
+                if (loginResponse!= null && loginResponse.Length > 0 && loginResponse != Constants.IncorrectPassword)
                 {
-                    HttpContext?.Session.Set("Email", loginPageViewModel.Email);
+                    HttpContext?.Session.Set("Email", loginViewModel.Email);
                     HttpContext?.Session.Set("Session", loginResponse);
                     return RedirectToAction("MFAConfirmation");
                 }
                 else
-                {
-                    ModelState.AddModelError("Email", "Incorrect email or password");
-                    ModelState.AddModelError("Password", "Incorrect email or password");
+                {                  
+                    if(loginResponse == Constants.IncorrectPassword)
+                    {
+                        ModelState.AddModelError("Password", Constants.IncorrectLoginDetails);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Email", Constants.IncorrectLoginDetails);
+                    }
+                 
                     return View("LoginPage");
                 }
             }
