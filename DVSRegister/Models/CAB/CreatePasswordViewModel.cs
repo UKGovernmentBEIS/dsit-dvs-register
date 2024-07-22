@@ -3,8 +3,7 @@
 namespace DVSRegister.Models.CAB
 {
     public class ConfirmPasswordViewModel
-    {
-        public string? Email { get; set; }
+    {       
 
         [Required(ErrorMessage = "Enter a valid password")]
         [StringLength(255, ErrorMessage = "Password must be between 10 and 255 characters", MinimumLength = 10)]
@@ -20,6 +19,8 @@ namespace DVSRegister.Models.CAB
         public string? ConfirmPassword { get; set; }
 
         public bool? PasswordReset { get; set; }
+
+        public string? ErrorMessage { get; set; }
     }
 }
 

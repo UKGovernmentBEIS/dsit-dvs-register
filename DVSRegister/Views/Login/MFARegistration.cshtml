@@ -17,22 +17,8 @@
 
                     @if (!ViewData.ModelState.IsValid)
                     {
-                        <div class="govuk-error-summary" data-module="govuk-error-summary">
-                            <div role="alert">
-                                <h2 class="govuk-error-summary__title">
-                                    There is a problem
-                                </h2>
-                                <div class="govuk-error-summary__body">
-                                    <ul class="govuk-list govuk-error-summary__list">
-                                        <li>
-                                            <a href="#">
-                                                Wrong MFA Code provided from the authenticator app. If Issue persists contact the team.
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                     }
                     <h1 class="govuk-heading-xl govuk-!-margin-top-8">Multi-factor authentication required</h1>
 
@@ -67,7 +53,7 @@
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("MFACode") && Html.ViewData.ModelState["MFACode"].Errors.Count > 0 ? "govuk-form-group--error" :"" )">
 
                         @Html.ValidationMessageFor(m => m.MFACode, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.MFACode, new { @class = "govuk-input govuk-input--width-10", id = "mfa-code", name = "mfa-code", @aria_describedby = "mfa-hint" })
+                        @Html.TextBoxFor(m => m.MFACode, new { @class = "govuk-input govuk-input--width-10", id = "mfacode", name = "mfa-code", @aria_describedby = "mfa-hint" })
                     </div>
                     <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
                         Confirm
