@@ -6,8 +6,7 @@ namespace DVSRegister.Models.CAB
     {    
 
 
-        [Required(ErrorMessage = "Enter a valid password")]
-        [DataType(DataType.Password)]
+        [Required(ErrorMessage = "Enter a valid password")]     
         public string Password { get; set; }
 
 
