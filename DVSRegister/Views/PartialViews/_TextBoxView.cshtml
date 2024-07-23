@@ -1,0 +1,24 @@
+﻿@model TextBoxViewModel
+
+<div class="govuk-form-group @(Model.HasError ? "govuk-form-group--error" : "")">
+    <label class="govuk-label govuk-label--s" for="@Model.PropertyName.ToLower()">
+        @Model.Label
+    </label>
+    @if (Model.HasError)
+    {
+    <p id="@(Model.PropertyName.ToLower())-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> @Model.ErrorMessage
+    </p>
+    }
+
+
+    @if (string.IsNullOrEmpty(Model.Hint))
+    {
+    <div id="event-name-hint" class="govuk-hint">
+        @Model.Hint
+    </div>
+    }
+
+    @Html.TextBox(Model.PropertyName, Model.Value, new { @id = Model.PropertyName.ToLower(), @class = Model.HasError ? Model.Class + " govuk-input--error" : Model.Class })
+
+</div>
