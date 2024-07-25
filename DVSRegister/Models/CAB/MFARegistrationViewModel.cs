@@ -1,17 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace DVSRegister.Models.CAB
+﻿namespace DVSRegister.Models.CAB
 {
-    public class MFARegistrationViewModel
+    public class MFARegistrationViewModel : MFACodeViewModel
     {
         public string? SecretToken { get; set; }
         public string? Email { get; set; }
         public string? Password { get; set; }
 
-        [Required(ErrorMessage = "Enter valid MFA code")]
-        [RegularExpression("^[0-9]{6}$", ErrorMessage = "The MFA code must be a 6-digit number.")]
-        public string MFACode { get; set; }
+      
     }
 }
 

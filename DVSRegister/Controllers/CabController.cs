@@ -762,7 +762,7 @@ namespace DVSRegister.Controllers
         {
             try
             {
-                byte[]? fileContent = await bucketService.DownloadFileAsync(key);
+                byte[]? fileContent = await bucketService.DownloadFileAsync("TEST.pdf");
 
                 if (fileContent == null || fileContent.Length == 0)
                 {
