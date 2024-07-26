@@ -67,31 +67,50 @@ namespace DVSRegister.CommonUtility
         public async Task<byte[]?> DownloadFileAsync(string keyName)
         {
             try
-            {
-                var request = new GetObjectRequest
+            {              
+
+                GetPreSignedUrlRequest getPreSignedUrlRequest = new GetPreSignedUrlRequest
                 {
                     BucketName = config.BucketName,
-                    Key = keyName
+                    Key = "TEST.pdf",
+                    Expires = DateTime.UtcNow.AddMinutes(5) // URL expires in 5 minutes
                 };
 
-                using (var response = await s3Client.GetObjectAsync(request))
-                using (var responseStream = response.ResponseStream)
+                string url = s3Client.GetPreSignedURL(getPreSignedUrlRequest);
+                logger.LogInformation("PresignedURL{0}" , url);              
+
+                using (HttpClient httpClient = new HttpClient())
                 {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        await responseStream.CopyToAsync(memoryStream);
-                        return memoryStream.ToArray();
-                    }
+                    HttpResponseMessage response = await httpClient.GetAsync(url);
+                    response.EnsureSuccessStatusCode();
+
+                    return await response.Content.ReadAsByteArrayAsync();
                 }
+                              
+                //var request = new GetObjectRequest
+                //{
+                //    BucketName = config.BucketName,
+                //    Key = keyName
+                //};
+
+                //using (var response = await s3Client.GetObjectAsync(request))
+                //using (var responseStream = response.ResponseStream)
+                //{
+                //    using (var memoryStream = new MemoryStream())
+                //    {
+                //        await responseStream.CopyToAsync(memoryStream);
+                //        return memoryStream.ToArray();
+                //    }
+                //}
             }
             catch (AmazonS3Exception e)
             {
-                logger.LogError("AWS S3 error when writing CSV file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                logger.LogError("AWS S3 error when downloading file from bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
                 return null;
             }
             catch (Exception e)
             {
-                logger.LogError("Error when writing file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                logger.LogError("Error when downloading file from bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
                 return null;
 
             }
