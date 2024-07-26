@@ -77,15 +77,37 @@ namespace DVSRegister.CommonUtility
                     Expires = DateTime.UtcNow.AddMinutes(5) // URL expires in 5 minutes
                 };
 
-                string url = s3Client.GetPreSignedURL(getPreSignedUrlRequest);
-                logger.LogInformation("PresignedURL{0}", url);
+                string url = "https://s3-dvs-dev20240529103145426300000001.s3.eu-west-2.amazonaws.com/TEST.pdf";
+               
 
                 using (HttpClient httpClient = new HttpClient())
                 {
                     HttpResponseMessage response = await httpClient.GetAsync(url);
                     response.EnsureSuccessStatusCode();
 
-                    return await response.Content.ReadAsByteArrayAsync();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine($"Failed to download file. Status code: {response.StatusCode}");
+                       
+                    }
+
+                    // Check if the content length is greater than zero
+                    if (response.Content.Headers.ContentLength == null || response.Content.Headers.ContentLength <= 0)
+                    {
+                        Console.WriteLine("The response content length is zero or null.");
+                        
+                    }
+
+                    // Read the content as a byte array
+                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
+                    // Check if the byte array is not empty
+                    if (fileBytes == null || fileBytes.Length == 0)
+                    {
+                        Console.WriteLine("The downloaded file is empty.");                        
+                    }
+
+                    Console.WriteLine("File downloaded successfully.");
+                    return fileBytes;
                 }
 
                 //var request = new GetObjectRequest
