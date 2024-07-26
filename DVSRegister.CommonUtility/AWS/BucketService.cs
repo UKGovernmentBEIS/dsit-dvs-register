@@ -78,14 +78,36 @@ namespace DVSRegister.CommonUtility
                 };
 
                 string url = s3Client.GetPreSignedURL(getPreSignedUrlRequest);
-                logger.LogInformation("PresignedURL{0}", url);
+                Console.WriteLine("PresignedURL:", url);
 
                 using (HttpClient httpClient = new HttpClient())
                 {
                     HttpResponseMessage response = await httpClient.GetAsync(url);
                     response.EnsureSuccessStatusCode();
 
-                    return await response.Content.ReadAsByteArrayAsync();
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine($"Failed to download file. Status code: {response.StatusCode}");
+                       
+                    }
+
+                    // Check if the content length is greater than zero
+                    if (response.Content.Headers.ContentLength == null || response.Content.Headers.ContentLength <= 0)
+                    {
+                        Console.WriteLine("The response content length is zero or null.");
+                        
+                    }
+
+                    // Read the content as a byte array
+                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
+                    // Check if the byte array is not empty
+                    if (fileBytes == null || fileBytes.Length == 0)
+                    {
+                        Console.WriteLine("The downloaded file is empty.");                        
+                    }
+
+                    Console.WriteLine("File downloaded successfully.");
+                    return fileBytes;
                 }
 
                 //var request = new GetObjectRequest
