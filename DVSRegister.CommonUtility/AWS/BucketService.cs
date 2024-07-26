@@ -77,8 +77,8 @@ namespace DVSRegister.CommonUtility
                     Expires = DateTime.UtcNow.AddMinutes(5) // URL expires in 5 minutes
                 };
 
-                string url = s3Client.GetPreSignedURL(getPreSignedUrlRequest);
-                Console.WriteLine("PresignedURL:", url);
+                string url = "https://s3-dvs-dev20240529103145426300000001.s3.eu-west-2.amazonaws.com/TEST.pdf";
+               
 
                 using (HttpClient httpClient = new HttpClient())
                 {
