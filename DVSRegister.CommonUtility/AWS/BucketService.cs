@@ -4,6 +4,7 @@ using Amazon.S3.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Amazon.S3.Transfer;
+using Amazon.Runtime.Internal;
 
 namespace DVSRegister.CommonUtility
 {
@@ -68,21 +69,40 @@ namespace DVSRegister.CommonUtility
         {
             try
             {
-                var request = new GetObjectRequest
+
+                GetPreSignedUrlRequest getPreSignedUrlRequest = new GetPreSignedUrlRequest
                 {
                     BucketName = config.BucketName,
-                    Key = keyName
+                    Key = "TEST.pdf",
+                    Expires = DateTime.UtcNow.AddMinutes(5) // URL expires in 5 minutes
                 };
 
-                using (var response = await s3Client.GetObjectAsync(request))
-                using (var responseStream = response.ResponseStream)
+                string url = s3Client.GetPreSignedURL(getPreSignedUrlRequest);
+                logger.LogInformation("PresignedURL{0}", url);
+
+                using (HttpClient httpClient = new HttpClient())
                 {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        await responseStream.CopyToAsync(memoryStream);
-                        return memoryStream.ToArray();
-                    }
+                    HttpResponseMessage response = await httpClient.GetAsync(url);
+                    response.EnsureSuccessStatusCode();
+
+                    return await response.Content.ReadAsByteArrayAsync();
                 }
+
+                //var request = new GetObjectRequest
+                //{
+                //    BucketName = config.BucketName,
+                //    Key = keyName
+                //};
+
+                //using (var response = await s3Client.GetObjectAsync(request))
+                //using (var responseStream = response.ResponseStream)
+                //{
+                //    using (var memoryStream = new MemoryStream())
+                //    {
+                //        await responseStream.CopyToAsync(memoryStream);
+                //        return memoryStream.ToArray();
+                //    }
+                //}
             }
             catch (AmazonS3Exception e)
             {
