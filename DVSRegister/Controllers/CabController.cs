@@ -1,6 +1,7 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.BusinessLogic.Services.GoogleAnalytics;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
@@ -23,19 +24,22 @@ namespace DVSRegister.Controllers
         private readonly IBucketService bucketService;
         private readonly IAVService avService;
         private readonly IEmailSender emailSender;
+        private readonly GoogleAnalyticsService googleAnalyticsService;
 
-        public CabController(ICabService cabService, IAVService aVService, IBucketService bucketService, IEmailSender emailSender)
+        public CabController(ICabService cabService, IAVService aVService, IBucketService bucketService, IEmailSender emailSender, GoogleAnalyticsService googleAnalyticsService)
         {           
             this.cabService = cabService;
             this.bucketService = bucketService;
             this.avService = aVService;
             this.emailSender = emailSender;
+            this.googleAnalyticsService = googleAnalyticsService;
         }
 
         [HttpGet("")]
         [HttpGet("landing-page")]
         public IActionResult LandingPage()
         {
+            googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
             return View();
         }
 
@@ -747,6 +751,7 @@ namespace DVSRegister.Controllers
             HttpContext?.Session.Remove("CertificateInfoSummary");           
             ViewBag.Email = email;
             await emailSender.SendEmailCabInformationSubmitted(email, email);
+            await googleAnalyticsService.SendCertificateInfoCompletedEventAsync(Request);
             return View();
            
         }

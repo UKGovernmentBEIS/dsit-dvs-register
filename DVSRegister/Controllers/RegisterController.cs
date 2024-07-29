@@ -1,5 +1,6 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.Register;
+using DVSRegister.BusinessLogic.Services.GoogleAnalytics;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models.Enums;
@@ -15,14 +16,16 @@ namespace DVSRegister.Controllers
         private readonly ILogger<RegisterController> logger;     
         private readonly IRegisterService registerService;
         private readonly ICabService cabService;
-       
+        private readonly GoogleAnalyticsService googleAnalyticsService;
 
-        public RegisterController(ILogger<RegisterController> logger, IRegisterService registerService, ICabService cabService)
+
+        public RegisterController(ILogger<RegisterController> logger, IRegisterService registerService, ICabService cabService, GoogleAnalyticsService googleAnalyticsService)
         {
             this.logger = logger;          
             this.registerService = registerService;
             this.cabService = cabService;
-            
+            this.googleAnalyticsService = googleAnalyticsService;
+
 
         }
         [HttpGet("register-search")]
@@ -82,6 +85,7 @@ namespace DVSRegister.Controllers
             ProviderDetailsViewModel providerDetailsViewModel = new ProviderDetailsViewModel();
             providerDetailsViewModel.Provider = providerDto;
             providerDetailsViewModel.LastUpdated = TempData.Peek("LastUpdated") as string??string.Empty;
+            await googleAnalyticsService.SendProviderDetailsViewedEventAsync(Request);
             return View(providerDetailsViewModel);
         }
 
@@ -91,6 +95,7 @@ namespace DVSRegister.Controllers
         {
             RegisterPublishLogsViewModel registerPublishLogsViewModel = new RegisterPublishLogsViewModel();
             registerPublishLogsViewModel.RegisterPublishLog = await registerService.GetRegisterPublishLogs();
+            await googleAnalyticsService.SendPublishLogViewedEventAsync(Request);
             return View("Updates", registerPublishLogsViewModel);
         }
 
