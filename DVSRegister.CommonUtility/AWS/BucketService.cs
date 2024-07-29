@@ -3,8 +3,6 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Amazon.S3.Transfer;
-using Amazon.Runtime.Internal;
 
 namespace DVSRegister.CommonUtility
 {
@@ -70,72 +68,31 @@ namespace DVSRegister.CommonUtility
             try
             {
 
-                GetPreSignedUrlRequest getPreSignedUrlRequest = new GetPreSignedUrlRequest
+                var request = new GetObjectRequest
                 {
                     BucketName = config.BucketName,
-                    Key = "TEST.pdf",
-                    Expires = DateTime.UtcNow.AddMinutes(5) // URL expires in 5 minutes
+                    Key = keyName
                 };
 
-                string url = "https://s3-dvs-dev20240529103145426300000001.s3.eu-west-2.amazonaws.com/TEST.pdf";
-               
-
-                using (HttpClient httpClient = new HttpClient())
+                using (var response = await s3Client.GetObjectAsync(request))
+                using (var responseStream = response.ResponseStream)
                 {
-                    HttpResponseMessage response = await httpClient.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-
-                    if (!response.IsSuccessStatusCode)
+                    using (var memoryStream = new MemoryStream())
                     {
-                        Console.WriteLine($"Failed to download file. Status code: {response.StatusCode}");
-                       
+                        await responseStream.CopyToAsync(memoryStream);
+                        return memoryStream.ToArray();
                     }
-
-                    // Check if the content length is greater than zero
-                    if (response.Content.Headers.ContentLength == null || response.Content.Headers.ContentLength <= 0)
-                    {
-                        Console.WriteLine("The response content length is zero or null.");
-                        
-                    }
-
-                    // Read the content as a byte array
-                    byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
-                    // Check if the byte array is not empty
-                    if (fileBytes == null || fileBytes.Length == 0)
-                    {
-                        Console.WriteLine("The downloaded file is empty.");                        
-                    }
-
-                    Console.WriteLine("File downloaded successfully.");
-                    return fileBytes;
                 }
-
-                //var request = new GetObjectRequest
-                //{
-                //    BucketName = config.BucketName,
-                //    Key = keyName
-                //};
-
-                //using (var response = await s3Client.GetObjectAsync(request))
-                //using (var responseStream = response.ResponseStream)
-                //{
-                //    using (var memoryStream = new MemoryStream())
-                //    {
-                //        await responseStream.CopyToAsync(memoryStream);
-                //        return memoryStream.ToArray();
-                //    }
-                //}
             }
             catch (AmazonS3Exception e)
             {
-                logger.LogError("AWS S3 error when writing CSV file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                logger.LogError("AWS S3 error when reading  file from bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
                 return null;
             }
             catch (Exception e)
             {
-                logger.LogError("Error when writing file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                logger.LogError("Error when reading file from bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
                 return null;
-
             }
         }
     }
