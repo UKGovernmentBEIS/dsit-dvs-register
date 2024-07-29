@@ -6,6 +6,7 @@ using DVSRegister.BusinessLogic.Services.Cookies;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.PreAssessment;
 using DVSRegister.BusinessLogic.Services.PreRegistration;
+using DVSRegister.BusinessLogic.Services.GoogleAnalytics;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
@@ -55,7 +56,7 @@ namespace DVSRegister
             ConfigureDvsRegisterServices(services);
             ConfigureAutomapperServices(services);
             ConfigureCookieService(services);
-            //ConfigureGoogleAnalyticsService(services);
+            ConfigureGoogleAnalyticsService(services);
 
             ConfigureS3Client(services);
             ConfigureS3FileWriter(services);
@@ -154,5 +155,12 @@ namespace DVSRegister
             });
             services.AddScoped<ICookieService, CookieService>();
         }
+        private void ConfigureGoogleAnalyticsService(IServiceCollection services)
+        {
+            services.Configure<GoogleAnalyticsConfiguration>(
+                configuration.GetSection(GoogleAnalyticsConfiguration.ConfigSection));
+            services.AddScoped<GoogleAnalyticsService, GoogleAnalyticsService>();
+        }
+
     }
 }

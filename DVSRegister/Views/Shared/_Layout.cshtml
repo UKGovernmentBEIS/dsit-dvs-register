@@ -1,6 +1,35 @@
-﻿<!DOCTYPE html>
+﻿@using DVSRegister.Middleware
+@using DVSRegister.BusinessLogic.Services
+@using DVSRegister.BusinessLogic.Services.Cookies
+@using DVSRegister.BusinessLogic.Services.GoogleAnalytics
+@using Microsoft.Extensions.Hosting
+@inject CookieService CookieService
+@inject GoogleAnalyticsService GoogleAnalytics
+@{
+    string assetsPath = "/assets/images";
+}
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    @if (CookieService.HasAcceptedGoogleAnalytics(Context.Request))
+    {
+        var id = GoogleAnalytics.Configuration.MeasurementId;
+        <!-- Google Tag Manager -->
+        <script>
+            (function (w, d, s, l, i) {
+                w[l] = w[l] || []; w[l].push({
+                    'gtm.start':
+                        new Date().getTime(), event: 'gtm.js'
+                }); var f = d.getElementsByTagName(s)[0],
+                    j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                        'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+            })
+                (window, document, 'script', 'dataLayer', '@id');
+            </script>
+        <!-- End Google Tag Manager -->
+    }
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - GOV.UK</title>
@@ -8,6 +37,14 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body class="govuk-frontend-supported govuk-template__body">
+    @{
+        ViewData["ServiceName"] = "register of digital identity and attribute services";
+        await Html.RenderPartialAsync("_CookieBanner");
+    }
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZ96NTWC"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
     <header class="govuk-header" role="banner" data-module="govuk-header">
         <div class="govuk-header__container govuk-width-container">
             <div class="govuk-header__logo">
@@ -83,6 +120,11 @@
         <script type="module" src="~/js/govuk.js"></script>
         <script type="module">import { initAll } from "/js/govuk.js";
             initAll();</script>
+
+    @if (CookieService.HasAcceptedGoogleAnalytics(Context.Request))
+    {
+        <script>setUpGoogleAnalytics()</script>
+    }
         @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

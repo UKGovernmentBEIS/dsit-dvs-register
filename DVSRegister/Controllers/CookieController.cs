@@ -31,7 +31,7 @@ public class CookieController : Controller
 
         var viewModel = new CookieSettingsViewModel
         {
-            //GoogleAnalytics = cookie?.GoogleAnalytics is true,
+            GoogleAnalytics = cookie?.GoogleAnalytics is true,
             ChangesHaveBeenSaved = changesHaveBeenSaved
         };
         return View("CookiePage", viewModel);

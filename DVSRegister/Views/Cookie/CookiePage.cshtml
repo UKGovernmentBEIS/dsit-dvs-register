@@ -101,14 +101,26 @@
                             </div>
                             <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="changedName" name="changedName" type="radio" value="yes">
-                                    <label class="govuk-label govuk-radios__label" for="changedName">
+                                    @(Html.RadioButtonFor(m => m.GoogleAnalytics, true,
+                                        new
+                                        {
+                                            @class = "govuk-radios__input",
+                                            id = "GoogleAnalyticsGpg__On",
+                                            @checked = Model.GoogleAnalytics
+                                        }))
+                                    <label class="govuk-label govuk-radios__label" for="GoogleAnalyticsGpg__On">
                                         Yes
                                     </label>
                                 </div>
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="changedName-2" name="changedName" type="radio" value="no">
-                                    <label class="govuk-label govuk-radios__label" for="changedName-2">
+                                    @(Html.RadioButtonFor(m => m.GoogleAnalytics, false,
+                                        new
+                                        {
+                                            @class = "govuk-radios__input",
+                                            id = "GoogleAnalyticsGpg__Off",
+                                            @checked = !Model.GoogleAnalytics
+                                        }))
+                                    <label class="govuk-label govuk-radios__label" for="GoogleAnalyticsGpg__Off">
                                         No
                                     </label>
                                 </div>
