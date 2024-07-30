@@ -1,5 +1,4 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
-using DVSAdmin.BusinessLogic.Services;
+﻿using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
@@ -31,28 +30,28 @@ namespace DVSRegister.Controllers
         {
             if(passwordReset) 
             {
-                LoginPageViewModel loginPageViewModel = new LoginPageViewModel();
-                loginPageViewModel.PasswordReset = passwordReset;
-                return View("EnterEmail", loginPageViewModel);
+                EnterEmailViewModel enterEmailViewModel = new EnterEmailViewModel();
+                enterEmailViewModel.PasswordReset = passwordReset;
+                return View("EnterEmail", enterEmailViewModel);
             }
             return View("EnterEmail");
         }
 
         [HttpPost("enter-email")]
-        public async Task<IActionResult> EnterEmailAsync(LoginPageViewModel loginPageViewModel)
+        public async Task<IActionResult> EnterEmailAsync(EnterEmailViewModel enterEmailViewModel)
         {
             if (ModelState["Email"].Errors.Count == 0)
             {
-                var forgotPasswordResponse = await _signUpService.ForgotPassword(loginPageViewModel.Email);
+                var forgotPasswordResponse = await _signUpService.ForgotPassword(enterEmailViewModel.Email);
 
                 if (forgotPasswordResponse == "OK")
                 {
-                    HttpContext.Session?.Set("Email", loginPageViewModel.Email);
-                    return RedirectToAction("EnterCode", "Login", new { passwordReset = loginPageViewModel.PasswordReset});
+                    HttpContext.Session?.Set("Email", enterEmailViewModel.Email);
+                    return RedirectToAction("EnterCode", "Login", new { passwordReset = enterEmailViewModel.PasswordReset});
                 }
                 else
                 {
-                    ModelState.AddModelError("Email", "Incorrect Email provided");
+                    ModelState.AddModelError("Email", forgotPasswordResponse);
                     return View("EnterEmail");
                 }
             }
@@ -83,7 +82,6 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                ModelState.AddModelError("Code", "Incorrect Code entered");
                 return View("EnterCode", enterCodeViewModel);
             }
         }
@@ -132,8 +130,8 @@ namespace DVSRegister.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError("ErrorMessage", "Error in confirming password");
-                        return View("ConfirmPassword", confirmPasswordViewModel);
+                        ModelState.AddModelError("ErrorMessage", confirmPasswordResponse.ErrorMessage);
+                        return View("CreatePassword", confirmPasswordViewModel);
                     }
                 }
 
@@ -153,34 +151,37 @@ namespace DVSRegister.Controllers
             MFARegistrationViewModel MFARegistrationViewModel = HttpContext?.Session.Get<MFARegistrationViewModel>("MFARegistrationViewModel"); ;
             return View("MFARegistration", MFARegistrationViewModel);
         }
-
-        [HttpPost("confirm-mfa-code-login")]
-        public async Task<IActionResult> ConfirmMFACodeLogin(LoginPageViewModel loginPageViewModel)
+        [HttpPost("mfa-registration")]
+        public async Task<IActionResult> MFAConfirmationCheck(MFARegistrationViewModel viewModel)
         {
+            MFARegistrationViewModel MFARegistrationViewModel = HttpContext?.Session.Get<MFARegistrationViewModel>("MFARegistrationViewModel");
             if (ModelState["MFACode"].Errors.Count == 0)
             {
-                string Session = HttpContext?.Session.Get<string>("Session");
-                string Email = HttpContext?.Session.Get<string>("Email");
-                var mfaConfirmationCheckResponse = await _signUpService.ConfirmMFAToken(Session, Email, loginPageViewModel.MFACode);
+                var mfaConfirmationCheckResponse = await _signUpService.MFAConfirmation(MFARegistrationViewModel.Email, MFARegistrationViewModel.Password, viewModel.MFACode);
 
-                if (mfaConfirmationCheckResponse!=null && mfaConfirmationCheckResponse.IdToken.Length > 0)
+                if (mfaConfirmationCheckResponse == "OK")
                 {
-                    HttpContext?.Session.Set("IdToken", mfaConfirmationCheckResponse.IdToken);
-                    HttpContext?.Session.Set("AccessToken", mfaConfirmationCheckResponse.AccessToken);
-                    return RedirectToAction("LandingPage", "Cab");
+                    return View("SignUpComplete");
                 }
                 else
                 {
-                    ModelState.AddModelError("MFACode", "Wrong MFA Code provided from Authenticator App");
-                    return View("MFAConfirmation", loginPageViewModel);
+                    viewModel.SecretToken = MFARegistrationViewModel.SecretToken;
+                    viewModel.Email = MFARegistrationViewModel.Email;
+                    ModelState.AddModelError("MFACode", "Invalid MFA code provided");
+                    return View("MFARegistration", viewModel);
                 }
             }
             else
             {
-                return View("MFAConfirmation");
+                viewModel.Email = MFARegistrationViewModel.Email;
+                viewModel.SecretToken = MFARegistrationViewModel.SecretToken;
+                return View("MFARegistration", viewModel);
             }
-        }       
-        
+
+        }
+
+
+
 
 
         [HttpGet("sign-up-complete")]
@@ -197,30 +198,30 @@ namespace DVSRegister.Controllers
         {
             return View("LoginPage");
         }
-
-        [HttpGet("mfa-confirmation")]
-        public IActionResult MFAConfirmation()
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginToAccountAsync(LoginViewModel loginViewModel)
         {
-            return View("MFAConfirmation");
-        }
 
-        [HttpPost("login-validation")]
-        public async Task<IActionResult> LoginToAccountAsync(LoginPageViewModel loginPageViewModel)
-        {
-            ModelState.Remove(nameof(LoginPageViewModel.MFACode));
             if (ModelState["Email"].Errors.Count ==0 && ModelState["Password"].Errors.Count ==0)
             {
-                var loginResponse = await _signUpService.SignInAndWaitForMfa(loginPageViewModel.Email, loginPageViewModel.Password);
-                if (loginResponse.Length > 0 && loginResponse != Constants.IncorrectPassword)
+                var loginResponse = await _signUpService.SignInAndWaitForMfa(loginViewModel.Email, loginViewModel.Password);
+                if (loginResponse!= null && loginResponse.Length > 0 && loginResponse != Constants.IncorrectPassword)
                 {
-                    HttpContext?.Session.Set("Email", loginPageViewModel.Email);
+                    HttpContext?.Session.Set("Email", loginViewModel.Email);
                     HttpContext?.Session.Set("Session", loginResponse);
                     return RedirectToAction("MFAConfirmation");
                 }
                 else
                 {
-                    ModelState.AddModelError("Email", "Incorrect email or password");
-                    ModelState.AddModelError("Password", "Incorrect email or password");
+                    if (loginResponse == Constants.IncorrectPassword)
+                    {
+                        ModelState.AddModelError("Password", Constants.IncorrectLoginDetails);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Email", Constants.IncorrectLoginDetails);
+                    }
+
                     return View("LoginPage");
                 }
             }
@@ -230,30 +231,41 @@ namespace DVSRegister.Controllers
             }
         }
 
-        [HttpPost("mfa-confirmation-check")]
-        public async Task<IActionResult> MFAConfirmationCheck(MFARegistrationViewModel viewModel)
+        [HttpGet("mfa-confirmation")]
+        public IActionResult MFAConfirmation()
         {
-            MFARegistrationViewModel MFARegistrationViewModel = HttpContext?.Session.Get<MFARegistrationViewModel>("MFARegistrationViewModel");
+            return View("MFAConfirmation");
+        }
+
+        [HttpPost("mfa-confirmation-login")]
+        public async Task<IActionResult> ConfirmMFACodeLogin(MFACodeViewModel MFACodeViewModel)
+        {
             if (ModelState["MFACode"].Errors.Count == 0)
             {
-                var mfaConfirmationCheckResponse = await _signUpService.MFAConfirmation(MFARegistrationViewModel.Email, MFARegistrationViewModel.Password, viewModel.MFACode);
-                
-                if (mfaConfirmationCheckResponse == "OK")
+                string Session = HttpContext?.Session.Get<string>("Session");
+                string Email = HttpContext?.Session.Get<string>("Email");
+                var mfaConfirmationCheckResponse = await _signUpService.ConfirmMFAToken(Session, Email, MFACodeViewModel.MFACode);
+
+                if (mfaConfirmationCheckResponse!=null && mfaConfirmationCheckResponse.IdToken.Length > 0)
                 {
-                    return View("SignUpComplete");
+                    HttpContext?.Session.Set("IdToken", mfaConfirmationCheckResponse.IdToken);
+                    HttpContext?.Session.Set("AccessToken", mfaConfirmationCheckResponse.AccessToken);
+                    return RedirectToAction("LandingPage", "Cab");
                 }
                 else
                 {
-                    ModelState.AddModelError("MFACode", "Wrong MFA Code Provided from Authenticator App");
-                    return View("MFARegistration", viewModel);
+                    ModelState.AddModelError("MFACode", "Enter a valid MFA code");
+                    return View("MFAConfirmation", MFACodeViewModel);
                 }
             }
             else
             {
-                return View("MFARegistration", viewModel);
+                return View("MFAConfirmation");
             }
-            
         }
+
+
+    
         #endregion
 
         [HttpGet("sign-out")]

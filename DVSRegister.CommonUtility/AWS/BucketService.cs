@@ -3,7 +3,6 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Amazon.S3.Transfer;
 
 namespace DVSRegister.CommonUtility
 {
@@ -68,6 +67,7 @@ namespace DVSRegister.CommonUtility
         {
             try
             {
+
                 var request = new GetObjectRequest
                 {
                     BucketName = config.BucketName,
@@ -86,14 +86,13 @@ namespace DVSRegister.CommonUtility
             }
             catch (AmazonS3Exception e)
             {
-                logger.LogError("AWS S3 error when writing CSV file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                logger.LogError("AWS S3 error when reading  file from bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
                 return null;
             }
             catch (Exception e)
             {
-                logger.LogError("Error when writing file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                logger.LogError("Error when reading file from bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
                 return null;
-
             }
         }
     }
