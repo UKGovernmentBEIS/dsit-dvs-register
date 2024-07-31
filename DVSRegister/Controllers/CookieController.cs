@@ -44,7 +44,7 @@ public class CookieController : Controller
         {
             Version = _configuration.CurrentCookieMessageVersion,
             ConfirmationShown = true,
-            GoogleAnalytics = viewModel.GoogleAnalytics,
+            GoogleAnalytics = (bool)viewModel.GoogleAnalytics,
         };
         _cookieService.SetCookie(Response, _configuration.CookieSettingsCookieName, cookieSettings);
         return CookieSettings_Get(changesHaveBeenSaved: true);
