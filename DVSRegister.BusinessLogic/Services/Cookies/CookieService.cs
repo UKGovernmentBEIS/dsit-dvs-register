@@ -1,15 +1,9 @@
-﻿using System;
+﻿using DVSRegister.BusinessLogic.Models.Cookies;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using DVSRegister.CommonUtility;
-using DVSRegister.CommonUtility.Email;
-using DVSRegister.BusinessLogic.Models;
-using DVSRegister.CommonUtility.Models.Enums;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
-using DVSRegister.BusinessLogic.Models.Cookies;
 
 namespace DVSRegister.BusinessLogic.Services.Cookies
 {
