@@ -37,9 +37,9 @@ namespace DVSRegister.Controllers
 
         [HttpGet("")]
         [HttpGet("landing-page")]
-        public IActionResult LandingPage()
+        public async Task<IActionResult> LandingPage()
         {
-            googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
+            await googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
             return View();
         }
 
