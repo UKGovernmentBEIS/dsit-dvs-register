@@ -1,15 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Mvc;
-using DVSRegister.Models.Cookies;
-using DVSRegister.BusinessLogic;
-using DVSRegister.BusinessLogic.Models.Cookies;
-using Microsoft.Extensions.Options;
+﻿using DVSRegister.BusinessLogic.Models.Cookies;
 using DVSRegister.BusinessLogic.Services.Cookies;
-using DVSRegister.CommonUtility.Models;
+using DVSRegister.Models.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace DVSRegister.Controllers;
 
