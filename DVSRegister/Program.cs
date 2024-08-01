@@ -1,6 +1,7 @@
 ﻿using DVSRegister;
 using DVSRegister.Data;
 using DVSRegister.Middleware;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration, builder.Environment);
@@ -23,6 +24,11 @@ var dbContext = scope.ServiceProvider.GetRequiredService<DVSRegisterDbContext>()
 startup.ConfigureDatabaseHealthCheck(dbContext);
 
 
+var forwardedHeaderOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+app.UseForwardedHeaders(forwardedHeaderOptions);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -32,8 +38,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<BasicAuthMiddleware>();
-
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
