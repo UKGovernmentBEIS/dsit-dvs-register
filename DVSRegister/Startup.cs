@@ -76,6 +76,7 @@ namespace DVSRegister
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.Name = "dvs-app";
             });
         }
 
