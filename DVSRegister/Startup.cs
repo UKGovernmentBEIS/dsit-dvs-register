@@ -46,7 +46,7 @@ namespace DVSRegister
             ConfigureSession(services);
             ConfigureDvsRegisterServices(services);
             ConfigureAutomapperServices(services);
-            //ConfigureCookieService(services);
+            ConfigureCookieService(services);
             ConfigureGoogleAnalyticsService(services);
 
             ConfigureS3Client(services);
