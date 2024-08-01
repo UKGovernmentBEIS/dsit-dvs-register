@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.PreRegistration;
+using DVSRegister.BusinessLogic.Services.GoogleAnalytics;
 using DVSRegister.BusinessLogic.Services.PreAssessment;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
@@ -16,12 +17,14 @@ namespace DVSRegister.Controllers
     {
         private readonly ILogger<PreRegistrationController> logger;
         private readonly IPreRegistrationService preRegistrationService;
+        private readonly GoogleAnalyticsService googleAnalyticsService;
 
-        public PreRegistrationController(ILogger<PreRegistrationController> logger, IPreRegistrationService preRegistrationService)
+        public PreRegistrationController(ILogger<PreRegistrationController> logger, IPreRegistrationService preRegistrationService, GoogleAnalyticsService googleAnalyticsService)
         {
             this.logger = logger;
             this.preRegistrationService = preRegistrationService;
-            
+            this.googleAnalyticsService = googleAnalyticsService;
+
         }
 
         /// <summary>
@@ -97,6 +100,7 @@ namespace DVSRegister.Controllers
         {           
             ViewBag.fromSummaryPage = fromSummaryPage;
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
+            googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
             return View(summaryViewModel.SponsorViewModel);
         }
 
@@ -269,6 +273,7 @@ namespace DVSRegister.Controllers
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();
             ViewBag.HideCountries = hideCountries;
             ViewBag.ConfirmAccuracy = confirmAccuracy;
+            googleAnalyticsService.SendSummaryPageViewedEventAsync(Request);
             return View(summaryViewModel);
         }
 
