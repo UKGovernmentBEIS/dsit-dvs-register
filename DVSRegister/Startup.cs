@@ -37,10 +37,7 @@ namespace DVSRegister
 
             services.Configure<BasicAuthMiddlewareConfiguration>(
             configuration.GetSection(BasicAuthMiddlewareConfiguration.ConfigSection));
-            services.AddControllersWithViews(options =>
-            {
-                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-            }).AddSessionStateTempDataProvider(); ;
+            services.AddControllersWithViews();          
             string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));
             services.AddDbContext<DVSRegisterDbContext>(opt =>
                 opt.UseNpgsql(connectionString));
@@ -143,6 +140,7 @@ namespace DVSRegister
             // Change the default antiforgery cookie name so it doesn't include Asp.Net for security reasons
             services.AddAntiforgery(options =>
             {
+
                 options.Cookie.Name = "Antiforgery";
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;

@@ -44,6 +44,7 @@ namespace DVSRegister.Controllers
        /// </summary>
        /// <returns></returns>
         [HttpPost("what-we-will-need-from-you")]
+        [ValidateAntiForgeryToken]
         public IActionResult Continue()
         {
             SummaryViewModel summaryViewModel = GetPreRegistrationSummary();

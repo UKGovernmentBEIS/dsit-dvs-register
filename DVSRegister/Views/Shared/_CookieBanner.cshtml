@@ -16,7 +16,7 @@
 
 <form method="POST" action="@Url.Action(nameof(CookieController.CookieConsent), "Cookie")">
     @Html.Hidden("ReturnUrl", Context.Request.GetEncodedPathAndQuery())
-   @*  @Html.AntiForgeryToken() *@
+    @Html.AntiForgeryToken()
 
     @if (bannerState == BannerState.ShowBanner)
     {

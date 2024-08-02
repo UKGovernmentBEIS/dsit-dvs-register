@@ -44,6 +44,7 @@ public class CookieController : Controller
     }
 
     [HttpPost("cookie-consent")]
+    [ValidateAntiForgeryToken]
     public IActionResult CookieConsent(CookieConsentViewModel cookieConsent)
     {
         if (cookieConsent.Consent == "hide")

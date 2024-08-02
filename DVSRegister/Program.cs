@@ -39,6 +39,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseMiddleware<BasicAuthMiddleware>();
 app.UseStaticFiles();
+app.UseCookiePolicy();
 app.UseRouting();
 app.UseAuthorization();
 app.UseSession();
