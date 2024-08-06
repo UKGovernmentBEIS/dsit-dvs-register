@@ -46,15 +46,13 @@ namespace DVSRegister.CommonUtility
             }
             catch (AmazonS3Exception e)
             {
-                logger.LogError("AWS S3 error when writing  file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);                
-                return new GenericResponse { Success = true };
-                //return new GenericResponse { Success = false }; //ToDo: uncomment once bucket access ready
+                logger.LogError("AWS S3 error when writing  file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                return new GenericResponse { Success = false };
             }
             catch (Exception e)
             {
                 logger.LogError("Error when writing file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
-                //return new GenericResponse { Success = false };//ToDo: uncomment once bucket access ready
-                return new GenericResponse { Success = true };
+                return new GenericResponse { Success = false };               
             }
         }
 
