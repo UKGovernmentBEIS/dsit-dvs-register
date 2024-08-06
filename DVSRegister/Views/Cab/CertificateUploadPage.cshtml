@@ -45,7 +45,7 @@
                     {
                         <div class="govuk-form-group govuk-form-group--error">
                             <label class="govuk-label" for="file-upload">
-                                This file should be in PDF format and no bigger than 25MB
+                                This file should be in PDF format and no bigger than 5MB
                             </label>
                             <p id="file-error" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.File, "", new { @class = "govuk-error-message" })
@@ -58,7 +58,7 @@
                     {
                         <div class="govuk-form-group">
                             <label class="govuk-label" for="file-upload">
-                                This file should be in PDF format and no bigger than 25MB
+                                This file should be in PDF format and no bigger than 5MB
                             </label>
                             @Html.TextBoxFor(m => m.File, new { type = "file", @class = "govuk-file-upload", id = "file", name = "file-name" })
                         </div>
@@ -78,7 +78,7 @@
                                     @Model.FileName
                                 </dd>
                                 <dd class="govuk-summary-list__actions">
-                                    <a class="govuk-link" href="#" aria-label="Remove service provider’s certificate of conformity ">Remove<span class="govuk-visually-hidden"> name</span></a>
+                                    <a class="govuk-link" href="/cab-service/submit-certificate-information/upload-certificate-of-conformity?fromSummaryPage=@ViewBag.fromSummaryPage&remove=true" aria-label="Remove service provider’s certificate of conformity ">Remove<span class="govuk-visually-hidden"> Remove file</span></a>
                                     
                                 </dd>
                             </div>

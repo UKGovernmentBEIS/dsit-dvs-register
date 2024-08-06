@@ -120,8 +120,28 @@ namespace DVSRegister
         {
             var s3Config = new S3Configuration();
             configuration.GetSection(S3Configuration.ConfigSection).Bind(s3Config);
-            services.AddScoped(_ => new AmazonS3Client(RegionEndpoint.GetBySystemName(s3Config.Region)));
-           
+            string localAccessKey = configuration.GetValue<string>("S3:LocalDevOnly_AccessKey")??string.Empty;
+            string localSecreKey = configuration.GetValue<string>("S3:LocalDevOnly_SecretKey")??string.Empty;
+            string localServiceURL = configuration.GetValue<string>("S3:LocalDevOnly_ServiceUrl")??string.Empty;
+
+            if (!string.IsNullOrEmpty(localAccessKey) && !string.IsNullOrEmpty(localSecreKey) && !string.IsNullOrEmpty(localSecreKey))
+            {
+
+                // For local development connect to a local instance of Minio add the access key , secret key and service url in local user secrets only
+                var clientConfig = new AmazonS3Config
+                {
+                    ServiceURL = localServiceURL,
+                    ForcePathStyle = true,
+                };
+
+                services.AddScoped(_ => new AmazonS3Client(localAccessKey, localSecreKey, clientConfig));
+            }
+
+            else
+            {
+                services.AddScoped(_ => new AmazonS3Client(RegionEndpoint.GetBySystemName(s3Config.Region)));
+            } 
+
         }
 
         private void ConfigureS3FileWriter(IServiceCollection services)
