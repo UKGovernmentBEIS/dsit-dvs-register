@@ -34,17 +34,20 @@
 
                     @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", emailViewModel)
 
-                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "govuk-error-message" })
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("Password") && Html.ViewData.ModelState["Password"].Errors.Count >0 ? "govuk-form-group--error": "" )">
-                        <h1 class="govuk-label-wrapper">
-                            <label class="govuk-label govuk-label--s" for="event-name">
-                                Password
-                            </label>
-                        </h1>
-                        @Html.TextBoxFor(m => m.Password, new { @class = "govuk-input govuk-input--width-20", id = "password", name = "password", type = "password" })
+                    @{
+                        var passwordViewModel = new PasswordTextBoxViewModel
+                        {
+                            PropertyName = "Password",
+                            Label = "Password",
+                            Value = Model?.Password,
+                            Class = "govuk-input govuk-input--width-20",
+                            HasError = Html.ViewData.ModelState.ContainsKey("Email") && Html.ViewData.ModelState["Password"].Errors.Count > 0,
+                            ErrorMessage = Html.ViewData.ModelState.ContainsKey("Email") && Html.ViewData.ModelState["Password"].Errors.Count > 0 ?
+                        Html.ViewData.ModelState["Password"].Errors[0].ErrorMessage : string.Empty,
+                        };
+                    }
 
-                    </div>
-
+                    @await Html.PartialAsync("~/Views/PartialViews/_PasswordTextBoxView.cshtml", passwordViewModel)
 
                     <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
                         Sign In
