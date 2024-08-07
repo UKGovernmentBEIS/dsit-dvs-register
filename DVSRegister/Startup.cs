@@ -69,7 +69,7 @@ namespace DVSRegister
                 options.IdleTimeout = TimeSpan.FromMinutes(30); // ToDo:Adjust the timeout
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
-                //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;               
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;               
             });
         }
 
@@ -160,10 +160,9 @@ namespace DVSRegister
             // Change the default antiforgery cookie name so it doesn't include Asp.Net for security reasons
             services.AddAntiforgery(options =>
             {
-
                 options.Cookie.Name = "Antiforgery";
                 options.Cookie.HttpOnly = true;
-                //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
             services.AddScoped<ICookieService, CookieService>();
         }

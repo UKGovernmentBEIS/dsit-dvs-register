@@ -23,13 +23,6 @@ using var scope = app.Services.CreateScope();
 var dbContext = scope.ServiceProvider.GetRequiredService<DVSRegisterDbContext>();
 startup.ConfigureDatabaseHealthCheck(dbContext);
 
-
-var forwardedHeaderOptions = new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-};
-app.UseForwardedHeaders(forwardedHeaderOptions);
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {   
@@ -38,10 +31,21 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<BasicAuthMiddleware>();
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCookiePolicy();
 app.UseRouting();
 app.UseAuthorization();
+// Configure Forwarded Headers Middleware
+var forwardedHeadersOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+// Clear the default settings for KnownNetworks and KnownProxies
+forwardedHeadersOptions.KnownNetworks.Clear(); // Clear default networks
+forwardedHeadersOptions.KnownProxies.Clear();  // Clear default proxies
+app.UseForwardedHeaders(forwardedHeadersOptions);
+
 app.UseSession();
 app.MapControllers();
 app.Run();
