@@ -21,7 +21,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         public PreRegistrationControllerTests()
         {
             // Arrange : mock controller common for all test cases
-            controller = new PreRegistrationController(loggerMock.Object, preRegistrationServiceMock.Object);
+            controller = new PreRegistrationController(loggerMock.Object, preRegistrationServiceMock.Object, null);
         }
 
 

@@ -1,6 +1,7 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.BusinessLogic.Services.GoogleAnalytics;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
@@ -20,22 +21,23 @@ namespace DVSRegister.Controllers
     {
     
         private readonly ICabService cabService;
-        private readonly IBucketService bucketService;
-        private readonly IAVService avService;
+        private readonly IBucketService bucketService;    
         private readonly IEmailSender emailSender;
+        private readonly GoogleAnalyticsService googleAnalyticsService;
 
-        public CabController(ICabService cabService, IAVService aVService, IBucketService bucketService, IEmailSender emailSender)
+        public CabController(ICabService cabService, IBucketService bucketService, IEmailSender emailSender, GoogleAnalyticsService googleAnalyticsService)
         {           
             this.cabService = cabService;
             this.bucketService = bucketService;
-            this.avService = aVService;
             this.emailSender = emailSender;
+            this.googleAnalyticsService = googleAnalyticsService;
         }
 
         [HttpGet("")]
         [HttpGet("landing-page")]
-        public IActionResult LandingPage()
+        public async Task<IActionResult> LandingPage()
         {
+            await googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
             return View();
         }
 
@@ -549,54 +551,58 @@ namespace DVSRegister.Controllers
 
 
         [HttpGet("submit-certificate-information/upload-certificate-of-conformity")]
-        public IActionResult CertificateUploadPage(bool fromSummaryPage)
+        public async Task<IActionResult> CertificateUploadPage(bool fromSummaryPage, bool remove)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
-            ViewBag.HasSupplementarySchemes = summaryViewModel.HasSupplementarySchemes;
-            return View();
+            CertificateFileViewModel certificateFileViewModel = new CertificateFileViewModel();
+            if (remove)
+            {             
+                summaryViewModel.FileLink = null;
+                summaryViewModel.FileName = null;               
+                HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);             
+                return View(certificateFileViewModel);
+            } 
+            if(!string.IsNullOrEmpty(summaryViewModel.FileName) && !string.IsNullOrEmpty(summaryViewModel.FileLink)) 
+            {
+                certificateFileViewModel.FileName = summaryViewModel.FileName;
+                certificateFileViewModel.FileUrl = summaryViewModel.FileLink;
+                var fileContent = await bucketService.DownloadFileAsync(summaryViewModel.FileLink);
+                var stream = new MemoryStream(fileContent);
+                IFormFile formFile = new FormFile(stream, 0, fileContent.Length, "File", summaryViewModel.FileName)
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "application/pdf"
+                };
+                certificateFileViewModel.FileUploadedSuccessfully = true;               
+                certificateFileViewModel.File = formFile;
+            }
+            return View(certificateFileViewModel);
 
         }
 
         [HttpPost("submit-certificate-information/upload-certificate-of-conformity")]
         public async Task<IActionResult> SaveCertificate(CertificateFileViewModel certificateFileViewModel)
-        {
-            // Virus Scan
-            // Upload to S3
+        {           
             bool fromSummaryPage = certificateFileViewModel.FromSummaryPage;
-            certificateFileViewModel.FromSummaryPage = false;
-            // Store the filename and link in Session
+            certificateFileViewModel.FromSummaryPage = false;          
             if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == false)
             {
                 if (ModelState["File"].Errors.Count == 0)
                 {
                     using (var memoryStream = new MemoryStream())
                     {
-
-                        await certificateFileViewModel.File.CopyToAsync(memoryStream);
-                        //TODO:  uncomment service call once aws provisioned
-                        GenericResponse avServiceResponse = new GenericResponse { Success = true };
-                        // GenericResponse avServiceResponse = avService.ScanFileForVirus(memoryStream);
-
-                        if (avServiceResponse.Success)
-                        {                        
-                            GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
-                            if (genericResponse.Success)
-                            {
-                                CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
-                                summaryViewModel.FileName = certificateFileViewModel.File.FileName;
-                                summaryViewModel.FileLink = genericResponse.Data;
-
-                                certificateFileViewModel.FileUploadedSuccessfully = true;                               
-                                certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
-                                HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
-                                return View("CertificateUploadPage", certificateFileViewModel);
-                            }
-                            else
-                            {
-                                ModelState.AddModelError("File", "Unable to upload the file provided");
-                                return View("CertificateUploadPage", certificateFileViewModel);
-                            }
+                        await certificateFileViewModel.File.CopyToAsync(memoryStream);    
+                        GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                        if (genericResponse.Success)
+                        {
+                            CertificateInfoSummaryViewModel summaryViewModel = GetCertificateInfoSummary();
+                            summaryViewModel.FileName = certificateFileViewModel.File.FileName;
+                            summaryViewModel.FileLink = genericResponse.Data;
+                            certificateFileViewModel.FileUploadedSuccessfully = true;
+                            certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
+                            HttpContext?.Session.Set("CertificateInfoSummary", summaryViewModel);
+                            return View("CertificateUploadPage", certificateFileViewModel);
                         }
                         else
                         {
@@ -744,9 +750,10 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> InformationSubmitted()
         {
             string email = HttpContext?.Session.Get<string>("Email")??string.Empty;            
-            HttpContext?.Session.Remove("CertificateInfoSummary");           
+            HttpContext?.Session.Remove("CertificateInfoSummary");            
             ViewBag.Email = email;
             await emailSender.SendEmailCabInformationSubmitted(email, email);
+            await googleAnalyticsService.SendCertificateInfoCompletedEventAsync(Request);
             return View();
            
         }

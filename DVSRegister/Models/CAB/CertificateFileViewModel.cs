@@ -7,7 +7,7 @@ namespace DVSRegister.Models.CAB
 	{
         
         [Required(ErrorMessage = "Upload the digital identity and attribute service provider's certificate of conformity")]
-        [MaxFileSize(5)] // 25 MB
+        [MaxFileSize(5)] // 5 MB
         [AllowedExtensions(new string[] { ".pdf" }, ErrorMessage = "The selected file must be a PDF")]        
         public IFormFile? File { get; set; }
 
