@@ -30,9 +30,11 @@ namespace DVSRegister.Data.Entities
         [Column(TypeName = "decimal(10, 2)")]
         public decimal FileSizeInKb { get; set; }
         public DateTime ConformityIssueDate { get; set; }
-        public DateTime ConformityExpiryDate { get; set; }     
-        public string? SubmittedCAB { get; set; }
-        public string? CabEmail { get; set; }
+        public DateTime ConformityExpiryDate { get; set; }
+        
+        [ForeignKey("CabUser")]
+        public int CabUserId { get; set; }
+        public CabUser CabUser { get; set; }
         public int ServiceNumber { get;set; }
         public string TrustMarkNumber { get; set; }
         public ServiceStatusEnum ServiceStatus { get; set; }

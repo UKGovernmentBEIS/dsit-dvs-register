@@ -26,7 +26,10 @@ namespace DVSRegister.Data.Entities
         public string PublicContactEmail { get; set; }
         public string ProviderTelephoneNumber { get; set; }
         public string ProviderWebsiteAddress { get; set; }   
-        public int CompanyId {  get; set; } 
+        public int CompanyId {  get; set; }
+        [ForeignKey("CabUser")]
+        public int CabUserId { get; set; }
+        public CabUser CabUser { get; set; }
         public ProviderStatusEnum ProviderStatus { get; set; }       
         public ICollection<Service>? Services { get; set; }
         public NpgsqlTsVector SearchVector { get; set; }
