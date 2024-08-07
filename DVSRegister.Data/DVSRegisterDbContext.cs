@@ -40,7 +40,7 @@ namespace DVSRegister.Data
         public DbSet<ServiceIdentityProfileMapping> ServiceIdentityProfileMapping { get; set; }
         public DbSet<ServiceRoleMapping> ServiceRoleMapping { get; set; }
         public DbSet<ServiceSupSchemeMapping> ServiceSupSchemeMapping { get; set; }
-        public DbSet<CabUser> ServiceSupSchemeMapping { get; set; }
+        public DbSet<CabUser> CabUser { get; set; }
         #endregion
 
 

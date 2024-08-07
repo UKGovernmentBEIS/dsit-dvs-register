@@ -13,5 +13,6 @@ namespace DVSRegister.Data.Entities
         public string CAB { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
+        public DateTime CreatedTime { get; set; }       
     }
 }
