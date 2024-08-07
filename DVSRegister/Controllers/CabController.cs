@@ -948,7 +948,7 @@ namespace DVSRegister.Controllers
                     {
                         ModelState.AddModelError("ValidDate", Constants.ConformityIssueDateExpiryDateError);
                     }
-                    else if (date > maxExpiryDate)
+                    else if (date >= maxExpiryDate)
                     {
                         ModelState.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
                     }
