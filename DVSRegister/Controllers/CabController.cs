@@ -1,5 +1,7 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.GoogleAnalytics;
 using DVSRegister.CommonUtility;
@@ -24,13 +26,15 @@ namespace DVSRegister.Controllers
         private readonly IBucketService bucketService;    
         private readonly IEmailSender emailSender;
         private readonly GoogleAnalyticsService googleAnalyticsService;
+        private readonly IUserService userService;
 
-        public CabController(ICabService cabService, IBucketService bucketService, IEmailSender emailSender, GoogleAnalyticsService googleAnalyticsService)
+        public CabController(ICabService cabService, IBucketService bucketService, IEmailSender emailSender, GoogleAnalyticsService googleAnalyticsService, IUserService userService)
         {           
             this.cabService = cabService;
             this.bucketService = bucketService;
             this.emailSender = emailSender;
             this.googleAnalyticsService = googleAnalyticsService;
+            this.userService = userService;
         }
 
         [HttpGet("")]
@@ -38,7 +42,15 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> LandingPage()
         {
             await googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
-            return View();
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+            string cab = string.Empty;
+            var identity = HttpContext?.User.Identity as ClaimsIdentity;
+            var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
+            if (profileClaim != null)
+                cab = profileClaim.Value;
+            GenericResponse genericResponse = await userService.SaveUser(email,cab);
+            return genericResponse.Success ? View() : RedirectToAction("HandleException", "Error");
+           
         }
 
         #region Validate URN
