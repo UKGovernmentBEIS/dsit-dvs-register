@@ -1,6 +1,7 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using NpgsqlTypes;
 
 namespace DVSRegister.Data.Entities
 {
@@ -19,7 +20,8 @@ namespace DVSRegister.Data.Entities
         public string WebsiteAddress { get; set; }
         public string CompanyAddress { get; set; }
         public ICollection<ServiceRoleMapping> ServiceRoleMapping { get; set; }
-        public ICollection<ServiceQualityLevelMapping> ServiceQualityLevelMapping { get; set; }
+        public bool HasGPG44 { get; set; }
+        public ICollection<ServiceQualityLevelMapping>? ServiceQualityLevelMapping { get; set; }
         public ICollection<ServiceIdentityProfileMapping> ServiceIdentityProfileMapping { get; set; }
         public bool HasSupplementarySchemes { get; set; }
         public ICollection<ServiceSupSchemeMapping>? ServiceSupSchemeMapping { get; set; }
@@ -38,6 +40,7 @@ namespace DVSRegister.Data.Entities
         public int ServiceNumber { get;set; }
         public int TrustMarkNumber { get; set; }
         public ServiceStatusEnum ServiceStatus { get; set; }
+        public NpgsqlTsVector SearchVector { get; set; }
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }

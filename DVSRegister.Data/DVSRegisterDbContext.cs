@@ -48,9 +48,14 @@ namespace DVSRegister.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ProviderProfile>()
-            .HasGeneratedTsVectorColumn(p => p.SearchVector, "english", p => new { p.TradingName, p.RegisteredName })
+            .HasGeneratedTsVectorColumn(p => p.SearchVector, "english", p => new { p.RegisteredName, p.TradingName })
             .HasIndex(p => p.SearchVector)
             .HasMethod("GIN");
+
+            modelBuilder.Entity<Service>()
+           .HasGeneratedTsVectorColumn(p => p.SearchVector, "english", p => new { p.ServiceName })
+           .HasIndex(p => p.SearchVector)
+           .HasMethod("GIN");
 
             modelBuilder.Entity<QualityLevel>().HasData(
             new QualityLevel { Id =1, Level = "Low", QualityType = QualityTypeEnum.Authentication },
