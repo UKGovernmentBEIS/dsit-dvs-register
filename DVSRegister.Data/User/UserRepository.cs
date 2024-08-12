@@ -25,9 +25,9 @@ namespace DVSRegister.Data.Repositories
                     user.CreatedTime = DateTime.UtcNow;
                     await context.CabUser.AddAsync(user);
                     context.SaveChanges();
-                    transaction.Commit();
-                    genericResponse.Success = true;
-                }  
+                    transaction.Commit();                   
+                }
+                genericResponse.Success = true;
             }
             catch(Exception ex)
             {                

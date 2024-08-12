@@ -114,5 +114,118 @@ namespace DVSRegister.Data.CAB
             return genericResponse;
 
         }
+
+        public async Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = context.Database.BeginTransaction();
+            try
+            {
+                var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfile.Id);
+
+                if (existingProvider !=null)
+                {
+                    existingProvider.RegisteredName = providerProfile.RegisteredName;
+                    existingProvider.TradingName = providerProfile.TradingName;
+                    existingProvider.HasRegistrationNumber = providerProfile.HasRegistrationNumber;
+                    existingProvider.CompanyRegistrationNumber = providerProfile.CompanyRegistrationNumber;
+                    existingProvider.DUNSNumber = providerProfile.DUNSNumber;
+                    existingProvider.PrimaryContactFullName= providerProfile.PrimaryContactFullName;
+                    existingProvider.PrimaryContactJobTitle= providerProfile.PrimaryContactJobTitle;
+                    existingProvider.PrimaryContactEmail = providerProfile.PrimaryContactEmail;
+                    existingProvider.PrimaryContactTelephoneNumber = providerProfile.PrimaryContactTelephoneNumber;
+                    existingProvider.SecondaryContactFullName = providerProfile.SecondaryContactFullName;
+                    existingProvider.SecondaryContactJobTitle = providerProfile.SecondaryContactJobTitle;
+                    existingProvider.SecondaryContactEmail = providerProfile.SecondaryContactEmail;
+                    existingProvider.SecondaryContactTelephoneNumber = providerProfile.SecondaryContactTelephoneNumber;
+                    existingProvider.PublicContactEmail= providerProfile.PublicContactEmail;
+                    existingProvider.ProviderTelephoneNumber = providerProfile.ProviderTelephoneNumber;
+                    existingProvider.ProviderWebsiteAddress = providerProfile.ProviderWebsiteAddress;
+                    existingProvider.ProviderStatus = providerProfile.ProviderStatus;
+                    existingProvider.ModifiedTime = DateTime.UtcNow;
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
+                    providerProfile.CreatedTime = DateTime.UtcNow;
+                    var entity = await context.ProviderProfile.AddAsync(providerProfile);
+                    await context.SaveChangesAsync();
+                    genericResponse.InstanceId = entity.Entity.Id;
+                }
+                transaction.Commit();
+                genericResponse.Success = true;
+
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                transaction.Rollback();
+                logger.LogError(ex, "Error in SaveProviderProfile");
+            }
+            return genericResponse;
+        }
+
+        public async Task<bool> CheckProviderRegisteredNameExists(string registeredName)
+        {
+            var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.RegisteredName == registeredName);
+
+            if (existingProvider !=null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        public async Task<GenericResponse> SaveService(Service service)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = context.Database.BeginTransaction();
+            try
+            {
+                var existingService = await context.Service.FirstOrDefaultAsync(p => p.ProviderProfileId == service.ProviderProfileId && p.ServiceName == service.ServiceName);
+
+                if (existingService !=null)
+                {
+                    existingService.ServiceName = service.ServiceName;
+                    existingService.WebsiteAddress = service.WebsiteAddress;
+                    existingService.CompanyAddress = service.CompanyAddress;
+                    existingService.ServiceRoleMapping = service.ServiceRoleMapping;
+                    existingService.ServiceQualityLevelMapping = service.ServiceQualityLevelMapping;
+                    existingService.ServiceIdentityProfileMapping =service.ServiceIdentityProfileMapping;
+                    existingService.HasSupplementarySchemes = service.HasSupplementarySchemes;
+                    existingService.HasGPG44 = service.HasGPG44;
+                    existingService.ServiceSupSchemeMapping = service.ServiceSupSchemeMapping;
+                    existingService.FileName = service.FileName;
+                    existingService.FileLink = service.FileLink;
+                    existingService.FileSizeInKb =service.FileSizeInKb;
+                    existingService.ConformityIssueDate = service.ConformityIssueDate;
+                    existingService.ConformityExpiryDate =service.ConformityExpiryDate;
+                    existingService.CabUserId = service.CabUserId;
+                    existingService.ModifiedTime = DateTime.UtcNow;
+                    await context.SaveChangesAsync();
+                }
+                else
+                {
+                    service.CreatedTime = DateTime.UtcNow;
+                    var entity = await context.Service.AddAsync(service);
+                    await context.SaveChangesAsync();
+                    genericResponse.InstanceId = entity.Entity.Id;
+                }
+                transaction.Commit();
+                genericResponse.Success = true;
+
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                transaction.Rollback();
+                logger.LogError(ex, "Error in SaveService");
+            }
+            return genericResponse;
+        }
     }
 }

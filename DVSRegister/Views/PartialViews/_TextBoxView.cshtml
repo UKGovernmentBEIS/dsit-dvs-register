@@ -12,9 +12,9 @@
     }
 
 
-    @if (string.IsNullOrEmpty(Model.Hint))
+    @if (!string.IsNullOrEmpty(Model.Hint))
     {
-    <div id="event-name-hint" class="govuk-hint">
+        <div id="@Model.PropertyName.ToLower()-hint" class="govuk-hint">
         @Model.Hint
     </div>
     }

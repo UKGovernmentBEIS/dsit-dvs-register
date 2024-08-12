@@ -15,5 +15,8 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<List<SupplementarySchemeDto>> GetSupplementarySchemes();
         public Task<DVSRegister.Data.Entities.PreRegistration> GetURNDetails(string URN);
         public Task<bool> CheckURNValidatedByCab(string URN);
+        public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
+        public Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfile);
+        public Task<GenericResponse> SaveService(ServiceDto serviceDto);
     }
 }

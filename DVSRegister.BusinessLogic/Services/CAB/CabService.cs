@@ -114,5 +114,26 @@ namespace DVSRegister.BusinessLogic.Services.CAB
 
             return preRegistration;
         }
+
+        public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto)
+        {
+            ProviderProfile providerProfile = new();
+            automapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfile);
+            return genericResponse;
+        }
+
+        public async Task<GenericResponse> SaveService(ServiceDto serviceDto)
+        {
+            Service service = new Service();
+            automapper.Map(serviceDto, service);
+            GenericResponse genericResponse = await cabRepository.SaveService(service);
+            return genericResponse;
+        }
+
+        public async Task<bool> CheckProviderRegisteredNameExists(string registeredName)
+        {
+            return await cabRepository.CheckProviderRegisteredNameExists(registeredName);
+        }
     }
 }
