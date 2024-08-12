@@ -77,10 +77,19 @@
         </footer>
 
         <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/jquery-3.7.1.min.js"></script>
         <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
         <script type="module" src="~/js/govuk.js"></script>
-        <script type="module">import { initAll } from "/js/govuk.js";
-            initAll();</script>     
+        <script type="module" src="~/js/all.js"></script>
+        <script type="module">
+            import { initAll } from "/js/govuk.js";
+            initAll();
+            var SortableTable = window.MOJFrontend.SortableTable;
+            var $sortableTable = document.querySelector('[data-module="moj-sortable-table"]');
+            if ($sortableTable) {
+                new SortableTable($sortableTable);
+            }
+        </script>     
         @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
