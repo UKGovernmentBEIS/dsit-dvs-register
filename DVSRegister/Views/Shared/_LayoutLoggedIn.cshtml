@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
+    <title>@ViewData["Title"] - GOV.UK</title>
     <link rel="stylesheet" href="~/css/main.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
@@ -19,12 +19,15 @@
                         </svg>
                     </a>
                 </div>
+
                 <div class="govuk-header__content">
-                    <strong class="govuk-tag">
-                       Submit certificate information
-                    </strong>
+                    <span class="govuk-header__service-name">
+                        Conformity Assessment Body Service
+                    </span>
+                    <nav class="dsit-service-header__sign-out">
+                        @Html.ActionLink("Sign Out", "CabSignOut", "Login", null, new { @class = "govuk-header__link dsit-service-header__sign-out-link" })
+                    </nav>
                 </div>
-                @Html.ActionLink("Sign Out", "CabSignOut", "Login", null, new { @class = "govuk-header__link govuk-header__service-name" })
             </div>
         </div>
     </header>
@@ -74,10 +77,19 @@
         </footer>
 
         <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/jquery-3.7.1.min.js"></script>
         <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
         <script type="module" src="~/js/govuk.js"></script>
-        <script type="module">import { initAll } from "/js/govuk.js";
-            initAll();</script>     
+        <script type="module" src="~/js/all.js"></script>
+        <script type="module">
+            import { initAll } from "/js/govuk.js";
+            initAll();
+            var SortableTable = window.MOJFrontend.SortableTable;
+            var $sortableTable = document.querySelector('[data-module="moj-sortable-table"]');
+            if ($sortableTable) {
+                new SortableTable($sortableTable);
+            }
+        </script>     
         @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

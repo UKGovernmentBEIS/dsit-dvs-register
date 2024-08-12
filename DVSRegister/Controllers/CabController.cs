@@ -17,7 +17,7 @@ using System.Security.Claims;
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab-service")]
+    [Route("cab-service-legacy")]
     [ValidCognitoToken]
     public class CabController : Controller
     {
