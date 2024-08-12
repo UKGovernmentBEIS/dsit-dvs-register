@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using NpgsqlTypes;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240808211551_AddCabTables")]
+    partial class AddCabTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,13 +50,13 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 8, 9, 15, 10, 10, 878, DateTimeKind.Utc).AddTicks(6241)
+                            CreatedTime = new DateTime(2024, 8, 8, 21, 15, 50, 24, DateTimeKind.Utc).AddTicks(6040)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 8, 9, 15, 10, 10, 878, DateTimeKind.Utc).AddTicks(6245)
+                            CreatedTime = new DateTime(2024, 8, 8, 21, 15, 50, 24, DateTimeKind.Utc).AddTicks(6046)
                         });
                 });
 
@@ -1984,7 +1987,7 @@ namespace DVSRegister.Data.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("tsvector")
                         .HasAnnotation("Npgsql:TsVectorConfig", "english")
-                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "RegisteredName", "TradingName" });
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "TradingName", "RegisteredName" });
 
                     b.Property<string>("SecondaryContactEmail")
                         .IsRequired()
@@ -2181,9 +2184,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<decimal>("FileSizeInKb")
                         .HasColumnType("decimal(10, 2)");
 
-                    b.Property<bool>("HasGPG44")
-                        .HasColumnType("boolean");
-
                     b.Property<bool>("HasSupplementarySchemes")
                         .HasColumnType("boolean");
 
@@ -2195,13 +2195,6 @@ namespace DVSRegister.Data.Migrations
 
                     b.Property<DateTime?>("PublishedTime")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<NpgsqlTsVector>("SearchVector")
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("tsvector")
-                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
-                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "ServiceName" });
 
                     b.Property<string>("ServiceName")
                         .IsRequired()
@@ -2225,10 +2218,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("CabUserId");
 
                     b.HasIndex("ProviderProfileId");
-
-                    b.HasIndex("SearchVector");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.ToTable("Service");
                 });
