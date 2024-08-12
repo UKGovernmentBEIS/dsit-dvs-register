@@ -7587,6 +7587,14 @@ x:-moz-any-link {
   background-image: url(../assets/images/icon-tag-remove-cross-white.svg);
 }
 
+.dsit-service-header__sign-out {
+  float: right;
+}
+.dsit-service-header__sign-out-link {
+  font-weight: 700;
+  line-height: 1.8em;
+}
+
 .dsit-secondary-text-colour {
   color: #505a5f;
 }
