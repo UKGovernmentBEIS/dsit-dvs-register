@@ -45,4 +45,10 @@
   <ItemGroup>
     <None Include="Views\PartialViews\_ErrorSummaryView.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="Views\Cab\LandingPage.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

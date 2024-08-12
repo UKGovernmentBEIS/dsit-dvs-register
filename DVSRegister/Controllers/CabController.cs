@@ -17,7 +17,7 @@ using System.Security.Claims;
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab-service-legacy")]
+    [Route("cab")]
     [ValidCognitoToken]
     public class CabController : Controller
     {
@@ -52,6 +52,36 @@ namespace DVSRegister.Controllers
             return genericResponse.Success ? View() : RedirectToAction("HandleException", "Error");
            
         }
+
+
+
+        #region New path
+        [HttpGet("list-providers")]
+        public IActionResult ListProviders()
+        {
+            return View();
+        }
+
+        [HttpGet("provider-overview")]
+        public IActionResult ProviderOverview()
+        {
+            return View();
+        }
+
+        [HttpGet("provider-profile-details")]
+        public IActionResult ProviderProfileDetails()
+        {
+            return View();
+        }
+
+        [HttpGet("provider-service-details")]
+        public IActionResult ProviderServiceDetails()
+        {
+            return View();
+        }
+        #endregion
+
+
 
         #region Validate URN
 
