@@ -1,0 +1,143 @@
+﻿@{
+    ViewData["Title"] = "Northrow Limited";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "[LINK]", "Cab", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <h1 class="govuk-heading-xl">
+                    Northrow UK Ltd profile overview
+                </h1>
+            </div>
+            <div class="govuk-grid-column-full">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Profile overview
+                        </h2>
+                        <ul class="govuk-summary-card__actions">
+                            <li class="govuk-summary-card__action">
+                                <a class="govuk-link" href="#">View full profile information <span class="govuk-visually-hidden"> of Service [COMPANY NAME]</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Registered name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    Northrow UK Services LTD
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Trading name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    Northrow limited
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Service 1 details
+                        </h2>
+                        <ul class="govuk-summary-card__actions">
+                            <li class="govuk-summary-card__action">
+                                <a class="govuk-link" href="#">View service details <span class="govuk-visually-hidden"> of Service [COMPANY NAME]</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Service name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    Residency status verifier
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Submission date
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    10:24 am; 1 Feb 2024
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Status
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    <strong class="govuk-tag">
+                                        Submitted
+                                    </strong>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Service 2 details
+                        </h2>
+                        <ul class="govuk-summary-card__actions">
+                            <li class="govuk-summary-card__action">
+                                <a class="govuk-link" href="#">View service details <span class="govuk-visually-hidden"> of Service [COMPANY NAME]</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Service name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    Attribute authenticator
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Submission date
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    10:24 am; 1 Feb 2024
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Status
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    <strong class="govuk-tag govuk-tag--red">
+                                        Rejected
+                                    </strong>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+                <p class="govuk-body"><strong>No services have been submitted for this provider.</strong></p>
+                <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                    Submit a new service
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+

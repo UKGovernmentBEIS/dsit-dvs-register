@@ -32,5 +32,29 @@ namespace DVSRegister.Controllers
 
             return View();
         }
+
+        [HttpGet("list-providers")]
+        public IActionResult ListProviders()
+        {
+            return View();
+        }
+
+        [HttpGet("provider-overview")]
+        public IActionResult ProviderOverview()
+        {
+            return View();
+        }
+
+        [HttpGet("provider-profile-details")]
+        public IActionResult ProviderProfileDetails()
+        {
+            return View();
+        }
+
+        [HttpGet("provider-service-details")]
+        public IActionResult ProviderServiceDetails()
+        {
+            return View();
+        }
     }
 }

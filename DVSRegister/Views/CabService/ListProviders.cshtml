@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewData["Title"] = "List of service providers";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-breadcrumbs">
+                    <ol class="govuk-breadcrumbs__list">
+                        <li class="govuk-breadcrumbs__list-item">
+                            @Html.ActionLink("Home", "LandingPage", "Cab", null, new { @class = "govuk-breadcrumbs__link" })
+                        </li>
+                        <li class="govuk-breadcrumbs__list-item">
+                            @Html.ActionLink("List of providers", "#", "Cab", null, new { @class = "govuk-breadcrumbs__link" })
+                        </li>
+                    </ol>
+                </div>
+                <h1 class="govuk-heading-xl govuk-!-margin-top-8">Your service provider profiles</h1>
+            </div>
+        </div>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-form-group">
+                    <h2 class="govuk-label-wrapper">
+                        <label class="govuk-label govuk-label--s" for="event-name">
+                            Search for a service provider or service
+                        </label>
+                    </h2>
+                    <div id="search-hint" class="govuk-hint">
+                        Search for trading name, registered name or service name
+                    </div>
+                    <input class="govuk-input" id="event-name" name="eventName" type="text" aria-describedby="search hint" />
+                </div>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Search
+                    </button>
+                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                        Clear search
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <table class="govuk-table govuk-table--small-text-until-tablet moj-sortable-table" data-module="moj-sortable-table">
+                    <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">search results</caption>
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header" aria-sort="ascending">Registered name</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Trading name</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Services</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Last updated</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">@Html.ActionLink("Northrow limited", "#", "", null, new { @class = "govuk-link" })</td>
+                            <td class="govuk-table__cell">Northrow</td>
+                            <td class="govuk-table__cell">Tenant eligibility checker</td>
+                            <td class="govuk-table__cell">10:24 am; 1 Feb 2024</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">@Html.ActionLink("A Northrow limited", "#", "", null, new { @class = "govuk-link" })</td>
+                            <td class="govuk-table__cell">A Northrow</td>
+                            <td class="govuk-table__cell">A Tenant eligibility checker</td>
+                            <td class="govuk-table__cell">11:24 am; 1 Feb 2024</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">@Html.ActionLink("B Northrow limited", "#", "", null, new { @class = "govuk-link" })</td>
+                            <td class="govuk-table__cell">B Northrow</td>
+                            <td class="govuk-table__cell">B Tenant eligibility checker</td>
+                            <td class="govuk-table__cell">12:24 pm; 3 Feb 2024</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">@Html.ActionLink("Z Northrow limited", "#", "", null, new { @class = "govuk-link" })</td>
+                            <td class="govuk-table__cell">Z Northrow</td>
+                            <td class="govuk-table__cell">Z Tenant eligibility checker</td>
+                            <td class="govuk-table__cell">20:24 pm; 1 Feb 2024</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
