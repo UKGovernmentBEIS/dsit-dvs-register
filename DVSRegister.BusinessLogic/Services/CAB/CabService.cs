@@ -135,5 +135,13 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         {
             return await cabRepository.CheckProviderRegisteredNameExists(registeredName);
         }
+
+        public async Task<List<ProviderProfileDto>> GetProviders(string searchText = "")
+        {
+            var list = await cabRepository.GetProviders(searchText);
+            List<ProviderProfileDto> providerDtos = automapper.Map<List<ProviderProfileDto>>(list);
+            return providerDtos;
+        }
+       
     }
 }

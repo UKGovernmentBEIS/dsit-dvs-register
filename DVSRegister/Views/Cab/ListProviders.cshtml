@@ -1,4 +1,6 @@
-﻿
+﻿@using DVSRegister.Models.CAB.Provider
+@using DVSRegister.Extensions
+@model ProviderListViewModel
 @{
     ViewData["Title"] = "List of service providers";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
@@ -60,32 +62,44 @@
                             <th scope="col" class="govuk-table__header" aria-sort="none">Last updated</th>
                         </tr>
                     </thead>
-                    <tbody class="govuk-table__body">
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Html.ActionLink("Northrow limited", "#", "", null, new { @class = "govuk-link" })</td>
-                            <td class="govuk-table__cell">Northrow</td>
-                            <td class="govuk-table__cell">Tenant eligibility checker</td>
-                            <td class="govuk-table__cell">10:24 am; 1 Feb 2024</td>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Html.ActionLink("A Northrow limited", "#", "", null, new { @class = "govuk-link" })</td>
-                            <td class="govuk-table__cell">A Northrow</td>
-                            <td class="govuk-table__cell">A Tenant eligibility checker</td>
-                            <td class="govuk-table__cell">11:24 am; 1 Feb 2024</td>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Html.ActionLink("B Northrow limited", "#", "", null, new { @class = "govuk-link" })</td>
-                            <td class="govuk-table__cell">B Northrow</td>
-                            <td class="govuk-table__cell">B Tenant eligibility checker</td>
-                            <td class="govuk-table__cell">12:24 pm; 3 Feb 2024</td>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Html.ActionLink("Z Northrow limited", "#", "", null, new { @class = "govuk-link" })</td>
-                            <td class="govuk-table__cell">Z Northrow</td>
-                            <td class="govuk-table__cell">Z Tenant eligibility checker</td>
-                            <td class="govuk-table__cell">20:24 pm; 1 Feb 2024</td>
-                        </tr>
-                    </tbody>
+               
+
+                        @if(Model.Providers!=null && Model.Providers.Count>0)
+                        {
+                        <tbody class="govuk-table__body">
+                            @foreach (var item in Model.Providers)
+                            {
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell">@Html.ActionLink(item.RegisteredName, "#", "", null, new { @class = "govuk-link" })</td>
+                                    <td class="govuk-table__cell">@item.TradingName</td>
+                                    @if(item.Services!=null && item.Services.Count>0)
+                                    {
+                                         <td class="govuk-table__cell">
+                                        @foreach(var service in item.Services)
+                                        {
+                                                @service.ServiceName
+                                        }
+                                        </td>                                       
+                                    }
+                                    else
+                                    {
+                                        <td class="govuk-table__cell">No Services</td>
+                                    }
+
+                                    <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(item.ModifiedTime?? item.CreatedTime, "dd MMM yyyy ; hh:mm tt")</td>
+                                </tr>
+
+                            }
+                        </tbody>
+                        }
+                        else
+                        {
+                           
+                            <p class="govuk-body">Your search did not match any service providers.</p>
+                         
+                        }
+                      
+                   
                 </table>
             </div>
         </div>

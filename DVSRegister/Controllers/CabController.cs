@@ -1,5 +1,4 @@
-﻿using DVSRegister.BusinessLogic.Models;
-using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
@@ -10,6 +9,7 @@ using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
+using DVSRegister.Models.CAB.Provider;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Security.Claims;
@@ -42,7 +42,7 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> LandingPage()
         {
             await googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;            
             string cab = string.Empty;
             var identity = HttpContext?.User.Identity as ClaimsIdentity;
             var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
@@ -57,17 +57,17 @@ namespace DVSRegister.Controllers
 
         #region New path
         [HttpGet("list-providers")]
-        public IActionResult ListProviders()
+        public async Task<IActionResult> ListProviders()
         {
-            return View();
+            ProviderListViewModel providerListViewModel = new();
+            providerListViewModel.Providers = await cabService.GetProviders();
+            return View(providerListViewModel);
         }
-
         [HttpGet("provider-overview")]
         public IActionResult ProviderOverview()
         {
             return View();
         }
-
         [HttpGet("provider-profile-details")]
         public IActionResult ProviderProfileDetails()
         {

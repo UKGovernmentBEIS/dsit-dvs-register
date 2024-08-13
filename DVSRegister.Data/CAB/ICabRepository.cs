@@ -15,5 +15,6 @@ namespace DVSRegister.Data.CAB
         public Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile);
         public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
         public Task<GenericResponse> SaveService(Service service);
+        public Task<List<ProviderProfile>> GetProviders(string searchText = "");
     }
 }

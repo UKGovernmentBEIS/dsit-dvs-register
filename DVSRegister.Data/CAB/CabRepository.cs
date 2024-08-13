@@ -1,8 +1,10 @@
 ﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using DVSRegister.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NpgsqlTypes;
 
 namespace DVSRegister.Data.CAB
 {
@@ -226,6 +228,23 @@ namespace DVSRegister.Data.CAB
                 logger.LogError(ex, "Error in SaveService");
             }
             return genericResponse;
+        }
+
+
+
+        public async Task<List<ProviderProfile>> GetProviders(string searchText = "")
+        {
+            
+            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services)
+            .OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime);
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                searchText = searchText.Trim().ToLower();              
+                providerQuery = providerQuery.Where(p => p.SearchVector.Matches(searchText) ||
+                                                         p.Services.Any(s => s.SearchVector.Matches(searchText)));
+            }           
+            var searchResults = await providerQuery.ToListAsync();
+            return searchResults;
         }
     }
 }
