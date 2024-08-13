@@ -8,6 +8,7 @@ using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
+using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Provider;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +43,7 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> LandingPage()
         {
             await googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;            
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;          
             string cab = string.Empty;
             var identity = HttpContext?.User.Identity as ClaimsIdentity;
             var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
@@ -57,10 +58,18 @@ namespace DVSRegister.Controllers
 
         #region New path
         [HttpGet("list-providers")]
-        public async Task<IActionResult> ListProviders()
+        public async Task<IActionResult> ListProviders(string SearchAction = "", string SearchText = "")
         {
+            SearchAction = InputSanitizeExtensions.CleanseInput(SearchAction);
+            SearchText = InputSanitizeExtensions.CleanseInput(SearchText);
             ProviderListViewModel providerListViewModel = new();
-            providerListViewModel.Providers = await cabService.GetProviders();
+            if(SearchAction == "clearSearch")
+            {
+                ModelState.Clear();
+                providerListViewModel.SearchText = null;
+                SearchText = string.Empty;
+            }
+            providerListViewModel.Providers = await cabService.GetProviders(SearchText);
             return View(providerListViewModel);
         }
         [HttpGet("provider-overview")]
