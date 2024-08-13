@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "InformationSubmitted";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-panel govuk-panel--confirmation">
+                    <h1 class="govuk-panel__title">
+                       Information submitted
+                    </h1>
+                </div>
+                <p class="govuk-body">
+                    The digital identity and attribute service provider’s information has been
+                    submitted.
+                </p>
+                <p class="govuk-body">
+                    We have sent a confirmation of your submitted information to the following
+                    email address:
+
+                    <b> @ViewBag.Email </b>
+                </p>
+                <h2 class="govuk-heading-m">What happens next</h2>
+                <p class="govuk-body">
+                    You can now return to the homepage and select ‘view existing service
+                    providers’ to create a service submission for this provider.
+                </p>
+                <p class="govuk-body">
+                    If you need help, you can contact DSIT at <a href="{URL}" class="govuk-link">digital.identity.register@dsit.gov.uk.</a>
+                </p>
+                <p class="govuk-body">
+                    You can close this page now.
+                </p>
+              
+            </div>
+        </div>
+        <a href="@Url.Action("LandingPage", "Cab")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            Return to service
+
+        </a>
+    </main>
+</div>
+

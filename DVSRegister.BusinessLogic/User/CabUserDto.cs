@@ -4,6 +4,7 @@ namespace DVSRegister.BusinessLogic.Models
 {
     public class CabUserDto
     {
+        public int Id { get; set; }
         public int CabId { get; set; }     
         public string CabEmail { get; set; }
     }

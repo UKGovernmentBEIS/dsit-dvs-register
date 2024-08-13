@@ -12,5 +12,8 @@ namespace DVSRegister.Data.CAB
         public Task<List<Role>> GetRoles();
         public Task<List<IdentityProfile>> GetIdentityProfiles();
         public Task<List<SupplementaryScheme>> GetSupplementarySchemes();
+        public Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile);
+        public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
+        public Task<GenericResponse> SaveService(Service service);
     }
 }
