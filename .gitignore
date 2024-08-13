@@ -406,6 +406,5 @@ ASALocalRun/
 
 
 *.css.map
-*.min.js
 
 ./DVSRegister/node_modules
