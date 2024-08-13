@@ -246,5 +246,13 @@ namespace DVSRegister.Data.CAB
             var searchResults = await providerQuery.ToListAsync();
             return searchResults;
         }
+
+        public async Task<ProviderProfile> GetProvider(int providerId, int cabUserId)
+        {
+            ProviderProfile provider = new();
+            provider = await context.ProviderProfile.Include(p=>p.Services)
+            .Where(p => p.Id == providerId && p.CabUserId == cabUserId).OrderBy(c => c.ModifiedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+            return provider;
+        }
     }
 }

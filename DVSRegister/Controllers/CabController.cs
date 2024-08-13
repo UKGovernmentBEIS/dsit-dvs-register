@@ -1,4 +1,5 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
@@ -8,10 +9,10 @@ using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
-using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Provider;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Newtonsoft.Json;
 using System.Security.Claims;
 
@@ -43,7 +44,7 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> LandingPage()
         {
             await googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;          
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;   
             string cab = string.Empty;
             var identity = HttpContext?.User.Identity as ClaimsIdentity;
             var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
@@ -72,10 +73,14 @@ namespace DVSRegister.Controllers
             providerListViewModel.Providers = await cabService.GetProviders(SearchText);
             return View(providerListViewModel);
         }
+
         [HttpGet("provider-overview")]
-        public IActionResult ProviderOverview()
+        public async Task<IActionResult> ProviderOverview(int providerId)
         {
-            return View();
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;                      
+            CabUserDto cabUserDto = await userService.GetUser(email);
+            ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabUserDto.Id);
+            return View(providerProfileDto);
         }
         [HttpGet("provider-profile-details")]
         public IActionResult ProviderProfileDetails()

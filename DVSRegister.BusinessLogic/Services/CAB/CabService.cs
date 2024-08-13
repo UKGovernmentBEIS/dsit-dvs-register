@@ -142,6 +142,13 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             List<ProviderProfileDto> providerDtos = automapper.Map<List<ProviderProfileDto>>(list);
             return providerDtos;
         }
-       
+
+        public async Task<ProviderProfileDto> GetProvider(int providerId, int cabUserId)
+        {
+            var provider = await cabRepository.GetProvider(providerId, cabUserId);
+            ProviderProfileDto providerDto = automapper.Map<ProviderProfileDto>(provider);
+            return providerDto;
+        }
+
     }
 }

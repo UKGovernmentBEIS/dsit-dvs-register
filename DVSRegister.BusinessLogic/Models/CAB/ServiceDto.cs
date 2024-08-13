@@ -1,7 +1,4 @@
 ﻿using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.Data.Entities;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DVSRegister.BusinessLogic.Models.CAB
 {
@@ -30,5 +27,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public int ServiceNumber { get; set; }
         public int TrustMarkNumber { get; set; }
         public ServiceStatusEnum ServiceStatus { get; set; }
+        public DateTime? CreatedTime { get; set; }
+        public DateTime? ModifiedTime { get; set; }
+        public DateTime? PublishedTime { get; set; }
     }
 }
