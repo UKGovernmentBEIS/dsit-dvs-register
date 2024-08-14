@@ -19,5 +19,6 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfile);
         public Task<GenericResponse> SaveService(ServiceDto serviceDto);
         public Task<List<ProviderProfileDto>> GetProviders(string searchText = "");
+        public Task<ProviderProfileDto> GetProvider(int providerId, int cabUserId);
     }
 }

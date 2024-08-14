@@ -7,7 +7,6 @@
 }
 
 
-
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper">
 
@@ -28,27 +27,32 @@
         </div>
 
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <div class="govuk-form-group">
-                    <h2 class="govuk-label-wrapper">
-                        <label class="govuk-label govuk-label--s" for="event-name">
-                            Search for a service provider or service
-                        </label>
-                    </h2>
-                    <div id="search-hint" class="govuk-hint">
-                        Search for trading name, registered name or service name
-                    </div>
-                    <input class="govuk-input" id="event-name" name="eventName" type="text" aria-describedby="search hint" />
-                </div>
+            @using (Html.BeginForm("ListProviders", "Cab", FormMethod.Get))
+            {
+                <div class="govuk-grid-column-two-thirds">
+
+                    @{
+                        var searchTextBoxViewModel = new TextBoxViewModel
+                        {
+                            PropertyName = "SearchText",
+                            Label = "Search for a service provider or service",
+                            Value = Model?.SearchText ?? string.Empty,
+                            Class = "govuk-input",
+                            Hint = "Search for trading name, registered name or service name"
+                        };
+                    }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
                 <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                    <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="search">
                         Search
                     </button>
-                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearSearch">
                         Clear search
                     </button>
                 </div>
             </div>
+            }
         </div>
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
@@ -62,22 +66,22 @@
                             <th scope="col" class="govuk-table__header" aria-sort="none">Last updated</th>
                         </tr>
                     </thead>
-               
 
-                        @if(Model.Providers!=null && Model.Providers.Count>0)
+                    <tbody class="govuk-table__body">
+                        @if(Model?.Providers!=null && Model.Providers.Count>0)
                         {
-                        <tbody class="govuk-table__body">
+                       
                             @foreach (var item in Model.Providers)
                             {
                                 <tr class="govuk-table__row">
-                                    <td class="govuk-table__cell">@Html.ActionLink(item.RegisteredName, "#", "", null, new { @class = "govuk-link" })</td>
+                                    <td class="govuk-table__cell">@Html.ActionLink(item.RegisteredName, "ProviderOverview", "Cab", new { providerId  = item.Id}, new { @class = "govuk-link" })</td>
                                     <td class="govuk-table__cell">@item.TradingName</td>
                                     @if(item.Services!=null && item.Services.Count>0)
                                     {
                                          <td class="govuk-table__cell">
                                         @foreach(var service in item.Services)
                                         {
-                                                @service.ServiceName
+                                                @service.ServiceName<br/>
                                         }
                                         </td>                                       
                                     }
@@ -90,15 +94,18 @@
                                 </tr>
 
                             }
-                        </tbody>
+                       
                         }
                         else
                         {
-                           
-                            <p class="govuk-body">Your search did not match any service providers.</p>
+                            <tr class="govuk-table__row">                       
+                                <td class="govuk-table__cell" colspan="4">
+                                <p class="govuk-body"><b>Your search did not match any service providers.</b> </p>
+                                </td>
+                           </tr>
                          
                         }
-                      
+                        </tbody>                      
                    
                 </table>
             </div>
