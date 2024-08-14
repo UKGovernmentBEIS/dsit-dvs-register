@@ -25,7 +25,7 @@
                         </h2>
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
-                                <a class="govuk-link" href="#">View full profile information <span class="govuk-visually-hidden"> of Provider @Model.TradingName</span></a>
+                                <a class="govuk-link" href="/cab/provider-profile-details?providerId=@Model.Id">View full profile information <span class="govuk-visually-hidden"> of Provider @Model.TradingName</span></a>
                             </li>
                         </ul>
                     </div>
@@ -63,7 +63,7 @@
                                 </h2>
                                 <ul class="govuk-summary-card__actions">
                                     <li class="govuk-summary-card__action">
-                                        <a class="govuk-link" href="#">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
+                                        <a class="govuk-link" href="/cab/provider-service-details?serviceId=@item.Id">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
                                     </li>
                                 </ul>
                             </div>
@@ -107,16 +107,13 @@
 
             @if(Model.Services == null || Model.Services.Count == 0)
             {               
-                    <p class="govuk-body"><strong>No services have been submitted for this provider.</strong></p>
-                    <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
-                        Submit a new service
-                    </button>                
+                    <p class="govuk-body"><strong>No services have been submitted for this provider.</strong></p>                   
+                    @Html.ActionLink("Submit a new service", "BeforeYouStart", "CabService", null, new { @class = "govuk-button", role = "button", draggable = "false", data_module = "govuk-button" })
             }
             else
             {
-                    <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
-                        Add a new service
-                    </button>                
+
+                    @Html.ActionLink("Add a new service", "BeforeYouStart", "CabService", null, new { @class = "govuk-button", role = "button", draggable = "false", data_module = "govuk-button" })                        
             }
             </div>
             

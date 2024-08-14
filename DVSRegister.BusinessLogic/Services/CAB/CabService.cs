@@ -136,19 +136,26 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return await cabRepository.CheckProviderRegisteredNameExists(registeredName);
         }
 
-        public async Task<List<ProviderProfileDto>> GetProviders(string searchText = "")
+        public async Task<List<ProviderProfileDto>> GetProviders(int cabId, string searchText = "")
         {
-            var list = await cabRepository.GetProviders(searchText);
+            var list = await cabRepository.GetProviders(cabId, searchText);
             List<ProviderProfileDto> providerDtos = automapper.Map<List<ProviderProfileDto>>(list);
             return providerDtos;
         }
 
-        public async Task<ProviderProfileDto> GetProvider(int providerId, int cabUserId)
+        public async Task<ProviderProfileDto> GetProvider(int providerId, int cabId)
         {
-            var provider = await cabRepository.GetProvider(providerId, cabUserId);
+            var provider = await cabRepository.GetProvider(providerId, cabId);
             ProviderProfileDto providerDto = automapper.Map<ProviderProfileDto>(provider);
             return providerDto;
         }
+        public async Task<ServiceDto> GetServiceDetails(int serviceId, int cabId)
+        {
+            var service = await cabRepository.GetServiceDetails(serviceId, cabId);
+            ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
+            return serviceDto;
+        }
+
 
     }
 }

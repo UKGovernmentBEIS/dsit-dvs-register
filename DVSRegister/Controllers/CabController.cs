@@ -12,7 +12,6 @@ using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Provider;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Newtonsoft.Json;
 using System.Security.Claims;
 
@@ -44,14 +43,15 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> LandingPage()
         {
             await googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;   
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty; 
             string cab = string.Empty;
             var identity = HttpContext?.User.Identity as ClaimsIdentity;
             var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
             if (profileClaim != null)
                 cab = profileClaim.Value;
-            GenericResponse genericResponse = await userService.SaveUser(email,cab);
-            return genericResponse.Success ? View() : RedirectToAction("HandleException", "Error");
+            CabUserDto cabUser = await userService.SaveUser(email,cab);
+            HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
+            return cabUser.CabId>0 ? View() : RedirectToAction("HandleException", "Error");
            
         }
 
@@ -61,37 +61,78 @@ namespace DVSRegister.Controllers
         [HttpGet("list-providers")]
         public async Task<IActionResult> ListProviders(string SearchAction = "", string SearchText = "")
         {
-            SearchAction = InputSanitizeExtensions.CleanseInput(SearchAction);
-            SearchText = InputSanitizeExtensions.CleanseInput(SearchText);
-            ProviderListViewModel providerListViewModel = new();
-            if(SearchAction == "clearSearch")
+            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
+
+            if (cabId > 0)
             {
-                ModelState.Clear();
-                providerListViewModel.SearchText = null;
-                SearchText = string.Empty;
+                SearchAction = InputSanitizeExtensions.CleanseInput(SearchAction);
+                SearchText = InputSanitizeExtensions.CleanseInput(SearchText);
+                ProviderListViewModel providerListViewModel = new();
+                if (SearchAction == "clearSearch")
+                {
+                    ModelState.Clear();
+                    providerListViewModel.SearchText = null;
+                    SearchText = string.Empty;
+                }
+                providerListViewModel.Providers = await cabService.GetProviders(cabId, SearchText);
+                return View(providerListViewModel);
+
             }
-            providerListViewModel.Providers = await cabService.GetProviders(SearchText);
-            return View(providerListViewModel);
+            else
+            {
+                return RedirectToAction("HandleException", "Error");
+            }
+          
         }
 
         [HttpGet("provider-overview")]
         public async Task<IActionResult> ProviderOverview(int providerId)
         {
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;                      
-            CabUserDto cabUserDto = await userService.GetUser(email);
-            ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabUserDto.Id);
-            return View(providerProfileDto);
+            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
+
+            if (cabId > 0) 
+            {
+                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
+                return View(providerProfileDto);
+            }
+            else
+            {
+                return RedirectToAction("HandleException", "Error");
+            }
+           
         }
         [HttpGet("provider-profile-details")]
-        public IActionResult ProviderProfileDetails()
+        public IActionResult ProviderProfileDetails(int providerId)
         {
-            return View();
+            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+            HttpContext?.Session.Remove("ProviderProfile");
+            if (providerProfileDto.Id ==  providerId)
+            {
+                return View(providerProfileDto);
+            }
+            else
+            {
+                return RedirectToAction("HandleException", "Error");
+            }
+
+
         }
 
         [HttpGet("provider-service-details")]
-        public IActionResult ProviderServiceDetails()
+        public async Task<IActionResult> ProviderServiceDetails(int serviceId)
         {
-            return View();
+            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
+            if (cabId > 0) 
+            {
+                ServiceDto serviceDto = await cabService.GetServiceDetails(serviceId, cabId);
+                return View(serviceDto);
+            }
+            else
+            {
+                return RedirectToAction("HandleException", "Error");
+            }
+           
         }
         #endregion
 

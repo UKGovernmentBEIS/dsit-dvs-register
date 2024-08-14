@@ -19,14 +19,17 @@ namespace DVSRegister.BusinessLogic.Services
             this.automapper = automapper;
         }
       
-        public async Task<GenericResponse> SaveUser(string email , string cabName)
+        public async Task<CabUserDto> SaveUser(string email , string cabName)
         {
             Cab cab = await userRepository.GetCab(cabName);
             CabUser cabUser = new CabUser();
             cabUser.CabEmail = email;
-            cabUser.CabId = cab.Id;           
-            GenericResponse genericResponse = await userRepository.AddUser(cabUser);
-            return genericResponse;
+            cabUser.CabId = cab.Id;
+            var user = await userRepository.AddUser(cabUser);
+            CabUserDto userDto = automapper.Map<CabUserDto>(user);
+            return userDto;// return current user details
+
+
         }
 
         public async Task<CabUserDto> GetUser(string email)

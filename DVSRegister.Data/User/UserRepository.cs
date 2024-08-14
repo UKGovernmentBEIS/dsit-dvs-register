@@ -1,5 +1,4 @@
-﻿using DVSRegister.CommonUtility.Models;
-using DVSRegister.Data.Entities;
+﻿using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DVSRegister.Data.Repositories
@@ -13,30 +12,36 @@ namespace DVSRegister.Data.Repositories
             this.context = context;
         }
 
-        public async Task<GenericResponse> AddUser(CabUser user)
+        public async Task<CabUser> AddUser(CabUser user)
         {
-            GenericResponse genericResponse = new GenericResponse();
+           
             using var transaction = context.Database.BeginTransaction();
+            CabUser cabUser = new();
             try
             {
-                var existingEntity = await context.CabUser.FirstOrDefaultAsync<CabUser>(e => e.CabEmail == user.CabEmail);
+                var existingEntity = await context.CabUser.Include(c=>c.Cab).FirstOrDefaultAsync<CabUser>(e => e.CabEmail == user.CabEmail);
                 if(existingEntity == null)
                 {
                     user.CreatedTime = DateTime.UtcNow;
-                    await context.CabUser.AddAsync(user);
+                    var entity = await context.CabUser.AddAsync(user);
                     context.SaveChanges();
-                    transaction.Commit();                   
+                    transaction.Commit();                    
+                    return user;
+
+
                 }
-                genericResponse.Success = true;
+                return existingEntity;
+               
             }
             catch(Exception ex)
             {                
-                genericResponse.Success = false;
+                
                 transaction.Rollback();
                 Console.Write($"Exception while adding user to table - {ex}");
+                return null;
             }
 
-            return genericResponse;
+           
         }
 
 
