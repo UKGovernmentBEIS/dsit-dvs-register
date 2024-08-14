@@ -1,23 +1,27 @@
-﻿@{
+﻿@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.Extensions
+@using DVSRegister.CommonUtility.Models;
+@model ServiceDto
+@{
     ViewData["Title"] = "Northrow Limited";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "[LINK]", "Cab", null, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "ProviderOverview", "Cab", new { providerId = Model.ProviderProfileId }, new { @class = "govuk-back-link" })
     <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
 
                 <h1 class="govuk-heading-xl">
-                    Service [X] details
+                    @Model.ServiceName details
                 </h1>
             </div>
             <div class="govuk-grid-column-full">
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">
-                            Company information
+                            @Model.ServiceName details
                         </h2>
                     </div>
                     <div class="govuk-summary-card__content">
@@ -27,7 +31,7 @@
                                     Name of service
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    Identity guard
+                                   @Model.ServiceName
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
@@ -35,7 +39,8 @@
                                     Publication date
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    10:24 am; 1 Feb 2024
+                                    @if (@Model.PublishedTime != null)
+                                     @DateTimeExtensions.FormatDateTime(@Model.PublishedTime, "hh:mm tt; dd MMM yyyy")
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
@@ -43,76 +48,94 @@
                                     Status
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    <strong class="govuk-tag govuk-tag--green">
-                                        Published
-                                    </strong>
+                                    @HtmlExtensions.ToStyledStrongTag(Model.ServiceStatus)
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Public contact email
+                                    URL link to the service
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    name@email.com
+                                    @Model.WebsiteAddress
                                 </dd>
                             </div>
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Telephone number
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    07532167283
-                                </dd>
-                            </div>
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Website address
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    www.yourcompanyexpress.co.uk
-                                </dd>
-                            </div>
+                           
+                           
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     Company address details
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    5126 N Ravenswood Ave<br />
-                                    Unit 8<br />
-                                    Chicago<br />
-                                    Illinois<br />
-                                    60640<br />
-                                    United States<br />
+                                    @HtmlExtensions.ToStringWithLineBreaks(Model.CompanyAddress)
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Name of roles certified against
+                                    Roles certified against
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    Identity Service Provider (IDSP)<br />
-                                    Attribute Service Provider (ASP)<br />
-                                    Orchestration Service Provider (OSP)<br />  
+                                   @foreach(var item in Model.ServiceRoleMapping)
+                                    {
+                                        @item.Role.RoleName <br/>
+                                    }
                                 </dd>
                             </div>
+
+                            @if (Model.HasGPG44 &&  Model.ServiceQualityLevelMapping!=null)
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        GPG44 quality of authenticator
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @foreach (var item in Model.ServiceQualityLevelMapping.Where(s=>s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                        {
+                                            @item.QualityLevel.Level <br />
+                                        }
+                                    </dd>
+                                </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        GPG44 level of protection
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                        {
+                                            @item.QualityLevel.Level <br />
+                                        }
+                                    </dd>
+                                </div>
+                                
+                            }
+
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Identity profiles
+                                    GPG45 identity profiles
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    Label
-                                    Label
-                                    Label
+                                    @foreach (var item in Model.ServiceIdentityProfileMapping)
+                                    {
+                                        @item.IdentityProfile.IdentityProfileName <br />
+                                    }
                                 </dd>
                             </div>
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Supplementary schemes
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    Right to Work
-                                </dd>
-                            </div>
+
+                            @if(Model.HasSupplementarySchemes && Model.ServiceSupSchemeMapping!=null)
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Supplementary schemes
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @foreach (var item in Model.ServiceSupSchemeMapping)
+                                        {
+                                            @item.SupplementaryScheme.SchemeName <br />
+                                        }
+                                    </dd>
+                                </div>
+                            }
+                           
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     Service provider’s certificate
@@ -127,7 +150,7 @@
                                     Date of issue
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    11 June 2023
+                                    @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
@@ -135,7 +158,7 @@
                                     Date of expiry
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    11 June 2026
+                                    @DateTimeExtensions.FormatDateTime(@Model.ConformityExpiryDate, "dd MMM yyyy")
                                 </dd>
                             </div>
                         </dl>

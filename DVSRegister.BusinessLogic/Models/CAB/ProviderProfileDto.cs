@@ -1,5 +1,6 @@
 ﻿using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
+using System.Text.Json.Serialization;
 
 namespace DVSRegister.BusinessLogic.Models.CAB
 {
@@ -25,6 +26,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public int CompanyId { get; set; }
         public int CabUserId { get; set; }
         public ProviderStatusEnum ProviderStatus { get; set; }
+
+        [JsonIgnore]
         public ICollection<ServiceDto>? Services { get; set; }  
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }

@@ -18,7 +18,8 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
         public Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfile);
         public Task<GenericResponse> SaveService(ServiceDto serviceDto);
-        public Task<List<ProviderProfileDto>> GetProviders(string searchText = "");
-        public Task<ProviderProfileDto> GetProvider(int providerId, int cabUserId);
+        public Task<List<ProviderProfileDto>> GetProviders(int cabId, string searchText = "");
+        public Task<ProviderProfileDto> GetProvider(int providerId, int cabId);
+        public Task<ServiceDto> GetServiceDetails(int serviceId, int cabId);
     }
 }

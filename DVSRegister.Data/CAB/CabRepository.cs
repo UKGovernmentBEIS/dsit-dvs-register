@@ -212,6 +212,11 @@ namespace DVSRegister.Data.CAB
                 }
                 else
                 {
+                    // Get the current highest ServiceNumber for the given ProviderProfileId
+                    var serviceNumbers = await context.Service.Where(s => s.ProviderProfileId == service.ProviderProfileId)
+                    .Select(s => s.ServiceNumber).ToListAsync();
+                    int nextServiceNumber = serviceNumbers.Any()? serviceNumbers.Max() + 1 :1;                   
+                    service.ServiceNumber = nextServiceNumber;               
                     service.CreatedTime = DateTime.UtcNow;
                     var entity = await context.Service.AddAsync(service);
                     await context.SaveChangesAsync();
@@ -232,10 +237,12 @@ namespace DVSRegister.Data.CAB
 
 
 
-        public async Task<List<ProviderProfile>> GetProviders(string searchText = "")
+        public async Task<List<ProviderProfile>> GetProviders(int cabId, string searchText = "")
         {
-            
-            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services)
+            //Filter based on cab type as well, fetch records for users with same cab type
+            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services).Include(p => p.CabUser)
+            .ThenInclude(cu => cu.Cab)
+            .Where(p => p.CabUser.CabId == cabId)
             .OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime);
             if (!string.IsNullOrEmpty(searchText))
             {
@@ -247,12 +254,41 @@ namespace DVSRegister.Data.CAB
             return searchResults;
         }
 
-        public async Task<ProviderProfile> GetProvider(int providerId, int cabUserId)
+        public async Task<ProviderProfile> GetProvider(int providerId,int cabId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p=>p.Services)
-            .Where(p => p.Id == providerId && p.CabUserId == cabUserId).OrderBy(c => c.ModifiedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+            provider = await context.ProviderProfile.Include(p=>p.Services).Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
+            .Where(p => p.Id == providerId && p.CabUser.CabId == cabId).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
             return provider;
+        }
+
+        public async Task<Service> GetServiceDetails(int serviceId, int cabId)
+        {          
+
+            var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
+            .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
+            .Include(p => p.ServiceRoleMapping)
+            .ThenInclude(s => s.Role)
+            .Include(p => p.ServiceIdentityProfileMapping)
+            .ThenInclude(p => p.IdentityProfile);
+
+           
+            IQueryable<Service> queryWithOptionalIncludes = baseQuery;
+            if (await baseQuery.AnyAsync(p => p.ServiceQualityLevelMapping != null && p.ServiceQualityLevelMapping.Any()))
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)
+                    .ThenInclude(sq => sq.QualityLevel);
+            }
+
+            if (await baseQuery.AnyAsync(p => p.ServiceSupSchemeMapping != null && p.ServiceSupSchemeMapping.Any()))
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                    .ThenInclude(ssm => ssm.SupplementaryScheme);
+            }           
+            var service = await queryWithOptionalIncludes.FirstOrDefaultAsync() ?? new Service();
+
+
+            return service;
         }
     }
 }
