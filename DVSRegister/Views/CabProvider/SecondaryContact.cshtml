@@ -1,0 +1,102 @@
+﻿@model DVSRegister.Models.CAB.SecondaryContactViewModel
+@{
+    ViewData["Title"] = "The digital identity and attribute service provider’s primary contact";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+@{
+    bool hasError = false;
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "SelectIdentityProfiles", "Cab", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                @if (Html.ViewData?.ModelState.ContainsKey("DUNSNumber") == true)
+                {
+                    var errors = Html.ViewData?.ModelState["DUNSNumber"]?.Errors;
+                    if (errors != null && errors.Count > 0)
+                    {
+                        hasError = true;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("DUNSNumber", errors))
+                    }
+                }
+
+
+                <h1 class="govuk-heading-xl form-title">The digital identity and attribute service provider’s secondary contact</h1>
+
+                <p class="govuk-body">
+                    You should ask the service provider to provide this information. DSIT will use the contact details you provide to confirm the provider’s agreement to proceed with the application.
+                </p>
+
+                @{
+                    var SecondaryContactFullName = new TextBoxViewModel
+                    {
+                        PropertyName = "SecondaryContactFullName",
+                        Label = "Full name",
+                        Value = Model?.SecondaryContactFullName ?? string.Empty,
+                        Class = "govuk-input govuk-!-width-three-quarters",
+                        HasError = hasError,
+                        ErrorMessage = hasError ? Html.ViewData?.ModelState["SecondaryContactFullName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", SecondaryContactFullName)
+
+                @{
+                    var SecondaryContactJobTitle = new TextBoxViewModel
+                    {
+                        PropertyName = "SecondaryContactJobTitle",
+                        Label = "Job title",
+                        Value = Model?.SecondaryContactJobTitle ?? string.Empty,
+                        Class = "govuk-input govuk-!-width-three-quarters",
+                        HasError = hasError,
+                        ErrorMessage = hasError ? Html.ViewData?.ModelState["SecondaryContactJobTitle"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", SecondaryContactJobTitle)
+
+
+
+                @{
+                    var SecondaryContactEmail = new TextBoxViewModel
+                    {
+                        PropertyName = "SecondaryContactEmail",
+                        Label = "Email address",
+                        Value = Model?.SecondaryContactEmail ?? string.Empty,
+                        Class = "govuk-input govuk-!-width-three-quarters",
+                        HasError = hasError,
+                        ErrorMessage = hasError ? Html.ViewData?.ModelState["SecondaryContactEmail"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", SecondaryContactEmail)
+
+
+                @{
+                    var SecondaryContactTelephoneNumber = new TextBoxViewModel
+                    {
+                        PropertyName = "SecondaryContactTelephoneNumber",
+                        Label = "Telephone number",
+                        Value = Model?.SecondaryContactTelephoneNumber ?? string.Empty,
+                        Class = "govuk-input govuk-!-width-one-half",
+                        Hint = "For international numbers include the country code",
+                        HasError = hasError,
+                        ErrorMessage = hasError ? Html.ViewData?.ModelState["SecondaryContactTelephoneNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", SecondaryContactTelephoneNumber)
+
+                <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
