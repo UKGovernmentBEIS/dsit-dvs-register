@@ -15,7 +15,7 @@ namespace DVSRegister.Models
 
         [Required(ErrorMessage = "Enter an email address in the correct format, like name@example.com")]
         [EmailAddress(ErrorMessage = "Enter an email address in the correct format, like name@example.com")]
-        [AcceptedLength(255, ErrorMessage = "Enter an email address that is less than 255 characters")]
+        [MaximumLength(255, ErrorMessage = "Enter an email address that is less than 255 characters")]
         public string? SponsorEmail { get; set; }
 
         [Required(ErrorMessage = "Enter a telephone number, like 01632 960 001, 07700 900 982 or +44 808 157 0192")]

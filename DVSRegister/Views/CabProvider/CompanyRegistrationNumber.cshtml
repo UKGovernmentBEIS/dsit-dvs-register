@@ -7,8 +7,12 @@
     bool hasError = false;
 }
 
+@using (Html.BeginForm("SaveCompanyRegistrationNumber", "CabProvider", FormMethod.Post))
+{
+@Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "SelectIdentityProfiles", "Cab", null, new { @class = "govuk-back-link" })
+        @Html.ActionLink("Back", "HasRegistrationNumber", "CabProvider", null, new { @class = "govuk-back-link" })
     <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -20,7 +24,7 @@
                         {
                             hasError = true;
                             ViewData["Title"] = "Error: " + ViewData["Title"];
-                @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                          @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
                          new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("CompanyRegistrationNumber", errors))
                         }
                     }
@@ -53,3 +57,4 @@
         </div>
     </main>
 </div>
+}

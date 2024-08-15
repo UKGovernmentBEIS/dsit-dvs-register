@@ -18,7 +18,7 @@ using System.Security.Claims;
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab")]
+    [Route("cab-service")]
     [ValidCognitoToken]
     public class CabController : Controller
     {
@@ -39,7 +39,7 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("")]
-        [HttpGet("landing-page")]
+        [HttpGet("home")]
         public async Task<IActionResult> LandingPage()
         {
             await googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);

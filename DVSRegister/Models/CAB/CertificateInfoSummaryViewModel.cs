@@ -8,7 +8,7 @@ namespace DVSRegister.Models.CAB
         public int? PreRegistrationId { get; set; }
 
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
-        [AcceptedLength(160, ErrorMessage = "The company's registered name must be less than 161 characters.")]
+        [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters.")]
         [AcceptedCharacters(@"^[A-Za-z0-9 &@£$€¥#.,:;-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters.")]
         public string? RegisteredName { get; set; }
 
@@ -18,7 +18,7 @@ namespace DVSRegister.Models.CAB
         
         [Required(ErrorMessage ="Enter an email address in the correct format")]
         [EmailAddress(ErrorMessage = "Enter an email address in the correct format, like name@example.com.")]
-        [AcceptedLength(255, ErrorMessage = "Enter an email address that is less than 255 characters.")]
+        [MaximumLength(255, ErrorMessage = "Enter an email address that is less than 255 characters.")]
         public string? PublicContactEmail { get; set; }
 
         [Required(ErrorMessage = "Enter a telephone number, like 01632 960000, 07700 900 000 or +44 20 7946 0000")]
