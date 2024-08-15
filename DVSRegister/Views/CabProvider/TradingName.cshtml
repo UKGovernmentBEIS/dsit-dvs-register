@@ -12,7 +12,7 @@
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     <div class="govuk-width-container">
-        @Html.ActionLink("Back", "CheckInformation", "Cab", null, new { @class = "govuk-back-link" })
+        @Html.ActionLink("Back", "RegisteredName", "CabProvider", null, new { @class = "submit-profile/provider-registered-name" })
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -33,7 +33,7 @@
                     <p class="govuk-body">This trading name will be publicly displayed on the register of digital identity and attribute service providers. This should match the registered name on the certificate.</p>
 
                     @{
-                        var websiteViewmodel = new TextBoxViewModel
+                        var tradingNameViewmodel = new TextBoxViewModel
                 {
                     PropertyName = "TradingName",
                     Label = "Trading Name",
@@ -44,7 +44,7 @@
                 };
                     }
 
-                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", websiteViewmodel)
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", tradingNameViewmodel)
 
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Continue
