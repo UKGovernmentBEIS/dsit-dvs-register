@@ -58,7 +58,7 @@ namespace DVSRegister.Controllers
 
 
         #region New path
-        [HttpGet("list-providers")]
+        [HttpGet("view-profiles")]
         public async Task<IActionResult> ListProviders(string SearchAction = "", string SearchText = "")
         {
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
@@ -85,7 +85,7 @@ namespace DVSRegister.Controllers
           
         }
 
-        [HttpGet("provider-overview")]
+        [HttpGet("profile-overview")]
         public async Task<IActionResult> ProviderOverview(int providerId)
         {
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
@@ -102,7 +102,7 @@ namespace DVSRegister.Controllers
             }
            
         }
-        [HttpGet("provider-profile-details")]
+        [HttpGet("profile-information")]
         public IActionResult ProviderProfileDetails(int providerId)
         {
             ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
@@ -119,7 +119,7 @@ namespace DVSRegister.Controllers
 
         }
 
-        [HttpGet("provider-service-details")]
+        [HttpGet("service-details")]
         public async Task<IActionResult> ProviderServiceDetails(int serviceId)
         {
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
