@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab-provider")]
-    /*[ValidCognitoToken]*/
+    [Route("cab-service/create-profile")]
+    [ValidCognitoToken]
     public class CabProviderController : Controller
     {
 
@@ -30,20 +30,19 @@ namespace DVSRegister.Controllers
         public IActionResult BeforeYouStart()
         {            
             return View();
-        }
-        //First 5 Screens
+        }     
 
 
         #region Registered Name
 
-        [HttpGet("submit-profile/provider-registered-name")]
+        [HttpGet("reg-name")]
         public IActionResult RegisteredName(bool fromSummaryPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             return View("RegisteredName", profileSummaryViewModel);
         }
-        [HttpPost("submit-profile/service-providers-registered-name")]
+        [HttpPost("reg-name")]
         public IActionResult SaveRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
@@ -51,7 +50,7 @@ namespace DVSRegister.Controllers
             if (ModelState["RegisteredName"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
-                profileSummary.PublicContactEmail = profileSummaryViewModel.PublicContactEmail;
+                profileSummary.RegisteredName = profileSummaryViewModel.RegisteredName;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
                 return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("TradingName");
             }
@@ -66,14 +65,14 @@ namespace DVSRegister.Controllers
 
         #region Trading Name
 
-        [HttpGet("submit-profile/provider-trading-name")]
+        [HttpGet("trading-name")]
         public IActionResult TradingName(bool fromSummaryPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             return View("TradingName", profileSummaryViewModel);
         }
-        [HttpPost("submit-profile/service-providers-trading-name")]
+        [HttpPost("trading-name")]
         public IActionResult SaveTradingName(ProfileSummaryViewModel profileSummaryViewModel)
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
@@ -81,34 +80,190 @@ namespace DVSRegister.Controllers
             if (ModelState["TradingName"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
-                profileSummary.PublicContactEmail = profileSummaryViewModel.TradingName;
+                profileSummary.TradingName = profileSummaryViewModel.TradingName;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PrimaryContact");
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("HasRegistrationNumber");
             }
             else
             {
-                return View("PublicContactEmail", profileSummaryViewModel);
+                return View("TradingName", profileSummaryViewModel);
             }
 
         }
         #endregion
 
 
-     
+        #region HasCompanyRegistrationNumber
+        [HttpGet("company-number")]
+        public IActionResult HasRegistrationNumber(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            return View(summaryViewModel);
+        }
 
-        //-- Last 5 screens 
+
+        [HttpPost("company-number")]
+        public IActionResult SaveHasRegistrationNumber(ProfileSummaryViewModel profileSummaryViewModel)
+        {
+            ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            profileSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["HasRegistrationNumber"].Errors.Count == 0)
+            {
+                summaryViewModel.HasRegistrationNumber = profileSummaryViewModel.HasRegistrationNumber;               
+                if (Convert.ToBoolean(summaryViewModel.HasRegistrationNumber))
+                {
+                    summaryViewModel.DUNSNumber = null;
+                    HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
+                    return RedirectToAction("CompanyRegistrationNumber", new { fromSummaryPage = fromSummaryPage });
+                }
+                else
+                {
+                    summaryViewModel.CompanyRegistrationNumber = null;
+                    HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
+                    return RedirectToAction("DUNSNumber", new { fromSummaryPage = fromSummaryPage });
+                }
+            }
+            else
+            {
+                return View("HasRegistrationNumber", profileSummaryViewModel);
+            }
+
+        }
+        #endregion
+
+        #region Registration number
+
+        [HttpGet("company-number-input")]
+        public IActionResult CompanyRegistrationNumber(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            return View(summaryViewModel);
+        }
+
+        [HttpPost("company-number-input")]
+        public IActionResult SaveCompanyRegistrationNumber(ProfileSummaryViewModel profileSummaryViewModel)
+        {
+            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            profileSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["CompanyRegistrationNumber"].Errors.Count == 0)
+            {
+                ProfileSummaryViewModel profileSummary = GetProfileSummary();
+                profileSummary.CompanyRegistrationNumber = profileSummaryViewModel.CompanyRegistrationNumber;           
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PrimaryContact");
+            }
+            else
+            {
+                return View("CompanyRegistrationNumber", profileSummaryViewModel);
+            }
+
+        }
+        #endregion
+
+        #region DUNSNumber
+        [HttpGet("duns-number")]
+        public IActionResult DUNSNumber(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            return View(summaryViewModel);
+        }
+
+        [HttpPost("duns-number")]
+        public IActionResult SaveDUNSNumber(ProfileSummaryViewModel profileSummaryViewModel)
+        {
+            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            profileSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["DUNSNumber"].Errors.Count == 0)
+            {
+                ProfileSummaryViewModel profileSummary = GetProfileSummary();
+                profileSummary.DUNSNumber = profileSummaryViewModel.DUNSNumber;               
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PrimaryContact");
+            }
+            else
+            {
+                return View("DUNSNumber", profileSummaryViewModel);
+            }
+
+        }
+        #endregion
+
+        #region Primary Contact
+        [HttpGet("primary-contact-information")]
+        public IActionResult PrimaryContact(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;           
+            ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            ViewBag.hasRegistrationNumber = profileSummaryViewModel.HasRegistrationNumber;
+            return View(profileSummaryViewModel.PrimaryContact);
+        }
+        [HttpPost("primary-contact-information")]
+        public IActionResult SavePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
+        {
+            bool fromSummaryPage = primaryContactViewModel.FromSummaryPage;
+        
+            primaryContactViewModel.FromSummaryPage = false;
+            if (ModelState.IsValid)
+            {
+                ProfileSummaryViewModel profileSummary = GetProfileSummary();
+             
+                profileSummary.PrimaryContact = primaryContactViewModel;
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("SecondaryContact");
+            }
+            else
+            {
+                return View("PrimaryContact", primaryContactViewModel);
+            }
+        }
+        #endregion
+
+        #region Secondary Contact
+        [HttpGet("secondary-contact-information")]
+        public IActionResult SecondaryContact(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            return View(profileSummaryViewModel.SecondaryContact);
+        }
+
+
+        [HttpPost("secondary-contact-information")]
+        public IActionResult SaveSecondaryContact(SecondaryContactViewModel secondaryContactViewModel)
+        {
+            bool fromSummaryPage = secondaryContactViewModel.FromSummaryPage;
+            secondaryContactViewModel.FromSummaryPage = false;
+            if (ModelState.IsValid)
+            {
+                ProfileSummaryViewModel profileSummary = GetProfileSummary();
+                profileSummary.SecondaryContact = secondaryContactViewModel;
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PublicContactEmail");
+            }
+            else
+            {
+                return View("SecondaryContact", secondaryContactViewModel);
+            }
+        }
+        #endregion
+
 
 
         #region Public contact email
 
-        [HttpGet("submit-profile/provider-public-contact-email")]
+        [HttpGet("public-email")]
         public IActionResult PublicContactEmail(bool fromSummaryPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             return View("PublicContactEmail", profileSummaryViewModel);
         }
-        [HttpPost("submit-profile/service-providers-public-contact-email")]
+
+        [HttpPost("public-email")]
         public IActionResult SavePublicContactEmail(ProfileSummaryViewModel profileSummaryViewModel)
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
@@ -129,7 +284,7 @@ namespace DVSRegister.Controllers
         #endregion
 
         #region Telephone number
-        [HttpGet("submit-profile/provider-telephone-number")]
+        [HttpGet("public-telephone")]
         public IActionResult TelephoneNumber(bool fromSummaryPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
@@ -137,7 +292,7 @@ namespace DVSRegister.Controllers
             return View("TelephoneNumber", profileSummaryViewModel);
         }
 
-        [HttpPost("submit-certificate-information/service-providers-telephone-number")]
+        [HttpPost("public-telephone")]
         public IActionResult SaveTelephoneNumber(ProfileSummaryViewModel profileSummaryViewModel)
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
@@ -158,7 +313,7 @@ namespace DVSRegister.Controllers
 
 
         #region Website address
-        [HttpGet("submit-profile/service-providers-website-address")]
+        [HttpGet("public-website")]
         public IActionResult WebsiteAddress(bool fromSummaryPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
@@ -166,7 +321,7 @@ namespace DVSRegister.Controllers
             return View("WebsiteAddress", profileSummaryViewModel);
         }
 
-        [HttpPost("submit-profile/service-providers-website-address")]
+        [HttpPost("public-website")]
         public IActionResult SaveWebsiteAddress(ProfileSummaryViewModel profileSummaryViewModel)
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
@@ -188,13 +343,13 @@ namespace DVSRegister.Controllers
 
         #region Summary
 
-        [HttpGet("profile-summary")]
+        [HttpGet("check-answers")]
         public IActionResult ProfileSummary()
         {
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
             return View(summaryViewModel);
         }
-        [HttpPost("profile-summary")]
+        [HttpPost("check-answers")]
         public async Task<IActionResult> SaveProfileSummary()
         {
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
@@ -218,7 +373,7 @@ namespace DVSRegister.Controllers
         ///Final page if save success
         /// </summary>       
         /// <returns></returns>
-        [HttpGet("submit-certificate-information/information-submitted")]
+        [HttpGet("profile-submitted")]
         public IActionResult InformationSubmitted()
         {
             string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
