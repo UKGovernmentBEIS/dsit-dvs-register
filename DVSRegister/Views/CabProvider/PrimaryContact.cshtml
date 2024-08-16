@@ -3,8 +3,9 @@
     ViewData["Title"] = "The digital identity and attribute service provider’s primary contact";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
-@using (Html.BeginForm("SaveSecondaryContact", "CabProvider", FormMethod.Post))
+@using (Html.BeginForm("SavePrimaryContact", "CabProvider", FormMethod.Post))
 {
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     bool hasRegistrationNumber;
     hasRegistrationNumber = ViewBag.hasRegistrationNumber ?? false;
     <div class="govuk-width-container">
@@ -58,7 +59,7 @@
 
                 var PrimaryContactJobTitle = new TextBoxViewModel
                 {
-                PropertyName = "SecondaryContactJobTitle",
+                PropertyName = "PrimaryContactJobTitle",
                 Label = "Job title",
                 Value = Model?.PrimaryContactJobTitle ?? string.Empty,
                 Class = "govuk-input govuk-!-width-three-quarters",

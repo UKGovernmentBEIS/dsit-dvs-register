@@ -16,12 +16,12 @@ namespace DVSRegister.Models.CAB
         public bool? HasRegistrationNumber { get; set; }
 
         [Required(ErrorMessage = "Enter a Companies House Number.")]
-        [RequiredLengthAttribute(8, ErrorMessage = "Your Companies House number must be 8 characters long.")]
+        [RequiredLength(8, ErrorMessage = "Your Companies House number must be 8 characters long.")]
         [AcceptedCharacters(@"^[a-zA-Z0-9]*$", ErrorMessage = "Your Companies House number must contain only letters and numbers.")]
         public string? CompanyRegistrationNumber { get; set; }
 
         [Required(ErrorMessage = "Enter a D-U-N-S number")]
-        [RequiredLengthAttribute(9, ErrorMessage = "Your D-U-N-S number must be 9 characters long")]
+        [RequiredLength(9, ErrorMessage = "Your D-U-N-S number must be 9 characters long")]
         [AcceptedCharacters(@"^[0-9]+$", ErrorMessage = "Your D-U-N-S number must contain only numbers")]
         public string? DUNSNumber { get; set; }
         public PrimaryContactViewModel? PrimaryContact { get; set; }
