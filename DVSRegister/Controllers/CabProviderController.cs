@@ -189,6 +189,59 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
+        #region Primary Contact
+        [HttpGet("submit-profile/provider-primary-contact")]
+        public IActionResult PrimaryContact(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            return View("PrimaryContact", profileSummaryViewModel);
+        }
+        [HttpPost("submit-profile/service-providers-primary-contact")]
+        public IActionResult SavePrimaryContact(ProfileSummaryViewModel profileSummaryViewModel)
+        {
+            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            profileSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["PrimaryContact"].Errors.Count == 0)
+            {
+                ProfileSummaryViewModel profileSummary = GetProfileSummary();
+                profileSummary.PublicContactEmail = profileSummaryViewModel.TradingName;
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PrimaryContact");
+            }
+            else
+            {
+                return View("PrimaryContact", profileSummaryViewModel);
+            }
+        }
+        #endregion
+        #region Secondary Contact
+        [HttpGet("submit-profile/provider-secondary-contact")]
+        public IActionResult SecondaryContact(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            return View("PrimaryContact", profileSummaryViewModel);
+        }
+        [HttpPost("submit-profile/service-providers-secondary-contact")]
+        public IActionResult SaveSecondaryContact(ProfileSummaryViewModel profileSummaryViewModel)
+        {
+            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            profileSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["SecondaryContact"].Errors.Count == 0)
+            {
+                ProfileSummaryViewModel profileSummary = GetProfileSummary();
+                profileSummary.SecondaryContact = profileSummaryViewModel.SecondaryContact;
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("SecondaryContact");
+            }
+            else
+            {
+                return View("SecondaryContact", profileSummaryViewModel);
+            }
+        }
+        #endregion
+
 
 
 
