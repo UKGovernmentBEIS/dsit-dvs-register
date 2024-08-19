@@ -169,7 +169,7 @@ namespace DVSRegister.Data.CAB
 
         public async Task<bool> CheckProviderRegisteredNameExists(string registeredName)
         {
-            var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.RegisteredName == registeredName);
+            var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.RegisteredName.ToLower() == registeredName.ToLower());
 
             if (existingProvider !=null)
             {

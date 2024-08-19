@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
@@ -43,10 +44,19 @@ namespace DVSRegister.Controllers
             return View("RegisteredName", profileSummaryViewModel);
         }
         [HttpPost("reg-name")]
-        public IActionResult SaveRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
             profileSummaryViewModel.FromSummaryPage = false;
+            if(!string.IsNullOrEmpty(profileSummaryViewModel.RegisteredName))
+            {
+                bool registeredNameExist = await cabService.CheckProviderRegisteredNameExists(profileSummaryViewModel.RegisteredName);
+                if(registeredNameExist)
+                {
+                    ModelState.AddModelError("RegisteredName", Constants.RegisteredNameExistsError);
+                }
+            }
+           
             if (ModelState["RegisteredName"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
