@@ -61,15 +61,15 @@ namespace DVSRegister.Controllers
             return View();
         }
 
-        [HttpGet("gpg44-input")]
-        public IActionResult GPG44Input()
+        [HttpGet("gpg44")]
+        public IActionResult GPG44()
         {
 
             return View();
         }
 
-        [HttpGet("gpg45-input")]
-        public IActionResult GPG45Input()
+        [HttpGet("gpg45")]
+        public IActionResult GPG45()
         {
 
             return View();
