@@ -1,0 +1,85 @@
+﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@{
+    ViewData["Title"] = "Select the applicable roles from the UK digital identity and attributes trust framework for this service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool isValid = true;
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ServiceName", "Cab", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">
+                    Select the applicable roles from the UK digital identity and attributes trust framework for this service
+                </h1>
+                @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                @if (ViewData.ModelState.ErrorCount > 0)
+                {
+                    isValid = false;
+                    ViewData["Title"] = "Error: " + ViewData["Title"];
+                    @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                }
+                @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                <p class="govuk-body">
+                    This must match the information on the certificate.
+                </p>
+
+                @if (!isValid)
+                {
+                    <div class="govuk-form-group govuk-form-group--error">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                Select the roles
+                            </legend>
+                            <div id="selectedroleids-hint" class="govuk-hint">
+                                Select all that apply
+                            </div>
+                            <p id="selectedroleids-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                {ROLE}
+                            </p>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="role.Id" id="role_role.Id" aria-describedby="selectedroleids-hint selectedroleids-error" />
+                                    <label class="govuk-label govuk-checkboxes__label" for="role_role.Id">item.RoleName</label>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                }
+                else
+                {
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                Select the role(s)
+                            </legend>
+                            <div id="selectedroleids-hint" class="govuk-hint">
+                                Select all that apply
+                            </div>
+
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="role.Id" id="role_role.Id" aria-describedby="selectedroleids-hint" />
+                                    <label class="govuk-label govuk-checkboxes__label" for="role_role.Id">RoleName</label>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                }
+
+                @*DONOT Remove : Keeping AvailableRoles hidden variable to avoid db call to fetch countries after post*@
+                @*@Html.Hidden("AvailableRoles", JsonConvert.SerializeObject(Model.AvailableRoles))*@
+                <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+

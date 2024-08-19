@@ -6,7 +6,7 @@ namespace DVSRegister.Models.CAB
     {
         public int ProviderProfileId { get; set; }     
         public string? ServiceName { get; set; }
-        public string? WebsiteAddress { get; set; }
+        public string? ServiceURL { get; set; }
         public string? CompanyAddress { get; set; }
         public RoleViewModel? RoleViewModel { get; set; }
         public bool? HasGPG44 { get; set; }

@@ -14,7 +14,7 @@ using System.Security.Claims;
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab-service")]
+    [Route("cab-service/submit-service")]
     //[ValidCognitoToken]//
     public class CabServiceController : Controller
     {
@@ -33,6 +33,46 @@ namespace DVSRegister.Controllers
             return View();
         }
 
-      
+        [HttpGet("name-of-service")]
+        public IActionResult ServiceName()
+        {
+
+            return View();
+        }
+
+        [HttpGet("service-url")]
+        public IActionResult ServiceURL()
+        {
+
+            return View();
+        }
+
+        [HttpGet("company-address")]
+        public IActionResult CompanyAddress()
+        {
+
+            return View();
+        }
+
+        [HttpGet("provider-roles")]
+        public IActionResult ProviderRoles()
+        {
+
+            return View();
+        }
+
+        [HttpGet("gpg44-input")]
+        public IActionResult GPG44Input()
+        {
+
+            return View();
+        }
+
+        [HttpGet("gpg45-input")]
+        public IActionResult GPG45Input()
+        {
+
+            return View();
+        }
     }
 }
