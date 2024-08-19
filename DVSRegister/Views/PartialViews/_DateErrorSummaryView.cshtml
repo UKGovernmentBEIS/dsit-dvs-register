@@ -1,0 +1,46 @@
+﻿@model DateViewModel
+@{
+    var modelState = ViewData.ModelState;
+    string ahrefLinkId;
+}
+
+@if (modelState != null && modelState.Any(m => m.Value.Errors.Any()))
+{
+    <div class="govuk-error-summary" data-module="govuk-error-summary">
+        <div role="alert">
+            <h2 class="govuk-error-summary__title">
+                There is a problem
+            </h2>
+            <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list">
+                    @foreach (var entry in modelState)
+                    {
+                        foreach (var error in entry.Value.Errors)
+                        {
+                            if (entry.Key == "Day")
+                            {
+                            ahrefLinkId = Model.PropertyName.ToLower() + "-day";
+                            }
+                            else if (entry.Key == "Month")
+                            {
+                            ahrefLinkId = Model.PropertyName.ToLower() + "-month";
+                            }
+                            else if (entry.Key == "Year")
+                            {
+                            ahrefLinkId = Model.PropertyName.ToLower() + "-year";
+                            }
+                            else
+                            {
+                            ahrefLinkId = Model.PropertyName.ToLower();
+                            }
+
+                            <li>
+                                <a href="#@ahrefLinkId"><span class="govuk-visually-hidden">Error: </span>@error.ErrorMessage</a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+}

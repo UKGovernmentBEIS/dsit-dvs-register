@@ -1,4 +1,4 @@
-﻿namespace DVSRegister.Models.CAB
+﻿namespace DVSRegister.Models
 {
     public class DateViewModel
     {
@@ -7,5 +7,7 @@
         public int? Year { get; set; }
         public string? ValidDate { get; set; }
         public bool FromSummaryPage { get; set; }
+        public string? PropertyName { get; set; }       
+      
     }
 }
