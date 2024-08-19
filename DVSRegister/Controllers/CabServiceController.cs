@@ -1,6 +1,7 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
@@ -141,13 +142,50 @@ namespace DVSRegister.Controllers
             {
                 summaryViewModel.ConformityExpiryDate = conformityExpiryDate;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return RedirectToAction(""); //ToDo: update after adding next views
+                return RedirectToAction("ServiceSummary"); 
             }
             else
             {
                 return View("ConfirmityExpiryDate", dateViewModel);
 
             }
+        }
+
+        [HttpGet("check-your-answers")]
+        public IActionResult ServiceSummary()
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            return View(summaryViewModel);
+        }
+
+        [HttpPost("check-your-answers")]
+        public async Task<IActionResult> SaveServiceSummary()
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            ServiceDto serviceDto = MapViewModelToDto(summaryViewModel);
+            GenericResponse genericResponse = await cabService.SaveService(serviceDto);
+            if (genericResponse.Success)
+            {
+                return RedirectToAction("InformationSubmitted");
+            }
+            else
+            {
+                return RedirectToAction("HandleException", "Error");
+            }
+        }
+
+        /// <summary>
+        ///Final page if save success
+        /// </summary>       
+        /// <returns></returns>
+        [HttpGet("service-submitted")]
+        public IActionResult InformationSubmitted()
+        {
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+            HttpContext?.Session.Remove("ServiceSummary");
+            ViewBag.Email = email;
+            return View();
+
         }
 
 
@@ -268,6 +306,57 @@ namespace DVSRegister.Controllers
 
             }
             return date;
+        }
+
+        private ServiceDto MapViewModelToDto(ServiceSummaryViewModel model)
+        {
+
+            ServiceDto serviceDto = new ServiceDto();
+            if (model!= null)
+            {
+                ICollection<ServiceQualityLevelMappingDto> serviceQualityLevelMappings = new List<ServiceQualityLevelMappingDto>();
+                ICollection<ServiceRoleMappingDto> serviceRoleMappings = new List<ServiceRoleMappingDto>();
+                ICollection<ServiceIdentityProfileMappingDto> serviceIdentityProfileMappings = new List<ServiceIdentityProfileMappingDto>();
+                ICollection<ServiceSupSchemeMappingDto> serviceSupSchemeMappings = new List<ServiceSupSchemeMappingDto>();
+
+                foreach (var item in model.QualityLevelViewModel.SelectedQualityLevels)
+                {
+                    serviceQualityLevelMappings.Add(new ServiceQualityLevelMappingDto { QualityLevelId = item.Id });
+                }
+                foreach (var item in model.RoleViewModel.SelectedRoles)
+                {
+                    serviceRoleMappings.Add(new ServiceRoleMappingDto { RoleId = item.Id });
+                }
+                foreach (var item in model.IdentityProfileViewModel.SelectedIdentityProfiles)
+                {
+                    serviceIdentityProfileMappings.Add(new ServiceIdentityProfileMappingDto { IdentityProfileId = item.Id });
+                }
+                foreach (var item in model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
+                {
+                    serviceSupSchemeMappings.Add(new ServiceSupSchemeMappingDto { SupplementarySchemeId = item.Id });
+                }
+
+                serviceDto.ProviderProfileId = model.ProviderProfileId;
+                serviceDto.ServiceName = model.ServiceName??string.Empty;
+                serviceDto.WebsiteAddress = model.ServiceURL??string.Empty;
+                serviceDto.CompanyAddress = model.CompanyAddress??string.Empty;
+                serviceDto.ServiceRoleMapping = serviceRoleMappings;
+                serviceDto.ServiceIdentityProfileMapping= serviceIdentityProfileMappings;
+                serviceDto.ServiceQualityLevelMapping = serviceQualityLevelMappings;
+                serviceDto.HasSupplementarySchemes = model.HasSupplementarySchemes??false;
+                serviceDto.HasGPG44 = model.HasGPG44??false;
+                serviceDto.ServiceSupSchemeMapping = serviceSupSchemeMappings;
+                serviceDto.FileLink = model.FileLink??string.Empty;
+                serviceDto.FileName = model.FileName??string.Empty;
+                serviceDto.FileSizeInKb = model.FileSizeInKb??0;
+                serviceDto.ConformityIssueDate= Convert.ToDateTime(model.ConformityIssueDate);
+                serviceDto.ConformityExpiryDate = Convert.ToDateTime(model.ConformityExpiryDate);
+                serviceDto.CabUserId = 1;
+                serviceDto.ServiceStatus = ServiceStatusEnum.Submitted;
+            }
+            return serviceDto;
+
+
         }
         #endregion
     }
