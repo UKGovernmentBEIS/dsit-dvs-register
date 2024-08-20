@@ -1,4 +1,6 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
@@ -11,15 +13,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/submit-service")]
-    //[ValidCognitoToken]//
+    [ValidCognitoToken]
     public class CabServiceController : Controller
     {
 
         private readonly ICabService cabService;
+        private readonly IBucketService bucketService;
+        private readonly IUserService userService;
 
-        public CabServiceController(ICabService cabService)
+        public CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService)
         {
             this.cabService = cabService;
+            this.bucketService = bucketService;
+            this.userService=userService;   
         }
 
         [HttpGet("before-you-start")]
@@ -86,10 +92,76 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("certificate-upload")]
-        public IActionResult CertificateUploadPage()
+        public async Task<IActionResult> CertificateUploadPage(bool fromSummaryPage, bool remove)
         {
 
-            return View();
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            CertificateFileViewModel certificateFileViewModel = new CertificateFileViewModel();
+            if (remove)
+            {
+                summaryViewModel.FileLink = null;
+                summaryViewModel.FileName = null;
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return View(certificateFileViewModel);
+            }
+            if (!string.IsNullOrEmpty(summaryViewModel.FileName) && !string.IsNullOrEmpty(summaryViewModel.FileLink))
+            {
+                certificateFileViewModel.FileName = summaryViewModel.FileName;
+                certificateFileViewModel.FileUrl = summaryViewModel.FileLink;
+                var fileContent = await bucketService.DownloadFileAsync(summaryViewModel.FileLink);
+                var stream = new MemoryStream(fileContent);
+                IFormFile formFile = new FormFile(stream, 0, fileContent.Length, "File", summaryViewModel.FileName)
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "application/pdf"
+                };
+                certificateFileViewModel.FileUploadedSuccessfully = true;
+                certificateFileViewModel.File = formFile;
+            }
+            return View(certificateFileViewModel);
+        }
+
+        [HttpPost("certificate-upload")]
+        public async Task<IActionResult> SaveCertificate(CertificateFileViewModel certificateFileViewModel)
+        {
+            bool fromSummaryPage = certificateFileViewModel.FromSummaryPage;
+            certificateFileViewModel.FromSummaryPage = false;
+            if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == false)
+            {
+                if (ModelState["File"].Errors.Count == 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await certificateFileViewModel.File.CopyToAsync(memoryStream);
+                        GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                        if (genericResponse.Success)
+                        {
+                            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+                            summaryViewModel.FileName = certificateFileViewModel.File.FileName;
+                            summaryViewModel.FileLink = genericResponse.Data;
+                            certificateFileViewModel.FileUploadedSuccessfully = true;
+                            certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
+                            HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                            return View("CertificateUploadPage", certificateFileViewModel);
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("File", "Unable to upload the file provided");
+                            return View("CertificateUploadPage", certificateFileViewModel);
+                        }
+                    }
+                }
+                else
+                {
+                    return View("CertificateUploadPage", certificateFileViewModel);
+                }
+            }
+            else
+            {
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ConfirmityIssueDate");
+
+            }
         }
 
 
@@ -122,6 +194,7 @@ namespace DVSRegister.Controllers
         {
             bool fromSummaryPage = dateViewModel.FromSummaryPage;
             dateViewModel.FromSummaryPage = false;
+            dateViewModel.PropertyName = "ConfirmityIssueDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             DateTime? conformityIssueDate = ValidateIssueDate(dateViewModel);
             if (ModelState.IsValid)
@@ -158,6 +231,7 @@ namespace DVSRegister.Controllers
         [HttpPost("enter-expiry-date")]
         public IActionResult SaveConfirmityExpiryDate(DateViewModel dateViewModel)
         {
+            dateViewModel.PropertyName = "ConfirmityExpiryDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             DateTime? conformityExpiryDate = ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate));
             if (ModelState.IsValid)
@@ -184,7 +258,9 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveServiceSummary()
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            ServiceDto serviceDto = MapViewModelToDto(summaryViewModel);
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+            CabUserDto cabUserDto = await userService.GetUser(email);
+            ServiceDto serviceDto = MapViewModelToDto(summaryViewModel, cabUserDto.Id);
             GenericResponse genericResponse = await cabService.SaveService(serviceDto);
             if (genericResponse.Success)
             {
@@ -208,6 +284,32 @@ namespace DVSRegister.Controllers
             ViewBag.Email = email;
             return View();
 
+        }
+
+        /// <summary>
+        /// download from s3
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+
+        [HttpGet("download-certificate")]
+        public async Task<IActionResult> DownloadCertificate(string key, string filename)
+        {
+            try
+            {
+                byte[]? fileContent = await bucketService.DownloadFileAsync(key);
+
+                if (fileContent == null || fileContent.Length == 0)
+                {
+                    return RedirectToAction(Constants.CabRegistrationErrorPath);
+                }
+                string contentType = "application/octet-stream";
+                return File(fileContent, contentType, filename);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(Constants.CabRegistrationErrorPath);
+            }
         }
 
 
@@ -315,7 +417,7 @@ namespace DVSRegister.Controllers
                     {
                         ModelState.AddModelError("ValidDate", Constants.ConformityIssueDateExpiryDateError);
                     }
-                    else if (date >= maxExpiryDate)
+                    else if (date > maxExpiryDate)
                     {
                         ModelState.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
                     }
@@ -330,7 +432,7 @@ namespace DVSRegister.Controllers
             return date;
         }
 
-        private ServiceDto MapViewModelToDto(ServiceSummaryViewModel model)
+        private ServiceDto MapViewModelToDto(ServiceSummaryViewModel model, int userId)
         {
 
             ServiceDto serviceDto = new ServiceDto();
@@ -373,7 +475,7 @@ namespace DVSRegister.Controllers
                 serviceDto.FileSizeInKb = model.FileSizeInKb??0;
                 serviceDto.ConformityIssueDate= Convert.ToDateTime(model.ConformityIssueDate);
                 serviceDto.ConformityExpiryDate = Convert.ToDateTime(model.ConformityExpiryDate);
-                serviceDto.CabUserId = 1;
+                serviceDto.CabUserId = userId;
                 serviceDto.ServiceStatus = ServiceStatusEnum.Submitted;
             }
             return serviceDto;
