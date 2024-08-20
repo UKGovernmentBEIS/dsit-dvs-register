@@ -1,6 +1,6 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @{
-    ViewData["Title"] = "Select the applicable roles from the UK digital identity and attributes trust framework for this service";
+    ViewData["Title"] = "Select the applicable schemes for this service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -13,7 +13,7 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl">
-                    Select the applicable roles from the UK digital identity and attributes trust framework for this service
+                    Select the applicable schemes for this service
                 </h1>
                 @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                 @if (ViewData.ModelState.ErrorCount > 0)
@@ -24,7 +24,7 @@
                 }
                 @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                 <p class="govuk-body">
-                    This must match the information on the certificate.
+                    Select all supplementary schemes that the service  is certified against on the certificate of conformity.
                 </p>
 
                 @if (!isValid)

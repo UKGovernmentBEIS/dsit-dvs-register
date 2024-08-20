@@ -71,6 +71,28 @@ namespace DVSRegister.Controllers
             return View();
         }
 
+        [HttpGet("supplementary-schemes-input")]
+        public IActionResult HasSupplementarySchemesInput()
+        {
+
+            return View();
+        }
+
+        [HttpGet("supplementary-schemes")]
+        public IActionResult SupplementarySchemes()
+        {
+
+            return View();
+        }
+
+        [HttpGet("certificate-upload")]
+        public IActionResult CertificateUploadPage()
+        {
+
+            return View();
+        }
+
+
 
 
         [HttpGet("enter-issue-date")]
