@@ -1,0 +1,93 @@
+﻿@model DVSRegister.Models.DateViewModel
+@{
+    ViewData["Title"] = "Certificate Confirmity Expiry Date";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+@{
+    bool hasError = false;
+    bool hasDateError = false;
+    bool hasDayError = false;
+    bool hasMonthError = false;
+    bool hasYearError = false;
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ConfirmityIssueDate", "CabService", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                <h1 class="govuk-heading-xl">
+                    Certificate of conformity expiry date
+                </h1>
+                @if (ViewData.ModelState.ErrorCount >0)
+                {
+                    hasError = true;
+                    ViewData["Title"] = "Error: " + ViewData["Title"];   
+                    
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_DateErrorSummaryView.cshtml", Model)
+
+
+                    if ((Html.ViewData.ModelState.ContainsKey("ValidDate") &&   Html?.ViewData?.ModelState["ValidDate"]?.Errors.Count > 0))
+                    {
+                        hasDateError = true; hasDayError = true; hasMonthError = true; hasYearError = true;
+                    }
+                    if ((Html.ViewData.ModelState.ContainsKey("Day") && Html?.ViewData?.ModelState["Day"]?.Errors.Count > 0))
+                    {
+                        hasDayError = true;
+                    }
+
+                    if ((Html.ViewData.ModelState.ContainsKey("Month") && Html?.ViewData?.ModelState["Month"]?.Errors.Count > 0))
+                    {
+                        hasMonthError = true;
+                    }
+                    if ((Html.ViewData.ModelState.ContainsKey("Year") && Html?.ViewData?.ModelState["Year"]?.Errors.Count > 0))
+                    {
+                        hasYearError = true;
+                    }
+                }
+
+                @using (Html.BeginForm("SaveConfirmityExpiryDate", "CabService", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @Html.HiddenFor(m => m.PropertyName)
+                    <p class="govuk-body">
+                        This must match the information on the certificate. We do not accept
+                        certificates with an expiry date of more than 2 years after the date of issue
+                    </p>
+
+
+                    var conformityExpiryDateViewModel = new DateInputViewModel
+                {
+                    PropertyName = "ConfirmityExpiryDate",
+                    HasError = hasError,
+                    ErrorMessage = hasDateError? Html?.ViewData?.ModelState["ValidDate"]?.Errors[0].ErrorMessage ?? string.Empty:string.Empty,
+                    FieldsetLegend = "Certificate of conformity expiry date",
+                    Hint = "Enter the date in the format DD MM YYYY",
+
+                    Day = Convert.ToString(Model.Day)??string.Empty,
+                    HasDayError = hasDayError,
+                    DayError = !hasDateError & hasDayError ? Html?.ViewData?.ModelState["Day"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+
+                    Month = Convert.ToString(Model.Month)??string.Empty,
+                    HasMonthError = hasMonthError,
+                    MonthError = !hasDateError & hasMonthError ? Html?.ViewData?.ModelState["Month"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+
+                    Year = Convert.ToString(Model.Year)??string.Empty,
+                    HasYearError = hasYearError,
+                    YearError =  !hasDateError & hasYearError ? Html?.ViewData?.ModelState["Year"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty
+                 };
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_DateView.cshtml", conformityExpiryDateViewModel)
+
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
+                        Continue
+                    </button>
+                }
+            </div>
+        </div>
+    </main>
+</div>
+
