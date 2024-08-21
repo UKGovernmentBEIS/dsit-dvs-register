@@ -62,6 +62,60 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
+        #region Service URL
+        [HttpGet("service-url")]
+        public IActionResult ServiceURL(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            return View("ServiceURL", serviceSummaryViewModel);
+        }
+        [HttpPost("service-url")]
+        public IActionResult SaveServiceURL(ServiceSummaryViewModel serviceSummaryViewModel)
+        {
+            bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
+            serviceSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["ServiceURL"].Errors.Count == 0)
+            {
+                ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+                serviceSummary.ServiceURL = serviceSummaryViewModel.ServiceURL;
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("CompanyAddress");
+            }
+            else
+            {
+                return View("ServiceURL", serviceSummaryViewModel);
+            }
+        }
+        #endregion
+
+        #region Company Address
+        [HttpGet("company-address")]
+        public IActionResult CompanyAddress(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            return View("CompanyAddress", serviceSummaryViewModel);
+        }
+        [HttpPost("company-address")]
+        public IActionResult SaveCompanyAddress(ServiceSummaryViewModel serviceSummaryViewModel)
+        {
+            bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
+            serviceSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["CompanyAddress"].Errors.Count == 0)
+            {
+                ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+                serviceSummary.CompanyAddress = serviceSummaryViewModel.CompanyAddress;
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ProviderRoles");
+            }
+            else
+            {
+                return View("CompanyAddress", serviceSummaryViewModel);
+            }
+        }
+        #endregion
+
         [HttpGet("provider-roles")]
         public IActionResult ProviderRoles()
         {
