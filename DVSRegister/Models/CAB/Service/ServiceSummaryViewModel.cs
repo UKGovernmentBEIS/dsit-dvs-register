@@ -13,6 +13,8 @@ namespace DVSRegister.Models.CAB
 
         [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG44")]
         public bool? HasGPG44 { get; set; }
+
+        [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG45")]
         public bool? HasGPG45 { get; set; }
         public QualityLevelViewModel? QualityLevelViewModel { get; set; }
         public IdentityProfileViewModel? IdentityProfileViewModel { get; set; }
