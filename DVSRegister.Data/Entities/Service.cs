@@ -20,9 +20,10 @@ namespace DVSRegister.Data.Entities
         public string WebsiteAddress { get; set; }
         public string CompanyAddress { get; set; }
         public ICollection<ServiceRoleMapping> ServiceRoleMapping { get; set; }
-        public bool HasGPG44 { get; set; }
+        public bool HasGPG44 { get; set; }       
         public ICollection<ServiceQualityLevelMapping>? ServiceQualityLevelMapping { get; set; }
-        public ICollection<ServiceIdentityProfileMapping> ServiceIdentityProfileMapping { get; set; }
+        public bool HasGPG45 { get; set; }
+        public ICollection<ServiceIdentityProfileMapping>? ServiceIdentityProfileMapping { get; set; }
         public bool HasSupplementarySchemes { get; set; }
         public ICollection<ServiceSupSchemeMapping>? ServiceSupSchemeMapping { get; set; }
 
