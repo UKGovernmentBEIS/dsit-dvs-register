@@ -35,26 +35,32 @@ namespace DVSRegister.Controllers
             return View();
         }
 
+        #region Service Name
         [HttpGet("name-of-service")]
-        public IActionResult ServiceName()
+        public IActionResult ServiceName(bool fromSummaryPage)
         {
-
-            return View();
+                ViewBag.fromSummaryPage = fromSummaryPage;
+                ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+                return View("ServiceName", serviceSummaryViewModel);
         }
-
-        [HttpGet("service-url")]
-        public IActionResult ServiceURL()
+        [HttpPost("name-of-service")]
+        public IActionResult SaveServiceName(ServiceSummaryViewModel serviceSummaryViewModel )
         {
-
-            return View();
+            bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
+            serviceSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["ServiceName"].Errors.Count == 0)
+            {
+                ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+                serviceSummary.ServiceName = serviceSummaryViewModel.ServiceName;
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ServiceURL");
+            }
+            else
+            {
+                return View("ServiceName", serviceSummaryViewModel);
+            }
         }
-
-        [HttpGet("company-address")]
-        public IActionResult CompanyAddress()
-        {
-
-            return View();
-        }
+        #endregion
 
         [HttpGet("provider-roles")]
         public IActionResult ProviderRoles()
