@@ -107,7 +107,7 @@ namespace DVSRegister.Controllers
                 ServiceSummaryViewModel serviceSummary = GetServiceSummary();
                 serviceSummary.CompanyAddress = serviceSummaryViewModel.CompanyAddress;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("RoleViewModel");
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ProviderRoles");
             }
             else
             {
