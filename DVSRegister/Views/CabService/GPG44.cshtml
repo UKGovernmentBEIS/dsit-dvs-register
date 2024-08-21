@@ -61,7 +61,7 @@
                                 <div class="govuk-checkboxes" data-module="govuk-checkboxes">
                                     @foreach (var authenticator in Model.AvailableQualityOfAuthenticators)
                                     {
-                                        var idSuffix = authIndex > 0 ? $"_{authIndex}" : string.Empty;
+                                        var idSuffix = authIndex > 0 ? $"_{authIndex}" : string.Empty; // added to make the first checkbox id as selectedqualityofauthenticatorids so that error summary ahref refers first item
                                         <div class="govuk-checkboxes__item">
                                             <input class="govuk-checkboxes__input" type="checkbox" name="SelectedQualityofAuthenticatorIds" value="@authenticator.Id"
                                                    id="selectedqualityofauthenticatorids@(idSuffix)" aria-describedby="selectedqualityofauthenticatorids"
