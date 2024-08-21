@@ -10,6 +10,7 @@ namespace DVSRegister.Models.CAB
         public string? CompanyAddress { get; set; }
         public RoleViewModel? RoleViewModel { get; set; }
         public bool? HasGPG44 { get; set; }
+        public bool? HasGPG45 { get; set; }
         public QualityLevelViewModel? QualityLevelViewModel { get; set; }
         public IdentityProfileViewModel? IdentityProfileViewModel { get; set; }
         public bool? HasSupplementarySchemes { get; set; }
