@@ -90,7 +90,7 @@
                                         GPG44 quality of authenticator
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @foreach (var item in Model.QualityLevelViewModel.SelectedQualityLevels.Where(x=>x.QualityType == QualityTypeEnum.Authentication))
+                                        @foreach (var item in Model.QualityLevelViewModel.SelectedQualityofAuthenticators)
                                         {
 
                                             @item.Level
@@ -99,7 +99,7 @@
                                         }
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "SelectRoles", "CabService", new { fromSummaryPage = true },
+                                        @Html.ActionLink("Change", "GPG44", "CabService", new { fromSummaryPage = true },
                                                  new { @class = "govuk-link", @aria_label = "Change GPG44 quality of authenticator" })
                                     </dd>
                                 </div>
@@ -109,7 +109,7 @@
                                         GPG44 level of protection
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @foreach (var item in Model.QualityLevelViewModel.SelectedQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection))
+                                        @foreach (var item in Model.QualityLevelViewModel.SelectedLevelOfProtections)
                                         {
                                             @item.Level
                                             <br>
@@ -117,7 +117,7 @@
                                         }
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "SelectRoles", "CabService", new { fromSummaryPage = true },
+                                        @Html.ActionLink("Change", "GPG44", "CabService", new { fromSummaryPage = true },
                                                  new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
                                     </dd>
                                 </div>
@@ -134,7 +134,7 @@
                                         }
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "SelectIdentityProfiles", "CabService", new { fromSummaryPage = true },
+                                        @Html.ActionLink("Change", "GPG45", "CabService", new { fromSummaryPage = true },
                                                  new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
                                     </dd>
                                 </div>

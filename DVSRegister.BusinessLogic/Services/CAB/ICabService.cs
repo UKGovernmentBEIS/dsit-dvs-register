@@ -21,5 +21,6 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<List<ProviderProfileDto>> GetProviders(int cabId, string searchText = "");
         public Task<ProviderProfileDto> GetProvider(int providerId, int cabId);
         public Task<ServiceDto> GetServiceDetails(int serviceId, int cabId);
+        public Task<List<QualityLevelDto>> GetQualitylevels();
     }
 }

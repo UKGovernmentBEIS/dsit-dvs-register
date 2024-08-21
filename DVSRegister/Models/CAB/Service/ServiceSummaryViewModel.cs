@@ -1,4 +1,5 @@
 ﻿using DVSRegister.CommonUtility.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.Models.CAB
 {
@@ -9,6 +10,8 @@ namespace DVSRegister.Models.CAB
         public string? ServiceURL { get; set; }
         public string? CompanyAddress { get; set; }
         public RoleViewModel? RoleViewModel { get; set; }
+
+        [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG44")]
         public bool? HasGPG44 { get; set; }
         public bool? HasGPG45 { get; set; }
         public QualityLevelViewModel? QualityLevelViewModel { get; set; }
