@@ -123,6 +123,9 @@ namespace DVSRegister.Controllers
             return View();
         }
 
+
+        #region GPG44 - input
+
         [HttpGet("gpg44-input")]
         public IActionResult GPG44Input(bool fromSummaryPage)
         {
@@ -154,7 +157,9 @@ namespace DVSRegister.Controllers
                 return View("GPG44Input", viewModel);
             }
         }
+        #endregion
 
+        #region select GPG44
         [HttpGet("gpg44")]
         public async Task<IActionResult> GPG44(bool fromSummaryPage)
         {
@@ -197,20 +202,92 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("GPG45");
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("GPG45Input");
             }
             else
             {
                 return View("GPG44", qualityLevelViewModel);
             }
         }
+        #endregion
+
+        #region GPG45 input
+
+        [HttpGet("gpg45-input")]
+        public IActionResult GPG45Input(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            return View(summaryViewModel);
+        }
+
+        [HttpPost("gpg45-input")]
+        public IActionResult SaveGPG45Input(ServiceSummaryViewModel viewModel)
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            bool fromSummaryPage = viewModel.FromSummaryPage;
+            if (ModelState["HasGPG45"].Errors.Count == 0)
+            {
+                summaryViewModel.HasGPG45 = viewModel.HasGPG45;
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                if (Convert.ToBoolean(summaryViewModel.HasGPG45))
+                {
+                    return RedirectToAction("GPG45", new { fromSummaryPage = fromSummaryPage });
+                }
+                else
+                {
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("GPG45Input");
+                }
+               
+            }
+            else
+            {
+                return View("GPG45Input", viewModel);
+            }
+        }
+        #endregion
+
+        #region select GPG45
 
         [HttpGet("gpg45")]
-        public IActionResult GPG45()
+        public async Task<IActionResult> GPG45(bool fromSummaryPage)
         {
-
-            return View();
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();            
+            IdentityProfileViewModel identityProfileViewModel = new IdentityProfileViewModel();
+            identityProfileViewModel.HasGPG44 = summaryViewModel.HasGPG44;
+            identityProfileViewModel.SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList();
+            identityProfileViewModel.AvailableIdentityProfiles = await cabService.GetIdentityProfiles();
+            return View(identityProfileViewModel);
         }
+
+        /// <summary>
+        /// Save selected values to session
+        /// </summary>
+        /// <param name="identityProfileViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("gpg45")]
+        public async Task<IActionResult> SaveGPG45(IdentityProfileViewModel identityProfileViewModel)
+        {
+            bool fromSummaryPage = identityProfileViewModel.FromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            List<IdentityProfileDto> availableIdentityProfiles = await cabService.GetIdentityProfiles();
+            identityProfileViewModel.AvailableIdentityProfiles = availableIdentityProfiles;
+            identityProfileViewModel.SelectedIdentityProfileIds =  identityProfileViewModel.SelectedIdentityProfileIds??new List<int>();
+            if (identityProfileViewModel.SelectedIdentityProfileIds.Count > 0)
+                summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = availableIdentityProfiles.Where(c => identityProfileViewModel.SelectedIdentityProfileIds.Contains(c.Id)).ToList();
+            summaryViewModel.IdentityProfileViewModel.FromSummaryPage = false;
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("HasSupplementarySchemesInput");
+            }
+            else
+            {
+                return View("GPG45", identityProfileViewModel);
+            }
+        }
+        #endregion
 
         [HttpGet("supplementary-schemes-input")]
         public IActionResult HasSupplementarySchemesInput()

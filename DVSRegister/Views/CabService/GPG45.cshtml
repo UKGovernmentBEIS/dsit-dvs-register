@@ -1,11 +1,22 @@
-﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+﻿@model DVSRegister.Models.CAB.IdentityProfileViewModel
 @{
     ViewData["Title"] = "SelectSupplementarySchemes";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
+@{
+    bool hasError = false;
+}
 
 <div class="govuk-width-container">
-    @*@Html.ActionLink("Back", "HasSupplementaryScheme", "Cab", new { fromSummaryPage = ViewBag.fromSummaryPage }, new { @class = "govuk-back-link" })*@
+    @if(Convert.ToBoolean(Model.HasGPG44))
+    {
+        @Html.ActionLink("Back", "GPG44", "CabService", null, new { @class = "govuk-back-link" })
+    }
+    else
+    {
+        @Html.ActionLink("Back", "GPG44Input", "CabService", null, new { @class = "govuk-back-link" })
+    }
+
     <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -13,46 +24,74 @@
                     List the applicable GPG45 identity profiles for this service
                 </h1>
 
-                <p class="govuk-body">
-                    This must match the information on the certificate.
-                </p>
-                <div class="govuk-form-group">
-                    <fieldset class="govuk-fieldset">
-                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                            <h2 class="govuk-fieldset__heading">
-                                Low confidence
-                            </h2>
-                        </legend>
+                @using (Html.BeginForm("SaveGPG45", "CabService", FormMethod.Post))
+                {                   
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @if (ViewData.ModelState.ErrorCount >0)
+                    {
+                        hasError = true;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                    }
+                    var lowConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "L")
+                    .OrderBy(c => c.IdentityProfileName);
 
-                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                            <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="item.Id" id="role_item.Id" />
-                                <label class="govuk-label govuk-checkboxes__label" for="role_item.Id">item.SchemeName</label>
-                            </div>
-                        </div>
-                    </fieldset>
+                    var meduimConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "M")
+                    .OrderBy(c => c.IdentityProfileName);
 
-                    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                    var highConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "H")
+                    .OrderBy(c => c.IdentityProfileName);
 
-                    <fieldset class="govuk-fieldset">
-                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                            <h2 class="govuk-fieldset__heading">
-                                Medium confidence
-                            </h2>
-                        </legend>
+                    var veryHighConfidenceList = Model.AvailableIdentityProfiles
+                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "V")
+                    .OrderBy(c => c.IdentityProfileName);
 
-                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                            <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="item.Id" id="role_item.Id" />
-                                <label class="govuk-label govuk-checkboxes__label" for="role_item.Id">item.SchemeName</label>
-                            </div>
-                        </div>
-                    </fieldset>
 
-                </div>
+                    <p class="govuk-body">
+                        This must match the information on the certificate.
+                    </p>
+                    @if (hasError)
+                    {
+                        @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("Low confidence", Model, lowConfidenceList, true))
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                        @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("Medium confidence", Model, meduimConfidenceList, true))
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                        @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("High confidence", Model, highConfidenceList, true))
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                        @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
+                        new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>,bool>("Very high confidence", Model, veryHighConfidenceList, true))
+
+
+                    }
+                    else
+                    {
+                        @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("Low confidence", Model, lowConfidenceList, false))
+
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+                        @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("Medium confidence", Model, meduimConfidenceList, false))
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+                        @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("High confidence", Model, highConfidenceList, false))
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+                        @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("Very high confidence", Model, veryHighConfidenceList, false))
+                    }
+
                 <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
                     Continue
                 </button>
+                }
             </div>
         </div>
     </main>
