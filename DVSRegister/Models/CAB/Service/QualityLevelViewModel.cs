@@ -5,11 +5,17 @@ namespace DVSRegister.Models.CAB
 {
     public class QualityLevelViewModel
     {
-        public List<QualityLevelDto>? AvailableQualityLevels { get; set; }
+        public List<QualityLevelDto>? AvailableQualityOfAuthenticators { get; set; }
 
-        [EnsureMinimumCount(ErrorMessage = "Select the identity profile(s) for the digital identity and attribute service provider")]
-        public List<int>? SelectedQualityLevelIds{ get; set; }
-        public List<QualityLevelDto>? SelectedQualityLevels{ get; set; }
+        [EnsureMinimumCount(ErrorMessage = "Select the quality of authenticator")]
+        public List<int>? SelectedQualityofAuthenticatorIds { get; set; }
+        public List<QualityLevelDto>? SelectedQualityofAuthenticators { get; set; }
+
+        public List<QualityLevelDto>? AvailableLevelOfProtections { get; set; }
+
+        [EnsureMinimumCount(ErrorMessage = "Select the level of protection")]
+        public List<int>? SelectedLevelOfProtectionIds { get; set; }
+        public List<QualityLevelDto>? SelectedLevelOfProtections { get; set; }
         public bool FromSummaryPage { get; set; }
     }
 }

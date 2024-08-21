@@ -89,6 +89,11 @@ namespace DVSRegister.Data.CAB
             return await context.SupplementaryScheme.OrderBy(c => c.SchemeName).ToListAsync();
         }
 
+        public async Task<List<QualityLevel>> QualityLevels()
+        {
+            return await context.QualityLevel.ToListAsync();
+        }
+
         public async Task<GenericResponse> UpdateURNStatus(UniqueReferenceNumber uniqueReferenceNumber)
         {
 

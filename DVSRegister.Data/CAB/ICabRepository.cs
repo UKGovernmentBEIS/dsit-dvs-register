@@ -18,5 +18,6 @@ namespace DVSRegister.Data.CAB
         public Task<List<ProviderProfile>> GetProviders(int cabId,string searchText = "");
         public Task<ProviderProfile> GetProvider(int providerId, int cabId);
         public Task<Service> GetServiceDetails(int serviceId, int cabId);
+        public Task<List<QualityLevel>> QualityLevels();
     }
 }

@@ -123,11 +123,86 @@ namespace DVSRegister.Controllers
             return View();
         }
 
-        [HttpGet("gpg44")]
-        public IActionResult GPG44()
+        [HttpGet("gpg44-input")]
+        public IActionResult GPG44Input(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            return View(summaryViewModel);
+        }
 
-            return View();
+        [HttpPost("gpg44-input")]
+        public IActionResult SaveGPG44Input(ServiceSummaryViewModel viewModel)
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            bool fromSummaryPage = viewModel.FromSummaryPage;
+            if (ModelState["HasGPG44"].Errors.Count == 0)
+            {
+                summaryViewModel.HasGPG44 = viewModel.HasGPG44;
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                if (Convert.ToBoolean(summaryViewModel.HasGPG44))
+                {
+                    return RedirectToAction("GPG44", new { fromSummaryPage = fromSummaryPage });
+                }
+                else
+                {
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("GPG45Input");
+                }
+            }
+            else
+            {
+                return View("GPG44Input", viewModel);
+            }
+        }
+
+        [HttpGet("gpg44")]
+        public async Task<IActionResult> GPG44(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            QualityLevelViewModel qualityLevelViewModel = new QualityLevelViewModel();
+            var qualityLevels = await cabService.GetQualitylevels();
+            qualityLevelViewModel.AvailableQualityOfAuthenticators = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
+            qualityLevelViewModel.SelectedQualityofAuthenticatorIds = summaryViewModel?.QualityLevelViewModel?.SelectedQualityofAuthenticators?.Select(c => c.Id).ToList();
+
+            qualityLevelViewModel.AvailableLevelOfProtections = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
+            qualityLevelViewModel.SelectedLevelOfProtectionIds = summaryViewModel?.QualityLevelViewModel?.SelectedLevelOfProtections?.Select(c => c.Id).ToList();
+
+            return View(qualityLevelViewModel);
+        }
+
+        /// <summary>
+        /// Save selected values to session
+        /// </summary>
+        /// <param name="qualityLevelViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("gpg44")]
+        public async Task<IActionResult> SaveGPG44(QualityLevelViewModel qualityLevelViewModel)
+        {
+            bool fromSummaryPage = qualityLevelViewModel.FromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            List<QualityLevelDto> availableQualityLevels = await cabService.GetQualitylevels();
+            qualityLevelViewModel.AvailableQualityOfAuthenticators = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
+            qualityLevelViewModel.SelectedQualityofAuthenticatorIds =  qualityLevelViewModel.SelectedQualityofAuthenticatorIds??new List<int>();
+            if (qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Count > 0)
+                summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Contains(c.Id)).ToList();
+
+            qualityLevelViewModel.AvailableLevelOfProtections = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
+            qualityLevelViewModel.SelectedLevelOfProtectionIds =  qualityLevelViewModel.SelectedLevelOfProtectionIds??new List<int>();
+            if (qualityLevelViewModel.SelectedLevelOfProtectionIds.Count > 0)
+                summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedLevelOfProtectionIds.Contains(c.Id)).ToList();
+
+
+            summaryViewModel.QualityLevelViewModel.FromSummaryPage = false;
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("GPG45");
+            }
+            else
+            {
+                return View("GPG44", qualityLevelViewModel);
+            }
         }
 
         [HttpGet("gpg45")]
@@ -383,7 +458,7 @@ namespace DVSRegister.Controllers
 
             ServiceSummaryViewModel model = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel
             {
-                QualityLevelViewModel = new QualityLevelViewModel { SelectedQualityLevels = new List<QualityLevelDto>() },
+                QualityLevelViewModel = new QualityLevelViewModel { SelectedLevelOfProtections = new List<QualityLevelDto>(), SelectedQualityofAuthenticators = new List<QualityLevelDto>() },
                 RoleViewModel = new RoleViewModel { SelectedRoles = new List<RoleDto>() },
                 IdentityProfileViewModel = new IdentityProfileViewModel { SelectedIdentityProfiles = new List<IdentityProfileDto>() },
                 SupplementarySchemeViewModel = new SupplementarySchemeViewModel { SelectedSupplementarySchemes = new List<SupplementarySchemeDto> { } }
@@ -503,7 +578,11 @@ namespace DVSRegister.Controllers
                 ICollection<ServiceIdentityProfileMappingDto> serviceIdentityProfileMappings = new List<ServiceIdentityProfileMappingDto>();
                 ICollection<ServiceSupSchemeMappingDto> serviceSupSchemeMappings = new List<ServiceSupSchemeMappingDto>();
 
-                foreach (var item in model.QualityLevelViewModel.SelectedQualityLevels)
+                foreach (var item in model.QualityLevelViewModel.SelectedQualityofAuthenticators)
+                {
+                    serviceQualityLevelMappings.Add(new ServiceQualityLevelMappingDto { QualityLevelId = item.Id });
+                }
+                foreach (var item in model.QualityLevelViewModel.SelectedLevelOfProtections)
                 {
                     serviceQualityLevelMappings.Add(new ServiceQualityLevelMappingDto { QualityLevelId = item.Id });
                 }
