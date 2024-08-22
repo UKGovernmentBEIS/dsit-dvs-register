@@ -20,7 +20,11 @@ namespace DVSRegister.Models.CAB
         [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address")]
         public string? CompanyAddress { get; set; }
         public RoleViewModel? RoleViewModel { get; set; }
+
+        [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG44")]
         public bool? HasGPG44 { get; set; }
+
+        [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG45")]
         public bool? HasGPG45 { get; set; }
         public QualityLevelViewModel? QualityLevelViewModel { get; set; }
         public IdentityProfileViewModel? IdentityProfileViewModel { get; set; }
