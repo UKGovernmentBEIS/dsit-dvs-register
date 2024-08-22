@@ -5,6 +5,7 @@
 }
 @{
     bool hasError = false;
+  
 }
 
 <div class="govuk-width-container">
@@ -34,8 +35,8 @@
                         @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                     }
                     var lowConfidenceList = Model.AvailableIdentityProfiles
-                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "L")
-                    .OrderBy(c => c.IdentityProfileName);
+                                    .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "L")
+                                    .OrderBy(c => c.IdentityProfileName);
 
                     var meduimConfidenceList = Model.AvailableIdentityProfiles
                     .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "M")
@@ -49,43 +50,46 @@
                     .Where(c => c.IdentityProfileName.Substring(0, 1).ToUpper() == "V")
                     .OrderBy(c => c.IdentityProfileName);
 
-
+                    int lowConfCount = lowConfidenceList.Count();
+                    int medConfCount = meduimConfidenceList.Count();
+                    int highConfCount = highConfidenceList.Count();
+                    int verHighConfList = veryHighConfidenceList.Count();
                     <p class="govuk-body">
                         This must match the information on the certificate.
                     </p>
                     @if (hasError)
                     {
                         @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
-                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("Low confidence", Model, lowConfidenceList, true))
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool,int>("Low confidence", Model, lowConfidenceList, true, 0))
                         <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
                         @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
-                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("Medium confidence", Model, meduimConfidenceList, true))
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool, int>("Medium confidence", Model, meduimConfidenceList, true, lowConfCount))
                         <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
                         @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
-                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("High confidence", Model, highConfidenceList, true))
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool, int>("High confidence", Model, highConfidenceList, true, lowConfCount + medConfCount))
                         <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
                         @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
-                        new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>,bool>("Very high confidence", Model, veryHighConfidenceList, true))
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool, int>("Very high confidence", Model, veryHighConfidenceList, true, lowConfCount +medConfCount+ highConfCount))
 
 
                     }
                     else
                     {
                         @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
-                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("Low confidence", Model, lowConfidenceList, false))
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool, int >("Low confidence", Model, lowConfidenceList, false, 0))
 
                         <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
                         @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
-                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("Medium confidence", Model, meduimConfidenceList, false))
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool, int>("Medium confidence", Model, meduimConfidenceList, false, lowConfCount))
                         <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
                         @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
-                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("High confidence", Model, highConfidenceList, false))
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool, int>("High confidence", Model, highConfidenceList, false, lowConfCount + medConfCount))
                         <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 
                         @await Html.PartialAsync("~/Views/CabService/PartialViews/_IdentityProfilesView.cshtml",
-                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>("Very high confidence", Model, veryHighConfidenceList, false))
+                                 new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool, int>("Very high confidence", Model, veryHighConfidenceList, false,lowConfCount +medConfCount+ highConfCount))
                     }
 
                 <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">

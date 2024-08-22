@@ -16,8 +16,8 @@ namespace DVSRegister.Models.CAB
         [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address.")]
         public string? ServiceURL { get; set; }
 
-        [Required(ErrorMessage = "Enter the company website address")]
-        [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address")]
+        [Required(ErrorMessage = "Enter the company address")]
+       
         public string? CompanyAddress { get; set; }
         public RoleViewModel? RoleViewModel { get; set; }
 

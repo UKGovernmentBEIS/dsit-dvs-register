@@ -7,18 +7,19 @@
     bool hasError = false;
 }
 
-@using (Html.BeginForm("SaveGPG45Input", "CabService", FormMethod.Post))
-{
+
 <div class="govuk-width-container">
     @if(Convert.ToBoolean(Model.HasGPG44))
         {
-            @Html.ActionLink("Back", "GPG44", "CabService", new { fromSummaryPage = ViewBag.fromSummaryPage }, new { @class = "govuk-back-link" })
+            @Html.ActionLink("Back", "GPG44", "CabService", null, new { @class = "govuk-back-link" })
         }
         else
         {
-            @Html.ActionLink("Back", "GPG44Input", "CabService", new { fromSummaryPage = ViewBag.fromSummaryPage }, new { @class = "govuk-back-link" })
+            @Html.ActionLink("Back", "GPG44Input", "CabService", null, new { @class = "govuk-back-link" })
         }
-
+    @using (Html.BeginForm("SaveGPG45Input", "CabService", FormMethod.Post))
+    {
+        @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -57,6 +58,7 @@
             </div>
         </div>
     </main>
+    }
 </div>
-}
+
 
