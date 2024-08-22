@@ -269,7 +269,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("GPG45Input");
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("HasSupplementarySchemesInput");
                 }
                
             }
@@ -322,19 +322,78 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
-        [HttpGet("supplementary-schemes-input")]
-        public IActionResult HasSupplementarySchemesInput()
-        {
 
-            return View();
+        #region Supplemetary schemes
+
+        [HttpGet("supplementary-schemes-input")]
+        public IActionResult HasSupplementarySchemesInput(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            return View(summaryViewModel);
+        }
+
+        [HttpPost("supplementary-schemes-input")]
+        public IActionResult SaveHasSupplementarySchemesInput(ServiceSummaryViewModel viewModel)
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            bool fromSummaryPage = viewModel.FromSummaryPage;
+            if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
+            {
+                summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                if (Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
+                {
+                    return RedirectToAction("SupplementarySchemes", new { fromSummaryPage = fromSummaryPage });
+                }
+                else
+                {
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("CertificateUploadPage");
+                }
+
+            }
+            else
+            {
+                return View("HasSupplementarySchemesInput", viewModel);
+            }
         }
 
         [HttpGet("supplementary-schemes")]
-        public IActionResult SupplementarySchemes()
+        public async Task<IActionResult> SupplementarySchemes(bool fromSummaryPage)
         {
-
-            return View();
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            SupplementarySchemeViewModel supplementarySchemeViewModel = new SupplementarySchemeViewModel();
+            supplementarySchemeViewModel.SelectedSupplementarySchemeIds = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(c => c.Id).ToList();
+            supplementarySchemeViewModel.AvailableSchemes = await cabService.GetSupplementarySchemes();
+            return View(supplementarySchemeViewModel);
         }
+
+        [HttpPost("supplementary-schemes")]
+        public async Task<IActionResult> SaveSupplementarySchemes(SupplementarySchemeViewModel supplementarySchemeViewModel)
+        {
+            bool fromSummaryPage = supplementarySchemeViewModel.FromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            List<SupplementarySchemeDto> availableSupplementarySchemes = await cabService.GetSupplementarySchemes();
+            supplementarySchemeViewModel.AvailableSchemes = availableSupplementarySchemes;
+            supplementarySchemeViewModel.SelectedSupplementarySchemeIds =  supplementarySchemeViewModel.SelectedSupplementarySchemeIds??new List<int>();
+            if (supplementarySchemeViewModel.SelectedSupplementarySchemeIds.Count > 0)
+                summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = availableSupplementarySchemes.Where(c => supplementarySchemeViewModel.SelectedSupplementarySchemeIds.Contains(c.Id)).ToList();
+            summaryViewModel.SupplementarySchemeViewModel.FromSummaryPage = false;
+
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("CertificateUploadPage");
+            }
+            else
+            {
+                return View("SupplementarySchemes", supplementarySchemeViewModel);
+            }
+        }
+        #endregion
+
+        #region File upload/download
 
         [HttpGet("certificate-upload")]
         public async Task<IActionResult> CertificateUploadPage(bool fromSummaryPage, bool remove)
@@ -343,6 +402,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             CertificateFileViewModel certificateFileViewModel = new CertificateFileViewModel();
+            certificateFileViewModel.HasSupplementarySchemes = summaryViewModel.HasSupplementarySchemes;
             if (remove)
             {
                 summaryViewModel.FileLink = null;
@@ -353,7 +413,7 @@ namespace DVSRegister.Controllers
             if (!string.IsNullOrEmpty(summaryViewModel.FileName) && !string.IsNullOrEmpty(summaryViewModel.FileLink))
             {
                 certificateFileViewModel.FileName = summaryViewModel.FileName;
-                certificateFileViewModel.FileUrl = summaryViewModel.FileLink;
+                certificateFileViewModel.FileUrl = summaryViewModel.FileLink;                
                 var fileContent = await bucketService.DownloadFileAsync(summaryViewModel.FileLink);
                 var stream = new MemoryStream(fileContent);
                 IFormFile formFile = new FormFile(stream, 0, fileContent.Length, "File", summaryViewModel.FileName)
@@ -366,6 +426,12 @@ namespace DVSRegister.Controllers
             }
             return View(certificateFileViewModel);
         }
+
+        /// <summary>
+        /// upload to s3
+        /// </summary>
+        /// <param name="certificateFileViewModel"></param>
+        /// <returns></returns>
 
         [HttpPost("certificate-upload")]
         public async Task<IActionResult> SaveCertificate(CertificateFileViewModel certificateFileViewModel)
@@ -409,8 +475,36 @@ namespace DVSRegister.Controllers
             }
         }
 
+        /// <summary>
+        /// download from s3
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+
+        [HttpGet("download-certificate")]
+        public async Task<IActionResult> DownloadCertificate(string key, string filename)
+        {
+            try
+            {
+                byte[]? fileContent = await bucketService.DownloadFileAsync(key);
+
+                if (fileContent == null || fileContent.Length == 0)
+                {
+                    return RedirectToAction(Constants.CabRegistrationErrorPath);
+                }
+                string contentType = "application/octet-stream";
+                return File(fileContent, contentType, filename);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction(Constants.CabRegistrationErrorPath);
+            }
+        }
 
 
+        #endregion
+
+        #region Conformity issue/expiry dates
 
         [HttpGet("enter-issue-date")]
         public IActionResult ConfirmityIssueDate(bool fromSummaryPage)
@@ -491,7 +585,9 @@ namespace DVSRegister.Controllers
 
             }
         }
+        #endregion
 
+        #region Summary and save to database
         [HttpGet("check-your-answers")]
         public IActionResult ServiceSummary()
         {
@@ -531,33 +627,7 @@ namespace DVSRegister.Controllers
 
         }
 
-        /// <summary>
-        /// download from s3
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-
-        [HttpGet("download-certificate")]
-        public async Task<IActionResult> DownloadCertificate(string key, string filename)
-        {
-            try
-            {
-                byte[]? fileContent = await bucketService.DownloadFileAsync(key);
-
-                if (fileContent == null || fileContent.Length == 0)
-                {
-                    return RedirectToAction(Constants.CabRegistrationErrorPath);
-                }
-                string contentType = "application/octet-stream";
-                return File(fileContent, contentType, filename);
-            }
-            catch (Exception)
-            {
-                return RedirectToAction(Constants.CabRegistrationErrorPath);
-            }
-        }
-
-
+        #endregion
 
 
         #region Private Methods

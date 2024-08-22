@@ -28,6 +28,8 @@ namespace DVSRegister.Models.CAB
         public bool? HasGPG45 { get; set; }
         public QualityLevelViewModel? QualityLevelViewModel { get; set; }
         public IdentityProfileViewModel? IdentityProfileViewModel { get; set; }
+
+        [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against a supplementary scheme")]
         public bool? HasSupplementarySchemes { get; set; }
         public SupplementarySchemeViewModel? SupplementarySchemeViewModel { get; set; }
         public string? FileName { get; set; }
