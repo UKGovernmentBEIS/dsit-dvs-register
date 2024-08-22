@@ -116,13 +116,46 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
-        [HttpGet("provider-roles")]
-        public IActionResult ProviderRoles()
-        {
+        #region Roles
 
-            return View();
+        [HttpGet("provider-roles")]
+        public async Task<IActionResult> ProviderRoles()
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            RoleViewModel roleViewModel = new RoleViewModel();
+            roleViewModel.SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList();
+            roleViewModel.AvailableRoles = await cabService.GetRoles();
+            return View(roleViewModel);
         }
 
+
+        /// <summary>
+        /// Save selected roles to session
+        /// </summary>
+        /// <param name="roleViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("provider-roles")]
+        public async Task<IActionResult> SaveRoles(RoleViewModel roleViewModel)
+        {
+            bool fromSummaryPage = roleViewModel.FromSummaryPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            List<RoleDto> availableRoles = await cabService.GetRoles();          
+            roleViewModel.AvailableRoles = availableRoles;
+            roleViewModel.SelectedRoleIds =  roleViewModel.SelectedRoleIds??new List<int>();
+            if (roleViewModel.SelectedRoleIds.Count > 0)
+                summaryViewModel.RoleViewModel.SelectedRoles = availableRoles.Where(c => roleViewModel.SelectedRoleIds.Contains(c.Id)).ToList();
+            summaryViewModel.RoleViewModel.FromSummaryPage = false;
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("GPG44Input");
+            }
+            else
+            {
+                return View("ProviderRoles", roleViewModel);
+            }
+        }
+        #endregion
 
         #region GPG44 - input
 
