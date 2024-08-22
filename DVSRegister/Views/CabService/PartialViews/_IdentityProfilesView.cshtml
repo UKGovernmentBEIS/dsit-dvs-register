@@ -1,7 +1,7 @@
 ﻿@using DVSRegister.BusinessLogic.Models;
-@model Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool>
+@model Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool , int>
 @{
-    int index = 0;
+    int index = Model.Item5;
 }
 
 @if (!Model.Item4)

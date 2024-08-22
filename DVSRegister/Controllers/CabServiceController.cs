@@ -39,10 +39,11 @@ namespace DVSRegister.Controllers
         [HttpGet("name-of-service")]
         public IActionResult ServiceName(bool fromSummaryPage)
         {
-                ViewBag.fromSummaryPage = fromSummaryPage;
-                ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-                return View("ServiceName", serviceSummaryViewModel);
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            return View(serviceSummaryViewModel);
         }
+
         [HttpPost("name-of-service")]
         public IActionResult SaveServiceName(ServiceSummaryViewModel serviceSummaryViewModel )
         {
@@ -119,8 +120,9 @@ namespace DVSRegister.Controllers
         #region Roles
 
         [HttpGet("provider-roles")]
-        public async Task<IActionResult> ProviderRoles()
+        public async Task<IActionResult> ProviderRoles(bool fromSummaryPage)
         {
+            ViewBag.fromSummaryPage = fromSummaryPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             RoleViewModel roleViewModel = new RoleViewModel();
             roleViewModel.SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList();
@@ -174,14 +176,18 @@ namespace DVSRegister.Controllers
             bool fromSummaryPage = viewModel.FromSummaryPage;
             if (ModelState["HasGPG44"].Errors.Count == 0)
             {
-                summaryViewModel.HasGPG44 = viewModel.HasGPG44;
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                summaryViewModel.HasGPG44 = viewModel.HasGPG44;               
                 if (Convert.ToBoolean(summaryViewModel.HasGPG44))
                 {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return RedirectToAction("GPG44", new { fromSummaryPage = fromSummaryPage });
                 }
                 else
                 {
+                    // clear selections if the value is changed from yes to no
+                    summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = new List<QualityLevelDto>();
+                    summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = new List<QualityLevelDto>();
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("GPG45Input");
                 }
             }
@@ -262,13 +268,16 @@ namespace DVSRegister.Controllers
             if (ModelState["HasGPG45"].Errors.Count == 0)
             {
                 summaryViewModel.HasGPG45 = viewModel.HasGPG45;
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+               
                 if (Convert.ToBoolean(summaryViewModel.HasGPG45))
                 {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return RedirectToAction("GPG45", new { fromSummaryPage = fromSummaryPage });
                 }
                 else
                 {
+                    summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = new List<IdentityProfileDto>();
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("HasSupplementarySchemesInput");
                 }
                
@@ -340,14 +349,16 @@ namespace DVSRegister.Controllers
             bool fromSummaryPage = viewModel.FromSummaryPage;
             if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
             {
-                summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;               
                 if (Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
                 {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return RedirectToAction("SupplementarySchemes", new { fromSummaryPage = fromSummaryPage });
                 }
                 else
                 {
+                    summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = new List<SupplementarySchemeDto>();
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("CertificateUploadPage");
                 }
 
