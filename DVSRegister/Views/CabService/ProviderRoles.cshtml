@@ -1,33 +1,36 @@
-﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+﻿@model DVSRegister.Models.CAB.RoleViewModel
 @{
     ViewData["Title"] = "Select the applicable roles from the UK digital identity and attributes trust framework for this service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
-    bool isValid = true;
+    bool hasError = false;
+    int index = 0;
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ServiceName", "Cab", null, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "CompanyAddress", "CabService", null, new { @class = "govuk-back-link" })
     <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
+
+            @using (Html.BeginForm("SaveRoles", "CabCabService", FormMethod.Post))
+             {
+                 <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl">
                     Select the applicable roles from the UK digital identity and attributes trust framework for this service
                 </h1>
                 @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                 @if (ViewData.ModelState.ErrorCount > 0)
                 {
-                    isValid = false;
+                    hasError = true;
                     ViewData["Title"] = "Error: " + ViewData["Title"];
                     @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
-                }
-                @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                }              
                 <p class="govuk-body">
                     This must match the information on the certificate.
                 </p>
 
-                @if (!isValid)
+                @if (hasError)
                 {
                     <div class="govuk-form-group govuk-form-group--error">
                         <fieldset class="govuk-fieldset">
@@ -39,13 +42,19 @@
                             </div>
                             <p id="selectedroleids-error" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span>
-                                {ROLE}
+                                    @Html.ValidationMessageFor(m => m.SelectedRoleIds, "", new { @class = "govuk-error-message" })
                             </p>
                             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="role.Id" id="role_role.Id" aria-describedby="selectedroleids-hint selectedroleids-error" />
-                                    <label class="govuk-label govuk-checkboxes__label" for="role_role.Id">item.RoleName</label>
-                                </div>
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    var idSuffix = index > 0 ? $"_{index}" : string.Empty; // added to make the first checkbox id as selectedroleids so that error summary ahref refers first item
+                                    <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="selectedroleids@(idSuffix)" aria-describedby="selectedroleids-error"
+                                    @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "") />
+                                    <label class="govuk-label govuk-checkboxes__label" for="selectedroleids@(idSuffix)">@role.RoleName</label>
+                                     </div>
+                                    index++;
+                                }
                             </div>
 
                         </fieldset>
@@ -63,22 +72,24 @@
                             </div>
 
                             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="role.Id" id="role_role.Id" aria-describedby="selectedroleids-hint" />
-                                    <label class="govuk-label govuk-checkboxes__label" for="role_role.Id">RoleName</label>
-                                </div>
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id" aria-describedby="selectedroleids-hint"
+                                        @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@role.Id">@role.RoleName</label>
+                                    </div>
+                                }
                             </div>
-
                         </fieldset>
                     </div>
                 }
-
-                @*DONOT Remove : Keeping AvailableRoles hidden variable to avoid db call to fetch countries after post*@
-                @*@Html.Hidden("AvailableRoles", JsonConvert.SerializeObject(Model.AvailableRoles))*@
+            
                 <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
                     Continue
                 </button>
             </div>
+            }
         </div>
     </main>
 </div>

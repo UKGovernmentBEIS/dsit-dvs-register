@@ -11,15 +11,15 @@
 @using (Html.BeginForm("SaveCertificate", "CabService", FormMethod.Post, new { enctype ="multipart/form-data"}))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
-    bool hasSchemes = ViewBag.HasSupplementarySchemes ?? false;
+   
     <div class="govuk-width-container">
-        @if (hasSchemes == true)
+        @if (Convert.ToBoolean(Model.HasSupplementarySchemes) == true)
         {
             <nav>@Html.ActionLink("Back", "SupplementarySchemes", "CabService", null, new { @class = "govuk-back-link" })</nav>
         }
         else
         {
-            <nav>@Html.ActionLink("Back", "HasSupplementarySchemesInput", "Cab", null, new { @class = "govuk-back-link" })</nav>
+            <nav>@Html.ActionLink("Back", "HasSupplementarySchemesInput", "CabService", null, new { @class = "govuk-back-link" })</nav>
         }
 
         <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">

@@ -1,33 +1,37 @@
-﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+﻿@model DVSRegister.Models.CAB.SupplementarySchemeViewModel
 @{
     ViewData["Title"] = "Select the applicable schemes for this service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
-    bool isValid = true;
+    bool hasError = false;
+    int index = 0;
 }
 
 <div class="govuk-width-container">
     @Html.ActionLink("Back", "ServiceName", "Cab", null, new { @class = "govuk-back-link" })
+ 
     <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl">
                     Select the applicable schemes for this service
                 </h1>
-                @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+            
                 @if (ViewData.ModelState.ErrorCount > 0)
                 {
-                    isValid = false;
+                    hasError = true;
                     ViewData["Title"] = "Error: " + ViewData["Title"];
                     @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                 }
+                @using (Html.BeginForm("SaveSupplementarySchemes", "CabService", FormMethod.Post))
+                {
                 @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                 <p class="govuk-body">
                     Select all supplementary schemes that the service  is certified against on the certificate of conformity.
                 </p>
 
-                @if (!isValid)
+                @if(hasError)
                 {
                     <div class="govuk-form-group govuk-form-group--error">
                         <fieldset class="govuk-fieldset">
@@ -39,13 +43,22 @@
                             </div>
                             <p id="selectedroleids-error" class="govuk-error-message">
                                 <span class="govuk-visually-hidden">Error:</span>
-                                {ROLE}
+                                    @Html.ValidationMessageFor(m => m.SelectedSupplementarySchemeIds, "", new { @class = "govuk-error-message", id = "selectedsupplementaryschemeids-error" })
                             </p>
                             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="role.Id" id="role_role.Id" aria-describedby="selectedroleids-hint selectedroleids-error" />
-                                    <label class="govuk-label govuk-checkboxes__label" for="role_role.Id">item.RoleName</label>
-                                </div>
+                                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                        @foreach (var item in Model.AvailableSchemes)
+                                        {
+                                            var idSuffix = index > 0 ? $"_{index}" : string.Empty; // added to make the first checkbox id as selectedsupplementaryschemeids so that error summary ahref refers first item
+                                            <div class="govuk-checkboxes__item">
+                                                <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id"
+                                                id="selectedsupplementaryschemeids@(idSuffix)" aria-describedby="selectedsupplementaryschemeids-error"
+                                                @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
+                                                <label class="govuk-label govuk-checkboxes__label" for="selectedsupplementaryschemeids@(idSuffix)">@item.SchemeName</label>
+                                            </div>
+                                            index++;
+                                        }
+                                    </div>
                             </div>
 
                         </fieldset>
@@ -63,23 +76,33 @@
                             </div>
 
                             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="role.Id" id="role_role.Id" aria-describedby="selectedroleids-hint" />
-                                    <label class="govuk-label govuk-checkboxes__label" for="role_role.Id">RoleName</label>
-                                </div>
+                                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                        @foreach (var item in Model.AvailableSchemes)
+                                        {
+                                            var idSuffix = index > 0 ? $"_{index}" : string.Empty;
+                                            <div class="govuk-checkboxes__item">
+                                                <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds"
+                                                 value="@item.Id" id="selectedsupplementaryschemeids@(idSuffix)" aria-describedby="selectedroleids-hint"
+                                                @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
+                                                <label class="govuk-label govuk-checkboxes__label" for="selectedsupplementaryschemeids@(idSuffix)">@item.SchemeName</label>
+                                            </div>
+                                            index++;
+                                        }
+                                    </div>
                             </div>
 
                         </fieldset>
                     </div>
                 }
 
-                @*DONOT Remove : Keeping AvailableRoles hidden variable to avoid db call to fetch countries after post*@
-                @*@Html.Hidden("AvailableRoles", JsonConvert.SerializeObject(Model.AvailableRoles))*@
+             
                 <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
                     Continue
                 </button>
+                }
             </div>
         </div>
     </main>
+    }
 </div>
 

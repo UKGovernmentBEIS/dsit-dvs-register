@@ -17,6 +17,7 @@ namespace DVSRegister.Models.CAB
 
         public bool? FileUploadedSuccessfully { get; set; }
         public bool FromSummaryPage { get; set; }
+        public bool? HasSupplementarySchemes { get; set; }
 
     }
 }
