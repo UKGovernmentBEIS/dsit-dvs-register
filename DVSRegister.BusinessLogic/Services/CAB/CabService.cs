@@ -160,6 +160,11 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             var list = await cabRepository.QualityLevels();
             return automapper.Map<List<QualityLevelDto>>(list);
         }
+        public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
+        {
+            return await cabRepository.CheckValidCabAndProviderProfile(providerId, cabId);
+
+        }
 
     }
 }

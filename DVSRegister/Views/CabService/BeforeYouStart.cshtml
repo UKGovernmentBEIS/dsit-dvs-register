@@ -38,7 +38,7 @@
                 <p class="govuk-body">Once DSIT has approved this submission, the information you have provided will be publicly available on the register of digital identity and attribute services.</p>
 
 
-                <p class="govuk-body">@Html.ActionLink("Continue", "RegisteredName", "CabProvider", null, new { @class = "govuk-button" })</p>
+                <p class="govuk-body">@Html.ActionLink("Continue", "ServiceName", "CabService", new { providerProfileId = ViewBag.ProviderProfileId }, new { @class = "govuk-button" })</p>
             </div>
         </div>
     </main>

@@ -107,14 +107,14 @@
 
             @if(Model.Services == null || Model.Services.Count == 0)
             {               
-                    <p class="govuk-body"><strong>No services have been submitted for this provider.</strong></p>                   
-                    @Html.ActionLink("Submit a new service", "BeforeYouStart", "CabService", null, new { @class = "govuk-button", role = "button", draggable = "false", data_module = "govuk-button" })
+                    <p class="govuk-body"><strong>No services have been submitted for this provider.</strong></p>
+                    @Html.ActionLink("Submit a new service", "BeforeYouStart", "CabService", new { providerProfileId = Model.Id }, new { @class = "govuk-button", role = "button", draggable = "false", data_module = "govuk-button" })
             }
             else
             {
 
-                    @Html.ActionLink("Add a new service", "BeforeYouStart", "CabService", null, new { @class = "govuk-button", role = "button", draggable = "false", data_module = "govuk-button" })                        
-            }
+                    @Html.ActionLink("Add a new service", "BeforeYouStart", "CabService", new { providerProfileId = Model.Id}, new { @class = "govuk-button", role = "button", draggable = "false", data_module = "govuk-button" })
+                }
             </div>
             
         </div>

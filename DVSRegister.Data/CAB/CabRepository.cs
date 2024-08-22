@@ -295,5 +295,20 @@ namespace DVSRegister.Data.CAB
 
             return service;
         }
+
+        public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
+        {
+            ProviderProfile provider = new();
+            provider = await context.ProviderProfile.Include(p => p.CabUser).ThenInclude(p=>p.Cab).Where(x=>x.Id == providerId).FirstOrDefaultAsync()??new ProviderProfile();
+            if(provider.CabUser.Cab.Id > 0 &&  provider.CabUser.Cab.Id == cabId)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
+        }
     }
 }
