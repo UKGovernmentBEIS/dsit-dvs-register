@@ -48,7 +48,7 @@ namespace DVSRegister.Data.Repositories
         public async Task<CabUser> GetUser(string email)
         {
             CabUser user = new CabUser();
-            user = await context.CabUser.FirstOrDefaultAsync<CabUser>(e => e.CabEmail == email);
+            user = await context.CabUser.Include(x=>x.Cab).FirstOrDefaultAsync<CabUser>(e => e.CabEmail == email)??new CabUser();
             return user;
         }
 

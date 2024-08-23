@@ -6,7 +6,8 @@ namespace DVSRegister.Models.CAB
 {
     public class ServiceSummaryViewModel
     {
-        public int ProviderProfileId { get; set; }
+        public int ProviderProfileId { get; set; }     
+
         [Required(ErrorMessage = "Enter the service name")]
         [MaximumLength(160, ErrorMessage = "The service name must be less than 161 characters.")]
         [AcceptedCharacters(@"^[A-Za-z0-9 &@£$€¥#.,:;-]+$", ErrorMessage = "The service name must contain only letters, numbers and accepted characters.")]
@@ -39,6 +40,7 @@ namespace DVSRegister.Models.CAB
         public DateTime? ConformityExpiryDate { get; set; }
         public CertificateInfoStatusEnum CertificateInfoStatus { get; set; }
         public int CabUserId { get; set; }
+        public int CabId { get; set; }
         public bool FromSummaryPage { get;set; }
     }
 }
