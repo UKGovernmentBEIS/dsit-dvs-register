@@ -84,7 +84,8 @@ namespace DVSRegister
             services.AddScoped<IRegisterRepository, RegisterRepository>();
             services.AddScoped<IRegisterService, RegisterService>();
             services.AddScoped<IBucketService, BucketService>();
-            services.AddScoped<IAVService, AVService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();           
             services.AddSingleton<CookieService>();
             services.AddScoped(opt =>
             {

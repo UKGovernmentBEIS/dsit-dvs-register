@@ -1,0 +1,58 @@
+﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@{
+    ViewData["Title"] = "A URL link to the service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool hasError = false;
+}
+@using (Html.BeginForm("SaveServiceURL", "CabService", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+
+<div class="govuk-width-container">
+        @Html.ActionLink("Back", "ServiceName", "CabService", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @if (Html.ViewData?.ModelState.ContainsKey("ServiceURL") == true)
+                {
+                    var errors = Html.ViewData?.ModelState["ServiceURL"]?.Errors;
+                    if (errors != null && errors.Count > 0)
+                    {
+                        hasError = true;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ServiceURL", errors))
+                    }
+                }
+                <h1 class="govuk-heading-xl form-title">
+                    A URL link to the service
+                </h1>
+
+                <p class="govuk-body">
+                    Enter a URL link to a website address for the service. The information you provide will be publicly displayed on the register of digital identity and attribute services.
+                </p>
+
+             
+                    @{
+                        var ServiceURLViewmodel = new TextBoxViewModel
+                        {
+                            PropertyName = "ServiceURL",
+                            Label = "URL link to the service",
+                            Value = Model?.ServiceURL ?? string.Empty,
+                            Class = "govuk-input",
+                            Hint = "For example, www.yourcompanyexpress.co.uk",
+                            HasError = hasError,
+                            ErrorMessage = hasError ? Html.ViewData?.ModelState["ServiceURL"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                        };
+                    }
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", ServiceURLViewmodel)
+              
+                <button type="submit" class="govuk-button govuk-!-margin-top-2">Continue</button>
+            </div>
+        </div>
+    </main>
+</div>
+}

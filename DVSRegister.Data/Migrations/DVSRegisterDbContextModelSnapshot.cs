@@ -18,10 +18,69 @@ namespace DVSRegister.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.Cab", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CabName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cab");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CabName = "EY",
+                            CreatedTime = new DateTime(2024, 8, 27, 9, 48, 52, 800, DateTimeKind.Utc).AddTicks(8205)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CabName = "DSIT",
+                            CreatedTime = new DateTime(2024, 8, 27, 9, 48, 52, 800, DateTimeKind.Utc).AddTicks(8207)
+                        });
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.CabUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CabEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CabId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CabId");
+
+                    b.ToTable("CabUser");
+                });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoIdentityProfileMapping", b =>
                 {
@@ -1853,6 +1912,175 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("Provider");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CabUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CompanyRegistrationNumber")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("DUNSNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("HasRegistrationNumber")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ModifiedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("PrimaryContactEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrimaryContactFullName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrimaryContactJobTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrimaryContactTelephoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProviderStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProviderTelephoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProviderWebsiteAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PublicContactEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PublishedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("RegisteredName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "RegisteredName", "TradingName" });
+
+                    b.Property<string>("SecondaryContactEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecondaryContactFullName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecondaryContactJobTitle")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecondaryContactTelephoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TradingName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CabUserId");
+
+                    b.HasIndex("SearchVector");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
+
+                    b.ToTable("ProviderProfile");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.QualityLevel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("QualityType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("QualityLevel");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Level = "Low",
+                            QualityType = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Level = "Medium",
+                            QualityType = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Level = "High",
+                            QualityType = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Level = "Low",
+                            QualityType = 2
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Level = "Medium",
+                            QualityType = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Level = "High",
+                            QualityType = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Level = "Very High",
+                            QualityType = 2
+                        });
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.RegisterPublishLog", b =>
                 {
                     b.Property<int>("Id")
@@ -1916,6 +2144,188 @@ namespace DVSRegister.Data.Migrations
                             Id = 3,
                             RoleName = "Orchestration Service Provider (OSP)"
                         });
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CabUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CompanyAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ConformityExpiryDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("ConformityIssueDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("FileLink")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("FileSizeInKb")
+                        .HasColumnType("decimal(10, 1)");
+
+                    b.Property<bool>("HasGPG44")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("HasGPG45")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("HasSupplementarySchemes")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ModifiedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("ProviderProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("PublishedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "ServiceName" });
+
+                    b.Property<string>("ServiceName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ServiceNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TrustMarkNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("WebsiteAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CabUserId");
+
+                    b.HasIndex("ProviderProfileId");
+
+                    b.HasIndex("SearchVector");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
+
+                    b.ToTable("Service");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceIdentityProfileMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdentityProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdentityProfileId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceIdentityProfileMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceQualityLevelMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("QualityLevelId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QualityLevelId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceQualityLevelMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceRoleMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceRoleMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceSupSchemeMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SupplementarySchemeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("SupplementarySchemeId");
+
+                    b.ToTable("ServiceSupSchemeMapping");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.SupplementaryScheme", b =>
@@ -2035,6 +2445,17 @@ namespace DVSRegister.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.CabUser", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.Cab", "Cab")
+                        .WithMany()
+                        .HasForeignKey("CabId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cab");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoIdentityProfileMapping", b =>
@@ -2217,6 +2638,17 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("PreRegistration");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.CabUser", "CabUser")
+                        .WithMany()
+                        .HasForeignKey("CabUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CabUser");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.RegisterPublishLog", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.Provider", "Provider")
@@ -2226,6 +2658,101 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Provider");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.CabUser", "CabUser")
+                        .WithMany()
+                        .HasForeignKey("CabUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
+                        .WithMany("Services")
+                        .HasForeignKey("ProviderProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CabUser");
+
+                    b.Navigation("Provider");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceIdentityProfileMapping", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.IdentityProfile", "IdentityProfile")
+                        .WithMany()
+                        .HasForeignKey("IdentityProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithMany("ServiceIdentityProfileMapping")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("IdentityProfile");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceQualityLevelMapping", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.QualityLevel", "QualityLevel")
+                        .WithMany()
+                        .HasForeignKey("QualityLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithMany("ServiceQualityLevelMapping")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("QualityLevel");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceRoleMapping", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithMany("ServiceRoleMapping")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceSupSchemeMapping", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithMany("ServiceSupSchemeMapping")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.SupplementaryScheme", "SupplementaryScheme")
+                        .WithMany()
+                        .HasForeignKey("SupplementarySchemeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
+
+                    b.Navigation("SupplementaryScheme");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.UniqueReferenceNumber", b =>
@@ -2262,6 +2789,22 @@ namespace DVSRegister.Data.Migrations
             modelBuilder.Entity("DVSRegister.Data.Entities.Provider", b =>
                 {
                     b.Navigation("CertificateInformation");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
+                {
+                    b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
+                {
+                    b.Navigation("ServiceIdentityProfileMapping");
+
+                    b.Navigation("ServiceQualityLevelMapping");
+
+                    b.Navigation("ServiceRoleMapping");
+
+                    b.Navigation("ServiceSupSchemeMapping");
                 });
 #pragma warning restore 612, 618
         }

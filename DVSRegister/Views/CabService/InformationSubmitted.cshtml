@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "InformationSubmitted";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-panel govuk-panel--confirmation">
+                    <h1 class="govuk-panel__title">
+                       Service submitted successfully
+                    </h1>
+                </div>
+                <p class="govuk-body">
+                    The service information you have provided has been submitted to the
+                    Department for Science, Innovation and Technology. You can view the service
+                    information under the service provider profile
+                </p>
+                <p class="govuk-body">
+                    We have sent a confirmation of your submitted information to the following
+                    email address:
+
+                    <b> @ViewBag.Email </b>
+                </p>
+                <h2 class="govuk-heading-m">What happens next</h2>
+                <p class="govuk-body">
+                    DSIT will review the service information you have submitted. If the submission
+                    is approved, the service provider will be contacted to proceed with the
+                    application. A decision will be communicated to you by email within 1 week.
+                </p>
+                <p class="govuk-body">
+                    If you need help, you can contact DSIT at <b>digital.identity.register@dsit.gov.uk.</b>
+                </p>
+                <p class="govuk-body">
+                    You can close this page now.
+                </p>
+              
+            </div>
+        </div>
+        <a href="@Url.Action("ListProviders", "Cab")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            Return to your provider profiles
+
+        </a>
+    </main>
+</div>
+

@@ -1,0 +1,184 @@
+﻿@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.Extensions
+@model ProviderProfileDto
+@{
+    ViewData["Title"] = "Northrow Limited";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ProviderOverview", "Cab", new { providerId = Model.Id}, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <h1 class="govuk-heading-xl">
+                    @Model.TradingName profile information
+                </h1>
+            </div>
+            <div class="govuk-grid-column-full">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Company information
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Registered name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.RegisteredName
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Trading name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.TradingName
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Primary contact’s details
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Full name of primary contact
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.PrimaryContactFullName
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Job title of primary contact
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.PrimaryContactJobTitle
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Email address of primary contact
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.PrimaryContactEmail
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Telephone number of primary contact
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.PrimaryContactTelephoneNumber
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Secondary contact’s details
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Full name of secondary contact
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.SecondaryContactFullName
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Job title of secondary contact
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.SecondaryContactJobTitle
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Email address of primary contact
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.SecondaryContactEmail
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Telephone number of primary contact
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.SecondaryContactTelephoneNumber
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Public provider information
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Public contact email
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.PublicContactEmail
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Telephone number
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                   @Model.ProviderTelephoneNumber
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Website address
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.ProviderWebsiteAddress
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-visually-hidden">Warning</span>
+                        To make changes to the information shown, contact digital.identity.register@dsit.gov.uk
+                    </strong>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+

@@ -10,11 +10,11 @@ namespace DVSRegister.Validations
     /// </summary>
     /// <seealso cref="System.ComponentModel.DataAnnotations.ValidationAttribute" />
     [AttributeUsage(AttributeTargets.Property)]
-    public class AcceptedLengthAttribute : ValidationAttribute
+    public class MaximumLengthAttribute : ValidationAttribute
     {
         public int acceptedLength { get; }
 
-        public AcceptedLengthAttribute(int acceptedLength)
+        public MaximumLengthAttribute(int acceptedLength)
         {
             this.acceptedLength = acceptedLength;
         }

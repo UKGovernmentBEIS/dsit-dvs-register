@@ -7587,6 +7587,74 @@ x:-moz-any-link {
   background-image: url(../assets/images/icon-tag-remove-cross-white.svg);
 }
 
+.dsit-service-header__sign-out {
+  float: right;
+}
+.dsit-service-header__sign-out-link {
+  font-weight: 700;
+  line-height: 1.8em;
+}
+
+.moj-sortable-table [aria-sort] button,
+.moj-sortable-table [aria-sort] button:hover {
+  background-color: transparent;
+  border-width: 0;
+  -webkit-box-shadow: 0 0 0 0;
+  -moz-box-shadow: 0 0 0 0;
+  box-shadow: 0 0 0 0;
+  color: #005ea5;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  padding: 0 10px 0 0;
+  position: relative;
+  text-align: inherit;
+  font-size: 1em;
+  margin: 0;
+}
+.moj-sortable-table [aria-sort] button:focus {
+  background-color: #ffdd00;
+  color: #0b0c0c;
+  box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
+  outline: none;
+}
+.moj-sortable-table [aria-sort]:first-child button {
+  right: auto;
+}
+.moj-sortable-table [aria-sort] button:before {
+  content: " ▼";
+  position: absolute;
+  right: -1px;
+  top: 9px;
+  font-size: 0.5em;
+}
+.moj-sortable-table [aria-sort] button:after {
+  content: " ▲";
+  position: absolute;
+  right: -1px;
+  top: 1px;
+  font-size: 0.5em;
+}
+.moj-sortable-table [aria-sort=ascending] button:before,
+.moj-sortable-table [aria-sort=descending] button:before {
+  content: none;
+}
+.moj-sortable-table [aria-sort=ascending] button:after {
+  content: " ▲";
+  font-size: 0.8em;
+  position: absolute;
+  right: -5px;
+  top: 2px;
+}
+.moj-sortable-table [aria-sort=descending] button:after {
+  content: " ▼";
+  font-size: 0.8em;
+  position: absolute;
+  right: -5px;
+  top: 2px;
+}
+
 .dsit-secondary-text-colour {
   color: #505a5f;
 }

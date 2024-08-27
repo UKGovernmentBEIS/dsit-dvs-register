@@ -1,0 +1,97 @@
+﻿@model DateInputViewModel
+
+@{
+    string hintId = @Model.PropertyName.ToLower() + "-hint";
+    string errorId = @Model.PropertyName.ToLower() + "-error";
+}
+
+<div class="govuk-form-group @(Model.HasError ? "govuk-form-group--error" : "")">
+
+    <fieldset class="govuk-fieldset" role="group" aria-describedby="@(Model.HasError ? hintId + " " + errorId : hintId)">  
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+            <h1 class="govuk-fieldset__heading">
+               @Model.FieldsetLegend
+            </h1>
+        </legend>
+        <div id="@hintId" class="govuk-hint">
+           @Model.Hint
+        </div>
+
+        @if (Model.HasError)
+        {
+            <p id="@errorId" class="govuk-error-message">
+
+                <span class="govuk-visually-hidden">Error:</span> @Model.ErrorMessage
+                @if (Model.HasDayError && !string.IsNullOrEmpty(@Model.DayError))
+                {
+                    <br />
+
+                    <span class="govuk-visually-hidden">Error:</span> @Model.DayError
+                }
+                @if (Model.HasMonthError && !string.IsNullOrEmpty(@Model.MonthError))
+                {
+                    <br /> <span class="govuk-visually-hidden">Error:</span> @Model.MonthError
+                }
+                @if (Model.HasYearError && !string.IsNullOrEmpty(@Model.YearError))
+                {
+                    <br />
+
+                    <span class="govuk-visually-hidden">Error:</span> @Model.YearError
+                }
+               
+            </p>
+        }       
+
+        
+        <div class="govuk-date-input" id="@Model.PropertyName.ToLower()">
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for="@Model.PropertyName.ToLower()-day">
+                        Day
+                    </label>
+                    @if (Model.HasDayError)
+                    {
+                        @Html.TextBoxFor(model => model.Day, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--width-2 govuk-input--error", id = Model.PropertyName.ToLower()+"-day" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.Day, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2", id = Model.PropertyName.ToLower()+"-day" })
+                    }
+
+
+                </div>
+            </div>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for="@Model.PropertyName-month">
+                        Month
+                    </label>
+                    @if (Model.HasMonthError)
+                    {
+                        @Html.TextBoxFor(model => model.Month, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--width-2 govuk-input--error", id = Model.PropertyName.ToLower()+"-month" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.Month, new { @class = "govuk-input govuk-date-input__input govuk-input--width-2", id = Model.PropertyName.ToLower()+"-month" })
+                    }
+                </div>
+            </div>
+            <div class="govuk-date-input__item">
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-date-input__label" for="@Model.PropertyName-year">
+                        Year
+                    </label>
+                    @if (Model.HasYearError)
+                    {
+                        @Html.TextBoxFor(model => model.Year, new { @class = "govuk-input govuk-date-input__input govuk-input--width-4 govuk-input--width-4 govuk-input--error", id = Model.PropertyName.ToLower()+"-year" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.Year, new { @class = "govuk-input govuk-date-input__input govuk-input--width-4", id = Model.PropertyName.ToLower()+"-year" })
+                    }
+
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>

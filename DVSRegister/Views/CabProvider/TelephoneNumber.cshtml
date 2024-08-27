@@ -1,0 +1,63 @@
+﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+@{
+    ViewData["Title"] = "Telephone Number";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool hasError = false;
+}
+@using (Html.BeginForm("SaveTelephoneNumber", "CabProvider", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "PublicContactEmail", "CabProvider", null, new { @class = "govuk-back-link" })
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s telephone number   </h1>
+
+                    @if (Html.ViewData?.ModelState.ContainsKey("ProviderTelephoneNumber") == true)
+                    {
+                        var errors = Html.ViewData?.ModelState["ProviderTelephoneNumber"]?.Errors;
+                        if (errors != null && errors.Count>0)
+                        {
+                            hasError = true;
+                            ViewData["Title"] = "Error: " + ViewData["Title"];
+                            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ProviderTelephoneNumber", errors))
+                        }
+                    }
+
+
+                    <p class="govuk-body">
+                        You should ask the service provider to provide this information. The
+                        telephone number you enter will be publicly displayed on the register of
+                        digital identity and attribute services.
+                    </p>
+
+                 @{
+                 var telephoneNumberViewModel = new TextBoxViewModel
+                {
+                    PropertyName = "ProviderTelephoneNumber",
+                    Label = "Telephone number",
+                    Value = Model?.ProviderTelephoneNumber??string.Empty,
+                    Class = "govuk-input",
+                    Hint = "For international numbers include the country code",
+                    HasError = hasError,
+                    ErrorMessage = hasError ? Html.ViewData?.ModelState["ProviderTelephoneNumber"]?.Errors[0].ErrorMessage??string.Empty : string.Empty,
+                };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", telephoneNumberViewModel)
+
+
+                  
+
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+}

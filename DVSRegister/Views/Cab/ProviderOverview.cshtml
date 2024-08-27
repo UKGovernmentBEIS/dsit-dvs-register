@@ -1,0 +1,123 @@
+﻿@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.Extensions
+
+@model ProviderProfileDto
+@{
+    ViewData["Title"] = "Northrow Limited";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ListProviders", "Cab", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <h1 class="govuk-heading-xl">
+                    @Model.TradingName profile overview
+                </h1>
+            </div>
+            <div class="govuk-grid-column-full">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Profile overview
+                        </h2>
+                        <ul class="govuk-summary-card__actions">
+                            <li class="govuk-summary-card__action">
+                                <a class="govuk-link" href="/cab-service/profile-information?providerId=@Model.Id">View full profile information <span class="govuk-visually-hidden"> of Provider @Model.TradingName</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Registered name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.RegisteredName
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Trading name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.TradingName
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+                @if (Model.Services!= null && Model.Services.Count>0)
+                {
+                    @foreach(var item in Model.Services)
+                    {
+                        <div class="govuk-summary-card">
+
+                            <div class="govuk-summary-card__title-wrapper">
+                                <h2 class="govuk-summary-card__title">
+                                    Service @item.ServiceNumber details
+                                </h2>
+                                <ul class="govuk-summary-card__actions">
+                                    <li class="govuk-summary-card__action">
+                                        <a class="govuk-link" href="/cab-service/service-details?serviceId=@item.Id">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="govuk-summary-card__content">
+                                <dl class="govuk-summary-list">
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            Service name
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @item.ServiceName
+                                        </dd>
+                                    </div>
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            Submission date
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @DateTimeExtensions.FormatDateTime(@item.CreatedTime, "dd MMM yyyy ; hh:mm tt")
+                                        </dd>
+                                    </div>
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            Status
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @HtmlExtensions.ToStyledStrongTag(item.ServiceStatus)
+                                        </dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </div>
+                    }
+                   
+                }              
+               
+
+            </div>
+
+            <div class="govuk-grid-column-two-thirds">
+
+            @if(Model.Services == null || Model.Services.Count == 0)
+            {               
+                    <p class="govuk-body"><strong>No services have been submitted for this provider.</strong></p>
+                    @Html.ActionLink("Submit a new service", "BeforeYouStart", "CabService", new { providerProfileId = Model.Id }, new { @class = "govuk-button", role = "button", draggable = "false", data_module = "govuk-button" })
+            }
+            else
+            {
+
+                    @Html.ActionLink("Add a new service", "BeforeYouStart", "CabService", new { providerProfileId = Model.Id}, new { @class = "govuk-button", role = "button", draggable = "false", data_module = "govuk-button" })
+                }
+            </div>
+            
+        </div>
+    </main>
+</div>
+

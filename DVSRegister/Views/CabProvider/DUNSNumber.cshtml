@@ -1,0 +1,55 @@
+﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+@{
+    ViewData["Title"] = "The digital identity and attribute service provider’s  D-U-N-S Number";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool hasError = false;
+}
+
+@using (Html.BeginForm("SaveDUNSNumber", "CabProvider", FormMethod.Post))
+{
+@Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "HasRegistrationNumber", "CabProvider", null, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl form-title">
+                    The digital identity and attribute service provider’s  D-U-N-S Number
+                </h1>
+
+                @if (Html.ViewData?.ModelState.ContainsKey("DUNSNumber") == true)
+                {
+                    var errors = Html.ViewData?.ModelState["DUNSNumber"]?.Errors;
+                    if (errors != null && errors.Count > 0)
+                    {
+                        hasError = true;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("DUNSNumber", errors))
+                    }
+                }
+
+                <div class="govuk-form-group">
+                    @{
+                        var dunsViewmodel = new TextBoxViewModel
+                        {
+                            PropertyName = "DUNSNumber",
+                            Label = "The service provider’s D-U-N-S Number",
+                            Value = Model?.DUNSNumber ?? string.Empty,
+                            Class = "govuk-input govuk-input--width-10",
+                            Hint = "The D-U-N-S number has 9 characters. For example, 012345678",
+                            HasError = hasError,
+                            ErrorMessage = hasError ? Html.ViewData?.ModelState["DUNSNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                        };
+                    }
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", dunsViewmodel)
+                </div>
+                <button type="submit" class="govuk-button govuk-!-margin-top-2">Continue</button>
+            </div>
+        </div>
+    </main>
+</div>
+}

@@ -9,5 +9,7 @@
         public string Hint { get; set; }
         public bool HasError { get; set; }
         public string Class { get; set; }
+        public string TextBoxType { get; set; }
+        public IFormFile? File { get; set; }
     }
 }

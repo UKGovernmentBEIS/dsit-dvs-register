@@ -1,0 +1,66 @@
+﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@using DVSRegister.Models.UI.Enums
+@{
+    ViewData["Title"] = "SelectSupplementarySchemes";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool hasError = false;
+}
+
+
+<div class="govuk-width-container">
+    @if(Convert.ToBoolean(Model.HasGPG44))
+        {
+            @Html.ActionLink("Back", "GPG44", "CabService", null, new { @class = "govuk-back-link" })
+        }
+        else
+        {
+            @Html.ActionLink("Back", "GPG44Input", "CabService", null, new { @class = "govuk-back-link" })
+        }
+    @using (Html.BeginForm("SaveGPG45Input", "CabService", FormMethod.Post))
+    {
+        @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                    @if (Html.ViewData?.ModelState.ContainsKey("HasGPG45") == true)
+                    {
+                        hasError = true;
+                        var errors = Html.ViewData?.ModelState["HasGPG45"]?.Errors;
+                        if (errors != null && errors.Count > 0)
+                        {
+                            hasError = true;
+                            ViewData["Title"] = "Error: " + ViewData["Title"];
+                            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("HasGPG45", errors))
+                        }
+
+                    }
+
+                  
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TwoRadioButtonGroupView.cshtml", new TwoRadioButtonGroupViewModel
+                {
+                    PropertyName = "HasGPG45",
+                    Value = Model.HasGPG45,
+                    FieldSet = "Is the service certified against GPG45 identity profiles?",
+                    Heading = HeadingEnum.H1,
+                    LegendStyleClass = "govuk-fieldset__legend--xl",
+                    HasError = Html.ViewData.ModelState.ContainsKey("HasGPG45") && Html.ViewData.ModelState["HasGPG45"].Errors.Count > 0,
+                    ErrorMessage = Html.ViewData.ModelState.ContainsKey("HasGPG45") && Html.ViewData.ModelState["HasGPG45"].Errors.Count > 0 ?
+                    Html.ViewData.ModelState["HasGPG45"].Errors[0].ErrorMessage : string.Empty,
+                    Label1 = "Yes",
+                    Label2 = "No"
+                })
+                <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </main>
+    }
+</div>
+
+

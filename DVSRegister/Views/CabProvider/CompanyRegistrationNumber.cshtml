@@ -1,0 +1,60 @@
+﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+@{
+    ViewData["Title"] = "Does the digital identity and attribute service provider have a Companies House or charity registration number?";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool hasError = false;
+}
+
+@using (Html.BeginForm("SaveCompanyRegistrationNumber", "CabProvider", FormMethod.Post))
+{
+@Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+
+<div class="govuk-width-container">
+        @Html.ActionLink("Back", "HasRegistrationNumber", "CabProvider", new { fromSummaryPage = ViewBag.fromSummaryPage }, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                @if (Html.ViewData?.ModelState.ContainsKey("CompanyRegistrationNumber") == true)
+                    {
+                        var errors = Html.ViewData?.ModelState["CompanyRegistrationNumber"]?.Errors;
+                        if (errors != null && errors.Count>0)
+                        {
+                            hasError = true;
+                            ViewData["Title"] = "Error: " + ViewData["Title"];
+                          @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                         new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("CompanyRegistrationNumber", errors))
+                        }
+                    }
+
+                <h1 class="govuk-heading-xl form-title">
+                    Does the digital identity and attribute service provider have a Companies House or charity registration number?
+                </h1>
+
+                <p class="govuk-body">This number should allow for checks against Companies House or the charity register,</p>
+
+                <div class="govuk-form-group">
+                    @{
+                        var dunsViewmodel = new TextBoxViewModel
+                        {
+                            PropertyName = "CompanyRegistrationNumber",
+                            Label = "Companies House or charity registration number",
+                            Value = Model?.CompanyRegistrationNumber ?? string.Empty,
+                            Class = "govuk-input govuk-input--width-10",
+                            Hint = "In the UK it is 8 characters. For example, 01234567 or AC012345.",
+                            HasError = hasError,
+                            ErrorMessage = hasError ? Html.ViewData?.ModelState["CompanyRegistrationNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                        };
+                    }
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", dunsViewmodel)
+
+                </div>
+                <button type="submit" class="govuk-button govuk-!-margin-top-2">Continue</button>
+            </div>
+        </div>
+    </main>
+</div>
+}

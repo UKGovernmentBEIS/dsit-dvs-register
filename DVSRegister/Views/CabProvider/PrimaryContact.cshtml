@@ -1,0 +1,117 @@
+﻿@model DVSRegister.Models.CAB.PrimaryContactViewModel
+@{
+    ViewData["Title"] = "The digital identity and attribute service provider’s primary contact";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@using (Html.BeginForm("SavePrimaryContact", "CabProvider", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    bool hasRegistrationNumber;
+    hasRegistrationNumber = ViewBag.hasRegistrationNumber ?? false;
+    <div class="govuk-width-container">
+
+        @if (hasRegistrationNumber)
+        {
+            @Html.ActionLink("Back", "CompanyRegistrationNumber", "CabProvider", null, new { @class = "govuk-back-link" })
+        }
+        else
+        {
+            @Html.ActionLink("Back", "DUNSNumber", "CabProvider", null, new { @class = "govuk-back-link" })
+        }
+       
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+
+                    @if (ViewData.ModelState.ErrorCount >0)
+                    {
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                    }
+
+
+                <h1 class="govuk-heading-xl form-title">The digital identity and attribute service provider’s primary contact</h1>
+
+                <p class="govuk-body">
+                    You should ask the service provider to provide this information. DSIT will use the contact details you provide to confirm the provider’s agreement to proceed with the application.
+                </p>
+
+            @{
+                bool fullNameHasError = Html.ViewData.ModelState.ContainsKey("PrimaryContactFullName")
+                && Html?.ViewData?.ModelState["PrimaryContactFullName"]?.Errors.Count > 0;
+                var PrimaryContactFullName = new TextBoxViewModel
+                {
+                PropertyName = "PrimaryContactFullName",
+                Label = "Full name",
+                Value = Model?.PrimaryContactFullName ?? string.Empty,
+                Class = "govuk-input govuk-!-width-three-quarters",
+                HasError = fullNameHasError,
+                ErrorMessage = fullNameHasError ? Html?.ViewData?.ModelState["PrimaryContactFullName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                };
+            }
+
+            @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", PrimaryContactFullName)
+
+                @{
+                bool jobTitleHasError = Html.ViewData.ModelState.ContainsKey("PrimaryContactJobTitle")
+                && Html?.ViewData?.ModelState["PrimaryContactJobTitle"]?.Errors.Count > 0;
+
+                var PrimaryContactJobTitle = new TextBoxViewModel
+                {
+                PropertyName = "PrimaryContactJobTitle",
+                Label = "Job title",
+                Value = Model?.PrimaryContactJobTitle ?? string.Empty,
+                Class = "govuk-input govuk-!-width-three-quarters",
+                HasError = jobTitleHasError,
+                ErrorMessage = jobTitleHasError ? Html?.ViewData?.ModelState["PrimaryContactJobTitle"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                };
+            }
+
+             @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", PrimaryContactJobTitle)
+
+
+
+            @{
+                bool emailHasError = Html.ViewData.ModelState.ContainsKey("PrimaryContactEmail")
+                && Html?.ViewData?.ModelState["PrimaryContactEmail"]?.Errors.Count > 0;
+                var PrimaryContactEmail = new TextBoxViewModel
+                {
+                PropertyName = "PrimaryContactEmail",
+                Label = "Email address",
+                Value = Model?.PrimaryContactEmail ?? string.Empty,
+                Class = "govuk-input govuk-!-width-three-quarters",
+                HasError = emailHasError,
+                ErrorMessage = emailHasError ? Html.ViewData?.ModelState["PrimaryContactEmail"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                };
+                }
+
+            @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", PrimaryContactEmail)
+
+
+                @{
+                bool phoneNumberHasError = Html.ViewData.ModelState.ContainsKey("PrimaryContactTelephoneNumber")
+                && Html?.ViewData?.ModelState["PrimaryContactTelephoneNumber"]?.Errors.Count > 0;
+                var PrimaryContactTelephoneNumber = new TextBoxViewModel
+                {
+                PropertyName = "PrimaryContactTelephoneNumber",
+                Label = "Telephone number",
+                Value = Model?.PrimaryContactTelephoneNumber ?? string.Empty,
+                Class = "govuk-input govuk-!-width-one-half",
+                Hint = "For international numbers include the country code",
+                HasError = phoneNumberHasError,
+                ErrorMessage = phoneNumberHasError ? Html.ViewData?.ModelState["PrimaryContactTelephoneNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                };
+            }
+
+             @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", PrimaryContactTelephoneNumber)
+
+
+                <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
+                    Continue
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+}

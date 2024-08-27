@@ -1,4 +1,5 @@
 ﻿
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,9 +32,46 @@ namespace DVSRegister.Data
         public DbSet<ConsentToken> ConsentToken { get; set; }
         public DbSet<RegisterPublishLog> RegisterPublishLog { get; set; }
 
+        #region new path
+        public DbSet<Cab> Cab { get; set; }
+        public DbSet<CabUser> CabUser { get; set; }
+        public DbSet<ProviderProfile> ProviderProfile { get; set; }
+        public DbSet<Service> Service { get; set; }
+        public DbSet<QualityLevel> QualityLevel { get; set; }
+        public DbSet<ServiceQualityLevelMapping> ServiceQualityLevelMapping { get; set; }
+        public DbSet<ServiceIdentityProfileMapping> ServiceIdentityProfileMapping { get; set; }
+        public DbSet<ServiceRoleMapping> ServiceRoleMapping { get; set; }
+        public DbSet<ServiceSupSchemeMapping> ServiceSupSchemeMapping { get; set; }
+       
+        #endregion
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-             modelBuilder.Entity<Provider>()
+            modelBuilder.Entity<ProviderProfile>()
+            .HasGeneratedTsVectorColumn(p => p.SearchVector, "english", p => new { p.RegisteredName, p.TradingName })
+            .HasIndex(p => p.SearchVector)
+            .HasMethod("GIN");
+
+            modelBuilder.Entity<Service>()
+           .HasGeneratedTsVectorColumn(p => p.SearchVector, "english", p => new { p.ServiceName })
+           .HasIndex(p => p.SearchVector)
+           .HasMethod("GIN");
+
+            modelBuilder.Entity<QualityLevel>().HasData(
+            new QualityLevel { Id =1, Level = "Low", QualityType = QualityTypeEnum.Authentication },
+            new QualityLevel { Id =2, Level = "Medium", QualityType = QualityTypeEnum.Authentication },
+            new QualityLevel { Id =3, Level = "High", QualityType = QualityTypeEnum.Authentication },
+            new QualityLevel { Id =4, Level = "Low", QualityType = QualityTypeEnum.Protection },
+            new QualityLevel { Id =5, Level = "Medium", QualityType = QualityTypeEnum.Protection },
+            new QualityLevel { Id =6, Level = "High", QualityType = QualityTypeEnum.Protection },
+            new QualityLevel { Id =7, Level = "Very High", QualityType = QualityTypeEnum.Protection });
+
+            modelBuilder.Entity<Cab>().HasData(
+            new Cab { Id =1, CabName = "EY", CreatedTime = DateTime.UtcNow },
+            new Cab { Id =2, CabName = "DSIT", CreatedTime = DateTime.UtcNow });
+       
+
+            modelBuilder.Entity<Provider>()
             .HasGeneratedTsVectorColumn( p => p.SearchVector,  "english", p => new { p.RegisteredName, p.TradingName })  
             .HasIndex(p => p.SearchVector)
             .HasMethod("GIN"); 
@@ -44,10 +82,11 @@ namespace DVSRegister.Data
             new CertificateReviewRejectionReason { Id =3, Reason = "The information submitted does not match the information on the certificate" },
             new CertificateReviewRejectionReason { Id =4, Reason = "The certificate or information submitted contains errors" },
             new CertificateReviewRejectionReason { Id =5, Reason = "Other" });
+
             modelBuilder.Entity<Role>().HasData(
-                new Role { Id =1, RoleName = "Identity Service Provider (IDSP)" },
-                new Role { Id =2, RoleName = "Attribute Service Provider (ASP)" },
-                new Role { Id =3, RoleName = "Orchestration Service Provider (OSP)" });
+            new Role { Id =1, RoleName = "Identity Service Provider (IDSP)" },
+            new Role { Id =2, RoleName = "Attribute Service Provider (ASP)" },
+            new Role { Id =3, RoleName = "Orchestration Service Provider (OSP)" });
 
                 modelBuilder.Entity<IdentityProfile>().HasData(
                 new IdentityProfile { Id =1, IdentityProfileName = "L1A " },

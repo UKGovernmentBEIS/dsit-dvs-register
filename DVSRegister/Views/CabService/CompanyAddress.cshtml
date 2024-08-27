@@ -1,0 +1,65 @@
+﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@{
+    ViewData["Title"] = "Company address details";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool isValid = true;
+}
+@using (Html.BeginForm("SaveCompanyAddress", "CabService", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "ServiceURL", "CabService", null, new { @class = "govuk-back-link" })
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl"> Company address details </h1>
+                    @if (Html.ViewData?.ModelState.ContainsKey("CompanyAddress") == true && Html.ViewData.ModelState["CompanyAddress"].Errors.Count > 0)
+                    {
+                        isValid = false;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("CompanyAddress", Html.ViewData.ModelState["CompanyAddress"]?.Errors))
+                    }
+                    <p class="govuk-body">This address must match the address that appears on the certificate of conformity.</p>
+
+                    @if (!isValid)
+                    {
+                        <div class="govuk-form-group govuk-form-group--error">
+                            <label class="govuk-label govuk-label--s" for="address">
+                                Company address details
+                            </label>
+                            <p id="address-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.CompanyAddress, "", new { @class = "govuk-error-message" })
+                            </p>
+                            <div id="company-address-hint" class="govuk-hint">
+                                Enter the company address as shown on the certificate of conformity
+                            </div>
+                            @Html.TextAreaFor(m => m.CompanyAddress, 5, 20, new { @class = "govuk-textarea govuk-textarea--error", id = "address", name = "address-name", aria_describedby = "company-address-hint address-error" })
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-form-group">
+                            <label class="govuk-label govuk-label--s" for="address">
+                                Company address details
+                            </label>
+                            <div id="company-address-hint" class="govuk-hint">
+                                Enter the company address as shown on the certificate of conformity
+                            </div>
+                            @Html.TextAreaFor(m => m.CompanyAddress, 5, 20, new { @class = "govuk-textarea", id = "address", name = "address-name", aria_describedby = "company-address-hint" })
+                        </div>
+                    }
+
+
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+}

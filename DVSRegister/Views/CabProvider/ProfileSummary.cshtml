@@ -1,0 +1,300 @@
+﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+@{
+    ViewData["Title"] = "ProfileSummary";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+@using (Html.BeginForm("SaveProfileSummary", "CabProvider", FormMethod.Post))
+{
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "WebsiteAddress", "CabProvider", null, new { @class = "govuk-back-link" })
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl"> Check your answers before submitting your information</h1>
+                   
+                </div>
+                <div class="govuk-grid-column-full">
+
+
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                            <h2 class="govuk-summary-card__title">
+                                Company information
+                            </h2>
+                        </div>
+                        <div class="govuk-summary-card__content">
+                            <dl class="govuk-summary-list">
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Registered name
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.RegisteredName
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "RegisteredName", "CabProvider", new { fromSummaryPage = true },
+                                                 new { @class = "govuk-link", 
+                                                       @aria_label = "Change digital identity and attribute service provider’s registered name" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Trading name
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.TradingName
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "TradingName", "CabProvider", new { fromSummaryPage = true },
+                                                 new { @class = "govuk-link", 
+                                                       @aria_label = "Change digital identity and attribute service provider’s trading name" })
+                                    </dd>
+                                </div>
+
+
+                                @if (Convert.ToBoolean(Model.HasRegistrationNumber))
+                                {
+
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            Companies House or charity
+                                            registration number
+                                        </dt>                                       
+                                            <dd class="govuk-summary-list__value">
+                                                @Model.CompanyRegistrationNumber
+                                            </dd>
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "CompanyRegistrationNumber", "CabProvider", new { fromSummaryPage = true }, new
+                                                {  @class = "govuk-link", @aria_label = "Change digital identity and attribute service  Companies House or charityregistration number" })
+                                        </dd>
+                                    </div>
+
+                                }
+                                else
+                                {
+                                 <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            Companies House or charity
+                                            registration number
+                                        </dt>                                       
+                                            <dd class="govuk-summary-list__value">
+                                              No
+                                            </dd>
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { fromSummaryPage = true }, new
+                                                {
+                                                    @class = "govuk-link",
+                                                    @aria_label = "Change digital identity and attribute service Companies House or charity registration number" })
+                                        </dd>
+                                    </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                            Dun & Bradstreet or D-U-N-S
+                                            number
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.DUNSNumber
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "DUNSNumber", "CabProvider", new { fromSummaryPage = true }, new
+                                            {
+                                              @class = "govuk-link",
+                                              @aria_label = "Change digital identity and attribute service  Dun & Bradstreet or D-U-N-S number"
+                                            })
+                                    </dd>
+                                </div>
+                                    
+                                }                            
+
+                            </dl>
+                        </div>
+                    </div>
+
+
+
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                            <h2 class="govuk-summary-card__title">
+                                Primary contact's details
+                            </h2>
+                            <ul class="govuk-summary-card__actions">
+                              
+                                <li class="govuk-summary-card__action">
+                                    @Html.ActionLink("Change", "PrimaryContact", "CabProvider", new { fromSummaryPage = true }, new
+                                        {
+                                            @class = "govuk-link",
+                                            @aria_label = "Primary contact's details"
+                                        })
+                                   
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="govuk-summary-card__content">
+                            <dl class="govuk-summary-list">
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Full name of primary contact
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                       @Model?.PrimaryContact?.PrimaryContactFullName
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Job title of primary contact
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model?.PrimaryContact?.PrimaryContactJobTitle
+                                    </dd>
+                                </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Email address of primary contact
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model?.PrimaryContact?.PrimaryContactEmail
+                                    </dd>
+                                </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Telephone number of primary contact
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model?.PrimaryContact?.PrimaryContactTelephoneNumber
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                            <h2 class="govuk-summary-card__title">
+                                Secondary contact's details
+                            </h2>
+                            <ul class="govuk-summary-card__actions">
+
+                                <li class="govuk-summary-card__action">
+                                    @Html.ActionLink("Change", "SecondaryContact", "CabProvider", new { fromSummaryPage = true }, new
+                                        {
+                                            @class = "govuk-link",
+                                            @aria_label = "Secondary contact's details"
+                                        })
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="govuk-summary-card__content">
+                            <dl class="govuk-summary-list">
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Full name of secondary contact
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model?.SecondaryContact?.SecondaryContactFullName
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Job title of secondary contact
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model?.SecondaryContact?.SecondaryContactJobTitle
+                                    </dd>
+                                </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Email address of secondary contact
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model?.SecondaryContact?.SecondaryContactEmail
+                                    </dd>
+                                </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Telephone number of secondary contact
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model?.SecondaryContact?.SecondaryContactTelephoneNumber
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                            <h2 class="govuk-summary-card__title">
+                                Public contact information
+                            </h2>
+                        </div>
+                        <div class="govuk-summary-card__content">
+                            <dl class="govuk-summary-list">
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Public contact email
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.PublicContactEmail
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "PublicContactEmail", "CabProvider", new { fromSummaryPage = true },
+                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s public contact email" })
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Telephone number
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.ProviderTelephoneNumber
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "TelephoneNumber", "CabProvider", new { fromSummaryPage = true },
+                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s telephone number" })
+                                    </dd>
+                                </div>
+
+                                    <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Website address
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.ProviderWebsiteAddress
+                                    </dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "WebsiteAddress", "CabProvider", new { fromSummaryPage = true },
+                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
+                                    </dd>
+                                </div>                               
+
+                            </dl>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-visually-hidden">Warning</span>
+                    If DSIT approves this submission, the company and public contact
+                    information you have provided will be publicly available.
+                </strong>
+            </div>
+
+            <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                Confirm and Continue
+            </button>
+        </main>
+    </div>
+
+}
+
+

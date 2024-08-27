@@ -1,0 +1,63 @@
+﻿@using DVSRegister.BusinessLogic.Models;
+@model Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool , int>
+@{
+    int index = Model.Item5;
+}
+
+@if (!Model.Item4)
+{
+    <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h1 class="govuk-fieldset__heading">
+                    @Model.Item1
+                </h1>
+            </legend>
+
+            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                @foreach (var item in Model.Item3)
+                {
+                    var idSuffix = index > 0 ? $"_{index}" : string.Empty;
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedIdentityProfileIds" value="@item.Id" id="selectedidentityprofileids@(idSuffix)"
+                        @(Model.Item2.SelectedIdentityProfileIds.Contains(item.Id) ? "checked" : "") />
+                        <label class="govuk-label govuk-checkboxes__label" for="selectedidentityprofileids@(idSuffix)">@item.IdentityProfileName</label>
+                    </div>
+                    index++;
+                }
+            </div>
+
+
+        </fieldset>
+    </div>
+}
+else
+{
+    <div class="govuk-form-group  govuk-form-group--error">
+        <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                <h1 class="govuk-fieldset__heading">
+                    @Model.Item1
+                </h1>
+            </legend>
+            <p id="selectedidentityprofileids-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span>  @Html.ValidationMessageFor(m => m.Item2.SelectedIdentityProfileIds, "", new { @class = "govuk-error-message" })
+            </p>
+            @Html.ValidationMessageFor(m => m.Item2.SelectedIdentityProfileIds, "", new { @class = "govuk-error-message" })
+            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                @foreach (var item in Model.Item3)
+                {
+                    var idSuffix = index > 0 ? $"_{index}" : string.Empty;
+                    <div class="govuk-checkboxes__item">
+                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedIdentityProfileIds" value="@item.Id" id="selectedidentityprofileids@(idSuffix)" aria-describedby="selectedidentityprofileids-error"
+                        @(Model.Item2.SelectedIdentityProfileIds.Contains(item.Id) ? "checked" : "") />
+                        <label class="govuk-label govuk-checkboxes__label" for="selectedidentityprofileids@(idSuffix)">@item.IdentityProfileName</label>
+                    </div>
+                    index++;
+                }
+            </div>
+
+
+        </fieldset>
+    </div>
+}

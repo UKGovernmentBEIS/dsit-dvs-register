@@ -39,7 +39,7 @@ namespace DVSRegister.Middleware
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine("Inner Exception");
-                    Console.WriteLine(String.Concat(ex.InnerException.StackTrace, ex.InnerException.Message));
+                    Console.Write(String.Concat(ex.InnerException.StackTrace, ex.InnerException.Message));
                 }
                 // Redirect to error page 
                 if (requestPath.Contains("pre-registration"))

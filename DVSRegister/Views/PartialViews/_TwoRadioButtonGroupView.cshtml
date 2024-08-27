@@ -1,0 +1,115 @@
+﻿@model TwoRadioButtonGroupViewModel
+@using DVSRegister.Models.UI.Enums
+<div class="govuk-form-group @(Model.HasError ? "govuk-form-group--error" : "")">
+    @if (Model.HasError)
+    {
+        <fieldset class="govuk-fieldset" aria-describedby="@(Model.PropertyName.ToLower())-error">
+
+            @if (!string.IsNullOrEmpty(Model.FieldSet))
+            {
+                @switch (Model.Heading)
+                {
+                    case HeadingEnum.None:
+                        <legend class="govuk-fieldset__legend">
+                            @Model.FieldSet
+                        </legend>
+                        break;
+                    case HeadingEnum.H1:
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
+                            <h1 class="govuk-fieldset__heading">
+                                @Model.FieldSet
+                            </h1>
+                        </legend>
+                        break;
+                    case HeadingEnum.H2:
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
+                            <h2 class="govuk-fieldset__heading">
+                                @Model.FieldSet
+                            </h2>
+                        </legend>
+                        break;
+                    case HeadingEnum.H3:
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
+                            <h3 class="govuk-fieldset__heading">
+                                @Model.FieldSet
+                            </h3>
+                        </legend>
+                        break;
+                }
+
+
+            }
+            <p id="@(Model.PropertyName.ToLower())-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> @Model.ErrorMessage
+            </p>
+            <div class="govuk-radios" data-module="govuk-radios">
+                <div class="govuk-radios__item">
+                    @Html.RadioButton(Model.PropertyName, true, Model.Value == true, new { @id = Model.PropertyName.ToLower(), @class = "govuk-radios__input" })
+                    <label class="govuk-label govuk-radios__label" for="@Model.PropertyName.ToLower()">
+                        @Model.Label1
+                    </label>
+                </div>
+                <div class="govuk-radios__item">
+                    @Html.RadioButton(Model.PropertyName, false, Model.Value == false, new { @id = Model.PropertyName.ToLower() + "-2", @class = "govuk-radios__input" })
+                    <label class="govuk-label govuk-radios__label" for="@Model.PropertyName.ToLower()-2">
+                        @Model.Label2
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+    }
+    else
+    {
+        <fieldset class="govuk-fieldset">
+            @if (!string.IsNullOrEmpty(Model.FieldSet))
+            {
+
+                @switch (Model.Heading)
+                {
+                    case HeadingEnum.None:
+                        <legend class="govuk-fieldset__legend">
+                            @Model.FieldSet
+                        </legend>
+                        break;
+                    case HeadingEnum.H1:
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
+                            <h1 class="govuk-fieldset__heading">
+                                @Model.FieldSet
+                            </h1>
+                        </legend>
+                        break;
+                    case HeadingEnum.H2:
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
+                            <h2 class="govuk-fieldset__heading">
+                                @Model.FieldSet
+                            </h2>
+                        </legend>
+                        break;
+                    case HeadingEnum.H3:
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
+                            <h3 class="govuk-fieldset__heading">
+                                @Model.FieldSet
+                            </h3>
+                        </legend>
+                        break;
+                }
+
+
+            }
+            <div class="govuk-radios" data-module="govuk-radios">
+                <div class="govuk-radios__item">
+                    @Html.RadioButton(Model.PropertyName, true, Model.Value == true, new { @id = Model.PropertyName.ToLower(), @class = "govuk-radios__input" })
+                    <label class="govuk-label govuk-radios__label" for="@Model.PropertyName.ToLower()">
+                        @Model.Label1
+                    </label>
+                </div>
+                <div class="govuk-radios__item">
+                    @Html.RadioButton(Model.PropertyName, false, Model.Value == false, new { @id = Model.PropertyName.ToLower() + "-2", @class = "govuk-radios__input" })
+                    <label class="govuk-label govuk-radios__label" for="@Model.PropertyName.ToLower()-2">
+                        @Model.Label2
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+    }
+</div>
