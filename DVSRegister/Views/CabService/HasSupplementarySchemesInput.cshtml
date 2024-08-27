@@ -1,4 +1,5 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@using DVSRegister.Models.UI.Enums
 @{
     ViewData["Title"] = "Is the service certified against any supplementary schemes?";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
@@ -37,11 +38,7 @@
                                      new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("HasSupplementarySchemes", errors))
                         }
 
-                    }
-
-                <h1 class="govuk-heading-xl form-title">
-                    Is the service certified against any supplementary schemes?
-                </h1>
+                    }             
 
                    
                 @await Html.PartialAsync("~/Views/PartialViews/_TwoRadioButtonGroupView.cshtml", new TwoRadioButtonGroupViewModel
@@ -49,6 +46,9 @@
                     PropertyName = "HasSupplementarySchemes",
                     Value = Model.HasSupplementarySchemes,
                     HasError = hasError,
+                    FieldSetLegend = "Is the service certified against any supplementary schemes?",
+                    Heading = HeadingEnum.H1,
+                    HeadingClass = "govuk-fieldset__legend--xl",
                     ErrorMessage = hasError ?
                     Html.ViewData.ModelState["HasSupplementarySchemes"].Errors[0].ErrorMessage : string.Empty,
                     Label1 = "Yes",
