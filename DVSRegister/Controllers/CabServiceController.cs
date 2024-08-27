@@ -492,6 +492,7 @@ namespace DVSRegister.Controllers
                         {
                             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
                             summaryViewModel.FileName = certificateFileViewModel.File.FileName;
+                            summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
                             summaryViewModel.FileLink = genericResponse.Data;
                             certificateFileViewModel.FileUploadedSuccessfully = true;
                             certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;

@@ -1,4 +1,5 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@using DVSRegister.Models.UI.Enums
 @{
     ViewData["Title"] = "SelectSupplementarySchemes";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
@@ -38,14 +39,15 @@
 
                     }
 
-                    <h1 class="govuk-heading-xl">
-                        Is the service certified against GPG45 identity profiles?
-                    </h1>
+                  
 
                 @await Html.PartialAsync("~/Views/PartialViews/_TwoRadioButtonGroupView.cshtml", new TwoRadioButtonGroupViewModel
                 {
                     PropertyName = "HasGPG45",
                     Value = Model.HasGPG45,
+                    FieldSet = "Is the service certified against GPG45 identity profiles?",
+                    Heading = HeadingEnum.H1,
+                    LegendStyleClass = "govuk-fieldset__legend--xl",
                     HasError = Html.ViewData.ModelState.ContainsKey("HasGPG45") && Html.ViewData.ModelState["HasGPG45"].Errors.Count > 0,
                     ErrorMessage = Html.ViewData.ModelState.ContainsKey("HasGPG45") && Html.ViewData.ModelState["HasGPG45"].Errors.Count > 0 ?
                     Html.ViewData.ModelState["HasGPG45"].Errors[0].ErrorMessage : string.Empty,

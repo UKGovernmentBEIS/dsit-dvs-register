@@ -110,40 +110,15 @@ namespace DVSRegister.Data.CAB
             using var transaction = context.Database.BeginTransaction();
             try
             {
-                var existingService = await context.Service.FirstOrDefaultAsync(p => p.ProviderProfileId == service.ProviderProfileId && p.ServiceName == service.ServiceName);
-
-                if (existingService !=null)
-                {
-                    existingService.ServiceName = service.ServiceName;
-                    existingService.WebsiteAddress = service.WebsiteAddress;
-                    existingService.CompanyAddress = service.CompanyAddress;
-                    existingService.ServiceRoleMapping = service.ServiceRoleMapping;
-                    existingService.ServiceQualityLevelMapping = service.ServiceQualityLevelMapping;
-                    existingService.ServiceIdentityProfileMapping =service.ServiceIdentityProfileMapping;
-                    existingService.HasSupplementarySchemes = service.HasSupplementarySchemes;
-                    existingService.HasGPG44 = service.HasGPG44;
-                    existingService.ServiceSupSchemeMapping = service.ServiceSupSchemeMapping;
-                    existingService.FileName = service.FileName;
-                    existingService.FileLink = service.FileLink;
-                    existingService.FileSizeInKb =service.FileSizeInKb;
-                    existingService.ConformityIssueDate = service.ConformityIssueDate;
-                    existingService.ConformityExpiryDate =service.ConformityExpiryDate;
-                    existingService.CabUserId = service.CabUserId;
-                    existingService.ModifiedTime = DateTime.UtcNow;
-                    await context.SaveChangesAsync();
-                }
-                else
-                {
-                    // Get the current highest ServiceNumber for the given ProviderProfileId
-                    var serviceNumbers = await context.Service.Where(s => s.ProviderProfileId == service.ProviderProfileId)
-                    .Select(s => s.ServiceNumber).ToListAsync();
-                    int nextServiceNumber = serviceNumbers.Any()? serviceNumbers.Max() + 1 :1;                   
-                    service.ServiceNumber = nextServiceNumber;               
-                    service.CreatedTime = DateTime.UtcNow;
-                    var entity = await context.Service.AddAsync(service);
-                    await context.SaveChangesAsync();
-                    genericResponse.InstanceId = entity.Entity.Id;
-                }
+                // Get the current highest ServiceNumber for the given ProviderProfileId
+                var serviceNumbers = await context.Service.Where(s => s.ProviderProfileId == service.ProviderProfileId)
+                .Select(s => s.ServiceNumber).ToListAsync();
+                int nextServiceNumber = serviceNumbers.Any() ? serviceNumbers.Max() + 1 : 1;
+                service.ServiceNumber = nextServiceNumber;
+                service.CreatedTime = DateTime.UtcNow;
+                var entity = await context.Service.AddAsync(service);
+                await context.SaveChangesAsync();
+                genericResponse.InstanceId = entity.Entity.Id;
                 transaction.Commit();
                 genericResponse.Success = true;
 
