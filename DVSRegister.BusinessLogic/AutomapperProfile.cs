@@ -41,8 +41,7 @@ namespace DVSRegister.BusinessLogic
 
             CreateMap<CertificateInfoIdentityProfileMapping, CertificateInfoIdentityProfileMappingDto>();
             CreateMap<CertificateInfoIdentityProfileMappingDto, CertificateInfoIdentityProfileMapping>();
-            CreateMap<CertificateInfoRoleMapping, CertificateInfoRoleMappingDto>();
-            CreateMap<CertificateInfoRoleMappingDto, CertificateInfoRoleMapping>();
+         
             CreateMap<CertificateInfoSupSchemeMapping, CertificateInfoSupSchemeMappingDto>();
             CreateMap<CertificateInfoSupSchemeMappingDto, CertificateInfoSupSchemeMapping>();
 
@@ -50,16 +49,7 @@ namespace DVSRegister.BusinessLogic
            .ForMember(dest => dest.CertificateInformation, opt => opt.MapFrom(src => src.CertificateInformation));
             CreateMap<ProviderDto, Provider>()
             .ForMember(dest => dest.CertificateInformation, opt => opt.MapFrom(src => src.CertificateInformation));
-            CreateMap<CertificateInformation, CertificateInfoDto>()
-            .ForMember(dest => dest.CertificateInfoRoleMappings, opt => opt.MapFrom(src => src.CertificateInfoRoleMappings))
-            .ForMember(dest => dest.CertificateInfoIdentityProfileMappings, opt => opt.MapFrom(src => src.CertificateInfoIdentityProfileMappings))
-            .ForMember(dest => dest.CertificateInfoSupSchemeMappings, opt => opt.MapFrom(src => src.CertificateInfoSupSchemeMappings))
-              .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
-            CreateMap<CertificateInfoDto, CertificateInformation>()
-            .ForMember(dest => dest.CertificateInfoRoleMappings, opt => opt.MapFrom(src => src.CertificateInfoRoleMappings))
-            .ForMember(dest => dest.CertificateInfoIdentityProfileMappings, opt => opt.MapFrom(src => src.CertificateInfoIdentityProfileMappings))
-            .ForMember(dest => dest.CertificateInfoSupSchemeMappings, opt => opt.MapFrom(src => src.CertificateInfoSupSchemeMappings))
-             .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
+           
 
             CreateMap<RegisterPublishLog, RegisterPublishLogDto>();
             CreateMap<RegisterPublishLogDto, RegisterPublishLog>();

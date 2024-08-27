@@ -19,7 +19,7 @@ namespace DVSRegister.Data
         public DbSet<PreRegistrationReview> PreRegistrationReview { get; set; }
         public DbSet<CertificateInformation> CertificateInformation { get; set; }
         public DbSet<Role> Role { get; set; }
-        public DbSet<CertificateInfoRoleMapping> CertificateInfoRoleMapping { get; set; }
+        //public DbSet<CertificateInfoRoleMapping> CertificateInfoRoleMapping { get; set; }
         public DbSet<IdentityProfile> IdentityProfile { get; set; }
         public DbSet<CertificateInfoIdentityProfileMapping> CertificateInfoIdentityProfileMapping { get; set; }
         public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }
