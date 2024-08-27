@@ -82,6 +82,7 @@ namespace DVSRegister.Controllers
             if (cabId > 0) 
             {
                 ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
                 HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
                 return View(providerProfileDto);
             }
@@ -94,8 +95,7 @@ namespace DVSRegister.Controllers
         [HttpGet("profile-information")]
         public IActionResult ProviderProfileDetails(int providerId)
         {
-            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
-            HttpContext?.Session.Remove("ProviderProfile");
+            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();          
             if (providerProfileDto.Id ==  providerId)
             {
                 return View(providerProfileDto);
