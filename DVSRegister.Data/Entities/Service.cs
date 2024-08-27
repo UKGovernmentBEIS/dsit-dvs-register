@@ -30,7 +30,7 @@ namespace DVSRegister.Data.Entities
         public string FileName { get; set; }
         public string FileLink { get; set; }
 
-        [Column(TypeName = "decimal(10, 2)")]
+        [Column(TypeName = "decimal(10, 1)")]
         public decimal FileSizeInKb { get; set; }
         public DateTime ConformityIssueDate { get; set; }
         public DateTime ConformityExpiryDate { get; set; }
