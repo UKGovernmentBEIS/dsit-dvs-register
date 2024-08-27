@@ -5,33 +5,33 @@
     {
         <fieldset class="govuk-fieldset" aria-describedby="@(Model.PropertyName.ToLower())-error">
 
-            @if (!string.IsNullOrEmpty(Model.FieldSetLegend))
+            @if (!string.IsNullOrEmpty(Model.FieldSet))
             {
                 @switch (Model.Heading)
                 {
                     case HeadingEnum.None:
                         <legend class="govuk-fieldset__legend">
-                            @Model.FieldSetLegend
+                            @Model.FieldSet
                         </legend>
                         break;
                     case HeadingEnum.H1:
-                        <legend class="govuk-fieldset__legend @Model.HeadingClass">
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
                             <h1 class="govuk-fieldset__heading">
-                                @Model.FieldSetLegend
+                                @Model.FieldSet
                             </h1>
                         </legend>
                         break;
                     case HeadingEnum.H2:
-                        <legend class="govuk-fieldset__legend @Model.HeadingClass">
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
                             <h2 class="govuk-fieldset__heading">
-                                @Model.FieldSetLegend
+                                @Model.FieldSet
                             </h2>
                         </legend>
                         break;
                     case HeadingEnum.H3:
-                        <legend class="govuk-fieldset__legend @Model.HeadingClass">
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
                             <h3 class="govuk-fieldset__heading">
-                                @Model.FieldSetLegend
+                                @Model.FieldSet
                             </h3>
                         </legend>
                         break;
@@ -61,34 +61,34 @@
     else
     {
         <fieldset class="govuk-fieldset">
-            @if (!string.IsNullOrEmpty(Model.FieldSetLegend))
+            @if (!string.IsNullOrEmpty(Model.FieldSet))
             {
 
                 @switch (Model.Heading)
                 {
                     case HeadingEnum.None:
                         <legend class="govuk-fieldset__legend">
-                            @Model.FieldSetLegend
+                            @Model.FieldSet
                         </legend>
                         break;
                     case HeadingEnum.H1:
-                        <legend class="govuk-fieldset__legend @Model.HeadingClass">
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
                             <h1 class="govuk-fieldset__heading">
-                                @Model.FieldSetLegend
+                                @Model.FieldSet
                             </h1>
                         </legend>
                         break;
                     case HeadingEnum.H2:
-                        <legend class="govuk-fieldset__legend @Model.HeadingClass">
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
                             <h2 class="govuk-fieldset__heading">
-                                @Model.FieldSetLegend
+                                @Model.FieldSet
                             </h2>
                         </legend>
                         break;
                     case HeadingEnum.H3:
-                        <legend class="govuk-fieldset__legend @Model.HeadingClass">
+                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
                             <h3 class="govuk-fieldset__heading">
-                                @Model.FieldSetLegend
+                                @Model.FieldSet
                             </h3>
                         </legend>
                         break;

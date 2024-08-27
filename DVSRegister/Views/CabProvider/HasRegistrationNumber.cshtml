@@ -32,9 +32,9 @@
                 PropertyName = "HasRegistrationNumber",
                 Value = Model.HasRegistrationNumber,
                 HasError = hasError,
-                FieldSetLegend = "Does the digital identity and attribute service provider have a Companies House or charity registration number?",
+                FieldSet = "Does the digital identity and attribute service provider have a Companies House or charity registration number?",
                 Heading = HeadingEnum.H1,
-                HeadingClass = "govuk-fieldset__legend--xl",
+                LegendStyleClass = "govuk-fieldset__legend--xl",
                 ErrorMessage = hasError ?
                 Html.ViewData.ModelState["HasRegistrationNumber"].Errors[0].ErrorMessage : string.Empty,
                 Label1 = "Yes",

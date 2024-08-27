@@ -37,9 +37,9 @@
                        PropertyName = "HasGPG44",
                        Value = Model.HasGPG44,
                        HasError = hasError,
-                       FieldSetLegend = "Is the service certified against GPG44?",
-                       Heading = DVSRegister.Models.UI.Enums.HeadingEnum.H1,
-                       HeadingClass = "govuk-fieldset__legend--xl",
+                       FieldSet = "Is the service certified against GPG44?",
+                       Heading = HeadingEnum.H1,
+                       LegendStyleClass = "govuk-fieldset__legend--xl",
                        ErrorMessage = hasError ? Html.ViewData?.ModelState["HasGPG44"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
                        Label1 = "Yes",
                        Label2 = "No"

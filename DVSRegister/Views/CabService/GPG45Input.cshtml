@@ -45,9 +45,9 @@
                 {
                     PropertyName = "HasGPG45",
                     Value = Model.HasGPG45,
-                    FieldSetLegend = "Is the service certified against GPG45 identity profiles?",
+                    FieldSet = "Is the service certified against GPG45 identity profiles?",
                     Heading = HeadingEnum.H1,
-                    HeadingClass = "govuk-fieldset__legend--xl",
+                    LegendStyleClass = "govuk-fieldset__legend--xl",
                     HasError = Html.ViewData.ModelState.ContainsKey("HasGPG45") && Html.ViewData.ModelState["HasGPG45"].Errors.Count > 0,
                     ErrorMessage = Html.ViewData.ModelState.ContainsKey("HasGPG45") && Html.ViewData.ModelState["HasGPG45"].Errors.Count > 0 ?
                     Html.ViewData.ModelState["HasGPG45"].Errors[0].ErrorMessage : string.Empty,

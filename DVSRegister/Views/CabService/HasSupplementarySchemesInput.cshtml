@@ -46,9 +46,9 @@
                     PropertyName = "HasSupplementarySchemes",
                     Value = Model.HasSupplementarySchemes,
                     HasError = hasError,
-                    FieldSetLegend = "Is the service certified against any supplementary schemes?",
+                    FieldSet = "Is the service certified against any supplementary schemes?",
                     Heading = HeadingEnum.H1,
-                    HeadingClass = "govuk-fieldset__legend--xl",
+                    LegendStyleClass = "govuk-fieldset__legend--xl",
                     ErrorMessage = hasError ?
                     Html.ViewData.ModelState["HasSupplementarySchemes"].Errors[0].ErrorMessage : string.Empty,
                     Label1 = "Yes",
