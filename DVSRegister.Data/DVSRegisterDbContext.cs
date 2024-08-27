@@ -16,8 +16,7 @@ namespace DVSRegister.Data
         public DbSet<PreRegistrationCountryMapping> PreRegistrationCountryMapping { get; set; }
         public DbSet<UniqueReferenceNumber> UniqueReferenceNumber { get; set; }
         public DbSet<User> User { get; set; }
-        public DbSet<PreRegistrationReview> PreRegistrationReview { get; set; }
-        public DbSet<CertificateInformation> CertificateInformation { get; set; }
+        public DbSet<PreRegistrationReview> PreRegistrationReview { get; set; }       
         public DbSet<Role> Role { get; set; }       
         public DbSet<IdentityProfile> IdentityProfile { get; set; }       
         public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }     

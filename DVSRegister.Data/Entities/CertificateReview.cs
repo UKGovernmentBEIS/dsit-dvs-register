@@ -14,10 +14,7 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("PreRegistration")]
         public int PreRegistrationId { get; set; }
         public PreRegistration PreRegistration { get; set; }
-
-        [ForeignKey("CertificateInformation")]
-        public int CertificateInformationId { get; set; }
-        public CertificateInformation CertificateInformation { get; set; }
+       
 
         [ForeignKey("Provider")]
         public int ProviderId { get; set; }

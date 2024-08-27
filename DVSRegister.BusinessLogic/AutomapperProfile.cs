@@ -39,10 +39,8 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceQualityLevelMappingDto, ServiceQualityLevelMapping>();         
           
 
-            CreateMap<Provider, ProviderDto>()
-           .ForMember(dest => dest.CertificateInformation, opt => opt.MapFrom(src => src.CertificateInformation));
-            CreateMap<ProviderDto, Provider>()
-            .ForMember(dest => dest.CertificateInformation, opt => opt.MapFrom(src => src.CertificateInformation));
+            CreateMap<Provider, ProviderDto>();
+            CreateMap<ProviderDto, Provider>();
            
 
             CreateMap<RegisterPublishLog, RegisterPublishLogDto>();
