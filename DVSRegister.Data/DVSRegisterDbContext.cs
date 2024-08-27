@@ -68,8 +68,11 @@ namespace DVSRegister.Data
 
             modelBuilder.Entity<Cab>().HasData(
             new Cab { Id =1, CabName = "EY", CreatedTime = DateTime.UtcNow },
-            new Cab { Id =2, CabName = "DSIT", CreatedTime = DateTime.UtcNow });
-       
+            new Cab { Id =2, CabName = "DSIT", CreatedTime = DateTime.UtcNow },
+            new Cab { Id =3, CabName = "ACCS", CreatedTime = DateTime.UtcNow },
+            new Cab { Id =4, CabName = "Kantara Initiative", CreatedTime = DateTime.UtcNow });
+
+
 
             modelBuilder.Entity<Provider>()
             .HasGeneratedTsVectorColumn( p => p.SearchVector,  "english", p => new { p.RegisteredName, p.TradingName })  
