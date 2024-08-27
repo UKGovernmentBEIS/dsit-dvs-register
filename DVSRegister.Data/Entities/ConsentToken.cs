@@ -13,10 +13,7 @@ namespace DVSRegister.Data.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
-
-        [ForeignKey("CertificateReview")]
-        public int CertificateReviewId { get; set; }
-        public CertificateReview CertificateReview { get; set; }
+       
         public string TokenId { get; set; }
         public string Token {  get; set; }
         public DateTime CreatedTime { get; set; }

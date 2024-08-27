@@ -21,7 +21,7 @@ namespace DVSRegister.Data
         public DbSet<IdentityProfile> IdentityProfile { get; set; }       
         public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }     
 
-        public DbSet<CertificateReview> CertificateReview { get; set; }
+        //public DbSet<CertificateReview> CertificateReview { get; set; }
         public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; }
        
         public DbSet<Provider> Provider { get; set; }
