@@ -43,8 +43,7 @@ namespace DVSRegister.Data.Entities
         public string? Comments { get; set; }
         public string? RejectionComments { get; set; }
         public int VerifiedUser { get; set; }      
-        public CertificateInfoStatusEnum CertificateInfoStatus { get; set; }
-        public ICollection<CertificateReviewRejectionReasonMappings>? CertificateReviewRejectionReasonMappings { get; set; }
+        public CertificateInfoStatusEnum CertificateInfoStatus { get; set; }       
 
     }
 }

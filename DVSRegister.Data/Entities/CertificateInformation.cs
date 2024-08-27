@@ -15,11 +15,8 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("Provider")]
         public int ProviderId { get; set; }
         public Provider Provider { get; set; }
-        public string ServiceName { get; set; }
-       // public ICollection<CertificateInfoRoleMapping> CertificateInfoRoleMappings { get; set; }
-        public ICollection<CertificateInfoIdentityProfileMapping> CertificateInfoIdentityProfileMappings { get; set; }
-        public bool HasSupplementarySchemes { get; set; }
-        public ICollection<CertificateInfoSupSchemeMapping>? CertificateInfoSupSchemeMappings { get; set; }
+        public string ServiceName { get; set; }      
+        public bool HasSupplementarySchemes { get; set; }       
 
         public string FileName { get; set; }
         public string FileLink { get; set; }

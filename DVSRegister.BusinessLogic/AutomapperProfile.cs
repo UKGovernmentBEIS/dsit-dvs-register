@@ -36,14 +36,8 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceSupSchemeMapping, ServiceSupSchemeMappingDto>();
             CreateMap<ServiceSupSchemeMappingDto, ServiceSupSchemeMapping>();
             CreateMap<ServiceQualityLevelMapping, ServiceQualityLevelMappingDto>();
-            CreateMap<ServiceQualityLevelMappingDto, ServiceQualityLevelMapping>();
-
-
-            CreateMap<CertificateInfoIdentityProfileMapping, CertificateInfoIdentityProfileMappingDto>();
-            CreateMap<CertificateInfoIdentityProfileMappingDto, CertificateInfoIdentityProfileMapping>();
-         
-            CreateMap<CertificateInfoSupSchemeMapping, CertificateInfoSupSchemeMappingDto>();
-            CreateMap<CertificateInfoSupSchemeMappingDto, CertificateInfoSupSchemeMapping>();
+            CreateMap<ServiceQualityLevelMappingDto, ServiceQualityLevelMapping>();         
+          
 
             CreateMap<Provider, ProviderDto>()
            .ForMember(dest => dest.CertificateInformation, opt => opt.MapFrom(src => src.CertificateInformation));
