@@ -23,8 +23,7 @@ namespace DVSRegister.Data.Entities
         public ProviderStatusEnum ProviderStatus { get;set; }
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
-        public DateTime? PublishedTime { get;set; }
-        public ICollection<CertificateInformation> CertificateInformation { get; set; }
+        public DateTime? PublishedTime { get;set; }      
         public NpgsqlTsVector SearchVector { get; set; }
 
     }

@@ -19,20 +19,22 @@ namespace DVSRegister.Data
 
         public async Task<List<Provider>> GetProviders(List<int> roles, List<int> schemes,string searchText = "")
         {
-           IQueryable<Provider> providerQuery = context.Provider;
-            
-            providerQuery = providerQuery.Where(p => p.ProviderStatus == ProviderStatusEnum.Published &&
-            (string.IsNullOrEmpty(searchText) || p.SearchVector.Matches(searchText)))
-            .Include(p => p.CertificateInformation).ThenInclude(ci => ci.CertificateInfoRoleMappings)
-            .Include(p => p.CertificateInformation).ThenInclude(ci => ci.CertificateInfoSupSchemeMappings);
-            // Include roles and schemes filters
+            //To do : update query after all db changes
+            //IQueryable<Provider> providerQuery = context.Provider;
 
-            providerQuery = providerQuery.Include(p => p.CertificateInformation
-            .Where(ci => ci.CertificateInfoStatus == CertificateInfoStatusEnum.Published &&
-              (!roles.Any() || (ci.CertificateInfoRoleMappings != null && ci.CertificateInfoRoleMappings.Any(r => roles.Contains(r.RoleId)))) &&
-             (!schemes.Any() || (ci.CertificateInfoSupSchemeMappings != null && ci.CertificateInfoSupSchemeMappings.Any(s => schemes.Contains(s.SupplementarySchemeId))))
-             ));
-            return await providerQuery.ToListAsync();
+            // providerQuery = providerQuery.Where(p => p.ProviderStatus == ProviderStatusEnum.Published &&
+            // (string.IsNullOrEmpty(searchText) || p.SearchVector.Matches(searchText)))
+            // .Include(p => p.CertificateInformation).ThenInclude(ci => ci.CertificateInfoRoleMappings)
+            // .Include(p => p.CertificateInformation).ThenInclude(ci => ci.CertificateInfoSupSchemeMappings);
+            // // Include roles and schemes filters
+
+            // providerQuery = providerQuery.Include(p => p.CertificateInformation
+            // .Where(ci => ci.CertificateInfoStatus == CertificateInfoStatusEnum.Published &&
+            //   (!roles.Any() || (ci.CertificateInfoRoleMappings != null && ci.CertificateInfoRoleMappings.Any(r => roles.Contains(r.RoleId)))) &&
+            //  (!schemes.Any() || (ci.CertificateInfoSupSchemeMappings != null && ci.CertificateInfoSupSchemeMappings.Any(s => schemes.Contains(s.SupplementarySchemeId))))
+            //  ));
+            // return await providerQuery.ToListAsync();
+            return new List<Provider>();
         }
 
         public async Task<List<RegisterPublishLog>> GetRegisterPublishLogs()
@@ -42,13 +44,14 @@ namespace DVSRegister.Data
 
         public async Task<Provider> GetProviderDetails(int providerId)
         {
+            //To do : update query after all db changes
             Provider provider = new Provider();
-            provider = await context.Provider.Include(p => p.PreRegistration)
-           .Include(p => p.CertificateInformation).ThenInclude(x => x.CertificateInfoRoleMappings)
-           .Include(p => p.CertificateInformation).ThenInclude(x => x.CertificateInfoIdentityProfileMappings)
-           .Include(p => p.CertificateInformation).ThenInclude(x => x.CertificateInfoSupSchemeMappings)
-           .Where(p => p.Id == providerId  && p.CertificateInformation.Any(ci => ci.CertificateInfoStatus == CertificateInfoStatusEnum.Published))
-           . OrderBy(c => c.ModifiedTime).FirstOrDefaultAsync() ?? new Provider();
+           // provider = await context.Provider.Include(p => p.PreRegistration)
+           //.Include(p => p.CertificateInformation).ThenInclude(x => x.CertificateInfoRoleMappings)
+           //.Include(p => p.CertificateInformation).ThenInclude(x => x.CertificateInfoIdentityProfileMappings)
+           //.Include(p => p.CertificateInformation).ThenInclude(x => x.CertificateInfoSupSchemeMappings)
+           //.Where(p => p.Id == providerId  && p.CertificateInformation.Any(ci => ci.CertificateInfoStatus == CertificateInfoStatusEnum.Published))
+           //. OrderBy(c => c.ModifiedTime).FirstOrDefaultAsync() ?? new Provider();
             return provider;
         }
     }

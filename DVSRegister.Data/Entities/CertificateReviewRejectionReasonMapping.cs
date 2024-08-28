@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DVSRegister.Data.Entities
 {
-    public class CertificateReviewRejectionReasonMappings
+    public class CertificateReviewRejectionReasonMapping
     {
-        public CertificateReviewRejectionReasonMappings() { }
+        public CertificateReviewRejectionReasonMapping() { }
 
         [Key]
         public int Id { get; set; }

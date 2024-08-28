@@ -36,30 +36,12 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceSupSchemeMapping, ServiceSupSchemeMappingDto>();
             CreateMap<ServiceSupSchemeMappingDto, ServiceSupSchemeMapping>();
             CreateMap<ServiceQualityLevelMapping, ServiceQualityLevelMappingDto>();
-            CreateMap<ServiceQualityLevelMappingDto, ServiceQualityLevelMapping>();
+            CreateMap<ServiceQualityLevelMappingDto, ServiceQualityLevelMapping>();         
+          
 
-
-            CreateMap<CertificateInfoIdentityProfileMapping, CertificateInfoIdentityProfileMappingDto>();
-            CreateMap<CertificateInfoIdentityProfileMappingDto, CertificateInfoIdentityProfileMapping>();
-            CreateMap<CertificateInfoRoleMapping, CertificateInfoRoleMappingDto>();
-            CreateMap<CertificateInfoRoleMappingDto, CertificateInfoRoleMapping>();
-            CreateMap<CertificateInfoSupSchemeMapping, CertificateInfoSupSchemeMappingDto>();
-            CreateMap<CertificateInfoSupSchemeMappingDto, CertificateInfoSupSchemeMapping>();
-
-            CreateMap<Provider, ProviderDto>()
-           .ForMember(dest => dest.CertificateInformation, opt => opt.MapFrom(src => src.CertificateInformation));
-            CreateMap<ProviderDto, Provider>()
-            .ForMember(dest => dest.CertificateInformation, opt => opt.MapFrom(src => src.CertificateInformation));
-            CreateMap<CertificateInformation, CertificateInfoDto>()
-            .ForMember(dest => dest.CertificateInfoRoleMappings, opt => opt.MapFrom(src => src.CertificateInfoRoleMappings))
-            .ForMember(dest => dest.CertificateInfoIdentityProfileMappings, opt => opt.MapFrom(src => src.CertificateInfoIdentityProfileMappings))
-            .ForMember(dest => dest.CertificateInfoSupSchemeMappings, opt => opt.MapFrom(src => src.CertificateInfoSupSchemeMappings))
-              .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
-            CreateMap<CertificateInfoDto, CertificateInformation>()
-            .ForMember(dest => dest.CertificateInfoRoleMappings, opt => opt.MapFrom(src => src.CertificateInfoRoleMappings))
-            .ForMember(dest => dest.CertificateInfoIdentityProfileMappings, opt => opt.MapFrom(src => src.CertificateInfoIdentityProfileMappings))
-            .ForMember(dest => dest.CertificateInfoSupSchemeMappings, opt => opt.MapFrom(src => src.CertificateInfoSupSchemeMappings))
-             .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
+            CreateMap<Provider, ProviderDto>();
+            CreateMap<ProviderDto, Provider>();
+           
 
             CreateMap<RegisterPublishLog, RegisterPublishLogDto>();
             CreateMap<RegisterPublishLogDto, RegisterPublishLog>();

@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using NpgsqlTypes;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240827212551_DropCertificateReviewTable")]
+    partial class DropCertificateReviewTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,25 +50,25 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 8, 27, 21, 33, 53, 172, DateTimeKind.Utc).AddTicks(4848)
+                            CreatedTime = new DateTime(2024, 8, 27, 21, 25, 50, 971, DateTimeKind.Utc).AddTicks(4304)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 8, 27, 21, 33, 53, 172, DateTimeKind.Utc).AddTicks(4852)
+                            CreatedTime = new DateTime(2024, 8, 27, 21, 25, 50, 971, DateTimeKind.Utc).AddTicks(4309)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 8, 27, 21, 33, 53, 172, DateTimeKind.Utc).AddTicks(4853)
+                            CreatedTime = new DateTime(2024, 8, 27, 21, 25, 50, 971, DateTimeKind.Utc).AddTicks(4310)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara Initiative",
-                            CreatedTime = new DateTime(2024, 8, 27, 21, 33, 53, 172, DateTimeKind.Utc).AddTicks(4855)
+                            CreatedTime = new DateTime(2024, 8, 27, 21, 25, 50, 971, DateTimeKind.Utc).AddTicks(4311)
                         });
                 });
 
@@ -92,99 +95,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("CabId");
 
                     b.ToTable("CabUser");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReview", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CertificateReviewStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Comments")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CommentsForIncorrect")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("InformationMatched")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsAuthenticyVerifiedCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsCabDetailsCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsCabLogoCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsCertificationScopeCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDateOfExpiryCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDateOfIssueCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsGPG44Correct")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsGPG45Correct")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsLocationCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsProviderDetailsCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsRolesCertifiedCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsServiceNameCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsServiceProvisionCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsServiceSummaryCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsURLLinkToServiceCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("ProviProviderProfileId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("RejectionComments")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("VerifiedUser")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProviProviderProfileId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("CertificateReview");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReviewRejectionReason", b =>
@@ -229,29 +139,6 @@ namespace DVSRegister.Data.Migrations
                             Id = 5,
                             Reason = "Other"
                         });
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReviewRejectionReasonMapping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CertificateReviewRejectionReasonId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CetificateReviewId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CertificateReviewRejectionReasonId");
-
-                    b.HasIndex("CetificateReviewId");
-
-                    b.ToTable("CertificateReviewRejectionReasonMapping");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ConsentToken", b =>
@@ -1276,44 +1163,6 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Cab");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReview", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "ProviderProfile")
-                        .WithMany()
-                        .HasForeignKey("ProviProviderProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProviderProfile");
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReviewRejectionReasonMapping", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.CertificateReviewRejectionReason", "CertificateReviewRejectionReason")
-                        .WithMany()
-                        .HasForeignKey("CertificateReviewRejectionReasonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.CertificateReview", "CetificateReview")
-                        .WithMany("CertificateReviewRejectionReasonMapping")
-                        .HasForeignKey("CetificateReviewId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CertificateReviewRejectionReason");
-
-                    b.Navigation("CetificateReview");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistrationCountryMapping", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.Country", "Country")
@@ -1493,11 +1342,6 @@ namespace DVSRegister.Data.Migrations
                         .HasForeignKey("PreRegistrationId");
 
                     b.Navigation("PreRegistration");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReview", b =>
-                {
-                    b.Navigation("CertificateReviewRejectionReasonMapping");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistration", b =>
