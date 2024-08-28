@@ -156,7 +156,7 @@ namespace DVSRegister.CommonUtility.Email
             return await SendEmail(emailModel);
         }
 
-        public async Task<bool> SendCertificateInfoSubmittedToDSIT(string emailAddress)
+        public async Task<bool> SendCertificateInfoSubmittedToDSIT()
         {
             var template = govUkNotifyConfig.CabSubmittedDSITEmailTemplate;
 

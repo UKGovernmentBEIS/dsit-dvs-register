@@ -670,7 +670,7 @@ namespace DVSRegister.Controllers
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.Email = email;
             await emailSender.SendEmailCabInformationSubmitted(email, email);
-            await emailSender.SendCertificateInfoSubmittedToDSIT("OfDiaEmailId");
+            await emailSender.SendCertificateInfoSubmittedToDSIT();
             return View();
 
         }
