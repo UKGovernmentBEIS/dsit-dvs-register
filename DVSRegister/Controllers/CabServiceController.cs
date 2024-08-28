@@ -8,6 +8,9 @@ using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
+using DVSRegister.CommonUtility.Email;
+using DVSRegister.Data.CAB;
+using DVSRegister.Data.Entities;
 
 
 namespace DVSRegister.Controllers
@@ -20,12 +23,14 @@ namespace DVSRegister.Controllers
         private readonly ICabService cabService;
         private readonly IBucketService bucketService;
         private readonly IUserService userService;
+        private readonly IEmailSender emailSender;
 
-        public CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService)
+        public CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IEmailSender emailSender)
         {
             this.cabService = cabService;
             this.bucketService = bucketService;
-            this.userService=userService;   
+            this.userService=userService;
+            this.emailSender=emailSender;
         }
 
         [HttpGet("before-you-start")]
@@ -659,11 +664,13 @@ namespace DVSRegister.Controllers
         /// </summary>       
         /// <returns></returns>
         [HttpGet("service-submitted")]
-        public IActionResult InformationSubmitted()
+        public async Task <IActionResult> InformationSubmitted()
         {
             string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.Email = email;
+            await emailSender.SendEmailCabInformationSubmitted(email, email);
+            await emailSender.SendCertificateInfoSubmittedToDSIT();
             return View();
 
         }
