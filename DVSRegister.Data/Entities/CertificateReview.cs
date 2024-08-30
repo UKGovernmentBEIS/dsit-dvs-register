@@ -41,8 +41,8 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("User")]
         public int VerifiedUser { get; set; }
 
-        public DateTime CreatedDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
         public CertificateReviewEnum CertificateReviewStatus { get; set; }
         public ICollection<CertificateReviewRejectionReasonMapping>? CertificateReviewRejectionReasonMapping { get; set; }
 
