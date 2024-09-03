@@ -37,6 +37,7 @@ namespace DVSRegister.Data
         public DbSet<ServiceSupSchemeMapping> ServiceSupSchemeMapping { get; set; }
         public DbSet<CertificateReview> CertificateReview { get; set; }
         public DbSet<CertificateReviewRejectionReasonMapping> CertificateReviewRejectionReasonMapping { get; set; }
+        public DbSet<ProceedApplicationConsentToken> ProceedApplicationConsentToken { get; set; }
 
         #endregion
 
