@@ -154,20 +154,20 @@ namespace DVSRegister.Data.CAB
         public async Task<ProviderProfile> GetProvider(int providerId,int cabId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p=>p.Services).Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
+            provider = await context.ProviderProfile.Include(p=>p.Services).ThenInclude(p=>p.CertificateReview)
+            .Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == providerId && p.CabUser.CabId == cabId).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
             return provider;
         }
 
         public async Task<Service> GetServiceDetails(int serviceId, int cabId)
-        {          
+        {
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
-            .Include(p => p.ServiceRoleMapping)
-            .ThenInclude(s => s.Role)
-            .Include(p => p.ServiceIdentityProfileMapping)
-            .ThenInclude(p => p.IdentityProfile);
+             .Include(p => p.CertificateReview)
+            .Include(p => p.ServiceRoleMapping)           
+            .ThenInclude(s => s.Role);
 
            
             IQueryable<Service> queryWithOptionalIncludes = baseQuery;
@@ -181,7 +181,13 @@ namespace DVSRegister.Data.CAB
             {
                 queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
                     .ThenInclude(ssm => ssm.SupplementaryScheme);
-            }           
+            }
+
+            if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)
+                    .ThenInclude(ssm => ssm.IdentityProfile);
+            }
             var service = await queryWithOptionalIncludes.FirstOrDefaultAsync() ?? new Service();
 
 

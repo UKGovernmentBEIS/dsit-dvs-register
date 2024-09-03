@@ -9,7 +9,7 @@ namespace DVSRegister.CommonUtility.Models.Enums
       
         [Description("In review")]
         InReview = 1,
-        [Description("Approved")]
+        [Description("Passed")]
         Approved = 2,
         [Description("Rejected")]
         Rejected = 3,
