@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.Data.Entities;
 
@@ -11,15 +10,7 @@ namespace DVSRegister.BusinessLogic
     {
         public AutoMapperProfile()
         {
-            CreateMap<PreRegistrationCountryMapping, PreRegistrationCountryMappingDto>();
-            CreateMap<PreRegistrationCountryMappingDto, PreRegistrationCountryMapping>();
-            CreateMap<Country, CountryDto>();
-            CreateMap<CountryDto, Country>();
-            CreateMap<PreRegistration, PreRegistrationDto>().ForMember(dest => dest.PreRegistrationCountryMappings, opt => opt.MapFrom(src => src.PreRegistrationCountryMappings));
-            CreateMap<PreRegistrationDto, PreRegistration>().ForMember(dest => dest.PreRegistrationCountryMappings, opt => opt.MapFrom(src => src.PreRegistrationCountryMappings));
-            CreateMap<URNDto, UniqueReferenceNumber>();
-            CreateMap<UniqueReferenceNumber, URNDto>();
-
+          
             CreateMap<Role, RoleDto>();
             CreateMap<RoleDto, Role>();
             CreateMap<IdentityProfile, IdentityProfileDto>();
