@@ -3,14 +3,12 @@ using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
-using DVSRegister.CommonUtility.Email;
-using DVSRegister.Data.CAB;
-using DVSRegister.Data.Entities;
 
 
 namespace DVSRegister.Controllers

@@ -7,8 +7,6 @@ using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.Cookies;
 using DVSRegister.BusinessLogic.Services.GoogleAnalytics;
-using DVSRegister.BusinessLogic.Services.PreAssessment;
-using DVSRegister.BusinessLogic.Services.PreRegistration;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
@@ -16,7 +14,6 @@ using DVSRegister.Data;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
@@ -75,9 +72,7 @@ namespace DVSRegister
 
         public void ConfigureDvsRegisterServices(IServiceCollection services)
         {
-            services.AddScoped<IPreRegistrationRepository, PreRegistrationRepository>();
-            services.AddScoped<IPreRegistrationService, PreRegistrationService>();
-            services.AddScoped<IURNService, URNService>();
+          
             services.AddScoped<ICabService, CabService>();
             services.AddScoped<ISignUpService, SignUpService>();
             services.AddScoped<ICabRepository, CabRepository>();

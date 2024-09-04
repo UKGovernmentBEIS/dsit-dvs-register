@@ -6,14 +6,7 @@ namespace DVSRegister.Controllers
 
     [Route("")]
     public class ErrorController : Controller
-    {
-        [HttpGet("pre-registration/service-error")]
-        public IActionResult HandleException()
-        {
-            ErrorViewModel errorViewModel = new ErrorViewModel { ApplicationType = "pre-reg" };
-            HttpContext?.Session.Clear();
-            return View("ServiceIssue", errorViewModel);
-        }
+    {       
 
         [HttpGet("cab-service/service-error")]
         public IActionResult CabHandleException()

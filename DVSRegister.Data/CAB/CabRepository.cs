@@ -1,6 +1,5 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Entities;
-using DVSRegister.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -9,9 +8,9 @@ namespace DVSRegister.Data.CAB
     public class CabRepository : ICabRepository
     {
         private readonly DVSRegisterDbContext context;
-        private readonly ILogger<PreRegistrationRepository> logger;
+        private readonly ILogger<CabRepository> logger;
 
-        public CabRepository(DVSRegisterDbContext context, ILogger<PreRegistrationRepository> logger)
+        public CabRepository(DVSRegisterDbContext context, ILogger<CabRepository> logger)
         {
             this.context = context;
             this.logger=logger;

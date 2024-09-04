@@ -30,4 +30,9 @@
     <ProjectReference Include="..\DVSRegister\DVSRegister.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="BusinessLogic\" />
+    <Folder Include="DVSRegister\" />
+  </ItemGroup>
+
 </Project>
