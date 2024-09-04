@@ -11,9 +11,7 @@ namespace DVSRegister.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("PreRegistration")]
-        public int PreRegistrationId { get; set; }
-        public PreRegistration PreRegistration { get; set; }
+    
        
         public bool IsCountryApproved { get; set; }
         public bool IsCompanyApproved { get; set; }
