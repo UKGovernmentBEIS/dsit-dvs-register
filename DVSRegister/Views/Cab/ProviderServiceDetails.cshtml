@@ -48,7 +48,14 @@
                                     Status
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @HtmlExtensions.ToStyledStrongTag(Model.ServiceStatus)
+                                    @if (Model.CertificateReview!= null && Model.ServiceStatus == ServiceStatusEnum.Submitted)
+                                    {
+                                        @HtmlExtensions.ToStyledStrongTag(Model.CertificateReview.CertificateReviewStatus)
+                                    }
+                                    else
+                                    {
+                                        @HtmlExtensions.ToStyledStrongTag(Model.ServiceStatus)
+                                    }
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">

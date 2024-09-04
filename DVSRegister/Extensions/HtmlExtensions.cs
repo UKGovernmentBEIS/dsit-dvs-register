@@ -1,4 +1,5 @@
 ﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using Microsoft.AspNetCore.Html;
 using System.ComponentModel;
 using System.Reflection;
@@ -20,8 +21,20 @@ namespace DVSRegister.Extensions
 
             switch (value)
             {
-                case ServiceStatusEnum.Submitted:               
-                    return "govuk-tag govuk-tag--blue";               
+                case ServiceStatusEnum.Submitted:
+                case ServiceStatusEnum.Received:
+                case ServiceStatusEnum.Published:
+                    return "govuk-tag govuk-tag--blue";
+
+                case CertificateReviewEnum.Approved:
+                    return "govuk-tag govuk-tag--green";
+
+                case ServiceStatusEnum.Removed:
+                case CertificateReviewEnum.Rejected:
+                    return "govuk-tag govuk-tag--red";
+
+                case CertificateReviewEnum.InReview:
+                    return "govuk-tag govuk-tag--yellow";
 
                 default:
                     return string.Empty;

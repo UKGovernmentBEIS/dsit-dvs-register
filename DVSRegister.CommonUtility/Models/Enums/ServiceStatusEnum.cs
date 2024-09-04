@@ -7,10 +7,12 @@ namespace DVSRegister.CommonUtility.Models
         //Donot change order of the enum as the ids are used to save in database
         //New entries should be added at the last
         [Description("Submitted")]
-        Submitted = 1,      
+        Submitted = 1,
+        [Description("Received")] // Status when provider consents to proceed application, opening loop
+        Received = 2,
         [Description("Published")]
-        Published = 2,
+        Published = 3,
         [Description("Removed")]
-        Removed = 3
+        Removed = 4
     }
 }

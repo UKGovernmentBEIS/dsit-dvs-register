@@ -48,7 +48,8 @@ namespace DVSRegister.BusinessLogic
 
 
             CreateMap<ProviderProfile, ProviderProfileDto>()
-            .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services));
+            .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services))
+            .ForMember(dest => dest.LastModified, opt => opt.MapFrom<LastModifiedDateResolver>());
             CreateMap<ProviderProfileDto, ProviderProfile>()
             .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services));
 
@@ -57,19 +58,25 @@ namespace DVSRegister.BusinessLogic
             CreateMap<CabUser, CabUserDto>();
             CreateMap<CabUserDto, CabUser>();
 
+           
+            CreateMap<CertificateReview, CertificateReviewDto>();
+            CreateMap<CertificateReviewDto, CertificateReview>();
+
             CreateMap<Service, ServiceDto>()
             .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
             .ForMember(dest => dest.ServiceRoleMapping, opt => opt.MapFrom(src => src.ServiceRoleMapping))
             .ForMember(dest => dest.ServiceIdentityProfileMapping, opt => opt.MapFrom(src => src.ServiceIdentityProfileMapping))
             .ForMember(dest => dest.ServiceSupSchemeMapping, opt => opt.MapFrom(src => src.ServiceSupSchemeMapping))
-            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
+            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
+            .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview));
 
             CreateMap<ServiceDto, Service>()
            .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
            .ForMember(dest => dest.ServiceRoleMapping, opt => opt.MapFrom(src => src.ServiceRoleMapping))
            .ForMember(dest => dest.ServiceIdentityProfileMapping, opt => opt.MapFrom(src => src.ServiceIdentityProfileMapping))
            .ForMember(dest => dest.ServiceSupSchemeMapping, opt => opt.MapFrom(src => src.ServiceSupSchemeMapping))
-           .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
+           .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
+           .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview));
         }
     }
 }

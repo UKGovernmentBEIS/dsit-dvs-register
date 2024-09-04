@@ -219,8 +219,7 @@ namespace DVSRegister.Controllers
             primaryContactViewModel.FromSummaryPage = false;
             if (ModelState.IsValid)
             {
-                ProfileSummaryViewModel profileSummary = GetProfileSummary();
-             
+                ProfileSummaryViewModel profileSummary = GetProfileSummary();             
                 profileSummary.PrimaryContact = primaryContactViewModel;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
                 return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("SecondaryContact");
@@ -366,15 +365,23 @@ namespace DVSRegister.Controllers
             string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
             CabUserDto cabUserDto = await userService.GetUser(email);
             ProviderProfileDto providerDto = MapViewModelToDto(summaryViewModel,cabUserDto.Id);
-            GenericResponse genericResponse = await cabService.SaveProviderProfile(providerDto);
-            if (genericResponse.Success)
+            if(providerDto !=null)
             {
-                return RedirectToAction("InformationSubmitted");
+                GenericResponse genericResponse = await cabService.SaveProviderProfile(providerDto);
+                if (genericResponse.Success)
+                {
+                    return RedirectToAction("InformationSubmitted");
+                }
+                else
+                {
+                    return RedirectToAction("HandleException", "Error");
+                }
             }
             else
             {
                 return RedirectToAction("HandleException", "Error");
             }
+          
         }
         #endregion
 
@@ -407,27 +414,33 @@ namespace DVSRegister.Controllers
 
         private ProviderProfileDto MapViewModelToDto(ProfileSummaryViewModel model, int cabUserId)
         {
-            ProviderProfileDto providerDto = new();
-            if (model != null)
+            
+            ProviderProfileDto providerDto = null;
+            if (model != null && !string.IsNullOrEmpty(model.RegisteredName) && !string.IsNullOrEmpty(model.TradingName) && model.HasRegistrationNumber!=null
+                && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactFullName) && !string.IsNullOrEmpty(model?.PrimaryContact.PrimaryContactJobTitle)
+                && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactEmail) && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactTelephoneNumber)
+                && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactFullName) && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactJobTitle)
+                && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactEmail) &&  !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactTelephoneNumber)
+                && !string.IsNullOrEmpty(model.PublicContactEmail) && !string.IsNullOrEmpty(model.ProviderTelephoneNumber) 
+                && !string.IsNullOrEmpty(model.ProviderWebsiteAddress) && cabUserId>0)
             {
-                providerDto.RegisteredName = model.RegisteredName??string.Empty;
-                providerDto.TradingName = model.TradingName??string.Empty;
-
-
+                providerDto = new();
+                providerDto.RegisteredName = model.RegisteredName;
+                providerDto.TradingName = model.TradingName;
                 providerDto.HasRegistrationNumber = model.HasRegistrationNumber??false;
                 providerDto.CompanyRegistrationNumber = model.CompanyRegistrationNumber??string.Empty;
                 providerDto.DUNSNumber = model.DUNSNumber??string.Empty;
-                providerDto.PrimaryContactFullName = model.PrimaryContact?.PrimaryContactFullName??string.Empty;
-                providerDto.PrimaryContactJobTitle = model.PrimaryContact?.PrimaryContactJobTitle??string.Empty;
-                providerDto.PrimaryContactEmail = model.PrimaryContact?.PrimaryContactEmail??string.Empty;
-                providerDto.PrimaryContactTelephoneNumber = model.PrimaryContact?.PrimaryContactTelephoneNumber??string.Empty;
-                providerDto.SecondaryContactFullName = model.SecondaryContact?.SecondaryContactFullName??string.Empty;
-                providerDto.SecondaryContactJobTitle = model.SecondaryContact?.SecondaryContactJobTitle??string.Empty;
-                providerDto.SecondaryContactEmail = model.SecondaryContact?.SecondaryContactEmail??string.Empty;
-                providerDto.SecondaryContactTelephoneNumber = model.SecondaryContact?.SecondaryContactTelephoneNumber??string.Empty;
-                providerDto.PublicContactEmail= model.PublicContactEmail??string.Empty;
-                providerDto.ProviderTelephoneNumber = model.ProviderTelephoneNumber??string.Empty;
-                providerDto.ProviderWebsiteAddress = model.ProviderWebsiteAddress??string.Empty;
+                providerDto.PrimaryContactFullName = model.PrimaryContact.PrimaryContactFullName;
+                providerDto.PrimaryContactJobTitle = model.PrimaryContact.PrimaryContactJobTitle;
+                providerDto.PrimaryContactEmail = model.PrimaryContact.PrimaryContactEmail;
+                providerDto.PrimaryContactTelephoneNumber = model.PrimaryContact.PrimaryContactTelephoneNumber;
+                providerDto.SecondaryContactFullName = model.SecondaryContact.SecondaryContactFullName;
+                providerDto.SecondaryContactJobTitle = model.SecondaryContact.SecondaryContactJobTitle;
+                providerDto.SecondaryContactEmail = model.SecondaryContact.SecondaryContactEmail;
+                providerDto.SecondaryContactTelephoneNumber = model.SecondaryContact.SecondaryContactTelephoneNumber;
+                providerDto.PublicContactEmail= model.PublicContactEmail;
+                providerDto.ProviderTelephoneNumber = model.ProviderTelephoneNumber;
+                providerDto.ProviderWebsiteAddress = model.ProviderWebsiteAddress;
                 providerDto.CabUserId = cabUserId;
                 providerDto.ProviderStatus = ProviderStatusEnum.Unpublished;
                 providerDto.CreatedTime = DateTime.UtcNow;

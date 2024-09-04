@@ -45,5 +45,6 @@ namespace DVSRegister.Data.Entities
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
+        public CertificateReview CertificateReview { get; set; }
     }
 }
