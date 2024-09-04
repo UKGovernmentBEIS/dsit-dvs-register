@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-    [Route("")]
     [Route("cab-application-registration")]
     public class LoginController : Controller
     {
