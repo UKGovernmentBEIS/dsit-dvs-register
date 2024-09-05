@@ -17,11 +17,9 @@ namespace DVSRegister.Data
         public DbSet<IdentityProfile> IdentityProfile { get; set; }       
         public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }
         public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; }       
-        public DbSet<Provider> Provider { get; set; }
-        public DbSet<ConsentToken> ConsentToken { get; set; }
-        public DbSet<RegisterPublishLog> RegisterPublishLog { get; set; }
-
-        #region new path
+        public DbSet<Provider> Provider { get; set; } //To Do : remove
+        public DbSet<ConsentToken> ConsentToken { get; set; }//To Do : update
+        public DbSet<RegisterPublishLog> RegisterPublishLog { get; set; }  //To Do : update   
         public DbSet<Cab> Cab { get; set; }
         public DbSet<CabUser> CabUser { get; set; }
         public DbSet<ProviderProfile> ProviderProfile { get; set; }
@@ -34,8 +32,8 @@ namespace DVSRegister.Data
         public DbSet<CertificateReview> CertificateReview { get; set; }
         public DbSet<CertificateReviewRejectionReasonMapping> CertificateReviewRejectionReasonMapping { get; set; }
         public DbSet<ProceedApplicationConsentToken> ProceedApplicationConsentToken { get; set; }
+        public DbSet<PublicInterestCheck> PublicInterestCheck { get; set; }
 
-        #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
