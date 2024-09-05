@@ -11,6 +11,7 @@ namespace DVSRegister.Models.CAB
         [Required(ErrorMessage = "Enter your job title")]
         public string? PrimaryContactJobTitle { get; set; }
 
+        [EmailAddress(ErrorMessage = "Enter an email address in the correct format, like name@example.com")]
         [Required(ErrorMessage = "Enter an email address in the correct format, like name@example.com")]
         [MaximumLength(255, ErrorMessage = "Enter an email address that is less than 255 characters")]
         public string? PrimaryContactEmail { get; set; }
