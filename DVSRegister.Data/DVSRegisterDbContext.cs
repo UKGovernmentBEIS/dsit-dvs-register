@@ -18,7 +18,7 @@ namespace DVSRegister.Data
         public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }
         public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; }       
         public DbSet<Provider> Provider { get; set; }
-        public DbSet<ConsentToken> ConsentToken { get; set; }
+        //public DbSet<ConsentToken> ConsentToken { get; set; }
         public DbSet<RegisterPublishLog> RegisterPublishLog { get; set; }
 
         #region new path
