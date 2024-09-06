@@ -39,8 +39,7 @@ namespace DVSRegister.Data
 
         public async Task<List<RegisterPublishLog>> GetRegisterPublishLogs()
         {
-            //  return await context.RegisterPublishLog.OrderByDescending(p => p.CreatedTime).ToListAsync();
-            return new List<RegisterPublishLog>();
+            return await context.RegisterPublishLog.OrderByDescending(p => p.CreatedTime).ToListAsync();
         }
 
         public async Task<Provider> GetProviderDetails(int providerId)

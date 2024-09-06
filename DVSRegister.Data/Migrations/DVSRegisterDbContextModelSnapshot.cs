@@ -47,25 +47,25 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 9, 6, 18, 22, 18, 401, DateTimeKind.Utc).AddTicks(5101)
+                            CreatedTime = new DateTime(2024, 9, 5, 8, 24, 43, 396, DateTimeKind.Utc).AddTicks(8408)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 9, 6, 18, 22, 18, 401, DateTimeKind.Utc).AddTicks(5106)
+                            CreatedTime = new DateTime(2024, 9, 5, 8, 24, 43, 396, DateTimeKind.Utc).AddTicks(8412)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 9, 6, 18, 22, 18, 401, DateTimeKind.Utc).AddTicks(5107)
+                            CreatedTime = new DateTime(2024, 9, 5, 8, 24, 43, 396, DateTimeKind.Utc).AddTicks(8413)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara Initiative",
-                            CreatedTime = new DateTime(2024, 9, 6, 18, 22, 18, 401, DateTimeKind.Utc).AddTicks(5108)
+                            CreatedTime = new DateTime(2024, 9, 5, 8, 24, 43, 396, DateTimeKind.Utc).AddTicks(8414)
                         });
                 });
 
@@ -797,6 +797,37 @@ namespace DVSRegister.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.RegisterPublishLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProviderName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Services")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId");
+
+                    b.ToTable("RegisterPublishLog");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -1182,6 +1213,17 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Provider");
 
                     b.Navigation("SecondaryCheckUser");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.RegisterPublishLog", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.Provider", "Provider")
+                        .WithMany()
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Provider");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
