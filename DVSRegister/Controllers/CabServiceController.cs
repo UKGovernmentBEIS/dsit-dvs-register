@@ -3,14 +3,12 @@ using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
-using DVSRegister.CommonUtility.Email;
-using DVSRegister.Data.CAB;
-using DVSRegister.Data.Entities;
 
 
 namespace DVSRegister.Controllers
@@ -648,15 +646,23 @@ namespace DVSRegister.Controllers
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();           
             ServiceDto serviceDto = MapViewModelToDto(summaryViewModel);
-            GenericResponse genericResponse = await cabService.SaveService(serviceDto);
-            if (genericResponse.Success)
+            if(serviceDto!=null)
             {
-                return RedirectToAction("InformationSubmitted");
+                GenericResponse genericResponse = await cabService.SaveService(serviceDto);
+                if (genericResponse.Success)
+                {
+                    return RedirectToAction("InformationSubmitted");
+                }
+                else
+                {
+                    return RedirectToAction("HandleException", "Error");
+                }
             }
             else
             {
                 return RedirectToAction("HandleException", "Error");
             }
+           
         }
 
         /// <summary>
@@ -811,9 +817,14 @@ namespace DVSRegister.Controllers
         private ServiceDto MapViewModelToDto(ServiceSummaryViewModel model)
         {
 
-            ServiceDto serviceDto = new ServiceDto();
-            if (model!= null)
+
+            ServiceDto serviceDto = null;
+            if (model!= null &&  !string.IsNullOrEmpty(model.ServiceName) && !string.IsNullOrEmpty(model.ServiceURL) && !string.IsNullOrEmpty(model.CompanyAddress)
+                &&  model.RoleViewModel.SelectedRoles!=null && model.RoleViewModel.SelectedRoles.Any() &&  model.HasSupplementarySchemes!=null && model.HasGPG44!=null &&
+               !string.IsNullOrEmpty(model.FileName) && !string.IsNullOrEmpty(model.FileLink) &&  model.FileSizeInKb!=null && model.ConformityExpiryDate!=null && model.ConformityIssueDate != null
+               && model.CabUserId>0)
             {
+                serviceDto = new ();
                 ICollection<ServiceQualityLevelMappingDto> serviceQualityLevelMappings = new List<ServiceQualityLevelMappingDto>();
                 ICollection<ServiceRoleMappingDto> serviceRoleMappings = new List<ServiceRoleMappingDto>();
                 ICollection<ServiceIdentityProfileMappingDto> serviceIdentityProfileMappings = new List<ServiceIdentityProfileMappingDto>();
@@ -841,17 +852,17 @@ namespace DVSRegister.Controllers
                 }
 
                 serviceDto.ProviderProfileId = model.ProviderProfileId;
-                serviceDto.ServiceName = model.ServiceName??string.Empty;
-                serviceDto.WebsiteAddress = model.ServiceURL??string.Empty;
-                serviceDto.CompanyAddress = model.CompanyAddress??string.Empty;
+                serviceDto.ServiceName = model.ServiceName;
+                serviceDto.WebsiteAddress = model.ServiceURL;
+                serviceDto.CompanyAddress = model.CompanyAddress;
                 serviceDto.ServiceRoleMapping = serviceRoleMappings;
                 serviceDto.ServiceIdentityProfileMapping= serviceIdentityProfileMappings;
                 serviceDto.ServiceQualityLevelMapping = serviceQualityLevelMappings;
-                serviceDto.HasSupplementarySchemes = model.HasSupplementarySchemes??false;
+                serviceDto.HasSupplementarySchemes =  model.HasSupplementarySchemes??false;
                 serviceDto.HasGPG44 = model.HasGPG44??false;
                 serviceDto.ServiceSupSchemeMapping = serviceSupSchemeMappings;
-                serviceDto.FileLink = model.FileLink??string.Empty;
-                serviceDto.FileName = model.FileName??string.Empty;
+                serviceDto.FileLink = model.FileLink;
+                serviceDto.FileName = model.FileName;
                 serviceDto.FileSizeInKb = model.FileSizeInKb??0;
                 serviceDto.ConformityIssueDate= Convert.ToDateTime(model.ConformityIssueDate);
                 serviceDto.ConformityExpiryDate = Convert.ToDateTime(model.ConformityExpiryDate);

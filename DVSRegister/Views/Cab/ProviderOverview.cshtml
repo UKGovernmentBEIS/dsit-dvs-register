@@ -1,5 +1,6 @@
 ﻿@using DVSRegister.BusinessLogic.Models.CAB;
 @using DVSRegister.Extensions
+@using DVSRegister.CommonUtility.Models;
 
 @model ProviderProfileDto
 @{
@@ -90,7 +91,15 @@
                                             Status
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @HtmlExtensions.ToStyledStrongTag(item.ServiceStatus)
+                                            @if (item.CertificateReview!= null && item.ServiceStatus == ServiceStatusEnum.Submitted)
+                                            {
+                                                @HtmlExtensions.ToStyledStrongTag(item.CertificateReview.CertificateReviewStatus)
+                                            }
+                                            else
+                                            {
+                                                @HtmlExtensions.ToStyledStrongTag(item.ServiceStatus)
+                                            }
+
                                         </dd>
                                     </div>
                                 </dl>

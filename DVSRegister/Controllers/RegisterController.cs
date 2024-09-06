@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
+    [Route("")]
     [Route("register")]
     public class RegisterController : Controller
     {
@@ -28,6 +29,7 @@ namespace DVSRegister.Controllers
 
 
         }
+        [Route("")]
         [HttpGet("register-search")]
         public async Task<IActionResult> Register(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, bool FromDeatilsPage = false, int RemoveRole = 0, int RemoveScheme = 0, string SearchAction = "", string SearchProvider = "")
         {

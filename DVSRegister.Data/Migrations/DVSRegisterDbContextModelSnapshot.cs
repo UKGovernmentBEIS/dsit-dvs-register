@@ -47,13 +47,25 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 8, 27, 9, 48, 52, 800, DateTimeKind.Utc).AddTicks(8205)
+                            CreatedTime = new DateTime(2024, 9, 5, 8, 24, 43, 396, DateTimeKind.Utc).AddTicks(8408)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 8, 27, 9, 48, 52, 800, DateTimeKind.Utc).AddTicks(8207)
+                            CreatedTime = new DateTime(2024, 9, 5, 8, 24, 43, 396, DateTimeKind.Utc).AddTicks(8412)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CabName = "ACCS",
+                            CreatedTime = new DateTime(2024, 9, 5, 8, 24, 43, 396, DateTimeKind.Utc).AddTicks(8413)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CabName = "Kantara Initiative",
+                            CreatedTime = new DateTime(2024, 9, 5, 8, 24, 43, 396, DateTimeKind.Utc).AddTicks(8414)
                         });
                 });
 
@@ -82,132 +94,6 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("CabUser");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoIdentityProfileMapping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CertificateInformationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("IdentityProfileId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CertificateInformationId");
-
-                    b.HasIndex("IdentityProfileId");
-
-                    b.ToTable("CertificateInfoIdentityProfileMapping");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoRoleMapping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CertificateInformationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CertificateInformationId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("CertificateInfoRoleMapping");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoSupSchemeMapping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CertificateInformationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("SupplementarySchemeId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CertificateInformationId");
-
-                    b.HasIndex("SupplementarySchemeId");
-
-                    b.ToTable("CertificateInfoSupSchemeMappings");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInformation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CertificateInfoStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ConformityExpiryDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("ConformityIssueDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("FileLink")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("HasSupplementarySchemes")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("ProviderId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ServiceName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SubmittedCAB")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProviderId");
-
-                    b.ToTable("CertificateInformation");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReview", b =>
                 {
                     b.Property<int>("Id")
@@ -216,10 +102,7 @@ namespace DVSRegister.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CertificateInfoStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CertificateInformationId")
+                    b.Property<int>("CertificateReviewStatus")
                         .HasColumnType("integer");
 
                     b.Property<string>("Comments")
@@ -229,10 +112,7 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<bool?>("InformationMatched")
@@ -256,16 +136,16 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool>("IsDateOfIssueCorrect")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsIdentityProfilesCorrect")
+                    b.Property<bool>("IsGPG44Correct")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsGPG45Correct")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsLocationCorrect")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsProviderDetailsCorrect")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsQualityAssessmentCorrect")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsRolesCertifiedCorrect")
@@ -283,31 +163,27 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool>("IsURLLinkToServiceCorrect")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("ModifiedDate")
+                    b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("PreRegistrationId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProviderId")
+                    b.Property<int>("ProviProviderProfileId")
                         .HasColumnType("integer");
 
                     b.Property<string>("RejectionComments")
                         .HasColumnType("text");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("VerifiedUser")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CertificateInformationId");
+                    b.HasIndex("ProviProviderProfileId");
 
-                    b.HasIndex("PreRegistrationId");
-
-                    b.HasIndex("ProviderId");
+                    b.HasIndex("ServiceId")
+                        .IsUnique();
 
                     b.ToTable("CertificateReview");
                 });
@@ -356,7 +232,7 @@ namespace DVSRegister.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReviewRejectionReasonMappings", b =>
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReviewRejectionReasonMapping", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -376,7 +252,7 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasIndex("CetificateReviewId");
 
-                    b.ToTable("CertificateReviewRejectionReasonMappings");
+                    b.ToTable("CertificateReviewRejectionReasonMapping");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ConsentToken", b =>
@@ -384,9 +260,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
-
-                    b.Property<int>("CertificateReviewId")
-                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
@@ -401,1082 +274,11 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CertificateReviewId");
-
                     b.HasIndex("Token");
 
                     b.HasIndex("TokenId");
 
                     b.ToTable("ConsentToken");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.Country", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CountryName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Country");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CountryName = "Afghanistan"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CountryName = "Albania"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CountryName = "Algeria"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CountryName = "Andorra"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CountryName = "Angola"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CountryName = "Antigua and Barbuda"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CountryName = "Argentina"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CountryName = "Armenia"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CountryName = "Australia"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CountryName = "Austria"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CountryName = "Azerbaijan"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CountryName = "Bahrain"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CountryName = "Bangladesh"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CountryName = "Barbados"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CountryName = "Belarus"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CountryName = "Belgium"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CountryName = "Belize"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CountryName = "Benin"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CountryName = "Bhutan"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CountryName = "Bolivia"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            CountryName = "Bosnia and Herzegovina"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CountryName = "Botswana"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CountryName = "Brazil"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            CountryName = "Brunei"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            CountryName = "Bulgaria"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            CountryName = "Burkina Faso"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            CountryName = "Burundi"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            CountryName = "Cambodia"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            CountryName = "Cameroon"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            CountryName = "Canada"
-                        },
-                        new
-                        {
-                            Id = 31,
-                            CountryName = "Cape Verde"
-                        },
-                        new
-                        {
-                            Id = 32,
-                            CountryName = "Central African Republic"
-                        },
-                        new
-                        {
-                            Id = 33,
-                            CountryName = "Chad"
-                        },
-                        new
-                        {
-                            Id = 34,
-                            CountryName = "Chile"
-                        },
-                        new
-                        {
-                            Id = 35,
-                            CountryName = "China"
-                        },
-                        new
-                        {
-                            Id = 36,
-                            CountryName = "Colombia"
-                        },
-                        new
-                        {
-                            Id = 37,
-                            CountryName = "Comoros"
-                        },
-                        new
-                        {
-                            Id = 38,
-                            CountryName = "Congo"
-                        },
-                        new
-                        {
-                            Id = 39,
-                            CountryName = "Congo (Democratic Republic)"
-                        },
-                        new
-                        {
-                            Id = 40,
-                            CountryName = "Costa Rica"
-                        },
-                        new
-                        {
-                            Id = 41,
-                            CountryName = "Croatia"
-                        },
-                        new
-                        {
-                            Id = 42,
-                            CountryName = "Cuba"
-                        },
-                        new
-                        {
-                            Id = 43,
-                            CountryName = "Cyprus"
-                        },
-                        new
-                        {
-                            Id = 44,
-                            CountryName = "Czechia"
-                        },
-                        new
-                        {
-                            Id = 45,
-                            CountryName = "Denmark"
-                        },
-                        new
-                        {
-                            Id = 46,
-                            CountryName = "Djibouti"
-                        },
-                        new
-                        {
-                            Id = 47,
-                            CountryName = "Dominica"
-                        },
-                        new
-                        {
-                            Id = 48,
-                            CountryName = "Dominican Republic"
-                        },
-                        new
-                        {
-                            Id = 49,
-                            CountryName = "East Timor"
-                        },
-                        new
-                        {
-                            Id = 50,
-                            CountryName = "Ecuador"
-                        },
-                        new
-                        {
-                            Id = 51,
-                            CountryName = "Egypt"
-                        },
-                        new
-                        {
-                            Id = 52,
-                            CountryName = "El Salvador"
-                        },
-                        new
-                        {
-                            Id = 53,
-                            CountryName = "Equatorial Guinea"
-                        },
-                        new
-                        {
-                            Id = 54,
-                            CountryName = "Eritrea"
-                        },
-                        new
-                        {
-                            Id = 55,
-                            CountryName = "Estonia"
-                        },
-                        new
-                        {
-                            Id = 56,
-                            CountryName = "Eswatini"
-                        },
-                        new
-                        {
-                            Id = 57,
-                            CountryName = "Ethiopia"
-                        },
-                        new
-                        {
-                            Id = 58,
-                            CountryName = "Fiji"
-                        },
-                        new
-                        {
-                            Id = 59,
-                            CountryName = "Finland"
-                        },
-                        new
-                        {
-                            Id = 60,
-                            CountryName = "France"
-                        },
-                        new
-                        {
-                            Id = 61,
-                            CountryName = "Gabon"
-                        },
-                        new
-                        {
-                            Id = 62,
-                            CountryName = "Georgia"
-                        },
-                        new
-                        {
-                            Id = 63,
-                            CountryName = "Germany"
-                        },
-                        new
-                        {
-                            Id = 64,
-                            CountryName = "Ghana"
-                        },
-                        new
-                        {
-                            Id = 65,
-                            CountryName = "Greece"
-                        },
-                        new
-                        {
-                            Id = 66,
-                            CountryName = "Grenada"
-                        },
-                        new
-                        {
-                            Id = 67,
-                            CountryName = "Guatemala"
-                        },
-                        new
-                        {
-                            Id = 68,
-                            CountryName = "Guinea"
-                        },
-                        new
-                        {
-                            Id = 69,
-                            CountryName = "Guinea-Bissau"
-                        },
-                        new
-                        {
-                            Id = 70,
-                            CountryName = "Guyana"
-                        },
-                        new
-                        {
-                            Id = 71,
-                            CountryName = "Haiti"
-                        },
-                        new
-                        {
-                            Id = 72,
-                            CountryName = "Honduras"
-                        },
-                        new
-                        {
-                            Id = 73,
-                            CountryName = "Hungary"
-                        },
-                        new
-                        {
-                            Id = 74,
-                            CountryName = "Iceland"
-                        },
-                        new
-                        {
-                            Id = 75,
-                            CountryName = "India"
-                        },
-                        new
-                        {
-                            Id = 76,
-                            CountryName = "Indonesia"
-                        },
-                        new
-                        {
-                            Id = 77,
-                            CountryName = "Iran"
-                        },
-                        new
-                        {
-                            Id = 78,
-                            CountryName = "Iraq"
-                        },
-                        new
-                        {
-                            Id = 79,
-                            CountryName = "Ireland"
-                        },
-                        new
-                        {
-                            Id = 80,
-                            CountryName = "Israel"
-                        },
-                        new
-                        {
-                            Id = 81,
-                            CountryName = "Italy"
-                        },
-                        new
-                        {
-                            Id = 82,
-                            CountryName = "Ivory Coast"
-                        },
-                        new
-                        {
-                            Id = 83,
-                            CountryName = "Jamaica"
-                        },
-                        new
-                        {
-                            Id = 84,
-                            CountryName = "Japan"
-                        },
-                        new
-                        {
-                            Id = 85,
-                            CountryName = "Jordan"
-                        },
-                        new
-                        {
-                            Id = 86,
-                            CountryName = "Kazakhstan"
-                        },
-                        new
-                        {
-                            Id = 87,
-                            CountryName = "Kenya"
-                        },
-                        new
-                        {
-                            Id = 88,
-                            CountryName = "Kiribati"
-                        },
-                        new
-                        {
-                            Id = 89,
-                            CountryName = "Kosovo"
-                        },
-                        new
-                        {
-                            Id = 90,
-                            CountryName = "Kuwait"
-                        },
-                        new
-                        {
-                            Id = 91,
-                            CountryName = "Kyrgyzstan"
-                        },
-                        new
-                        {
-                            Id = 92,
-                            CountryName = "Laos"
-                        },
-                        new
-                        {
-                            Id = 93,
-                            CountryName = "Latvia"
-                        },
-                        new
-                        {
-                            Id = 94,
-                            CountryName = "Lebanon"
-                        },
-                        new
-                        {
-                            Id = 95,
-                            CountryName = "Lesotho"
-                        },
-                        new
-                        {
-                            Id = 96,
-                            CountryName = "Liberia"
-                        },
-                        new
-                        {
-                            Id = 97,
-                            CountryName = "Libya"
-                        },
-                        new
-                        {
-                            Id = 98,
-                            CountryName = "Liechtenstein"
-                        },
-                        new
-                        {
-                            Id = 99,
-                            CountryName = "Lithuania"
-                        },
-                        new
-                        {
-                            Id = 100,
-                            CountryName = "Luxembourg"
-                        },
-                        new
-                        {
-                            Id = 101,
-                            CountryName = "Madagascar"
-                        },
-                        new
-                        {
-                            Id = 102,
-                            CountryName = "Malawi"
-                        },
-                        new
-                        {
-                            Id = 103,
-                            CountryName = "Malaysia"
-                        },
-                        new
-                        {
-                            Id = 104,
-                            CountryName = "Maldives"
-                        },
-                        new
-                        {
-                            Id = 105,
-                            CountryName = "Mali"
-                        },
-                        new
-                        {
-                            Id = 106,
-                            CountryName = "Malta"
-                        },
-                        new
-                        {
-                            Id = 107,
-                            CountryName = "Marshall Islands"
-                        },
-                        new
-                        {
-                            Id = 108,
-                            CountryName = "Mauritania"
-                        },
-                        new
-                        {
-                            Id = 109,
-                            CountryName = "Mauritius"
-                        },
-                        new
-                        {
-                            Id = 110,
-                            CountryName = "Mexico"
-                        },
-                        new
-                        {
-                            Id = 111,
-                            CountryName = "Federated States of Micronesia"
-                        },
-                        new
-                        {
-                            Id = 112,
-                            CountryName = "Moldova"
-                        },
-                        new
-                        {
-                            Id = 113,
-                            CountryName = "Monaco"
-                        },
-                        new
-                        {
-                            Id = 114,
-                            CountryName = "Mongolia"
-                        },
-                        new
-                        {
-                            Id = 115,
-                            CountryName = "Montenegro"
-                        },
-                        new
-                        {
-                            Id = 116,
-                            CountryName = "Morocco"
-                        },
-                        new
-                        {
-                            Id = 117,
-                            CountryName = "Mozambique"
-                        },
-                        new
-                        {
-                            Id = 118,
-                            CountryName = "Myanmar (Burma)"
-                        },
-                        new
-                        {
-                            Id = 119,
-                            CountryName = "Namibia"
-                        },
-                        new
-                        {
-                            Id = 120,
-                            CountryName = "Nauru"
-                        },
-                        new
-                        {
-                            Id = 121,
-                            CountryName = "Nepal"
-                        },
-                        new
-                        {
-                            Id = 122,
-                            CountryName = "Netherlands"
-                        },
-                        new
-                        {
-                            Id = 123,
-                            CountryName = "New Zealand"
-                        },
-                        new
-                        {
-                            Id = 124,
-                            CountryName = "Nicaragua"
-                        },
-                        new
-                        {
-                            Id = 125,
-                            CountryName = "Niger"
-                        },
-                        new
-                        {
-                            Id = 126,
-                            CountryName = "Nigeria"
-                        },
-                        new
-                        {
-                            Id = 127,
-                            CountryName = "North Korea"
-                        },
-                        new
-                        {
-                            Id = 128,
-                            CountryName = "North Macedonia"
-                        },
-                        new
-                        {
-                            Id = 129,
-                            CountryName = "Norway"
-                        },
-                        new
-                        {
-                            Id = 130,
-                            CountryName = "Oman"
-                        },
-                        new
-                        {
-                            Id = 131,
-                            CountryName = "Pakistan"
-                        },
-                        new
-                        {
-                            Id = 132,
-                            CountryName = "Palau"
-                        },
-                        new
-                        {
-                            Id = 133,
-                            CountryName = "Panama"
-                        },
-                        new
-                        {
-                            Id = 134,
-                            CountryName = "Papua New Guinea"
-                        },
-                        new
-                        {
-                            Id = 135,
-                            CountryName = "Paraguay"
-                        },
-                        new
-                        {
-                            Id = 136,
-                            CountryName = "Peru"
-                        },
-                        new
-                        {
-                            Id = 137,
-                            CountryName = "Philippines"
-                        },
-                        new
-                        {
-                            Id = 138,
-                            CountryName = "Poland"
-                        },
-                        new
-                        {
-                            Id = 139,
-                            CountryName = "Portugal"
-                        },
-                        new
-                        {
-                            Id = 140,
-                            CountryName = "Qatar"
-                        },
-                        new
-                        {
-                            Id = 141,
-                            CountryName = "Romania"
-                        },
-                        new
-                        {
-                            Id = 142,
-                            CountryName = "Russia"
-                        },
-                        new
-                        {
-                            Id = 143,
-                            CountryName = "Rwanda"
-                        },
-                        new
-                        {
-                            Id = 144,
-                            CountryName = "St Kitts and Nevis"
-                        },
-                        new
-                        {
-                            Id = 145,
-                            CountryName = "St Lucia"
-                        },
-                        new
-                        {
-                            Id = 146,
-                            CountryName = "St Vincent"
-                        },
-                        new
-                        {
-                            Id = 147,
-                            CountryName = "Samoa"
-                        },
-                        new
-                        {
-                            Id = 148,
-                            CountryName = "San Marino"
-                        },
-                        new
-                        {
-                            Id = 149,
-                            CountryName = "Sao Tome and Principe"
-                        },
-                        new
-                        {
-                            Id = 150,
-                            CountryName = "Saudi Arabia"
-                        },
-                        new
-                        {
-                            Id = 151,
-                            CountryName = "Senegal"
-                        },
-                        new
-                        {
-                            Id = 152,
-                            CountryName = "Serbia"
-                        },
-                        new
-                        {
-                            Id = 153,
-                            CountryName = "Seychelles"
-                        },
-                        new
-                        {
-                            Id = 154,
-                            CountryName = "Sierra Leone"
-                        },
-                        new
-                        {
-                            Id = 155,
-                            CountryName = "Singapore"
-                        },
-                        new
-                        {
-                            Id = 156,
-                            CountryName = "Slovakia"
-                        },
-                        new
-                        {
-                            Id = 157,
-                            CountryName = "Slovenia"
-                        },
-                        new
-                        {
-                            Id = 158,
-                            CountryName = "Solomon Islands"
-                        },
-                        new
-                        {
-                            Id = 159,
-                            CountryName = "Somalia"
-                        },
-                        new
-                        {
-                            Id = 160,
-                            CountryName = "South Africa"
-                        },
-                        new
-                        {
-                            Id = 161,
-                            CountryName = "South Korea"
-                        },
-                        new
-                        {
-                            Id = 162,
-                            CountryName = "South Sudan"
-                        },
-                        new
-                        {
-                            Id = 163,
-                            CountryName = "Spain"
-                        },
-                        new
-                        {
-                            Id = 164,
-                            CountryName = "Sri Lanka"
-                        },
-                        new
-                        {
-                            Id = 168,
-                            CountryName = "Sudan"
-                        },
-                        new
-                        {
-                            Id = 169,
-                            CountryName = "Suriname"
-                        },
-                        new
-                        {
-                            Id = 170,
-                            CountryName = "Sweden"
-                        },
-                        new
-                        {
-                            Id = 171,
-                            CountryName = "Switzerland"
-                        },
-                        new
-                        {
-                            Id = 172,
-                            CountryName = "Syria"
-                        },
-                        new
-                        {
-                            Id = 173,
-                            CountryName = "Tajikistan"
-                        },
-                        new
-                        {
-                            Id = 174,
-                            CountryName = "Tanzania"
-                        },
-                        new
-                        {
-                            Id = 175,
-                            CountryName = "Thailand"
-                        },
-                        new
-                        {
-                            Id = 176,
-                            CountryName = "The Bahamas"
-                        },
-                        new
-                        {
-                            Id = 177,
-                            CountryName = "The Gambia"
-                        },
-                        new
-                        {
-                            Id = 178,
-                            CountryName = "Togo"
-                        },
-                        new
-                        {
-                            Id = 179,
-                            CountryName = "Tonga"
-                        },
-                        new
-                        {
-                            Id = 180,
-                            CountryName = "Trinidad and Tobago"
-                        },
-                        new
-                        {
-                            Id = 181,
-                            CountryName = "Tunisia"
-                        },
-                        new
-                        {
-                            Id = 182,
-                            CountryName = "Turkey"
-                        },
-                        new
-                        {
-                            Id = 183,
-                            CountryName = "Turkmenistan"
-                        },
-                        new
-                        {
-                            Id = 184,
-                            CountryName = "Tuvalu"
-                        },
-                        new
-                        {
-                            Id = 185,
-                            CountryName = "Uganda"
-                        },
-                        new
-                        {
-                            Id = 186,
-                            CountryName = "Ukraine"
-                        },
-                        new
-                        {
-                            Id = 187,
-                            CountryName = "United Arab Emirates"
-                        },
-                        new
-                        {
-                            Id = 188,
-                            CountryName = "United Kingdom"
-                        },
-                        new
-                        {
-                            Id = 189,
-                            CountryName = "United States"
-                        },
-                        new
-                        {
-                            Id = 190,
-                            CountryName = "Uruguay "
-                        },
-                        new
-                        {
-                            Id = 191,
-                            CountryName = "Uzbekistan "
-                        },
-                        new
-                        {
-                            Id = 192,
-                            CountryName = "Vanuatu"
-                        },
-                        new
-                        {
-                            Id = 193,
-                            CountryName = "Vatican City"
-                        },
-                        new
-                        {
-                            Id = 194,
-                            CountryName = "Venezuela"
-                        },
-                        new
-                        {
-                            Id = 195,
-                            CountryName = "Vietnam"
-                        },
-                        new
-                        {
-                            Id = 196,
-                            CountryName = "Yemen"
-                        },
-                        new
-                        {
-                            Id = 197,
-                            CountryName = "Zambia"
-                        },
-                        new
-                        {
-                            Id = 198,
-                            CountryName = "Zimbabwe"
-                        },
-                        new
-                        {
-                            Id = 199,
-                            CountryName = "Akrotiri"
-                        },
-                        new
-                        {
-                            Id = 200,
-                            CountryName = "Anguilla"
-                        },
-                        new
-                        {
-                            Id = 201,
-                            CountryName = "Bermuda"
-                        },
-                        new
-                        {
-                            Id = 202,
-                            CountryName = "British Antarctic Territory"
-                        },
-                        new
-                        {
-                            Id = 203,
-                            CountryName = "British Indian Ocean Territory"
-                        },
-                        new
-                        {
-                            Id = 204,
-                            CountryName = "British Virgin Islands"
-                        },
-                        new
-                        {
-                            Id = 205,
-                            CountryName = "Cayman Islands"
-                        },
-                        new
-                        {
-                            Id = 206,
-                            CountryName = "Dhekelia"
-                        },
-                        new
-                        {
-                            Id = 207,
-                            CountryName = "Falkland Islands"
-                        },
-                        new
-                        {
-                            Id = 208,
-                            CountryName = "Gibraltar"
-                        },
-                        new
-                        {
-                            Id = 209,
-                            CountryName = "Montserrat"
-                        },
-                        new
-                        {
-                            Id = 210,
-                            CountryName = "Pitcairn, Henderson, Ducie and Oeno Islands"
-                        },
-                        new
-                        {
-                            Id = 211,
-                            CountryName = "St Helena, Ascension and Tristan da Cunha"
-                        },
-                        new
-                        {
-                            Id = 212,
-                            CountryName = "South Georgia and South Sandwich Islands"
-                        },
-                        new
-                        {
-                            Id = 213,
-                            CountryName = "Turks and Caicos Islands"
-                        });
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.IdentityProfile", b =>
@@ -1658,193 +460,31 @@ namespace DVSRegister.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistration", b =>
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProceedApplicationConsentToken", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationReviewStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("CompanyRegistrationNumber")
-                        .IsRequired()
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<int>("ConfirmAccuracy")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("CreatedDate")
+                    b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("varchar(254)");
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("HasParentCompany")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsApplicationSponsor")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("JobTitle")
+                    b.Property<string>("Token")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("ParentCompanyLocation")
-                        .HasColumnType("varchar(160)");
-
-                    b.Property<string>("ParentCompanyRegisteredName")
-                        .HasColumnType("varchar(160)");
-
-                    b.Property<string>("RegisteredCompanyName")
+                    b.Property<string>("TokenId")
                         .IsRequired()
-                        .HasColumnType("varchar(160)");
-
-                    b.Property<string>("SponsorEmail")
-                        .HasColumnType("varchar(254)");
-
-                    b.Property<string>("SponsorFullName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SponsorJobTitle")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SponsorTelephoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TelephoneNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TradingName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("URN")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("PreRegistration");
-                });
+                    b.HasIndex("ServiceId");
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistrationCountryMapping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CountryId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PreRegistrationId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CountryId");
-
-                    b.HasIndex("PreRegistrationId");
-
-                    b.ToTable("PreRegistrationCountryMapping");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistrationReview", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ApplicationReviewStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsBannedPoliticalApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsCheckListApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsCompanyApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsCountryApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDirectorshipsAndRelationApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDirectorshipsApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsECCheckApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsProvidersWebpageApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsSanctionListApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTARICApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTradingAddressApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsUNFCApproved")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("PreRegistrationId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("PrimaryCheckTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("PrimaryCheckUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("RejectionReason")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("SecondaryCheckTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int?>("SecondaryCheckUserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PreRegistrationId")
-                        .IsUnique();
-
-                    b.HasIndex("PrimaryCheckUserId");
-
-                    b.HasIndex("SecondaryCheckUserId");
-
-                    b.ToTable("PreRegistrationReview");
+                    b.ToTable("ProceedApplicationConsentToken");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Provider", b =>
@@ -1864,9 +504,6 @@ namespace DVSRegister.Data.Migrations
 
                     b.Property<DateTime?>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("PreRegistrationId")
-                        .HasColumnType("integer");
 
                     b.Property<int>("ProviderStatus")
                         .HasColumnType("integer");
@@ -1902,8 +539,6 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PreRegistrationId");
 
                     b.HasIndex("SearchVector");
 
@@ -2015,6 +650,87 @@ namespace DVSRegister.Data.Migrations
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.ToTable("ProviderProfile");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.PublicInterestCheck", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsBannedPoliticalApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCompanyHouseNumberApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDirectorshipsAndRelationApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDirectorshipsApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsECCheckApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsProvidersWebpageApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsSanctionListApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTARICApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsTradingAddressApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsUNFCApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("PrimaryCheckComment")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("PrimaryCheckTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("PrimaryCheckUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProviderProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PublicInterestCheckStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RejectionReason")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SecondaryCheckComment")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("SecondaryCheckTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("SecondaryCheckUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrimaryCheckUserId");
+
+                    b.HasIndex("ProviderProfileId");
+
+                    b.HasIndex("SecondaryCheckUserId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("PublicInterestCheck");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.QualityLevel", b =>
@@ -2362,58 +1078,6 @@ namespace DVSRegister.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.UniqueReferenceNumber", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CheckedByCAB")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("LastCheckedTimeStamp")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int?>("PreRegistrationId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("RegisteredDIPName")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("ReleasedTimeStamp")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("URN")
-                        .IsRequired()
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<int>("URNStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Validity")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PreRegistrationId");
-
-                    b.ToTable("UniqueReferenceNumber");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -2458,102 +1122,26 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Cab");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoIdentityProfileMapping", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.CertificateInformation", "CertificateInformation")
-                        .WithMany("CertificateInfoIdentityProfileMappings")
-                        .HasForeignKey("CertificateInformationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.IdentityProfile", "IdentityProfile")
-                        .WithMany()
-                        .HasForeignKey("IdentityProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CertificateInformation");
-
-                    b.Navigation("IdentityProfile");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoRoleMapping", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.CertificateInformation", "CertificateInformation")
-                        .WithMany("CertificateInfoRoleMappings")
-                        .HasForeignKey("CertificateInformationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CertificateInformation");
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInfoSupSchemeMapping", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.CertificateInformation", "CertificateInformation")
-                        .WithMany("CertificateInfoSupSchemeMappings")
-                        .HasForeignKey("CertificateInformationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.SupplementaryScheme", "SupplementaryScheme")
-                        .WithMany()
-                        .HasForeignKey("SupplementarySchemeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CertificateInformation");
-
-                    b.Navigation("SupplementaryScheme");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInformation", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.Provider", "Provider")
-                        .WithMany("CertificateInformation")
-                        .HasForeignKey("ProviderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Provider");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReview", b =>
                 {
-                    b.HasOne("DVSRegister.Data.Entities.CertificateInformation", "CertificateInformation")
+                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "ProviderProfile")
                         .WithMany()
-                        .HasForeignKey("CertificateInformationId")
+                        .HasForeignKey("ProviProviderProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DVSRegister.Data.Entities.PreRegistration", "PreRegistration")
-                        .WithMany()
-                        .HasForeignKey("PreRegistrationId")
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithOne("CertificateReview")
+                        .HasForeignKey("DVSRegister.Data.Entities.CertificateReview", "ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DVSRegister.Data.Entities.Provider", "Provider")
-                        .WithMany()
-                        .HasForeignKey("ProviderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("ProviderProfile");
 
-                    b.Navigation("CertificateInformation");
-
-                    b.Navigation("PreRegistration");
-
-                    b.Navigation("Provider");
+                    b.Navigation("Service");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReviewRejectionReasonMappings", b =>
+            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReviewRejectionReasonMapping", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.CertificateReviewRejectionReason", "CertificateReviewRejectionReason")
                         .WithMany()
@@ -2562,7 +1150,7 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("DVSRegister.Data.Entities.CertificateReview", "CetificateReview")
-                        .WithMany("CertificateReviewRejectionReasonMappings")
+                        .WithMany("CertificateReviewRejectionReasonMapping")
                         .HasForeignKey("CetificateReviewId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2572,70 +1160,15 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("CetificateReview");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.ConsentToken", b =>
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProceedApplicationConsentToken", b =>
                 {
-                    b.HasOne("DVSRegister.Data.Entities.CertificateReview", "CertificateReview")
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
                         .WithMany()
-                        .HasForeignKey("CertificateReviewId")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CertificateReview");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistrationCountryMapping", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.Country", "Country")
-                        .WithMany()
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.PreRegistration", "PreRegistration")
-                        .WithMany("PreRegistrationCountryMappings")
-                        .HasForeignKey("PreRegistrationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Country");
-
-                    b.Navigation("PreRegistration");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistrationReview", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.PreRegistration", "PreRegistration")
-                        .WithOne("PreRegistrationReview")
-                        .HasForeignKey("DVSRegister.Data.Entities.PreRegistrationReview", "PreRegistrationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.User", "PrimaryCheckUser")
-                        .WithMany()
-                        .HasForeignKey("PrimaryCheckUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.User", "SecondaryCheckUser")
-                        .WithMany()
-                        .HasForeignKey("SecondaryCheckUserId");
-
-                    b.Navigation("PreRegistration");
-
-                    b.Navigation("PrimaryCheckUser");
-
-                    b.Navigation("SecondaryCheckUser");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.Provider", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.PreRegistration", "PreRegistration")
-                        .WithMany()
-                        .HasForeignKey("PreRegistrationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PreRegistration");
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
@@ -2647,6 +1180,39 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("CabUser");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.PublicInterestCheck", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.User", "PrimaryCheckUser")
+                        .WithMany()
+                        .HasForeignKey("PrimaryCheckUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
+                        .WithMany()
+                        .HasForeignKey("ProviderProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "SecondaryCheckUser")
+                        .WithMany()
+                        .HasForeignKey("SecondaryCheckUserId");
+
+                    b.HasOne("DVSRegister.Data.Entities.Service", "PreRegistration")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PreRegistration");
+
+                    b.Navigation("PrimaryCheckUser");
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("SecondaryCheckUser");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.RegisterPublishLog", b =>
@@ -2755,40 +1321,9 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("SupplementaryScheme");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.UniqueReferenceNumber", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.PreRegistration", "PreRegistration")
-                        .WithMany()
-                        .HasForeignKey("PreRegistrationId");
-
-                    b.Navigation("PreRegistration");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.CertificateInformation", b =>
-                {
-                    b.Navigation("CertificateInfoIdentityProfileMappings");
-
-                    b.Navigation("CertificateInfoRoleMappings");
-
-                    b.Navigation("CertificateInfoSupSchemeMappings");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.CertificateReview", b =>
                 {
-                    b.Navigation("CertificateReviewRejectionReasonMappings");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.PreRegistration", b =>
-                {
-                    b.Navigation("PreRegistrationCountryMappings");
-
-                    b.Navigation("PreRegistrationReview")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.Provider", b =>
-                {
-                    b.Navigation("CertificateInformation");
+                    b.Navigation("CertificateReviewRejectionReasonMapping");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
@@ -2798,6 +1333,9 @@ namespace DVSRegister.Data.Migrations
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
                 {
+                    b.Navigation("CertificateReview")
+                        .IsRequired();
+
                     b.Navigation("ServiceIdentityProfileMapping");
 
                     b.Navigation("ServiceQualityLevelMapping");
