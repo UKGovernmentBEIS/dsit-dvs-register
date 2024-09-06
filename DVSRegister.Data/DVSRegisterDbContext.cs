@@ -19,7 +19,7 @@ namespace DVSRegister.Data
         public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; }       
         public DbSet<Provider> Provider { get; set; } //To Do : remove
         public DbSet<ConsentToken> ConsentToken { get; set; }//To Do : update
-        public DbSet<RegisterPublishLog> RegisterPublishLog { get; set; }  //To Do : update   
+       // public DbSet<RegisterPublishLog> RegisterPublishLog { get; set; }  //To Do : update   
         public DbSet<Cab> Cab { get; set; }
         public DbSet<CabUser> CabUser { get; set; }
         public DbSet<ProviderProfile> ProviderProfile { get; set; }
