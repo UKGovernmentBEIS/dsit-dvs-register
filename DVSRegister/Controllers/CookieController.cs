@@ -1,5 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.Cookies;
-using DVSRegister.BusinessLogic.Services.Cookies;
+using DVSRegister.Cookies;
 using DVSRegister.Models.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -8,10 +8,10 @@ namespace DVSRegister.Controllers;
 
 public class CookieController : Controller
 {
-    private readonly ICookieService _cookieService;
+    private readonly CookieService _cookieService;
     public readonly CookieServiceConfiguration _configuration;
 
-    public CookieController(ICookieService cookieService, IOptions<CookieServiceConfiguration> config)
+    public CookieController(CookieService cookieService, IOptions<CookieServiceConfiguration> config)
     {
         this._cookieService = cookieService;
         this._configuration = config.Value;
