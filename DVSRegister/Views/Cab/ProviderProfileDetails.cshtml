@@ -41,6 +41,26 @@
                                     @Model.TradingName
                                 </dd>
                             </div>
+                            @if(Model.HasParentCompany)
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Registered name of parent company
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.ParentCompanyRegisteredName
+                                    </dd>
+                                </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Location of parent company
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.ParentCompanyLocation
+                                    </dd>
+                                </div>
+                            }
                         </dl>
                     </div>
                 </div>

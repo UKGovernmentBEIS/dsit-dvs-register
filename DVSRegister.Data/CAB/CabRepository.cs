@@ -46,13 +46,16 @@ namespace DVSRegister.Data.CAB
             {
                 var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfile.Id);
 
-                if (existingProvider !=null)
+                if (existingProvider !=null) // Update is not implemented in UI, cna be used for future enhancements
                 {
                     existingProvider.RegisteredName = providerProfile.RegisteredName;
                     existingProvider.TradingName = providerProfile.TradingName;
                     existingProvider.HasRegistrationNumber = providerProfile.HasRegistrationNumber;
                     existingProvider.CompanyRegistrationNumber = providerProfile.CompanyRegistrationNumber;
                     existingProvider.DUNSNumber = providerProfile.DUNSNumber;
+                    existingProvider.HasParentCompany = providerProfile.HasParentCompany;
+                    existingProvider.ParentCompanyLocation = providerProfile.ParentCompanyLocation;
+                    existingProvider.ParentCompanyRegisteredName = providerProfile.ParentCompanyRegisteredName;
                     existingProvider.PrimaryContactFullName= providerProfile.PrimaryContactFullName;
                     existingProvider.PrimaryContactJobTitle= providerProfile.PrimaryContactJobTitle;
                     existingProvider.PrimaryContactEmail = providerProfile.PrimaryContactEmail;
