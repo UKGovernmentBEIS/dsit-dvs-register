@@ -37,6 +37,7 @@ namespace DVSRegister.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             modelBuilder.Entity<ProviderProfile>()
             .HasGeneratedTsVectorColumn(p => p.SearchVector, "english", p => new { p.RegisteredName, p.TradingName })
             .HasIndex(p => p.SearchVector)
@@ -56,13 +57,25 @@ namespace DVSRegister.Data
             new QualityLevel { Id =6, Level = "High", QualityType = QualityTypeEnum.Protection },
             new QualityLevel { Id =7, Level = "Very High", QualityType = QualityTypeEnum.Protection });
 
-            modelBuilder.Entity<Cab>().HasData(
-            new Cab { Id =1, CabName = "EY", CreatedTime = DateTime.UtcNow },
-            new Cab { Id =2, CabName = "DSIT", CreatedTime = DateTime.UtcNow },
-            new Cab { Id =3, CabName = "ACCS", CreatedTime = DateTime.UtcNow },
-            new Cab { Id =4, CabName = "Kantara Initiative", CreatedTime = DateTime.UtcNow });
+            if(environment != "Production")
+            {
+               modelBuilder.Entity<Cab>().HasData(
+               new Cab { Id =1, CabName = "EY", CreatedTime = DateTime.UtcNow },
+               new Cab { Id =2, CabName = "DSIT", CreatedTime = DateTime.UtcNow },
+               new Cab { Id =3, CabName = "ACCS", CreatedTime = DateTime.UtcNow },
+               new Cab { Id =4, CabName = "Kantara", CreatedTime = DateTime.UtcNow },           
+               new Cab { Id =6, CabName = "NQA", CreatedTime = DateTime.UtcNow },
+               new Cab { Id =7, CabName = "BSI", CreatedTime = DateTime.UtcNow });
 
-
+            }
+            else
+            {
+              modelBuilder.Entity<Cab>().HasData(
+               new Cab { Id =1, CabName = "ACCS", CreatedTime = DateTime.UtcNow },
+               new Cab { Id =2, CabName = "Kantara", CreatedTime = DateTime.UtcNow },
+               new Cab { Id =3, CabName = "NQA", CreatedTime = DateTime.UtcNow },
+               new Cab { Id =4, CabName = "BSI", CreatedTime = DateTime.UtcNow });
+            }
 
             modelBuilder.Entity<Provider>()
             .HasGeneratedTsVectorColumn( p => p.SearchVector,  "english", p => new { p.RegisteredName, p.TradingName })  

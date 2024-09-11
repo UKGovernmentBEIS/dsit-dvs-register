@@ -15,6 +15,9 @@ namespace DVSRegister.Data.Entities
         public bool HasRegistrationNumber {  get; set; }
         public string? CompanyRegistrationNumber { get; set; }
         public string? DUNSNumber { get; set; }
+        public bool HasParentCompany { get; set; }
+        public string? ParentCompanyRegisteredName { get; set; }
+        public string? ParentCompanyLocation { get; set; }
         public string PrimaryContactFullName { get; set; }
         public string PrimaryContactJobTitle { get; set; }
         public string PrimaryContactEmail { get; set; }
