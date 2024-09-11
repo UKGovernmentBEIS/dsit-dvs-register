@@ -38,6 +38,7 @@ namespace DVSRegister.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            Console.WriteLine(environment);
             modelBuilder.Entity<ProviderProfile>()
             .HasGeneratedTsVectorColumn(p => p.SearchVector, "english", p => new { p.RegisteredName, p.TradingName })
             .HasIndex(p => p.SearchVector)

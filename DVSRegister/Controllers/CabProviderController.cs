@@ -142,7 +142,7 @@ namespace DVSRegister.Controllers
 
         }
         #endregion
-
+      
         #region Registration number
 
         [HttpGet("company-number-input")]
@@ -163,7 +163,7 @@ namespace DVSRegister.Controllers
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.CompanyRegistrationNumber = profileSummaryViewModel.CompanyRegistrationNumber;           
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PrimaryContact");
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("HasParentCompany");
             }
             else
             {
@@ -192,7 +192,7 @@ namespace DVSRegister.Controllers
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.DUNSNumber = profileSummaryViewModel.DUNSNumber;               
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PrimaryContact");
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("HasParentCompany");
             }
             else
             {
@@ -202,20 +202,123 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
+        #region HasParentCompany
+
+        [HttpGet("parent-company")]
+        public IActionResult HasParentCompany(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            return View(summaryViewModel);
+        }
+
+        [HttpPost("parent-company")]
+        public IActionResult SaveHasParentCompany(ProfileSummaryViewModel profileSummaryViewModel)
+        {
+            ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            profileSummaryViewModel.FromSummaryPage = false;
+            profileSummaryViewModel.HasRegistrationNumber = summaryViewModel.HasRegistrationNumber; // required to add condition for back link
+            if (ModelState["HasParentCompany"].Errors.Count == 0)
+            {
+                summaryViewModel.HasParentCompany = profileSummaryViewModel.HasParentCompany;
+                if (Convert.ToBoolean(summaryViewModel.HasParentCompany))
+                {                   
+                    HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
+                    return RedirectToAction("ParentCompanyRegisteredName", new { fromSummaryPage = fromSummaryPage });
+                }
+                else
+                {
+                    summaryViewModel.ParentCompanyLocation = null;
+                    summaryViewModel.ParentCompanyRegisteredName = null;
+                    HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
+                    return RedirectToAction("PrimaryContact", new { fromSummaryPage = fromSummaryPage });
+                }
+            }
+            else
+            {
+                return View("HasParentCompany", profileSummaryViewModel);
+            }
+
+        }
+
+        #endregion
+
+        #region Parent company registered name
+
+        [HttpGet("parent-company-registerd-name-input")]
+        public IActionResult ParentCompanyRegisteredName(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            return View(summaryViewModel);
+        }
+
+
+        [HttpPost("parent-company-registerd-name-input")]
+        public IActionResult SaveParentCompanyRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
+        {
+            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            profileSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["ParentCompanyRegisteredName"].Errors.Count == 0)
+            {
+                ProfileSummaryViewModel profileSummary = GetProfileSummary();
+                profileSummary.ParentCompanyRegisteredName = profileSummaryViewModel.ParentCompanyRegisteredName;
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("ParentCompanyLocation");
+            }
+            else
+            {
+                return View("ParentCompanyRegisteredName", profileSummaryViewModel);
+            }
+
+        }
+        #endregion
+
+        #region Parent company location
+
+        [HttpGet("parent-company-location-input")]
+        public IActionResult ParentCompanyLocation(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            return View(summaryViewModel);
+        }
+
+        [HttpPost("parent-company-location-input")]
+        public IActionResult SaveParentCompanyLocation(ProfileSummaryViewModel profileSummaryViewModel)
+        {
+            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            profileSummaryViewModel.FromSummaryPage = false;
+            if (ModelState["ParentCompanyLocation"].Errors.Count == 0)
+            {
+                ProfileSummaryViewModel profileSummary = GetProfileSummary();
+                profileSummary.ParentCompanyLocation = profileSummaryViewModel.ParentCompanyLocation;
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PrimaryContact");
+            }
+            else
+            {
+                return View("ParentCompanyLocation", profileSummaryViewModel);
+            }
+
+        }
+
+        #endregion
+
         #region Primary Contact
         [HttpGet("primary-contact-information")]
         public IActionResult PrimaryContact(bool fromSummaryPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;           
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
-            ViewBag.hasRegistrationNumber = profileSummaryViewModel.HasRegistrationNumber;
+            ViewBag.hasParentCompany = profileSummaryViewModel.HasParentCompany;          
             return View(profileSummaryViewModel.PrimaryContact);
         }
         [HttpPost("primary-contact-information")]
         public IActionResult SavePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
         {
-            bool fromSummaryPage = primaryContactViewModel.FromSummaryPage;
-        
+            bool fromSummaryPage = primaryContactViewModel.FromSummaryPage;        
             primaryContactViewModel.FromSummaryPage = false;
             if (ModelState.IsValid)
             {
@@ -259,8 +362,6 @@ namespace DVSRegister.Controllers
             }
         }
         #endregion
-
-
 
         #region Public contact email
 
@@ -319,7 +420,6 @@ namespace DVSRegister.Controllers
             }
         }
         #endregion
-
 
         #region Website address
         [HttpGet("public-website")]
@@ -416,7 +516,7 @@ namespace DVSRegister.Controllers
         {
             
             ProviderProfileDto providerDto = null;
-            if (model != null && !string.IsNullOrEmpty(model.RegisteredName) && !string.IsNullOrEmpty(model.TradingName) && model.HasRegistrationNumber!=null
+            if (model != null && !string.IsNullOrEmpty(model.RegisteredName) && !string.IsNullOrEmpty(model.TradingName) && model.HasRegistrationNumber!=null && model.HasParentCompany!=null
                 && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactFullName) && !string.IsNullOrEmpty(model?.PrimaryContact.PrimaryContactJobTitle)
                 && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactEmail) && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactTelephoneNumber)
                 && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactFullName) && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactJobTitle)
@@ -430,6 +530,9 @@ namespace DVSRegister.Controllers
                 providerDto.HasRegistrationNumber = model.HasRegistrationNumber??false;
                 providerDto.CompanyRegistrationNumber = model.CompanyRegistrationNumber??string.Empty;
                 providerDto.DUNSNumber = model.DUNSNumber??string.Empty;
+                providerDto.HasParentCompany =  model.HasParentCompany??false;
+                providerDto.ParentCompanyRegisteredName = model.ParentCompanyRegisteredName;
+                providerDto.ParentCompanyLocation = model.ParentCompanyLocation;
                 providerDto.PrimaryContactFullName = model.PrimaryContact.PrimaryContactFullName;
                 providerDto.PrimaryContactJobTitle = model.PrimaryContact.PrimaryContactJobTitle;
                 providerDto.PrimaryContactEmail = model.PrimaryContact.PrimaryContactEmail;

@@ -30,7 +30,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseMiddleware<BasicAuthMiddleware>();
+
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
+{
+    app.UseMiddleware<BasicAuthMiddleware>();
+}
+else
+{
+    app.UseMiddleware<ExceptionHandlerMiddleware>();
+}
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCookiePolicy();
