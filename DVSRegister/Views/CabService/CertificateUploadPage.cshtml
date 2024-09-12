@@ -40,8 +40,8 @@
                     <h1 class="govuk-heading-xl">Upload the  certificate of conformity for this service</h1>
 
                     <p class="govuk-body">
-                        You must make sure that you name the file correctly. Please use the following
-                        standardised format: Certificate DateOfIssue TradingName ServiceName.pdf
+                       Please use the following
+                        standardised format to name your file: Certificate-DateOfIssue-TradingName-ServiceName.pdf
                     </p>
 
                     <p class="govuk-body">
@@ -71,12 +71,8 @@
 
                     @if (ViewData.Model?.FileUploadedSuccessfully == true)
                     {
+                        <p class="govuk-body">1 document</p>
                         <dl class="govuk-summary-list">
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    1 document
-                                </dt>
-                            </div>
                             <div class="govuk-summary-list__row">
                                 <dd class="govuk-summary-list__value">
                                     @Model.FileName

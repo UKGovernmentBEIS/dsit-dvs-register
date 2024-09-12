@@ -14,7 +14,7 @@
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
-                    <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s telephone number   </h1>
+                    <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s public telephone number   </h1>
 
                     @if (Html.ViewData?.ModelState.ContainsKey("ProviderTelephoneNumber") == true)
                     {
@@ -39,7 +39,7 @@
                  var telephoneNumberViewModel = new TextBoxViewModel
                 {
                     PropertyName = "ProviderTelephoneNumber",
-                    Label = "Telephone number",
+                    Label = "Public telephone number",
                     Value = Model?.ProviderTelephoneNumber??string.Empty,
                     Class = "govuk-input",
                     Hint = "For international numbers include the country code",

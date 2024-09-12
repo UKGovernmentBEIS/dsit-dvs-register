@@ -41,7 +41,7 @@
                                 </div>
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
-                                        Website address
+                                        URL link to the service
                                     </dt>
                                     <dd class="govuk-summary-list__value">
                                         @Model.ServiceURL
@@ -66,7 +66,7 @@
                                
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
-                                        Name of role(s) certified
+                                        Roles certified
                                         against
                                     </dt>                                  
                                     <dd class="govuk-summary-list__value">
@@ -80,7 +80,7 @@
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "ProviderRoles", "CabService", new { fromSummaryPage = true },
-                                                 new { @class = "govuk-link", @aria_label = "Change the role(s) from the UK digital identity and attributes trust framework that apply to the provider's service" })
+                                                 new { @class = "govuk-link", @aria_label = "Change the roles from the UK digital identity and attributes trust framework that apply to the provider's service" })
                                     </dd>
                                 </div>
 
@@ -285,11 +285,11 @@
                 <strong class="govuk-warning-text__text">
                     <span class="govuk-visually-hidden">Warning</span>
                     If DSIT approves this submission, the information you have provided
-                    will be publicly available.
+                    will be publicly available
                 </strong>
             </div>
             <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
-                Confirm and Continue
+                Submit
             </button>
         </main>
     </div>

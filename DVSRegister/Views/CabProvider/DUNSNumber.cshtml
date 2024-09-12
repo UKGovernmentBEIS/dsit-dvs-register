@@ -19,6 +19,10 @@
                     The digital identity and attribute service provider’s  D-U-N-S Number
                 </h1>
 
+                <p class="govuk-body">
+                    You should ask the service provider to provide this information.
+                </p>
+
                 @if (Html.ViewData?.ModelState.ContainsKey("DUNSNumber") == true)
                 {
                     var errors = Html.ViewData?.ModelState["DUNSNumber"]?.Errors;
