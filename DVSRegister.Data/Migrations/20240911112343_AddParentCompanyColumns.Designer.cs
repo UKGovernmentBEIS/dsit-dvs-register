@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using NpgsqlTypes;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240911112343_AddParentCompanyColumns")]
+    partial class AddParentCompanyColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,37 +50,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(95)
+                            CreatedTime = new DateTime(2024, 9, 11, 11, 23, 42, 109, DateTimeKind.Utc).AddTicks(3674)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(100)
+                            CreatedTime = new DateTime(2024, 9, 11, 11, 23, 42, 109, DateTimeKind.Utc).AddTicks(3678)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(101)
+                            CreatedTime = new DateTime(2024, 9, 11, 11, 23, 42, 109, DateTimeKind.Utc).AddTicks(3680)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(102)
+                            CreatedTime = new DateTime(2024, 9, 11, 11, 23, 42, 109, DateTimeKind.Utc).AddTicks(3681)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(104)
+                            CreatedTime = new DateTime(2024, 9, 11, 11, 23, 42, 109, DateTimeKind.Utc).AddTicks(3682)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(105)
+                            CreatedTime = new DateTime(2024, 9, 11, 11, 23, 42, 109, DateTimeKind.Utc).AddTicks(3683)
                         });
                 });
 

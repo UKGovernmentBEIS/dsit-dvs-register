@@ -106,7 +106,39 @@
                                     </dd>
                                 </div>
                                     
-                                }                            
+                                }    
+                                
+
+                                
+                                @if (Convert.ToBoolean(Model.HasParentCompany))
+                                {
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            Registered name of parent company
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @Model.ParentCompanyRegisteredName
+                                        </dd>
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "ParentCompanyRegisteredName", "CabProvider", new { fromSummaryPage = true }, new
+                                                { @class = "govuk-link", @aria_label = "Change digital identity and attribute service parent company registered name" })
+                                        </dd>
+                                    </div>
+
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            Location of parent company
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @Model.ParentCompanyLocation
+                                        </dd>
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "ParentCompanyLocation", "CabProvider", new { fromSummaryPage = true }, new
+                                                { @class = "govuk-link", @aria_label = "Change digital identity and attribute service parent company location" })
+                                        </dd>
+                                    </div>
+                        
+                                }
 
                             </dl>
                         </div>

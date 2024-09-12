@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using NpgsqlTypes;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240911173022_DropRegisterPublishLog")]
+    partial class DropRegisterPublishLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,37 +50,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(95)
+                            CreatedTime = new DateTime(2024, 9, 11, 17, 30, 21, 865, DateTimeKind.Utc).AddTicks(8811)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(100)
+                            CreatedTime = new DateTime(2024, 9, 11, 17, 30, 21, 865, DateTimeKind.Utc).AddTicks(8813)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(101)
+                            CreatedTime = new DateTime(2024, 9, 11, 17, 30, 21, 865, DateTimeKind.Utc).AddTicks(8815)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(102)
+                            CreatedTime = new DateTime(2024, 9, 11, 17, 30, 21, 865, DateTimeKind.Utc).AddTicks(8816)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(104)
+                            CreatedTime = new DateTime(2024, 9, 11, 17, 30, 21, 865, DateTimeKind.Utc).AddTicks(8817)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 9, 11, 17, 34, 1, 364, DateTimeKind.Utc).AddTicks(105)
+                            CreatedTime = new DateTime(2024, 9, 11, 17, 30, 21, 865, DateTimeKind.Utc).AddTicks(8818)
                         });
                 });
 
@@ -818,37 +821,6 @@ namespace DVSRegister.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.RegisterPublishLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProviderName")
-                        .HasColumnType("text");
-
-                    b.Property<int>("ProviderProfileId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Services")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProviderProfileId");
-
-                    b.ToTable("RegisterPublishLog");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -1234,17 +1206,6 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Provider");
 
                     b.Navigation("SecondaryCheckUser");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.RegisterPublishLog", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
-                        .WithMany()
-                        .HasForeignKey("ProviderProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Provider");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>

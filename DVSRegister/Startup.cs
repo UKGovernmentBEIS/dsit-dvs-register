@@ -5,11 +5,10 @@ using DVSRegister.BusinessLogic;
 using DVSRegister.BusinessLogic.Models.Cookies;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.BusinessLogic.Services.Cookies;
-using DVSRegister.BusinessLogic.Services.GoogleAnalytics;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.Cookies;
 using DVSRegister.Data;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Repositories;
@@ -44,8 +43,6 @@ namespace DVSRegister
             ConfigureDvsRegisterServices(services);
             ConfigureAutomapperServices(services);
             ConfigureCookieService(services);
-            ConfigureGoogleAnalyticsService(services);
-
             ConfigureS3Client(services);
             ConfigureS3FileWriter(services);
         }
@@ -80,8 +77,7 @@ namespace DVSRegister
             services.AddScoped<IRegisterService, RegisterService>();
             services.AddScoped<IBucketService, BucketService>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserRepository, UserRepository>();           
-            services.AddSingleton<CookieService>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));
@@ -160,14 +156,9 @@ namespace DVSRegister
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
-            services.AddScoped<ICookieService, CookieService>();
+            services.AddSingleton<CookieService>();
         }
-        private void ConfigureGoogleAnalyticsService(IServiceCollection services)
-        {
-            services.Configure<GoogleAnalyticsConfiguration>(
-                configuration.GetSection(GoogleAnalyticsConfiguration.ConfigSection));
-            services.AddScoped<GoogleAnalyticsService, GoogleAnalyticsService>();
-        }
+       
 
     }
 }

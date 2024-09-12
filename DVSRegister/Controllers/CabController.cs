@@ -2,7 +2,6 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.BusinessLogic.Services.GoogleAnalytics;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB.Provider;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +17,11 @@ namespace DVSRegister.Controllers
     {
     
         private readonly ICabService cabService;      
-        private readonly GoogleAnalyticsService googleAnalyticsService;
         private readonly IUserService userService;
 
-        public CabController(ICabService cabService, GoogleAnalyticsService googleAnalyticsService, IUserService userService)
+        public CabController(ICabService cabService, IUserService userService)
         {           
             this.cabService = cabService;          
-            this.googleAnalyticsService = googleAnalyticsService;
             this.userService = userService;
         }
 
@@ -32,7 +29,6 @@ namespace DVSRegister.Controllers
         [HttpGet("home")]
         public async Task<IActionResult> LandingPage()
         {
-            await googleAnalyticsService.SendSponsorPageViewedEventAsync(Request);
             string email = HttpContext?.Session.Get<string>("Email")??string.Empty; 
             string cab = string.Empty;
             var identity = HttpContext?.User.Identity as ClaimsIdentity;

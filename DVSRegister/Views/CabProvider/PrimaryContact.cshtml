@@ -6,17 +6,18 @@
 @using (Html.BeginForm("SavePrimaryContact", "CabProvider", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
-    bool hasRegistrationNumber;
-    hasRegistrationNumber = ViewBag.hasRegistrationNumber ?? false;
+    bool hasParentCompany;  
+    hasParentCompany = ViewBag.hasParentCompany ?? false;
     <div class="govuk-width-container">
 
-        @if (hasRegistrationNumber)
+        @if (hasParentCompany)
         {
-            @Html.ActionLink("Back", "CompanyRegistrationNumber", "CabProvider", null, new { @class = "govuk-back-link" })
+            @Html.ActionLink("Back", "ParentCompanyLocation", "CabProvider", null, new { @class = "govuk-back-link" })
         }
         else
         {
-            @Html.ActionLink("Back", "DUNSNumber", "CabProvider", null, new { @class = "govuk-back-link" })
+            @Html.ActionLink("Back", "HasParentCompany", "CabProvider", null, new { @class = "govuk-back-link" })           
+            
         }
        
     <main class="govuk-main-wrapper">

@@ -1,13 +1,11 @@
 ﻿using DVSRegister.BusinessLogic.Models.Cookies;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace DVSRegister.BusinessLogic.Services.Cookies
+namespace DVSRegister.Cookies
 {
-    public class CookieService : ICookieService
+    public class CookieService 
     {
         public readonly CookieServiceConfiguration Configuration;
         private readonly ILogger<CookieService> logger;
