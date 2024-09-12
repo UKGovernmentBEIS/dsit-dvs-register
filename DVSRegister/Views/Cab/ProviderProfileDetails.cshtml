@@ -61,14 +61,42 @@
                                     </dd>
                                 </div>
                             }
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Companies House
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @TODO TBD
-                                </dd>
-                            </div>
+
+
+                            @if(Model.HasRegistrationNumber)
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Companies House or charity
+                                        registration number
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.CompanyRegistrationNumber
+                                    </dd>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Companies House or charity
+                                        registration number
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                       NA
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        D U-N-S number
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model.DUNSNumber
+                                    </dd>
+                                </div>
+                                
+                            }
+
                         </dl>
                     </div>
                 </div>
