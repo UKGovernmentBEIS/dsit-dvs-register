@@ -12,12 +12,12 @@ namespace DVSRegister.Models.CAB
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's trading name")]
         public string? TradingName { get; set; }
 
-        [Required(ErrorMessage = "Select if the digital identity and attribute service provider has a Companies House or charity registration number")]
+        [Required(ErrorMessage = "Select ‘Yes’ if the provider has either a Companies House or charity registration number")]
         public bool? HasRegistrationNumber { get; set; }
 
-        [Required(ErrorMessage = "Enter a Companies House Number.")]
-        [RequiredLength(8, ErrorMessage = "Your Companies House number must be 8 characters long")]
-        [AcceptedCharacters(@"^[a-zA-Z0-9]*$", ErrorMessage = "Your Companies House number must contain only letters and numbers")]
+        [Required(ErrorMessage = "Enter a Companies House or charity registration number")]
+        [RequiredLength(8, ErrorMessage = "Your Companies House number must be 8 characters long.")]
+        [AcceptedCharacters(@"^[a-zA-Z0-9]*$", ErrorMessage = "Your Companies House number must contain only letters and numbers.")]
         public string? CompanyRegistrationNumber { get; set; }
 
         [Required(ErrorMessage = "Enter a D-U-N-S number")]

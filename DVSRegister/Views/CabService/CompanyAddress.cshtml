@@ -31,12 +31,12 @@
                             <label class="govuk-label govuk-label--s" for="address">
                                 Company address details
                             </label>
-                            <p id="address-error" class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.CompanyAddress, "", new { @class = "govuk-error-message" })
-                            </p>
                             <div id="company-address-hint" class="govuk-hint">
                                 Enter the company address as shown on the certificate of conformity
                             </div>
+                            <p id="address-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.CompanyAddress, "", new { @class = "govuk-error-message" })
+                            </p>
                             @Html.TextAreaFor(m => m.CompanyAddress, 5, 20, new { @class = "govuk-textarea govuk-textarea--error", id = "address", name = "address-name", aria_describedby = "company-address-hint address-error" })
 
                         </div>

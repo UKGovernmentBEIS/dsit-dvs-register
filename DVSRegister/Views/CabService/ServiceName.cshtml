@@ -45,7 +45,7 @@
                             Label = "Name of service",
                             Value = Model?.ServiceName ?? string.Empty,
                             Class = "govuk-input",
-                            Hint = "For example, ‘Identity Verification App",
+                            Hint = "For example, ‘Identity Verification App‘",
                             HasError = hasError,
                             ErrorMessage = hasError ? Html.ViewData?.ModelState["ServiceName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
                         };

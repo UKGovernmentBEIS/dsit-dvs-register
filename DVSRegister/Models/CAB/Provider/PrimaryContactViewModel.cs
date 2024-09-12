@@ -5,10 +5,10 @@ namespace DVSRegister.Models.CAB
 {
     public class PrimaryContactViewModel
     {
-        [Required(ErrorMessage = "Enter your full name")]
+        [Required(ErrorMessage = "Enter a full name")]
         public string? PrimaryContactFullName { get; set; }
 
-        [Required(ErrorMessage = "Enter your job title")]
+        [Required(ErrorMessage = "Enter a job title")]
         public string? PrimaryContactJobTitle { get; set; }
 
         [EmailAddress(ErrorMessage = "Enter an email address in the correct format, like name@example.com")]
