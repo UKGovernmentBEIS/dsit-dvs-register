@@ -65,17 +65,27 @@ namespace DVSRegister.Controllers
 
         #region Service Name
         [HttpGet("name-of-service")]
-        public IActionResult ServiceName(bool fromSummaryPage, int providerProfileId)
+        public async Task<IActionResult> ServiceName(bool fromSummaryPage, int providerProfileId)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-            if(providerProfileId > 0) 
+            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+            CabUserDto cabUserDto = await userService.GetUser(email);
+            // to prevent another cab changing the providerProfileId from url
+            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
+            if (providerProfileId > 0 && isValid) 
             {
                 serviceSummaryViewModel.ProviderProfileId = providerProfileId;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
+                return View(serviceSummaryViewModel);
+            }
+            else
+            {
+                return RedirectToAction("HandleException", "Error");
             }
           
-            return View(serviceSummaryViewModel);
+
+          
         }
 
         [HttpPost("name-of-service")]
@@ -88,7 +98,7 @@ namespace DVSRegister.Controllers
                 ServiceSummaryViewModel serviceSummary = GetServiceSummary();
                 serviceSummary.ServiceName = serviceSummaryViewModel.ServiceName;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ServiceURL");
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("CompanyAddress");
             }
             else
             {
@@ -97,32 +107,7 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
-        #region Service URL
-        [HttpGet("service-url")]
-        public IActionResult ServiceURL(bool fromSummaryPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
-            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-            return View("ServiceURL", serviceSummaryViewModel);
-        }
-        [HttpPost("service-url")]
-        public IActionResult SaveServiceURL(ServiceSummaryViewModel serviceSummaryViewModel)
-        {
-            bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
-            serviceSummaryViewModel.FromSummaryPage = false;
-            if (ModelState["ServiceURL"].Errors.Count == 0)
-            {
-                ServiceSummaryViewModel serviceSummary = GetServiceSummary();
-                serviceSummary.ServiceURL = serviceSummaryViewModel.ServiceURL;
-                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("CompanyAddress");
-            }
-            else
-            {
-                return View("ServiceURL", serviceSummaryViewModel);
-            }
-        }
-        #endregion
+  
 
         #region Company Address
         [HttpGet("company-address")]
@@ -446,7 +431,7 @@ namespace DVSRegister.Controllers
 
             ViewBag.fromSummaryPage = fromSummaryPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            CertificateFileViewModel certificateFileViewModel = new CertificateFileViewModel();
+            CertificateFileViewModel certificateFileViewModel = new();
             certificateFileViewModel.HasSupplementarySchemes = summaryViewModel.HasSupplementarySchemes;
             if (remove)
             {
@@ -819,7 +804,7 @@ namespace DVSRegister.Controllers
 
 
             ServiceDto serviceDto = null;
-            if (model!= null &&  !string.IsNullOrEmpty(model.ServiceName) && !string.IsNullOrEmpty(model.ServiceURL) && !string.IsNullOrEmpty(model.CompanyAddress)
+            if (model!= null &&  !string.IsNullOrEmpty(model.ServiceName) &&  !string.IsNullOrEmpty(model.CompanyAddress)
                 &&  model.RoleViewModel.SelectedRoles!=null && model.RoleViewModel.SelectedRoles.Any() &&  model.HasSupplementarySchemes!=null && model.HasGPG44!=null &&
                !string.IsNullOrEmpty(model.FileName) && !string.IsNullOrEmpty(model.FileLink) &&  model.FileSizeInKb!=null && model.ConformityExpiryDate!=null && model.ConformityIssueDate != null
                && model.CabUserId>0)
@@ -852,8 +837,7 @@ namespace DVSRegister.Controllers
                 }
 
                 serviceDto.ProviderProfileId = model.ProviderProfileId;
-                serviceDto.ServiceName = model.ServiceName;
-                serviceDto.WebsiteAddress = model.ServiceURL;
+                serviceDto.ServiceName = model.ServiceName;               
                 serviceDto.CompanyAddress = model.CompanyAddress;
                 serviceDto.ServiceRoleMapping = serviceRoleMappings;
                 serviceDto.ServiceIdentityProfileMapping= serviceIdentityProfileMappings;
