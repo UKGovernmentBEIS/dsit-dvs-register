@@ -1,7 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
 @using DVSRegister.Models.UI.Enums
 @{
-    ViewData["Title"] = "Does the digital identity and attribute service provider has a parent company outside UK?";
+    ViewData["Title"] = "Does the digital identity and attribute service provider have a parent company outside UK?";
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
 }
 @{
@@ -40,7 +40,7 @@
                        PropertyName = "HasParentCompany",
                        Value = Model.HasParentCompany,
                        HasError = hasError,
-                       FieldSet = "Does the digital identity and attribute service provider has a parent company outside the UK?",
+                       FieldSet = "Does the digital identity and attribute service provider have a parent company outside the UK?",
                        Heading = HeadingEnum.H1,
                        LegendStyleClass = "govuk-fieldset__legend--xl",
                        ErrorMessage = hasError ?
