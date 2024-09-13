@@ -26,7 +26,7 @@
         public const string ConformityExpiryMonthError = "The certificate of conformity expiry date must include a month";
         public const string ConformityExpiryYearError = "The certificate of conformity expiry date must include a year";
         public const string ConformityExpiryDateError = "The certificate of conformity expiry date must be today or in the past";
-        public const string ConformityMaxExpiryDateError = "The certificate of conformity expiry date must not be more than 2 years and 30 days after the date of issue";
+        public const string ConformityMaxExpiryDateError = "The certificate of conformity expiry date must not be more than 2 years and 60 days after the date of issue";
         public const string ConformityExpiryDateInvalidError = "The certificate of conformity expiry date must be a real date";
         public const string ConformityIssueDateExpiryDateError = "The certificate of conformity expiry date cannot be before issue date";
         public const string ConformityExpiryPastDateError = "The certificate of conformity expiry date must be in the future";

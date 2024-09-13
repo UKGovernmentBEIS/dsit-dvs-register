@@ -35,22 +35,10 @@
                                         @Model.ServiceName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "ServiceName", "CabService", new { fromSummaryPage = true },
+                                        @Html.ActionLink("Change", "ServiceName", "CabService", new { fromSummaryPage = true, providerProfileId  =Model.ProviderProfileId},
                                                  new { @class = "govuk-link", @aria_label = "Change service provider certified against any supplementary schemes on their certificate" })
                                     </dd>
-                                </div>
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
-                                        URL link to the service
-                                    </dt>
-                                    <dd class="govuk-summary-list__value">
-                                        @Model.ServiceURL
-                                    </dd>
-                                    <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "WebsiteAddress", "CabService", new { fromSummaryPage = true },
-                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
-                                    </dd>
-                                </div>
+                                </div>                               
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
                                         Company address details

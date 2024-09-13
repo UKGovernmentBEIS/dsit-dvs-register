@@ -75,7 +75,8 @@ namespace DVSRegister.Data
                new Cab { Id =1, CabName = "ACCS", CreatedTime = DateTime.UtcNow },
                new Cab { Id =2, CabName = "Kantara", CreatedTime = DateTime.UtcNow },
                new Cab { Id =3, CabName = "NQA", CreatedTime = DateTime.UtcNow },
-               new Cab { Id =4, CabName = "BSI", CreatedTime = DateTime.UtcNow });
+               new Cab { Id =4, CabName = "BSI", CreatedTime = DateTime.UtcNow },
+               new Cab { Id =5, CabName = "DSIT", CreatedTime = DateTime.UtcNow });
             }
 
             modelBuilder.Entity<Provider>()
