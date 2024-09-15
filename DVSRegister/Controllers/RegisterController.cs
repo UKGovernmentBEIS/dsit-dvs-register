@@ -8,23 +8,26 @@ using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
-{
+{    
     [Route("register")]
     public class RegisterController : Controller
     {
         private readonly ILogger<RegisterController> logger;     
         private readonly IRegisterService registerService;
         private readonly ICabService cabService;
-       
+//        private readonly GoogleAnalyticsService googleAnalyticsService;
+
 
         public RegisterController(ILogger<RegisterController> logger, IRegisterService registerService, ICabService cabService)
         {
             this.logger = logger;          
             this.registerService = registerService;
             this.cabService = cabService;
-            
+//            this.googleAnalyticsService = googleAnalyticsService;
+
 
         }
+        [Route("")]
         [HttpGet("register-search")]
         public async Task<IActionResult> Register(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, bool FromDeatilsPage = false, int RemoveRole = 0, int RemoveScheme = 0, string SearchAction = "", string SearchProvider = "")
         {

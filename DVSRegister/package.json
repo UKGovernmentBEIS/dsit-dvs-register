@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ministryofjustice/frontend": "^2.2.0",
     "dart-sass": "^1.25.0",
     "govuk-frontend": "^5.4.0",
     "sass": "^1.70.0"

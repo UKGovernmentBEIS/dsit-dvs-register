@@ -1,6 +1,7 @@
 ﻿using DVSRegister;
 using DVSRegister.Data;
 using DVSRegister.Middleware;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration, builder.Environment);
@@ -22,8 +23,6 @@ using var scope = app.Services.CreateScope();
 var dbContext = scope.ServiceProvider.GetRequiredService<DVSRegisterDbContext>();
 startup.ConfigureDatabaseHealthCheck(dbContext);
 
-
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {   
@@ -31,12 +30,32 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseMiddleware<BasicAuthMiddleware>();
+
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
+{
+    app.UseMiddleware<BasicAuthMiddleware>();
+}
+else
+{
+    app.UseMiddleware<ExceptionHandlerMiddleware>();
+}
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseCookiePolicy();
 app.UseRouting();
 app.UseAuthorization();
+// Configure Forwarded Headers Middleware
+var forwardedHeadersOptions = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+// Clear the default settings for KnownNetworks and KnownProxies
+forwardedHeadersOptions.KnownNetworks.Clear(); // Clear default networks
+forwardedHeadersOptions.KnownProxies.Clear();  // Clear default proxies
+app.UseForwardedHeaders(forwardedHeadersOptions);
+
 app.UseSession();
 app.MapControllers();
 app.Run();

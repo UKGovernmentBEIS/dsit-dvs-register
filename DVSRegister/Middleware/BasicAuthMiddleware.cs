@@ -39,12 +39,11 @@ namespace DVSRegister.Middleware
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine("Inner Exception");
-                    Console.WriteLine(String.Concat(ex.InnerException.StackTrace, ex.InnerException.Message));
+                    Console.Write(String.Concat(ex.InnerException.StackTrace, ex.InnerException.Message));
                 }
                 // Redirect to error page 
-                if (requestPath.Contains("pre-registration"))
-                    httpContext.Response.Redirect(Constants.PreRegistrationErrorPath);
-                else if (requestPath.Contains("cab-registration"))
+                
+                if (requestPath.Contains("cab-service"))
                     httpContext.Response.Redirect(Constants.CabRegistrationErrorPath);
                 else
                     httpContext.Response.Redirect(Constants.CommonErrorPath);

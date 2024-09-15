@@ -1,0 +1,117 @@
+﻿@using DVSRegister.Models.CAB.Provider
+@using DVSRegister.Extensions
+@model ProviderListViewModel
+@{
+    ViewData["Title"] = "List of service providers";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-breadcrumbs">
+                    <ol class="govuk-breadcrumbs__list">
+                        <li class="govuk-breadcrumbs__list-item">
+                            @Html.ActionLink("Home", "LandingPage", "Cab", null, new { @class = "govuk-breadcrumbs__link" })
+                        </li>
+                        <li class="govuk-breadcrumbs__list-item">
+                            @Html.ActionLink("List of providers", "#", "Cab", null, new { @class = "govuk-breadcrumbs__link" })
+                        </li>
+                    </ol>
+                </div>
+                <h1 class="govuk-heading-xl govuk-!-margin-top-8">Your service provider profiles</h1>
+            </div>
+        </div>
+
+        <div class="govuk-grid-row">
+            @using (Html.BeginForm("ListProviders", "Cab", FormMethod.Get))
+            {
+                <div class="govuk-grid-column-two-thirds">
+
+                    @{
+                        var searchTextBoxViewModel = new TextBoxViewModel
+                        {
+                            PropertyName = "SearchText",
+                            Label = "Search for a service provider or service",
+                            Value = Model?.SearchText ?? string.Empty,
+                            Class = "govuk-input",
+                            Hint = "Search for registered name, trading name or service name"
+                        };
+                    }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="search">
+                        Search
+                    </button>
+                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearSearch">
+                        Clear search
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <table class="govuk-table govuk-table--small-text-until-tablet moj-sortable-table" data-module="moj-sortable-table">
+                    <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">search results</caption>
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header" aria-sort="ascending">Registered name</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Trading name</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Services</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Last updated</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="govuk-table__body">
+                        @if(Model?.Providers!=null && Model.Providers.Count>0)
+                        {
+                       
+                            @foreach (var item in Model.Providers)
+                            {
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell">@Html.ActionLink(item.RegisteredName, "ProviderOverview", "Cab", new { providerId  = item.Id}, new { @class = "govuk-link" })</td>
+                                    <td class="govuk-table__cell">@item.TradingName</td>
+                                    @if(item.Services!=null && item.Services.Count>0)
+                                    {
+                                         <td class="govuk-table__cell">
+                                        @foreach(var service in item.Services)
+                                        {
+                                                @service.ServiceName<br/>
+                                        }
+                                        </td>
+                                       
+                                    }
+                                    else
+                                    {
+                                        <td class="govuk-table__cell">No services added</td>                                        
+                                    }
+
+
+                                    <td class="govuk-table__cell">@item.LastModified</td>
+                                    
+                                </tr>
+
+                            }
+                       
+                        }
+                        else
+                        {
+                            <tr class="govuk-table__row">                       
+                                <td class="govuk-table__cell" colspan="4">
+                                <p class="govuk-body"><b>Your search did not match any service providers.</b> </p>
+                                </td>
+                           </tr>
+                         
+                        }
+                        </tbody>                      
+                   
+                </table>
+            </div>
+        </div>
+    </main>
+</div>

@@ -1,0 +1,63 @@
+﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+@{
+    ViewData["Title"] = "The registered name of the digital identity and attribute service provider’s parent company";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool hasError = false;
+}
+
+@using (Html.BeginForm("SaveParentCompanyRegistrationNumber", "CabProvider", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "HasParentCompany", "CabProvider", new { fromSummaryPage = ViewBag.fromSummaryPage }, new { @class = "govuk-back-link" })
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+
+                    @if (Html.ViewData?.ModelState.ContainsKey("ParentCompanyRegisteredName") == true)
+                    {
+                        var errors = Html.ViewData?.ModelState["ParentCompanyRegisteredName"]?.Errors;
+                        if (errors != null && errors.Count>0)
+                        {
+                            hasError = true;
+                            ViewData["Title"] = "Error: " + ViewData["Title"];
+                            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ParentCompanyRegisteredName", errors))
+                        }
+                    }
+
+                    <h1 class="govuk-heading-xl form-title">
+                        The registered name of the digital identity and attribute service provider’s parent company
+                    </h1>
+
+                    <p class="govuk-body">
+                        You have declared that the digital identity and attribute service provider has a
+                        parent company outside the UK. Please provide the registered name of the
+                        parent company below.
+                    </p>
+
+                    <div class="govuk-form-group">
+                        @{
+                            var regNameViewModel = new TextBoxViewModel
+                        {
+                            PropertyName = "ParentCompanyRegisteredName",
+                            Label = "Registered name of parent company",
+                            Value = Model?.ParentCompanyRegisteredName ?? string.Empty,
+                            Class = "govuk-input",                            
+                            HasError = hasError,
+                            ErrorMessage = hasError ? Html.ViewData?.ModelState["ParentCompanyRegisteredName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                        };
+                        }
+
+                        @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", regNameViewModel)
+
+                    </div>
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2">Continue</button>
+                </div>
+            </div>
+        </main>
+    </div>
+}

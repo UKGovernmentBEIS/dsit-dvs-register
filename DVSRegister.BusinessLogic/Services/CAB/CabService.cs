@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
-using DVSRegister.BusinessLogic.Extensions;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Models.PreRegistration;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Entities;
 
@@ -22,13 +19,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             this.automapper = automapper;
             this.emailSender = emailSender;
         }
-        public async Task<PreRegistrationDto> GetPreRegistrationDetails(string URN)
-        {
-            var preRegistration = await cabRepository.GetPreRegistrationDetails(URN);
-            PreRegistrationDto preRegistrationDto = new PreRegistrationDto();
-            automapper.Map(preRegistration, preRegistrationDto);
-            return preRegistrationDto;
-        }
+     
         public async Task<List<RoleDto>> GetRoles()
         {
             var list = await cabRepository.GetRoles();
@@ -48,71 +39,56 @@ namespace DVSRegister.BusinessLogic.Services.CAB
 
 
 
-        public async Task<GenericResponse> SaveCertificateInformation(ProviderDto providerDto)
+        public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto)
         {
-            Provider provider = new Provider();
-            automapper.Map(providerDto, provider);
-            GenericResponse genericResponse = await cabRepository.SaveCertificateInformation(provider);
-            genericResponse.EmailSent = await emailSender.SendCertificateInfoSubmittedToDSIT();
+            ProviderProfile providerProfile = new();
+            automapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfile);
             return genericResponse;
         }
 
-        public async Task<bool> ValidateURN(string URN, string cabUserId)
+        public async Task<GenericResponse> SaveService(ServiceDto serviceDto)
         {
-            bool valid = false;
-            UniqueReferenceNumber uniqueReferenceNumber = await cabRepository.GetURNDetails(URN);
-            //URN is valid only if the status is Approved(Approved - CAB Validation pending) and not exceed 60 days
-            //after application approved
-
-
-            if (uniqueReferenceNumber != null)
-            {
-                if (uniqueReferenceNumber.URNStatus == URNStatusEnum.Approved)
-                {
-                    if (!ExpiredDateValidator.CheckExpired(uniqueReferenceNumber.ModifiedDate))
-                    {
-                        valid = true;
-                        // if valid change status to verified by cab
-                        uniqueReferenceNumber.URNStatus = URNStatusEnum.ValidatedByCAB;
-                        uniqueReferenceNumber.CheckedByCAB = cabUserId;
-                        uniqueReferenceNumber.ModifiedBy = cabUserId;
-                        uniqueReferenceNumber.ModifiedDate = DateTime.UtcNow;
-                        await cabRepository.UpdateURNStatus(uniqueReferenceNumber);
-                    }
-                    else
-                    {
-                        valid = false;
-                        uniqueReferenceNumber.URNStatus = URNStatusEnum.Expired;
-                        uniqueReferenceNumber.ModifiedBy = cabUserId;
-                        await cabRepository.UpdateURNStatus(uniqueReferenceNumber);
-                    }
-                }               
-            }
-            return valid;
+            Service service = new Service();
+            automapper.Map(serviceDto, service);
+            GenericResponse genericResponse = await cabRepository.SaveService(service);
+            return genericResponse;
         }
 
-        public async Task<bool> CheckURNValidatedByCab(string URN)
+        public async Task<bool> CheckProviderRegisteredNameExists(string registeredName)
         {
-            bool valid = false;
-            UniqueReferenceNumber uniqueReferenceNumber = await cabRepository.GetURNDetails(URN);
-            //URN is valid only if the status is Validated by cab           
-
-
-            if (uniqueReferenceNumber != null)
-            {
-                if (uniqueReferenceNumber.URNStatus == URNStatusEnum.ValidatedByCAB)
-                {
-                    valid = true;
-                }
-            }
-            return valid;
+            return await cabRepository.CheckProviderRegisteredNameExists(registeredName);
         }
 
-        public async Task<DVSRegister.Data.Entities.PreRegistration> GetURNDetails(string URN)
+        public async Task<List<ProviderProfileDto>> GetProviders(int cabId, string searchText = "")
         {
-            DVSRegister.Data.Entities.PreRegistration preRegistration = await cabRepository.GetPreRegistrationDetails(URN);
-
-            return preRegistration;
+            var list = await cabRepository.GetProviders(cabId, searchText);
+            List<ProviderProfileDto> providerDtos = automapper.Map<List<ProviderProfileDto>>(list);
+            return providerDtos;
         }
+
+        public async Task<ProviderProfileDto> GetProvider(int providerId, int cabId)
+        {
+            var provider = await cabRepository.GetProvider(providerId, cabId);
+            ProviderProfileDto providerDto = automapper.Map<ProviderProfileDto>(provider);
+            return providerDto;
+        }
+        public async Task<ServiceDto> GetServiceDetails(int serviceId, int cabId)
+        {
+            var service = await cabRepository.GetServiceDetails(serviceId, cabId);
+            ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
+            return serviceDto;
+        }
+        public async Task<List<QualityLevelDto>> GetQualitylevels()
+        {
+            var list = await cabRepository.QualityLevels();
+            return automapper.Map<List<QualityLevelDto>>(list);
+        }
+        public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
+        {
+            return await cabRepository.CheckValidCabAndProviderProfile(providerId, cabId);
+
+        }
+
     }
 }

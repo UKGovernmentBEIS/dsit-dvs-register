@@ -11,9 +11,6 @@ namespace DVSRegister.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("PreRegistration")]
-        public int PreRegistrationId { get; set; }
-        public PreRegistration PreRegistration { get; set; }
         public string RegisteredName { get; set; }
         public string TradingName { get; set; }
         public string PublicContactEmail { get; set; }
@@ -23,8 +20,7 @@ namespace DVSRegister.Data.Entities
         public ProviderStatusEnum ProviderStatus { get;set; }
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
-        public DateTime? PublishedTime { get;set; }
-        public ICollection<CertificateInformation> CertificateInformation { get; set; }
+        public DateTime? PublishedTime { get;set; }      
         public NpgsqlTsVector SearchVector { get; set; }
 
     }

@@ -1,0 +1,108 @@
+﻿@model DVSRegister.Models.CAB.SupplementarySchemeViewModel
+@{
+    ViewData["Title"] = "Select the applicable schemes for this service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool hasError = false;
+    int index = 0;
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "HasSupplementarySchemesInput", "CabService", null, new { @class = "govuk-back-link" })
+ 
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">
+                    Select the applicable supplementary schemes for this service
+                </h1>
+            
+                @if (ViewData.ModelState.ErrorCount > 0)
+                {
+                    hasError = true;
+                    ViewData["Title"] = "Error: " + ViewData["Title"];
+                    @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                }
+                @using (Html.BeginForm("SaveSupplementarySchemes", "CabService", FormMethod.Post))
+                {
+                @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                <p class="govuk-body">
+                    Select all supplementary schemes that the service  is certified against on the certificate of conformity.
+                </p>
+
+                @if(hasError)
+                {
+                    <div class="govuk-form-group govuk-form-group--error">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                Select all relevant supplementary schemes
+                            </legend>
+                            <div id="selectedroleids-hint" class="govuk-hint">
+                                Select all that apply
+                            </div>
+                            <p id="selectedroleids-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                    @Html.ValidationMessageFor(m => m.SelectedSupplementarySchemeIds, "", new { @class = "govuk-error-message", id = "selectedsupplementaryschemeids-error" })
+                            </p>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                        @foreach (var item in Model.AvailableSchemes)
+                                        {
+                                            var idSuffix = index > 0 ? $"_{index}" : string.Empty; // added to make the first checkbox id as selectedsupplementaryschemeids so that error summary ahref refers first item
+                                            <div class="govuk-checkboxes__item">
+                                                <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id"
+                                                id="selectedsupplementaryschemeids@(idSuffix)" aria-describedby="selectedsupplementaryschemeids-error"
+                                                @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
+                                                <label class="govuk-label govuk-checkboxes__label" for="selectedsupplementaryschemeids@(idSuffix)">@item.SchemeName</label>
+                                            </div>
+                                            index++;
+                                        }
+                                    </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                }
+                else
+                {
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                Select all relevant supplementary schemes
+                            </legend>
+                            <div id="selectedroleids-hint" class="govuk-hint">
+                                Select all that apply
+                            </div>
+
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                        @foreach (var item in Model.AvailableSchemes)
+                                        {
+                                            var idSuffix = index > 0 ? $"_{index}" : string.Empty;
+                                            <div class="govuk-checkboxes__item">
+                                                <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds"
+                                                 value="@item.Id" id="selectedsupplementaryschemeids@(idSuffix)" aria-describedby="selectedroleids-hint"
+                                                @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
+                                                <label class="govuk-label govuk-checkboxes__label" for="selectedsupplementaryschemeids@(idSuffix)">@item.SchemeName</label>
+                                            </div>
+                                            index++;
+                                        }
+                                    </div>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                }
+
+             
+                <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                    Continue
+                </button>
+                }
+            </div>
+        </div>
+    </main>
+    
+</div>
+

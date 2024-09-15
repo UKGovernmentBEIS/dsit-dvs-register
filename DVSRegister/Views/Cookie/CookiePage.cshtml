@@ -1,14 +1,14 @@
-﻿@model DVSRegister.Models.CAB.CertificateInfoSummaryViewModel
+﻿@model DVSRegister.Models.Cookies.CookieSettingsViewModel
 @using DVSRegister.Extensions
 @{
     ViewData["Title"] = "CertificateInfoSummary";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@using (Html.BeginForm("SaveSummaryAndSubmit", "Cab", FormMethod.Post))
+@using (Html.BeginForm("CookieSettings_Post", "Cookie", FormMethod.Post))
 {
     <div class="govuk-width-container">
-        @Html.ActionLink("Back", "ConfirmityExpiryDate", "Cab", null, new { @class = "govuk-back-link" })
+        @Html.ActionLink("Back", "LandingPage", "Cab", null, new { @class = "govuk-back-link" })
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -101,14 +101,26 @@
                             </div>
                             <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="changedName" name="changedName" type="radio" value="yes">
-                                    <label class="govuk-label govuk-radios__label" for="changedName">
+                                    @(Html.RadioButtonFor(m => m.GoogleAnalytics, true,
+                                        new
+                                        {
+                                            @class = "govuk-radios__input",
+                                            id = "GoogleAnalyticsGpg__On",
+                                            @checked = Model.GoogleAnalytics
+                                        }))
+                                    <label class="govuk-label govuk-radios__label" for="GoogleAnalyticsGpg__On">
                                         Yes
                                     </label>
                                 </div>
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" id="changedName-2" name="changedName" type="radio" value="no">
-                                    <label class="govuk-label govuk-radios__label" for="changedName-2">
+                                    @(Html.RadioButtonFor(m => m.GoogleAnalytics, false,
+                                        new
+                                        {
+                                            @class = "govuk-radios__input",
+                                            id = "GoogleAnalyticsGpg__Off",
+                                            @checked = !Model.GoogleAnalytics
+                                        }))
+                                    <label class="govuk-label govuk-radios__label" for="GoogleAnalyticsGpg__Off">
                                         No
                                     </label>
                                 </div>

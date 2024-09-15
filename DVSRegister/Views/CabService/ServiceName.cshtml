@@ -1,0 +1,61 @@
+﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@{
+    ViewData["Title"] = "The digital identity and attribute service provider’s name of service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool hasError = false;
+}
+
+@using (Html.BeginForm("SaveServiceName", "CabService", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+
+<div class="govuk-width-container">
+        @Html.ActionLink("Back", "BeforeYouStart", "CabService", new { providerProfileId  = Model.ProviderProfileId}, new { @class = "govuk-back-link" })
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                @if (Html.ViewData?.ModelState.ContainsKey("ServiceName") == true)
+                {
+                    var errors = Html.ViewData?.ModelState["ServiceName"]?.Errors;
+                    if (errors != null && errors.Count > 0)
+                    {
+                        hasError = true;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ServiceName", errors))
+                    }
+                }
+
+                <h1 class="govuk-heading-xl form-title">
+                    The digital identity and attribute service provider’s name of service
+                </h1>
+
+                <p class="govuk-body">
+                    This must match the service name on the certificate. The information you provide will be publicly displayed on the register of digital identity and attribute services.
+                </p>
+
+              
+                    @{
+                        var serviceNameViewmodel = new TextBoxViewModel
+                        {
+                            PropertyName = "ServiceName",
+                            Label = "Name of service",
+                            Value = Model?.ServiceName ?? string.Empty,
+                            Class = "govuk-input",
+                            Hint = "For example, ‘Identity Verification App‘",
+                            HasError = hasError,
+                            ErrorMessage = hasError ? Html.ViewData?.ModelState["ServiceName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                        };
+                    }
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", serviceNameViewmodel)
+                
+                <button type="submit" class="govuk-button govuk-!-margin-top-2">Continue</button>
+            </div>
+        </div>
+    </main>
+</div>
+}

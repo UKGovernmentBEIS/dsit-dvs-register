@@ -11,34 +11,24 @@
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl govuk-!-margin-top-8">Conformity Assessment Bodies Service</h1>
+                <h1 class="govuk-heading-xl govuk-!-margin-top-8">Conformity Assessment Body Service</h1>
             </div>
         </div>
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half">
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                <p class="govuk-body">@Html.ActionLink("Check unique reference number", "CheckURNStartPage", "Cab", null, new { @class = "govuk-link govuk-!-font-weight-bold" })</p>
-                <p class="govuk-body">
-                    Before starting the certification process, you must verify whether the digital identity and attribute service provider has successfully passed the pre-registration stage.
+                <p class="govuk-body">@Html.ActionLink("Create new service provider profile", "BeforeYouStart", "CabProvider", null, new { @class = "govuk-link govuk-!-font-weight-bold" })</p>
+                <p class="govuk-body govuk-!-margin-bottom-9">
+                    If this is the first time you are submitting information about a service provider, create a new profile of the service provider details.
                 </p>
             </div>
             <div class="govuk-grid-column-one-half">
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                <p class="govuk-body">@Html.ActionLink("Submit certificate information", "CertificateInformationStartPage", "Cab", null, new { @class = "govuk-link govuk-!-font-weight-bold" })</p>
-                <p class="govuk-body">
-                    For a provider to be published to the register of digital identity and attribute service providers, you will need to submit information on the provider’s certificate here. You can only proceed to this step after successfully verifying the service provider’s unique reference number.
+                <p class="govuk-body">@Html.ActionLink("Submit certificate information", "ListProviders", "Cab", null, new { @class = "govuk-link govuk-!-font-weight-bold" })</p>
+                <p class="govuk-body govuk-!-margin-bottom-9">
+                    View, update or amend profiles for your service providers and submit certificate information for new services against existing profiles.
                 </p>
-            </div>
-        </div>
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <hr class="govuk-section-break govuk-section-break--visible">
-                <h3 class="govuk-heading-m">Explore the topic</h3>
-                <br />
-                <a href="#" class="govuk-link govuk-!-font-weight-bold">What are the steps to publishing a digital identity and attribute service provider to the register? </a>
-                <br /><br />
-                <a href="#" class="govuk-link govuk-!-font-weight-bold">What is the unique reference number?</a>
             </div>
         </div>
     </main>

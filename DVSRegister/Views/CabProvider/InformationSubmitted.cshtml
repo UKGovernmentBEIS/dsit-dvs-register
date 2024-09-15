@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "InformationSubmitted";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-panel govuk-panel--confirmation">
+                    <h1 class="govuk-panel__title">
+                        Service provider profile created successfully
+                    </h1>
+                </div>
+                <p class="govuk-body">
+                    The digital identity and attribute service provider’s profile has been created. You can view the profile by returning to home and selecting ‘view existing service providers’.
+
+                </p>
+                
+                <h2 class="govuk-heading-m">What happens next</h2>
+                <p class="govuk-body">
+                    You can now return to the home and select ‘view existing service
+                    providers’ to create a service submission for this provider.
+                </p>
+                <p class="govuk-body">
+                    If you need help, you can contact DSIT at <b>digital.identity.register@dsit.gov.uk</b>.</a>
+                </p>
+                <p class="govuk-body">
+                    You can close this page now.
+                </p>
+
+            </div>
+        </div>
+        <a href="@Url.Action("LandingPage", "Cab")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            Return to home
+
+        </a>
+    </main>
+</div>
+

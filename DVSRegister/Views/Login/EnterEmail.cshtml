@@ -1,4 +1,4 @@
-﻿@model DVSRegister.Models.CAB.LoginPageViewModel
+﻿@model DVSRegister.Models.CAB.EnterEmailViewModel
 @{
     ViewData["Title"] = "Enter email";
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
@@ -15,24 +15,12 @@
 
                     @if (!ViewData.ModelState.IsValid)
                     {
-                        <div class="govuk-error-summary" data-module="govuk-error-summary">
-                            <div role="alert">
-                                <h2 class="govuk-error-summary__title">
-                                    There is a problem
-                                </h2>
-                                <div class="govuk-error-summary__body">
-                                    <ul class="govuk-list govuk-error-summary__list">
-                                        <li>
-                                            <a href="#">Incorrect Email used for Sign Up</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                     }
                     <h1 class="govuk-heading-xl govuk-!-margin-top-8">Enter your email address</h1>
 
-                    <p class="govuk-body">Ensure the email that you provide has been authorised by the Office for Digital Identities and Attributes.</p>
+                    <p class="govuk-body">Ensure the email that you provide has been authorised by the Department for Science, Innovation and Technology.</p>
 
                     <p class="govuk-body">You will receive a code to verify your email address.</p>
 

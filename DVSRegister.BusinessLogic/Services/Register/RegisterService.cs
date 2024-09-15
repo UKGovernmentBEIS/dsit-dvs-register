@@ -21,12 +21,14 @@ namespace DVSRegister.BusinessLogic.Services
          }
         public async Task<List<ProviderDto>> GetProviders(List<int> roles, List<int> schemes,string searchText = "")
         {
-            var list = await registerRepository.GetProviders(roles, schemes, searchText);
-            var providerList = list.Where(item => item.CertificateInformation != null && item.CertificateInformation.Any()).ToList();
-            List<ProviderDto> providerDtos = automapper.Map<List<ProviderDto>>(providerList);
+            //To Do: update after all db changes
+            //var list = await registerRepository.GetProviders(roles, schemes, searchText);
+            //var providerList = list.Where(item => item.CertificateInformation != null && item.CertificateInformation.Any()).ToList();
+            //List<ProviderDto> providerDtos = automapper.Map<List<ProviderDto>>(providerList);
 
-            await PopulateRolesIdentityProfilesSchemes(providerDtos);
-            return providerDtos;
+            //await PopulateRolesIdentityProfilesSchemes(providerDtos);
+            //return providerDtos;
+            return new List<ProviderDto>();
         }        
 
         public async Task<ProviderDto> GetProviderWithServiceDeatils(int providerId)

@@ -1,0 +1,56 @@
+﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+@using DVSRegister.Controllers
+@{
+    ViewData["Title"] = "Trading Company Name";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+@{
+    bool hasError = false;
+}
+@using (Html.BeginForm("SaveTradingName", "CabProvider", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "RegisteredName", "CabProvider", null, new { @class = "govuk-back-link" })
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+
+                    @if (Html.ViewData?.ModelState.ContainsKey("TradingName") == true)
+                    {
+                        var errors = Html.ViewData?.ModelState["TradingName"]?.Errors;
+                        if (errors != null && errors.Count > 0)
+                        {
+                            hasError = true;
+                            ViewData["Title"] = "Error: " + ViewData["Title"];
+                            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("TradingName", errors))
+                        }
+                    }
+
+                    <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s trading name</h1>
+                    <p class="govuk-body">This trading name will be publicly displayed on the register of digital identity and attribute services. This should match the trading name on the certificate of conformity.</p>
+
+                    @{
+                        var tradingNameViewmodel = new TextBoxViewModel
+                {
+                    PropertyName = "TradingName",
+                    Label = "Trading name",
+                    Value = Model?.TradingName ?? string.Empty,
+                    Class = "govuk-input",
+                    HasError = hasError,
+                    ErrorMessage = hasError ? Html.ViewData?.ModelState["TradingName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                };
+                    }
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", tradingNameViewmodel)
+
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+}

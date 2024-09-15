@@ -10,10 +10,9 @@ namespace DVSRegister.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("Provider")]
-        public int ProviderId { get; set; }
-        public Provider Provider { get; set; }
-
+        [ForeignKey("ProviderProfile")]
+        public int ProviderProfileId { get; set; }
+        public ProviderProfile Provider { get; set; }      
         public string? ProviderName { get; set; }
         public string? Services { get; set; }
         public string Description { get; set; }
