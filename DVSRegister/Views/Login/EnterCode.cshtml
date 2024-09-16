@@ -8,6 +8,7 @@
 @using (Html.BeginForm("EnterCodeValidation", "Login", FormMethod.Post))
 {
     @Html.HiddenFor(m=>m.PasswordReset)
+    @Html.HiddenFor(m => m.Email)
    
     <div class="govuk-width-container">
         <main class="govuk-main-wrapper">
