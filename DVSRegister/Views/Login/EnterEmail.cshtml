@@ -4,19 +4,28 @@
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
 }
 
+@{
+    bool hasError = false;
+}
 
 @using (Html.BeginForm("EnterEmail", "Login", FormMethod.Post))
 {
-   @Html.HiddenFor(m=>m.PasswordReset)
+    @Html.HiddenFor(m => m.PasswordReset)
     <div class="govuk-width-container">
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
 
-                    @if (!ViewData.ModelState.IsValid)
+                    @if (Html.ViewData?.ModelState.ContainsKey("Email") == true)
                     {
-                        ViewData["Title"] = "Error: " + ViewData["Title"];
-                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                        var errors = Html.ViewData?.ModelState["Email"]?.Errors;
+                        if (errors != null && errors.Count > 0)
+                        {
+                            hasError = true;
+                            ViewData["Title"] = "Error: " + ViewData["Title"];
+                            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("Email", errors))
+                        }
                     }
                     <h1 class="govuk-heading-xl govuk-!-margin-top-8">Enter your email address</h1>
 
@@ -24,15 +33,19 @@
 
                     <p class="govuk-body">You will receive a code to verify your email address.</p>
 
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("Email") && Html.ViewData.ModelState["Email"].Errors.Count > 0 ? "govuk-form-group--error" :"" )">
-                        <h1 class="govuk-label-wrapper">
-                            <label class="govuk-label govuk-label--s" for="event-name">
-                                Email address
-                            </label>
-                        </h1>
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.Email, new { @class = "govuk-input", id = "email", name = "email" })
-                    </div>
+                    @{
+                        var enterEmailViewmodel = new TextBoxViewModel
+                        {
+                            PropertyName = "Email",
+                            Label = "Email address",
+                            Value = Model?.Email ?? string.Empty,
+                            Class = "govuk-input",
+                            HasError = hasError,
+                            ErrorMessage = hasError ? Html.ViewData?.ModelState["Email"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                        };
+                    }
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", enterEmailViewmodel)
 
                     <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
                         Continue
