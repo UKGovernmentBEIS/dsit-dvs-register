@@ -11,10 +11,13 @@ namespace DVSRegister.Models.CAB
         [Required(ErrorMessage = "Enter the service name")]
         [MaximumLength(160, ErrorMessage = "The service name must be less than 161 characters.")]
         [AcceptedCharacters(@"^[A-Za-z0-9 &@£$€¥#.,:;-]+$", ErrorMessage = "The service name must contain only letters, numbers and accepted characters.")]
-        public string? ServiceName { get; set; }      
+        public string? ServiceName { get; set; }
 
-        [Required(ErrorMessage = "Enter the company address")]
-       
+        [Required(ErrorMessage = "Enter the service website address")]
+        [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address.")]
+        public string? ServiceURL { get; set; }
+
+        [Required(ErrorMessage = "Enter the company address")]       
         public string? CompanyAddress { get; set; }
         public RoleViewModel? RoleViewModel { get; set; }
 
