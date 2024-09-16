@@ -8,7 +8,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public int Id { get; set; }
         public int ProviderProfileId { get; set; }
         public ProviderProfileDto Provider { get; set; }
-        public string ServiceName { get; set; }       
+        public string ServiceName { get; set; }
+        public string WebSiteAddress { get; set; }
         public string CompanyAddress { get; set; }
         public ICollection<ServiceRoleMappingDto> ServiceRoleMapping { get; set; }
         public bool HasGPG44 { get; set; }
