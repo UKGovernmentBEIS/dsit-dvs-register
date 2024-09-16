@@ -2,37 +2,64 @@
 
 @{
     string hintId = @Model.PropertyName.ToLower() + "-hint";
-    string errorId = @Model.PropertyName.ToLower() + "-error";  
+    string errorId = @Model.PropertyName.ToLower() + "-error";
     string textBoxType = string.IsNullOrEmpty(Model.TextBoxType) ? "text" : Model.TextBoxType;
-  
+    string ariaDescribedbyValue = "";
+    if (Model.HasError && !string.IsNullOrEmpty(Model.Hint))
+    {
+        ariaDescribedbyValue = hintId + " " + errorId;
+    }
+    else if (Model.HasError)
+    {
+        ariaDescribedbyValue = errorId;
+    }
+    else if (!string.IsNullOrEmpty(Model.Hint))
+    {
+        ariaDescribedbyValue = hintId;
+    }
 }
+
 <div class="govuk-form-group @(Model.HasError ? "govuk-form-group--error" : "")">
     <label class="govuk-label govuk-label--s" for="@Model.PropertyName.ToLower()">
         @Model.Label
     </label>
-    @if (Model.HasError)
-    {
-        <p id="@errorId" class="govuk-error-message">
-        <span class="govuk-visually-hidden">Error:</span> @Model.ErrorMessage
-    </p>
-    }
 
 
     @if (!string.IsNullOrEmpty(Model.Hint))
     {
         <div id="@hintId" class="govuk-hint">
-        @Model.Hint
-       </div>
-        @Html.TextBox(Model.PropertyName, textBoxType == "text" ? Model.Value : Model.File,        
-        new { @id = Model.PropertyName.ToLower(), @type = textBoxType,
-        @class = Model.HasError ? Model.Class + " govuk-input--error" : Model.Class,
-        @aria_describedby = Model.HasError ? hintId+ " "+ errorId : hintId })
+            @Model.Hint
+        </div>
     }
+
+    @if (Model.HasError)
+    {
+        <p id="@errorId" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> @Model.ErrorMessage
+        </p>
+    }
+
+    @if (Model.HasError || !string.IsNullOrEmpty(Model.Hint))
+    {
+        @Html.TextBox(Model.PropertyName, textBoxType == "text" ? Model.Value : Model.File,
+        new
+        {
+            @id = Model.PropertyName.ToLower(),
+            @type = textBoxType,
+            @class = Model.HasError ? Model.Class + " govuk-input--error" : Model.Class,
+            @aria_describedby = @ariaDescribedbyValue
+        })
+    }
+
     else
     {
-       @Html.TextBox(Model.PropertyName, textBoxType == "text" ? Model.Value : Model.File,
-       new { @id = Model.PropertyName.ToLower(), @type = textBoxType,
-       @class = Model.HasError ? Model.Class + " govuk-input--error" : Model.Class })
-    }  
+        @Html.TextBox(Model.PropertyName, textBoxType == "text" ? Model.Value : Model.File,
+        new
+        {
+            @id = Model.PropertyName.ToLower(),
+            @type = textBoxType,
+            @class = Model.HasError ? Model.Class + " govuk-input--error" : Model.Class
+        })
+    }
 
 </div>
