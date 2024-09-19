@@ -63,7 +63,7 @@ namespace DVSRegister
             services.AddHttpContextAccessor();
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(30); // ToDo:Adjust the timeout
+                options.IdleTimeout = TimeSpan.FromMinutes(360); 
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;               
