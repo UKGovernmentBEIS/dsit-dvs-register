@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using NpgsqlTypes;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240918112046_AddPICheckTables")]
+    partial class AddPICheckTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,37 +50,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 9, 18, 11, 23, 0, 918, DateTimeKind.Utc).AddTicks(6619)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 20, 45, 306, DateTimeKind.Utc).AddTicks(4761)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 9, 18, 11, 23, 0, 918, DateTimeKind.Utc).AddTicks(6622)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 20, 45, 306, DateTimeKind.Utc).AddTicks(4764)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 9, 18, 11, 23, 0, 918, DateTimeKind.Utc).AddTicks(6623)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 20, 45, 306, DateTimeKind.Utc).AddTicks(4765)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 9, 18, 11, 23, 0, 918, DateTimeKind.Utc).AddTicks(6624)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 20, 45, 306, DateTimeKind.Utc).AddTicks(4767)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 9, 18, 11, 23, 0, 918, DateTimeKind.Utc).AddTicks(6625)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 20, 45, 306, DateTimeKind.Utc).AddTicks(4768)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 9, 18, 11, 23, 0, 918, DateTimeKind.Utc).AddTicks(6626)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 20, 45, 306, DateTimeKind.Utc).AddTicks(4769)
                         });
                 });
 
@@ -792,9 +795,6 @@ namespace DVSRegister.Data.Migrations
 
                     b.Property<int?>("RejectionReason")
                         .HasColumnType("integer");
-
-                    b.Property<string>("RejectionReasons")
-                        .HasColumnType("text");
 
                     b.Property<string>("SecondaryCheckComment")
                         .HasColumnType("text");

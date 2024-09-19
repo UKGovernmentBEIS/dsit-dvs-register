@@ -33,7 +33,7 @@
                 @if (hasError)
                 {
                     <div class="govuk-form-group govuk-form-group--error">
-                        <fieldset class="govuk-fieldset">
+                        <fieldset class="govuk-fieldset" aria-describedby="selectedroleids-hint selectedroleids-error">
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                                 Select the roles
                             </legend>
@@ -49,7 +49,7 @@
                                 {
                                     var idSuffix = index > 0 ? $"_{index}" : string.Empty; // added to make the first checkbox id as selectedroleids so that error summary ahref refers first item
                                     <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="selectedroleids@(idSuffix)" aria-describedby="selectedroleids-error"
+                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="selectedroleids@(idSuffix)"
                                     @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "") />
                                     <label class="govuk-label govuk-checkboxes__label" for="selectedroleids@(idSuffix)">@role.RoleName</label>
                                      </div>
@@ -63,9 +63,9 @@
                 else
                 {
                     <div class="govuk-form-group">
-                        <fieldset class="govuk-fieldset">
+                        <fieldset class="govuk-fieldset" aria-describedby="selectedroleids-hint">
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                Select the role
+                                Select the roles
                             </legend>
                             <div id="selectedroleids-hint" class="govuk-hint">
                                 Select all that apply
@@ -75,7 +75,7 @@
                                 @foreach (var role in Model.AvailableRoles)
                                 {
                                     <div class="govuk-checkboxes__item">
-                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id" aria-describedby="selectedroleids-hint"
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id"
                                         @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "") />
                                         <label class="govuk-label govuk-checkboxes__label" for="role_@role.Id">@role.RoleName</label>
                                     </div>

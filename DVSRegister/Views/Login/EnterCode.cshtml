@@ -1,41 +1,53 @@
 ﻿@model DVSRegister.Models.CAB.EnterCodeViewModel
 
 @{
-    ViewData["Title"] = "Enter confirmation code";
+    ViewData["Title"] = "Enter the code";
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
+}
+
+@{
+    bool hasError = false;
 }
 
 @using (Html.BeginForm("EnterCodeValidation", "Login", FormMethod.Post))
 {
-    @Html.HiddenFor(m=>m.PasswordReset)
+    @Html.HiddenFor(m => m.PasswordReset)
     @Html.HiddenFor(m => m.Email)
-   
     <div class="govuk-width-container">
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
-                    @if (!ViewData.ModelState.IsValid)
+                    @if (Html.ViewData?.ModelState.ContainsKey("Code") == true)
                     {
-                        ViewData["Title"] = "Error: " + ViewData["Title"];
-                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                        var errors = Html.ViewData?.ModelState["Code"]?.Errors;
+                        if (errors != null && errors.Count > 0)
+                        {
+                            hasError = true;
+                            ViewData["Title"] = "Error: " + ViewData["Title"];
+                            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("Code", errors))
+                        }
                     }
                     <h1 class="govuk-heading-xl govuk-!-margin-top-8">Enter the code</h1>
 
                     <p class="govuk-body">We have sent a code to: <strong>@(Model.Email) </strong></p>
                     <p class="govuk-body">It might take a few minutes to arrive. The code will expire in 60 minutes.</p>
 
-                    <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("code") && Html.ViewData.ModelState["code"].Errors.Count > 0 ? "govuk-form-group--error" :"" )">
+                    @{
+                        var enterCodeViewmodel = new TextBoxViewModel
+                        {
+                            PropertyName = "Code",
+                            Label = "Enter code",
+                            Hint = "This is a six-digit passcode. For example, 623452",
+                            Value = Model?.Code ?? string.Empty,
+                            Class = "govuk-input govuk-input--width-10",
+                            HasError = hasError,
+                            ErrorMessage = hasError ? Html.ViewData?.ModelState["Code"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                        };
+                    }
 
-                        <label class="govuk-label" for="code">
-                            Enter code
-                        </label>
-                        <div id="enter-code-hint" class="govuk-hint">
-                            For example, 226745
-                        </div>
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", enterCodeViewmodel)
 
-                        @Html.ValidationMessageFor(m => m.Code, "", new { @class = "govuk-error-message" })
-                        @Html.TextBoxFor(m => m.Code, new { @class = "govuk-input govuk-input--width-10", id = "code", name = "code", @aria_DescribedBy = "enter-code-hint" })
-                    </div>
 
                     <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
                         Confirm

@@ -34,7 +34,7 @@
 else
 {
     <div class="govuk-form-group  govuk-form-group--error">
-        <fieldset class="govuk-fieldset">
+        <fieldset class="govuk-fieldset" aria-describedby="selectedidentityprofileids-error">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                 <h1 class="govuk-fieldset__heading">
                     @Model.Item1
@@ -49,7 +49,7 @@ else
                 {
                     var idSuffix = index > 0 ? $"_{index}" : string.Empty;
                     <div class="govuk-checkboxes__item">
-                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedIdentityProfileIds" value="@item.Id" id="selectedidentityprofileids@(idSuffix)" aria-describedby="selectedidentityprofileids-error"
+                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedIdentityProfileIds" value="@item.Id" id="selectedidentityprofileids@(idSuffix)"
                         @(Model.Item2.SelectedIdentityProfileIds.Contains(item.Id) ? "checked" : "") />
                         <label class="govuk-label govuk-checkboxes__label" for="selectedidentityprofileids@(idSuffix)">@item.IdentityProfileName</label>
                     </div>
