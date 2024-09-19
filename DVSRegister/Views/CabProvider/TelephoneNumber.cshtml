@@ -1,6 +1,6 @@
 ﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
 @{
-    ViewData["Title"] = "Telephone Number";
+    ViewData["Title"] = "The digital identity and attribute service provider’s public telephone number";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -14,7 +14,6 @@
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
-                    <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s public telephone number   </h1>
 
                     @if (Html.ViewData?.ModelState.ContainsKey("ProviderTelephoneNumber") == true)
                     {
@@ -28,6 +27,7 @@
                         }
                     }
 
+                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s public telephone number</h1>
 
                     <p class="govuk-body">
                         You should ask the service provider to provide this information. The
