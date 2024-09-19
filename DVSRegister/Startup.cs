@@ -13,6 +13,7 @@ using DVSRegister.Data;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
@@ -37,6 +38,8 @@ namespace DVSRegister
             string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));
             services.AddDbContext<DVSRegisterDbContext>(opt =>
                 opt.UseNpgsql(connectionString));
+            // This allows encrypted cookies to be understood across multiple web server instances
+            services.AddDataProtection().PersistKeysToDbContext<DVSRegisterDbContext>();
 
             ConfigureGovUkNotify(services);
             ConfigureSession(services);

@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using NpgsqlTypes;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240918111214_AddProceedPublishConsentTokenTable")]
+    partial class AddProceedPublishConsentTokenTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,37 +50,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 9, 19, 15, 54, 15, 19, DateTimeKind.Utc).AddTicks(6024)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 12, 13, 319, DateTimeKind.Utc).AddTicks(2752)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 9, 19, 15, 54, 15, 19, DateTimeKind.Utc).AddTicks(6027)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 12, 13, 319, DateTimeKind.Utc).AddTicks(2757)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 9, 19, 15, 54, 15, 19, DateTimeKind.Utc).AddTicks(6062)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 12, 13, 319, DateTimeKind.Utc).AddTicks(2758)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 9, 19, 15, 54, 15, 19, DateTimeKind.Utc).AddTicks(6063)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 12, 13, 319, DateTimeKind.Utc).AddTicks(2759)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 9, 19, 15, 54, 15, 19, DateTimeKind.Utc).AddTicks(6064)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 12, 13, 319, DateTimeKind.Utc).AddTicks(2760)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 9, 19, 15, 54, 15, 19, DateTimeKind.Utc).AddTicks(6066)
+                            CreatedTime = new DateTime(2024, 9, 18, 11, 12, 13, 319, DateTimeKind.Utc).AddTicks(2761)
                         });
                 });
 
@@ -265,32 +268,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("CetificateReviewId");
 
                     b.ToTable("CertificateReviewRejectionReasonMapping");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.ConsentToken", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TokenId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Token");
-
-                    b.HasIndex("TokenId");
-
-                    b.ToTable("ConsentToken");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.IdentityProfile", b =>
@@ -532,37 +509,6 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("ProceedApplicationConsentToken");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.ProceedPublishConsentToken", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TokenId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceId");
-
-                    b.HasIndex("Token");
-
-                    b.HasIndex("TokenId");
-
-                    b.ToTable("ProceedPublishConsentToken");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.Provider", b =>
                 {
                     b.Property<int>("Id")
@@ -792,9 +738,6 @@ namespace DVSRegister.Data.Migrations
 
                     b.Property<int?>("RejectionReason")
                         .HasColumnType("integer");
-
-                    b.Property<string>("RejectionReasons")
-                        .HasColumnType("text");
 
                     b.Property<string>("SecondaryCheckComment")
                         .HasColumnType("text");
@@ -1199,25 +1142,6 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FriendlyName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Xml")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DataProtectionKeys");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.CabUser", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.Cab", "Cab")
@@ -1287,17 +1211,6 @@ namespace DVSRegister.Data.Migrations
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ProceedApplicationConsentToken", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.ProceedPublishConsentToken", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.Service", "Service")
                         .WithMany()
