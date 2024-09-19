@@ -48,7 +48,7 @@
                     @if (hasAuthenticatorError)
                     {
                         <div class="govuk-form-group govuk-form-group--error">
-                            <fieldset class="govuk-fieldset">
+                            <fieldset class="govuk-fieldset" aria-describedby="selectedqualityofauthenticatorids-error">
                                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
 
                                     Quality of authenticator
@@ -64,7 +64,7 @@
                                         var idSuffix = authIndex > 0 ? $"_{authIndex}" : string.Empty; // added to make the first checkbox id as selectedqualityofauthenticatorids so that error summary ahref refers first item
                                         <div class="govuk-checkboxes__item">
                                             <input class="govuk-checkboxes__input" type="checkbox" name="SelectedQualityofAuthenticatorIds" value="@authenticator.Id"
-                                                   id="selectedqualityofauthenticatorids@(idSuffix)" aria-describedby="selectedqualityofauthenticatorids-error"
+                                                   id="selectedqualityofauthenticatorids@(idSuffix)"
                                                    @(Model.SelectedQualityofAuthenticatorIds.Contains(authenticator.Id) ? "checked" : "") />
                                             <label class="govuk-label govuk-checkboxes__label" for="selectedqualityofauthenticatorids@(idSuffix)">@authenticator.Level</label>
                                         </div>
@@ -107,7 +107,7 @@
                     @if (hasProtectionError)
                     {
                         <div class="govuk-form-group govuk-form-group--error">
-                            <fieldset class="govuk-fieldset">
+                            <fieldset class="govuk-fieldset" aria-describedby="selectedlevelofprotectionids-error">
                                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                                         Level of protection
                                 </legend>
@@ -121,7 +121,7 @@
                                         var idSuffix = levelIndex > 0 ? $"_{levelIndex}" : string.Empty;
                                         <div class="govuk-checkboxes__item">
                                             <input class="govuk-checkboxes__input" type="checkbox" name="SelectedLevelOfProtectionIds" value="@level.Id"
-                                                   id="selectedlevelofprotectionids@(idSuffix)" aria-describedby="selectedlevelofprotectionids-error"
+                                                   id="selectedlevelofprotectionids@(idSuffix)"
                                                    @(Model.SelectedLevelOfProtectionIds.Contains(level.Id) ? "checked" : "") />
                                             <label class="govuk-label govuk-checkboxes__label" for="selectedlevelofprotectionids@(idSuffix)">@level.Level</label>
                                         </div>
