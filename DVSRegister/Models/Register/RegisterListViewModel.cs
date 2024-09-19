@@ -4,7 +4,9 @@ namespace DVSRegister.Models
 {
     public class RegisterListViewModel
     {
-        public List<ProviderDto>? Providers { get; set; }
+
+        public List<ProviderProfileDto>? Providers { get; set; }
+        // public List<ProviderDto>? Providers { get; set; }
         public string LastUpdated { get; set; }
         public string? SearchProvider { get; set; }
         public List<RoleDto>? AvailableRoles { get; set; }

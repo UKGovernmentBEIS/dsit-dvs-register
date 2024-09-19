@@ -32,7 +32,7 @@
                             Telephone number
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @Model.Provider.TelephoneNumber
+                            @Model.Provider.ProviderTelephoneNumber
                         </dd>
                     </div>
                     <div class="govuk-summary-list__row">
@@ -40,13 +40,13 @@
                             Website address
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @Model.Provider.WebsiteAddress
+                            @Model.Provider.ProviderWebsiteAddress
                         </dd>
                     </div>
                 </dl>
 
 
-                @foreach (var service in Model.Provider.CertificateInformation)
+                @foreach (var service in Model.Provider.Services)
                 {
                     
                     <h2 class="govuk-heading-m">Service @service.ServiceNumber: @service.ServiceName</h2>
@@ -58,7 +58,7 @@
                                 Company address details
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @HtmlExtensions.ToStringWithLineBreaks(Model.Provider.Address)
+                                @HtmlExtensions.ToStringWithLineBreaks(@service.CompanyAddress)
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -74,10 +74,11 @@
                                 roles certified against
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @foreach (var item in service.Roles)
+                                @*  to be checked *@
+                                @*  @foreach (var item in service.ServiceRoleMapping.Roles)
                                 {
                                     <div>@item.RoleName</div>
-                                }
+                                } *@
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -85,24 +86,26 @@
                                 Identity profiles
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @foreach (var item in service.IdentityProfiles)
+                                @*  to be checked *@
+                                @*  @foreach (var item in service.ServiceIdentityProfileMapping.IdentityProfiles)
                                 {
                                     <div>@item.IdentityProfileName</div>
-                                }
+                                } *@
                             </dd>
                         </div>
 
-                        @if (service.HasSupplementarySchemes && service.SupplementarySchemes!=null)
+                        @if (service.HasSupplementarySchemes && service.ServiceSupSchemeMapping != null)
                         {
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     Supplementary schemes
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @foreach (var item in service.SupplementarySchemes)
+                                    @*  to be checked *@
+                                    @*  @foreach (var item in service.ServiceSupSchemeMapping.SupplementaryScheme)
                                     {
                                         <div>@item.SchemeName</div>
-                                    }
+                                    } *@
                                 </dd>
                             </div>
 
@@ -118,26 +121,6 @@
                         </div>
                     </dl>
 
-
-                    <div class="govuk-grid-row">
-                        <div class="govuk-grid-column-two-thirds">
-                            <h2 class="govuk-heading-m">Service @service.ServiceNumber certificate of conformity</h2>                           
-                            <p class="govuk-body govuk-!-margin-bottom-2">
-                                <span class="govuk-hint">
-                                    PDF, 19.5 KB, 1 page
-                                </span>
-                            </p>
-                            <p class="govuk-body">
-                                <span class="govuk-hint">
-                                    This file may not be suitable for users of assistive technology.
-                                </span>
-                            </p>
-
-                            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="downloadCertificate">
-                                Download certificate of conformity
-                            </button>
-                        </div>
-                    </div>
 
                     <hr class="govuk-section-break govuk-section-break--m">
                 }

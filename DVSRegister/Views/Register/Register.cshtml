@@ -137,19 +137,21 @@
                                 <li>
                                     <h3 class="govuk-heading-m"><a href="provider-details?providerId=@provider.Id" class="govuk-link">@provider.TradingName</a></h3>
                                     <p class="govuk-body govuk-!-margin-bottom-2">Registered name: @provider.RegisteredName</p>
-                                    <p class="govuk-body-s dsit-secondary-text-colour">Address: @provider.Address</p>
+                                    @*  to be checked *@   <p class="govuk-body-s dsit-secondary-text-colour">Address: @provider.ParentCompanyLocation</p>
+                                 
                                     <ul role="list" class="govuk-list">
 
-                                        @foreach (var service in provider.CertificateInformation)
+                                        @foreach (var service in provider.Services)
                                         {
                                             <li>
                                                 <p class="govuk-body govuk-!-margin-bottom-2">Service @service.ServiceNumber: @service.ServiceName</p>
-                                                <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(",", service.Roles.Select(x => @Enum.GetName((RoleEnum)x.Id)).ToList())</p>
+                                                @*  to be checked *@   
+                                                @*   <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(",", service.Roles.Select(x => @Enum.GetName((RoleEnum)x.Id)).ToList())</p>
                                                 @if (@service.SupplementarySchemes != null && @service.SupplementarySchemes.Any())
                                                 {
                                                     <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes:   @string.Join(",", service.SupplementarySchemes.Select(x => x.SchemeName).ToList())</p>
                                                 }
-
+ *@
                                             </li>
                                         }
 
