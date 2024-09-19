@@ -1,11 +1,12 @@
 ﻿
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Entities;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DVSRegister.Data
 {
-    public class DVSRegisterDbContext : DbContext
+    public class DVSRegisterDbContext : DbContext, IDataProtectionKeyContext
     {
         public DVSRegisterDbContext(DbContextOptions<DVSRegisterDbContext> options) : base(options)
         {
@@ -35,6 +36,8 @@ namespace DVSRegister.Data
         public DbSet<PublicInterestCheck> PublicInterestCheck { get; set; }
         public DbSet<PICheckLogs> PICheckLogs { get; set; }
         public DbSet<ProceedPublishConsentToken> ProceedPublishConsentToken { get; set; }
+
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
