@@ -74,11 +74,10 @@
                                 roles certified against
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @*  to be checked *@
-                                @*  @foreach (var item in service.ServiceRoleMapping.Roles)
+                                 @foreach (var item in service.ServiceRoleMapping)
                                 {
-                                    <div>@item.RoleName</div>
-                                } *@
+                                    <div>@item.Role.RoleName</div>
+                                }
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -86,11 +85,10 @@
                                 Identity profiles
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @*  to be checked *@
-                                @*  @foreach (var item in service.ServiceIdentityProfileMapping.IdentityProfiles)
+                                 @foreach (var item in service.ServiceIdentityProfileMapping)
                                 {
-                                    <div>@item.IdentityProfileName</div>
-                                } *@
+                                 <div>@item.IdentityProfile.IdentityProfileName</div>
+                                }
                             </dd>
                         </div>
 
@@ -101,11 +99,10 @@
                                     Supplementary schemes
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @*  to be checked *@
-                                    @*  @foreach (var item in service.ServiceSupSchemeMapping.SupplementaryScheme)
+                                     @foreach (var item in service.ServiceSupSchemeMapping)
                                     {
-                                        <div>@item.SchemeName</div>
-                                    } *@
+                                    <div>@item.SupplementaryScheme.SchemeName</div>
+                                    }
                                 </dd>
                             </div>
 

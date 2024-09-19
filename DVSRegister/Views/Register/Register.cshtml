@@ -137,7 +137,7 @@
                                 <li>
                                     <h3 class="govuk-heading-m"><a href="provider-details?providerId=@provider.Id" class="govuk-link">@provider.TradingName</a></h3>
                                     <p class="govuk-body govuk-!-margin-bottom-2">Registered name: @provider.RegisteredName</p>
-                                    @*  to be checked *@   <p class="govuk-body-s dsit-secondary-text-colour">Address: @provider.ParentCompanyLocation</p>
+                                    <p class="govuk-body-s dsit-secondary-text-colour">Address: @provider.ParentCompanyLocation</p>
                                  
                                     <ul role="list" class="govuk-list">
 
@@ -145,13 +145,12 @@
                                         {
                                             <li>
                                                 <p class="govuk-body govuk-!-margin-bottom-2">Service @service.ServiceNumber: @service.ServiceName</p>
-                                                @*  to be checked *@   
-                                                @*   <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(",", service.Roles.Select(x => @Enum.GetName((RoleEnum)x.Id)).ToList())</p>
-                                                @if (@service.SupplementarySchemes != null && @service.SupplementarySchemes.Any())
+
+                                                <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(",", service.ServiceRoleMapping.Select(x => @Enum.GetName((RoleEnum)x.Id)).ToList())</p>
+                                                @if (@service.ServiceSupSchemeMapping != null && @service.ServiceSupSchemeMapping.Any())
                                                 {
-                                                    <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes:   @string.Join(",", service.SupplementarySchemes.Select(x => x.SchemeName).ToList())</p>
+                                                    <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes:   @string.Join(",", service.ServiceSupSchemeMapping.Select(x => x.SupplementarySchemeId).ToList())</p>
                                                 }
- *@
                                             </li>
                                         }
 
