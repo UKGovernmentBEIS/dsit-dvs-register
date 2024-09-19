@@ -33,6 +33,8 @@ namespace DVSRegister.Data
         public DbSet<CertificateReviewRejectionReasonMapping> CertificateReviewRejectionReasonMapping { get; set; }
         public DbSet<ProceedApplicationConsentToken> ProceedApplicationConsentToken { get; set; }
         public DbSet<PublicInterestCheck> PublicInterestCheck { get; set; }
+        public DbSet<PICheckLogs> PICheckLogs { get; set; }
+        public DbSet<ProceedPublishConsentToken> ProceedPublishConsentToken { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
