@@ -1,6 +1,6 @@
 ﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
 @{
-    ViewData["Title"] = "Website Address";
+    ViewData["Title"] = "The digital identity and attribute service provider’s public website address";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -14,7 +14,6 @@
         <main class="govuk-main-wrapper">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
-                    <h1 class="govuk-heading-xl"> The digital identity and attribute service provider’s public website address </h1>
 
                     @if (Html.ViewData?.ModelState.ContainsKey("ProviderWebsiteAddress") == true)
                     {
@@ -27,6 +26,7 @@
                                      new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ProviderWebsiteAddress", errors))
                         }
                     }
+                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s public website address</h1>
                     <p class="govuk-body">You should ask the service provider to provide this information. The website address you enter will be publicly displayed on the register of digital identity and attribute services.</p>
 
 
