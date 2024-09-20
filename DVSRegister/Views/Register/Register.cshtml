@@ -1,4 +1,5 @@
 ﻿@using DVSRegister.CommonUtility.Models.Enums;
+@using DVSRegister.Extensions;
 
 @model RegisterListViewModel
 @{
@@ -137,7 +138,7 @@
                                 <li>
                                     <h3 class="govuk-heading-m"><a href="provider-details?providerId=@provider.Id" class="govuk-link">@provider.TradingName</a></h3>
                                     <p class="govuk-body govuk-!-margin-bottom-2">Registered name: @provider.RegisteredName</p>
-                                    <p class="govuk-body-s dsit-secondary-text-colour">Address: @provider.ParentCompanyLocation</p>
+                                    
                                  
                                     <ul role="list" class="govuk-list">
 
@@ -151,10 +152,14 @@
                                                 {
                                                     <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes:   @string.Join(",", service.ServiceSupSchemeMapping.Select(x => x.SupplementaryScheme.SchemeName).ToList())</p>
                                                 }
+                                                <p class="govuk-body-s dsit-secondary-text-colour">Address: @service.CompanyAddress</p>
                                             </li>
+                                          
                                         }
+                                      
 
                                     </ul>
+                             
                                     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                                 </li>
                             }
