@@ -146,10 +146,10 @@
                                             <li>
                                                 <p class="govuk-body govuk-!-margin-bottom-2">Service @service.ServiceNumber: @service.ServiceName</p>
 
-                                                <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(",", service.ServiceRoleMapping.Select(x => @Enum.GetName((RoleEnum)x.Id)).ToList())</p>
+                                                <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(",", service.ServiceRoleMapping.Select(x => Enum.GetName(typeof(RoleEnum), x.RoleId)).ToList())</p>
                                                 @if (@service.ServiceSupSchemeMapping != null && @service.ServiceSupSchemeMapping.Any())
                                                 {
-                                                    <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes:   @string.Join(",", service.ServiceSupSchemeMapping.Select(x => x.SupplementarySchemeId).ToList())</p>
+                                                    <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes:   @string.Join(",", service.ServiceSupSchemeMapping.Select(x => x.SupplementaryScheme.SchemeName).ToList())</p>
                                                 }
                                             </li>
                                         }

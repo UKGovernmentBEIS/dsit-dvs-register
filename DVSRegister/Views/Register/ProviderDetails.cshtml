@@ -1,5 +1,6 @@
 ﻿@model ProviderDetailsViewModel
 @using DVSRegister.Extensions;
+@using DVSRegister.CommonUtility.Models.Enums;
 @{
     ViewData["Title"] = "Provider details";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
@@ -71,12 +72,12 @@
                         </div>
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
-                                roles certified against
+                                Roles certified against
                             </dt>
                             <dd class="govuk-summary-list__value">
                                  @foreach (var item in service.ServiceRoleMapping)
                                 {
-                                    <div>@item.Role.RoleName</div>
+                                    <div>@Enum.GetName(typeof(RoleEnum), item.RoleId)</div>
                                 }
                             </dd>
                         </div>
@@ -101,7 +102,7 @@
                                 <dd class="govuk-summary-list__value">
                                      @foreach (var item in service.ServiceSupSchemeMapping)
                                     {
-                                    <div>@item.SupplementaryScheme.SchemeName</div>
+                                        <div>@item.SupplementaryScheme.SchemeName</div>
                                     }
                                 </dd>
                             </div>
