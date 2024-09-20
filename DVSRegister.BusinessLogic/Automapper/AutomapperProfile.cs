@@ -30,8 +30,7 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceQualityLevelMappingDto, ServiceQualityLevelMapping>();         
           
 
-            CreateMap<Provider, ProviderDto>();
-            CreateMap<ProviderDto, Provider>();
+           
            
 
             CreateMap<RegisterPublishLog, RegisterPublishLogDto>();
