@@ -1,6 +1,7 @@
 ﻿@model ProviderDetailsViewModel
 @using DVSRegister.Extensions;
 @using DVSRegister.CommonUtility.Models.Enums;
+@using DVSRegister.CommonUtility.Models;
 @{
     ViewData["Title"] = "Provider details";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
@@ -81,33 +82,53 @@
                                 }
                             </dd>
                         </div>
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Identity profiles
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                 @foreach (var item in service.ServiceIdentityProfileMapping)
-                                {
-                                 <div>@item.IdentityProfile.IdentityProfileName</div>
-                                }
-                            </dd>
-                        </div>
 
-                        @if (service.HasSupplementarySchemes && service.ServiceSupSchemeMapping != null)
+                        @if (service.ServiceIdentityProfileMapping!=null)
                         {
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Supplementary schemes
+                                    Identity profiles
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                     @foreach (var item in service.ServiceSupSchemeMapping)
+                                    @foreach (var item in service.ServiceIdentityProfileMapping)
                                     {
-                                        <div>@item.SupplementaryScheme.SchemeName</div>
+                                        <div>@item.IdentityProfile.IdentityProfileName</div>
+                                    }
+                                </dd>
+                            </div>
+                        }
+                       
+
+                        @if (service.ServiceQualityLevelMapping!=null)
+                        {
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    GPG44 quality of authenticator
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                    {
+                                        <div>@item.QualityLevel.Level</div>
                                     }
                                 </dd>
                             </div>
 
+
+
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    GPG44 level of protection
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                    {
+                                        <div>@item.QualityLevel.Level</div>
+                                    }
+                                </dd>
+                            </div>
                         }
+
+                       
                     
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
