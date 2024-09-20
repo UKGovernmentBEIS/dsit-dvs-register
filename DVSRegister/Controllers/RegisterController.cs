@@ -2,28 +2,23 @@
 using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
-{    
+{
     [Route("register")]
     public class RegisterController : Controller
-    {
-        private readonly ILogger<RegisterController> logger;     
+    {         
         private readonly IRegisterService registerService;
         private readonly ICabService cabService;
-//        private readonly GoogleAnalyticsService googleAnalyticsService;
 
 
-        public RegisterController(ILogger<RegisterController> logger, IRegisterService registerService, ICabService cabService)
-        {
-            this.logger = logger;          
+        public RegisterController(IRegisterService registerService, ICabService cabService)
+        {                
             this.registerService = registerService;
             this.cabService = cabService;
-//            this.googleAnalyticsService = googleAnalyticsService;
 
 
         }
@@ -31,7 +26,7 @@ namespace DVSRegister.Controllers
         [HttpGet("register-search")]
         public async Task<IActionResult> Register(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, bool FromDeatilsPage = false, int RemoveRole = 0, int RemoveScheme = 0, string SearchAction = "", string SearchProvider = "")
         {
-            RegisterListViewModel registerListViewModel = new RegisterListViewModel();
+            RegisterListViewModel registerListViewModel = new ();
             if (FromDeatilsPage)
             {
                 Filters filters = HttpContext?.Session.Get<Filters>("Filters")??new Filters();
@@ -80,11 +75,13 @@ namespace DVSRegister.Controllers
         [HttpGet("provider-details")]
         public async Task<IActionResult> ProviderDetails(int providerId)
         {
-            ProviderDto providerDto = await registerService.GetProviderWithServiceDeatils(providerId);
-            providerDto.CertificateInformation = AssignServiceNumber(providerDto.CertificateInformation);
-            ProviderDetailsViewModel providerDetailsViewModel = new ProviderDetailsViewModel();
-            providerDetailsViewModel.Provider = providerDto;
-            providerDetailsViewModel.LastUpdated = TempData.Peek("LastUpdated") as string??string.Empty;
+
+            ProviderProfileDto providerProfileDto = await registerService.GetProviderWithServiceDeatils(providerId);
+            ProviderDetailsViewModel providerDetailsViewModel = new()
+            {
+                Provider = providerProfileDto,
+                LastUpdated = TempData.Peek("LastUpdated") as string ?? string.Empty
+            };
             return View(providerDetailsViewModel);
         }
 
@@ -146,15 +143,7 @@ namespace DVSRegister.Controllers
                 registerListViewModel.SelectedRoles =  registerListViewModel.AvailableRoles.Where(c => registerListViewModel.SelectedRoleIds.Contains(c.Id)).ToList();
         }
 
-        private List<CertificateInfoDto> AssignServiceNumber(ICollection<CertificateInfoDto> certificateInformationDtos)
-        {
-            List<CertificateInfoDto> certificateInformationDtosFiltered = certificateInformationDtos
-           .Where(x => x.CertificateInfoStatus == CertificateInfoStatusEnum.ReadyToPublish
-           || x.CertificateInfoStatus == CertificateInfoStatusEnum.Published).ToList();
-            certificateInformationDtosFiltered.Select((item, index) => new { item, index })
-            .ToList().ForEach(x => x.item.ServiceNumber = x.index + 1);
-            return certificateInformationDtosFiltered;
-        }
+       
 
 
         #endregion
