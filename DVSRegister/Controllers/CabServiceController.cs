@@ -758,7 +758,7 @@ namespace DVSRegister.Controllers
 
                     if (expiryDate.HasValue && fromSummaryPage)
                     {
-                        minIssueDate  = expiryDate.Value.AddYears(-2).AddDays(-60);
+                        minIssueDate  = expiryDate.Value.AddYears(-2);
                         if (date < minIssueDate)
                         {
                             ModelState.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
@@ -800,7 +800,7 @@ namespace DVSRegister.Controllers
                 else
                 {
                     date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
-                    var maxExpiryDate = issueDate.AddYears(2).AddDays(60);
+                    var maxExpiryDate = issueDate.AddYears(2);
                     if (date <= DateTime.Today)
                     {
                         ModelState.AddModelError("ValidDate", Constants.ConformityExpiryPastDateError);
@@ -870,6 +870,7 @@ namespace DVSRegister.Controllers
                 serviceDto.ServiceQualityLevelMapping = serviceQualityLevelMappings;
                 serviceDto.HasSupplementarySchemes =  model.HasSupplementarySchemes??false;
                 serviceDto.HasGPG44 = model.HasGPG44??false;
+                serviceDto.HasGPG45 = model.HasGPG44??false;
                 serviceDto.ServiceSupSchemeMapping = serviceSupSchemeMappings;
                 serviceDto.FileLink = model.FileLink;
                 serviceDto.FileName = model.FileName;

@@ -30,8 +30,7 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceQualityLevelMappingDto, ServiceQualityLevelMapping>();         
           
 
-            CreateMap<Provider, ProviderDto>();
-            CreateMap<ProviderDto, Provider>();
+           
            
 
             CreateMap<RegisterPublishLog, RegisterPublishLogDto>();
@@ -58,6 +57,7 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.ServiceRoleMapping, opt => opt.MapFrom(src => src.ServiceRoleMapping))
             .ForMember(dest => dest.ServiceIdentityProfileMapping, opt => opt.MapFrom(src => src.ServiceIdentityProfileMapping))
             .ForMember(dest => dest.ServiceSupSchemeMapping, opt => opt.MapFrom(src => src.ServiceSupSchemeMapping))
+            .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
             .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
             .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview));
 
@@ -66,6 +66,7 @@ namespace DVSRegister.BusinessLogic
            .ForMember(dest => dest.ServiceRoleMapping, opt => opt.MapFrom(src => src.ServiceRoleMapping))
            .ForMember(dest => dest.ServiceIdentityProfileMapping, opt => opt.MapFrom(src => src.ServiceIdentityProfileMapping))
            .ForMember(dest => dest.ServiceSupSchemeMapping, opt => opt.MapFrom(src => src.ServiceSupSchemeMapping))
+           .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
            .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview));
         }

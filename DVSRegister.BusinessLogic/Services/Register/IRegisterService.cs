@@ -7,7 +7,7 @@ namespace DVSRegister.BusinessLogic.Services
     {
 
         public Task<List<RegisterPublishLogDto>> GetRegisterPublishLogs();
-        public Task<List<ProviderDto>> GetProviders(List<int> roles, List<int> schemes,string searchText = "");
-        public Task<ProviderDto> GetProviderWithServiceDeatils(int providerId);
+        public Task<List<ProviderProfileDto>> GetProviders(List<int> roles, List<int> schemes,string searchText = "");
+        public Task<ProviderProfileDto> GetProviderWithServiceDeatils(int providerId);
     }
 }

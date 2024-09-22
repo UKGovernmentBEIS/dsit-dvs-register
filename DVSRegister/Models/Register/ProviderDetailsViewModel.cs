@@ -4,7 +4,8 @@ namespace DVSRegister.Models
 {
     public class ProviderDetailsViewModel
     {
-        public ProviderDto Provider { get; set; }
+        public ProviderProfileDto Provider { get; set; }
+      //  public ProviderDto Provider { get; set; }
         public string LastUpdated { get; set; }
     }
 }
