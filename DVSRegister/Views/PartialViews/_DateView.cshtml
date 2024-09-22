@@ -63,7 +63,7 @@
             </div>
             <div class="govuk-date-input__item">
                 <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label" for="@Model.PropertyName-month">
+                    <label class="govuk-label govuk-date-input__label" for="@Model.PropertyName.ToLower()-month">
                         Month
                     </label>
                     @if (Model.HasMonthError)
@@ -78,7 +78,7 @@
             </div>
             <div class="govuk-date-input__item">
                 <div class="govuk-form-group">
-                    <label class="govuk-label govuk-date-input__label" for="@Model.PropertyName-year">
+                    <label class="govuk-label govuk-date-input__label" for="@Model.PropertyName.ToLower()-year">
                         Year
                     </label>
                     @if (Model.HasYearError)
