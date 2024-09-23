@@ -7,7 +7,7 @@
     bool hasError = false;
 }
 
-@using (Html.BeginForm("SaveParentCompanyRegistrationNumber", "CabProvider", FormMethod.Post))
+@using (Html.BeginForm("SaveParentCompanyRegisteredName", "CabProvider", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
 
