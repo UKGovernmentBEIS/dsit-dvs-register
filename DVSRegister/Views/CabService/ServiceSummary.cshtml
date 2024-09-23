@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
-@using (Html.BeginForm("SaveServiceSummary", "Temp", FormMethod.Post))
+@using (Html.BeginForm("SaveServiceSummary", "CabService", FormMethod.Post))
 {
     <div class="govuk-width-container">
         @Html.ActionLink("Back", "ConfirmityExpiryDate", "CabService", null, new { @class = "govuk-back-link" })
