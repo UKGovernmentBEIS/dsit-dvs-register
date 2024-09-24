@@ -6,7 +6,7 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
-@using (Html.BeginForm("SaveServiceSummary", "Temp", FormMethod.Post))
+@using (Html.BeginForm("SaveServiceSummary", "CabService", FormMethod.Post))
 {
     <div class="govuk-width-container">
         @Html.ActionLink("Back", "ConfirmityExpiryDate", "CabService", null, new { @class = "govuk-back-link" })
@@ -14,7 +14,7 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <h1 class="govuk-heading-xl"> Check your answers before submitting your application</h1>
-                    
+
                 </div>
                 <div class="govuk-grid-column-full">
 
@@ -35,7 +35,7 @@
                                         @Model.ServiceName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "ServiceName", "CabService", new { fromSummaryPage = true, providerProfileId  =Model.ProviderProfileId},
+                                        @Html.ActionLink("Change", "ServiceName", "CabService", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
                                                  new { @class = "govuk-link", @aria_label = "Change service provider certified against any supplementary schemes on their certificate" })
                                     </dd>
                                 </div>
@@ -65,12 +65,12 @@
                                                  new { @class = "govuk-link", @aria_label = "Change company address details" })
                                     </dd>
                                 </div>
-                               
+
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
                                         Roles certified
                                         against
-                                    </dt>                                  
+                                    </dt>
                                     <dd class="govuk-summary-list__value">
                                         @foreach (var item in Model.RoleViewModel.SelectedRoles)
                                         {
@@ -92,23 +92,23 @@
                                         GPG44 quality of authenticator
                                     </dt>
 
-                                    @if (Model.QualityLevelViewModel!= null && Convert.ToBoolean(Model.HasGPG44))
+                                    @if (Model.QualityLevelViewModel != null && Convert.ToBoolean(Model.HasGPG44))
                                     {
                                         <dd class="govuk-summary-list__value">
-                                        @if (Model.QualityLevelViewModel.SelectedQualityofAuthenticators != null && Model.QualityLevelViewModel.SelectedQualityofAuthenticators.Count>0)
-                                        {
+                                            @if (Model.QualityLevelViewModel.SelectedQualityofAuthenticators != null && Model.QualityLevelViewModel.SelectedQualityofAuthenticators.Count > 0)
+                                            {
                                                 @foreach (var item in Model.QualityLevelViewModel.SelectedQualityofAuthenticators)
                                                 {
                                                     @item.Level
                                                     <br>
                                                 }
-                                        }
+                                            }
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "GPG44", "CabService", new { fromSummaryPage = true },
                                                      new { @class = "govuk-link", @aria_label = "Change GPG44 quality of authenticator" })
                                         </dd>
-                                       
+
 
                                     }
                                     else
@@ -121,8 +121,8 @@
                                                      new { @class = "govuk-link", @aria_label = "Change has supplementary scheme" })
                                         </dd>
                                     }
-                                  
-                                 
+
+
                                 </div>
 
                                 <div class="govuk-summary-list__row">
@@ -130,18 +130,18 @@
                                         GPG44 level of protection
                                     </dt>
 
-                                    @if (Model.QualityLevelViewModel!= null && Convert.ToBoolean(Model.HasGPG44))
+                                    @if (Model.QualityLevelViewModel != null && Convert.ToBoolean(Model.HasGPG44))
                                     {
                                         <dd class="govuk-summary-list__value">
-                                        @if (Model.QualityLevelViewModel.SelectedLevelOfProtections != null && Model.QualityLevelViewModel.SelectedLevelOfProtections.Count>0)
-                                        {
-                                           
+                                            @if (Model.QualityLevelViewModel.SelectedLevelOfProtections != null && Model.QualityLevelViewModel.SelectedLevelOfProtections.Count > 0)
+                                            {
+
                                                 @foreach (var item in Model.QualityLevelViewModel.SelectedLevelOfProtections)
                                                 {
                                                     @item.Level
                                                     <br>
                                                 }
-                                        }
+                                            }
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "GPG44", "CabService", new { fromSummaryPage = true },
@@ -152,7 +152,7 @@
                                     else
                                     {
                                         <dd class="govuk-summary-list__value">
-                                           None
+                                            None
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromSummaryPage = true },
@@ -167,17 +167,17 @@
                                         GPG45 identity profiles
                                     </dt>
 
-                                    @if (Model.IdentityProfileViewModel!= null && Convert.ToBoolean(Model.HasGPG45))
+                                    @if (Model.IdentityProfileViewModel != null && Convert.ToBoolean(Model.HasGPG45))
                                     {
                                         <dd class="govuk-summary-list__value">
-                                        @if (Model.IdentityProfileViewModel.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count>0)
-                                        {
+                                            @if (Model.IdentityProfileViewModel.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
+                                            {
                                                 @foreach (var item in Model.IdentityProfileViewModel.SelectedIdentityProfiles)
                                                 {
                                                     @item.IdentityProfileName
                                                     <br>
                                                 }
-                                        }
+                                            }
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "GPG45", "CabService", new { fromSummaryPage = true },
@@ -194,9 +194,9 @@
                                             @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromSummaryPage = true },
                                             new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
                                         </dd>
-                                    }                                    
-                                    
-                                  
+                                    }
+
+
                                 </div>
 
                                 <div class="govuk-summary-list__row">
@@ -204,18 +204,18 @@
                                         Supplementary schemes
                                     </dt>
 
-                                    @if (Model.SupplementarySchemeViewModel!= null && Convert.ToBoolean(Model.HasSupplementarySchemes))
+                                    @if (Model.SupplementarySchemeViewModel != null && Convert.ToBoolean(Model.HasSupplementarySchemes))
                                     {
                                         <dd class="govuk-summary-list__value">
-                                        @if (Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count>0)
-                                        {
-                                          
+                                            @if (Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count > 0)
+                                            {
+
                                                 @foreach (var item in Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
                                                 {
                                                     @item.SchemeName
                                                     <br>
                                                 }
-                                        }
+                                            }
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "SupplementarySchemes", "CabService", new { fromSummaryPage = true },
@@ -280,16 +280,19 @@
                     </div>
 
                 </div>
+                <div class="govuk-grid-column-two-thirds">
+                    <div class="govuk-warning-text">
+                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                        <strong class="govuk-warning-text__text">
+                            <span class="govuk-visually-hidden">Warning</span>
+                            If DSIT approves this submission, the information you have provided
+                            will be publicly available
+                        </strong>
+                    </div>
+                </div>
             </div>
 
-            <div class="govuk-warning-text">
-                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                <strong class="govuk-warning-text__text">
-                    <span class="govuk-visually-hidden">Warning</span>
-                    If DSIT approves this submission, the information you have provided
-                    will be publicly available
-                </strong>
-            </div>
+
             <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
                 Submit
             </button>

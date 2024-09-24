@@ -246,7 +246,7 @@ namespace DVSRegister.Controllers
 
         #region Parent company registered name
 
-        [HttpGet("parent-company-registerd-name-input")]
+        [HttpGet("parent-company-registered-name-input")]
         public IActionResult ParentCompanyRegisteredName(bool fromSummaryPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
@@ -254,8 +254,8 @@ namespace DVSRegister.Controllers
             return View(summaryViewModel);
         }
 
-
-        [HttpPost("parent-company-registerd-name-input")]
+        
+        [HttpPost("parent-company-registered-name-input")]
         public IActionResult SaveParentCompanyRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;

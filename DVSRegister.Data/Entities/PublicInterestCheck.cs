@@ -30,6 +30,7 @@ namespace DVSRegister.Data.Entities
         public bool IsProvidersWebpageApproved { get; set; }
         public PublicInterestCheckEnum PublicInterestCheckStatus { get; set; }
         public RejectionReasonEnum? RejectionReason { get; set; }
+        public string? RejectionReasons { get; set; }
         public string? PrimaryCheckComment { get; set; }
         public string? SecondaryCheckComment { get; set; }
 

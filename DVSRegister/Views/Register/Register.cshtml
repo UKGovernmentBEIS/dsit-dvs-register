@@ -1,4 +1,5 @@
 ﻿@using DVSRegister.CommonUtility.Models.Enums;
+@using DVSRegister.Extensions;
 
 @model RegisterListViewModel
 @{
@@ -14,102 +15,100 @@
                 Register of digital identity and attribute services
             </h1>
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-            <p class="govuk-body govuk-!-margin-bottom-7">Last updated @Model.LastUpdated
+            <p class="govuk-body govuk-!-margin-bottom-7">
+                Last updated @Model.LastUpdated
                 @Html.ActionLink("See all updates", "Updates", "Register", null, new { @class = "govuk-link" })
-               </p>
+            </p>
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-one-third">
-                    <search>
 
-                        <div class="govuk-form-group">
-                            <h2 class="govuk-label-wrapper">
-                                <label class="govuk-label govuk-label--m" for="SearchProvider">
-                                    Search for a service provider or service
-                                </label>
-                            </h2>
+                    <div class="govuk-form-group">
+                        <h2 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--m" for="SearchProvider">
+                                Search for a service provider or service
+                            </label>
+                        </h2>
 
-                            @Html.TextBoxFor(m => m.SearchProvider, new { @class = "govuk-input govuk-!-margin-bottom-4", id = "SearchProvider", name = "search-provider" })
+                        @Html.TextBoxFor(m => m.SearchProvider, new { @class = "govuk-input govuk-!-margin-bottom-4", id = "SearchProvider", name = "search-provider" })
 
-                            <div class="govuk-button-group">
-                                <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="search">
-                                    Search
-                                </button>
-
-                                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearSearch">
-                                    Clear search
-                                </button>
-                            </div>
-                        </div>
-
-                        <h2 class="govuk-heading-m">Filters</h2>
-                        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-
-                        <div class="govuk-form-group">
-                            <fieldset class="govuk-fieldset">
-                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                    <h3 class="govuk-fieldset__heading">
-                                        Role types
-                                    </h3>
-                                </legend>
-                                <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                    @foreach (var role in Model.AvailableRoles)
-                                    {
-                                        <div class="govuk-checkboxes__item">
-                                            <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id" aria-describedby="selectedroleids-error"
-                                            @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "") />
-                                            <label class="govuk-label govuk-checkboxes__label" for="role_@role.Id">@Enum.GetName((RoleEnum)@role.Id) </label>
-                                        </div>
-                                    }
-                                </div>
-                            </fieldset>
-                        </div>
-
-                        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                        <div class="govuk-form-group">
-                            <fieldset class="govuk-fieldset">
-                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                    <h3 class="govuk-fieldset__heading">
-                                        Supplementary schemes
-                                    </h3>
-                                </legend>
-                                <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-
-                                    @foreach (var item in Model.AvailableSchemes)
-                                    {
-                                        <div class="govuk-checkboxes__item">
-                                            <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id" id="scheme_@item.Id"
-                                            @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
-                                            <label class="govuk-label govuk-checkboxes__label" for="scheme_@item.Id">@item.SchemeName</label>
-                                        </div>
-                                    }
-
-                                </div>
-                            </fieldset>
-                        </div>
                         <div class="govuk-button-group">
-                            <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="filter">
-                                Apply filters
+                            <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="search">
+                                Search
                             </button>
-                            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearFilter">
-                                Clear filters
+
+                            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearSearch">
+                                Clear search
                             </button>
                         </div>
+                    </div>
 
-                    </search>
+                    <h2 class="govuk-heading-m">Filters</h2>
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                <h3 class="govuk-fieldset__heading">
+                                    Role types
+                                </h3>
+                            </legend>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id"
+                                               @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="role_@role.Id">@Enum.GetName((RoleEnum)@role.Id) </label>
+                                    </div>
+                                }
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                <h3 class="govuk-fieldset__heading">
+                                    Supplementary schemes
+                                </h3>
+                            </legend>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+
+                                @foreach (var item in Model.AvailableSchemes)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id" id="scheme_@item.Id"
+                                               @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="scheme_@item.Id">@item.SchemeName</label>
+                                    </div>
+                                }
+
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="filter">
+                            Apply filters
+                        </button>
+                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearFilter">
+                            Clear filters
+                        </button>
+                    </div>
                 </div>
                 <div class="govuk-grid-column-two-thirds">
 
 
-                    @if (Model.Providers!=null && Model.Providers.Any())
+                    @if (Model.Providers != null && Model.Providers.Any())
                     {
 
-                        if ((Model.SelectedRoleIds!=null && Model.SelectedRoleIds.Any())|| (Model.SelectedSupplementarySchemeIds!=null && Model.SelectedSupplementarySchemeIds.Any()))
+                        if ((Model.SelectedRoleIds != null && Model.SelectedRoleIds.Any()) || (Model.SelectedSupplementarySchemeIds != null && Model.SelectedSupplementarySchemeIds.Any()))
                         {
 
                             <div class="dsit-search-filter-box">
                                 <h3 class="govuk-heading-s govuk-!-margin-right-3">Containing <span class="govuk-visually-hidden">the following filters:</span></h3>
                                 <ul class="dsit-search-filter-box__tags">
-                                    @if (Model.SelectedRoles!=null && Model.SelectedRoles.Any())
+                                    @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
                                     {
                                         @foreach (var role in Model.SelectedRoles)
                                         {
@@ -118,7 +117,7 @@
 
                                     }
 
-                                    @if (Model.SelectedSupplementarySchemes!=null && Model.SelectedSupplementarySchemes.Any())
+                                    @if (Model.SelectedSupplementarySchemes != null && Model.SelectedSupplementarySchemes.Any())
                                     {
                                         @foreach (var scheme in Model.SelectedSupplementarySchemes)
                                         {
@@ -137,23 +136,28 @@
                                 <li>
                                     <h3 class="govuk-heading-m"><a href="provider-details?providerId=@provider.Id" class="govuk-link">@provider.TradingName</a></h3>
                                     <p class="govuk-body govuk-!-margin-bottom-2">Registered name: @provider.RegisteredName</p>
-                                    <p class="govuk-body-s dsit-secondary-text-colour">Address: @provider.Address</p>
+
+
                                     <ul role="list" class="govuk-list">
 
-                                        @foreach (var service in provider.CertificateInformation)
+                                        @foreach (var service in provider.Services)
                                         {
                                             <li>
                                                 <p class="govuk-body govuk-!-margin-bottom-2">Service @service.ServiceNumber: @service.ServiceName</p>
-                                                <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(",", service.Roles.Select(x => @Enum.GetName((RoleEnum)x.Id)).ToList())</p>
-                                                @if (@service.SupplementarySchemes != null && @service.SupplementarySchemes.Any())
-                                                {
-                                                    <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes:   @string.Join(",", service.SupplementarySchemes.Select(x => x.SchemeName).ToList())</p>
-                                                }
 
+                                                <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(",", service.ServiceRoleMapping.Select(x => Enum.GetName(typeof(RoleEnum), x.RoleId)).ToList())</p>
+                                                @if (@service.ServiceSupSchemeMapping != null && @service.ServiceSupSchemeMapping.Any())
+                                                {
+                                                    <p class="govuk-body-s dsit-secondary-text-colour">Supplementary schemes:   @string.Join(",", service.ServiceSupSchemeMapping.Select(x => x.SupplementaryScheme.SchemeName).ToList())</p>
+                                                }
+                                                <p class="govuk-body-s dsit-secondary-text-colour">Address: @service.CompanyAddress</p>
                                             </li>
+
                                         }
 
+
                                     </ul>
+
                                     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                                 </li>
                             }
@@ -183,9 +187,9 @@
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-7">
             <h3 class="govuk-heading-m">Explore the topic</h3>
             <ul class="govuk-list">
-                <li><a href="{URL}" class="govuk-link">Role type</a></li>
-                <li><a href="{URL}" class="govuk-link">Identity profiles</a></li>
-                <li><a href="{URL}" class="govuk-link">Supplementary schemes</a></li>
+                <li><a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role type</a></li>
+                <li><a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a></li>
+                <li><a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary schemes</a></li>
             </ul>
         </main>
     }

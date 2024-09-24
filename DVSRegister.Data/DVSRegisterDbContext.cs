@@ -1,11 +1,12 @@
 ﻿
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Entities;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DVSRegister.Data
 {
-    public class DVSRegisterDbContext : DbContext
+    public class DVSRegisterDbContext : DbContext, IDataProtectionKeyContext
     {
         public DVSRegisterDbContext(DbContextOptions<DVSRegisterDbContext> options) : base(options)
         {
@@ -17,7 +18,7 @@ namespace DVSRegister.Data
         public DbSet<IdentityProfile> IdentityProfile { get; set; }       
         public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }
         public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; }       
-        public DbSet<Provider> Provider { get; set; } //To Do : remove
+       // public DbSet<Provider> Provider { get; set; } //To Do : remove
         public DbSet<ConsentToken> ConsentToken { get; set; }//To Do : update
         public DbSet<RegisterPublishLog> RegisterPublishLog { get; set; } 
         public DbSet<Cab> Cab { get; set; }
@@ -33,6 +34,10 @@ namespace DVSRegister.Data
         public DbSet<CertificateReviewRejectionReasonMapping> CertificateReviewRejectionReasonMapping { get; set; }
         public DbSet<ProceedApplicationConsentToken> ProceedApplicationConsentToken { get; set; }
         public DbSet<PublicInterestCheck> PublicInterestCheck { get; set; }
+        public DbSet<PICheckLogs> PICheckLogs { get; set; }
+        public DbSet<ProceedPublishConsentToken> ProceedPublishConsentToken { get; set; }
+
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -79,10 +84,7 @@ namespace DVSRegister.Data
                new Cab { Id =5, CabName = "DSIT", CreatedTime = DateTime.UtcNow });
             }
 
-            modelBuilder.Entity<Provider>()
-            .HasGeneratedTsVectorColumn( p => p.SearchVector,  "english", p => new { p.RegisteredName, p.TradingName })  
-            .HasIndex(p => p.SearchVector)
-            .HasMethod("GIN"); 
+           
 
             modelBuilder.Entity<CertificateReviewRejectionReason>().HasData(
             new CertificateReviewRejectionReason { Id =1, Reason = "Information is missing from the certificate" },
