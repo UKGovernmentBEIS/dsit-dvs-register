@@ -34,20 +34,16 @@
                         Menu
                     </button>
                     <ul id="navigation" class="govuk-header__navigation-list">
-                        <li class="govuk-header__navigation-item">
+                        @*<li class="govuk-header__navigation-item">
                             <a class="govuk-header__link" href="#">
                                 Guidance
                             </a>
+                        </li>*@
+                        <li class="govuk-header__navigation-item @ViewData["ActiveRegister"]">
+                            @Html.ActionLink("Search", "Register", "Register", null, new { @class = "govuk-header__link" })
                         </li>
-                        <li class="govuk-header__navigation-item govuk-header__navigation-item--active">
-                            <a class="govuk-header__link" href="#">
-                                Search
-                            </a>
-                        </li>
-                        <li class="govuk-header__navigation-item">
-                            <a class="govuk-header__link" href="#">
-                                Updates
-                            </a>
+                        <li class="govuk-header__navigation-item @ViewData["ActiveUpdates"]">
+                            @Html.ActionLink("Updates", "Updates", "Register", null, new { @class = "govuk-header__link" })
                         </li>
                     </ul>
                 </nav>
