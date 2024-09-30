@@ -73,6 +73,7 @@
                         PropertyName = "SecondaryContactEmail",
                         Label = "Email address",
                         Value = Model?.SecondaryContactEmail ?? string.Empty,
+                        TextBoxType = "email",
                         Class = "govuk-input govuk-!-width-three-quarters",
                         HasError = emailHasError,
                         ErrorMessage = emailHasError ? Html.ViewData?.ModelState["SecondaryContactEmail"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
