@@ -8,21 +8,21 @@
 
 
 <div class="govuk-width-container">
+    <div class="govuk-breadcrumbs">
+        <ol class="govuk-breadcrumbs__list">
+            <li class="govuk-breadcrumbs__list-item">
+                @Html.ActionLink("Home", "LandingPage", "Cab", null, new { @class = "govuk-breadcrumbs__link" })
+            </li>
+            <li class="govuk-breadcrumbs__list-item">
+                @Html.ActionLink("List of providers", "#", "Cab", null, new { @class = "govuk-breadcrumbs__link" })
+            </li>
+        </ol>
+    </div>
     <main class="govuk-main-wrapper">
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <div class="govuk-breadcrumbs">
-                    <ol class="govuk-breadcrumbs__list">
-                        <li class="govuk-breadcrumbs__list-item">
-                            @Html.ActionLink("Home", "LandingPage", "Cab", null, new { @class = "govuk-breadcrumbs__link" })
-                        </li>
-                        <li class="govuk-breadcrumbs__list-item">
-                            @Html.ActionLink("List of providers", "#", "Cab", null, new { @class = "govuk-breadcrumbs__link" })
-                        </li>
-                    </ol>
-                </div>
-                <h1 class="govuk-heading-xl govuk-!-margin-top-8">Your service provider profiles</h1>
+                <h1 class="govuk-heading-xl">Your service provider profiles</h1>
             </div>
         </div>
 
@@ -42,16 +42,16 @@
                         };
                     }
 
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
-                <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="search">
-                        Search
-                    </button>
-                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearSearch">
-                        Clear search
-                    </button>
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="search">
+                            Search
+                        </button>
+                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearSearch">
+                            Clear search
+                        </button>
+                    </div>
                 </div>
-            </div>
             }
         </div>
         <div class="govuk-grid-row">
@@ -60,56 +60,57 @@
                     <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">search results</caption>
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
-                            <th scope="col" class="govuk-table__header" aria-sort="ascending">Registered name</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Registered name</th>
                             <th scope="col" class="govuk-table__header" aria-sort="none">Trading name</th>
                             <th scope="col" class="govuk-table__header" aria-sort="none">Services</th>
-                            <th scope="col" class="govuk-table__header" aria-sort="none">Last updated</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="descending">Last updated</th>
                         </tr>
                     </thead>
 
                     <tbody class="govuk-table__body">
-                        @if(Model?.Providers!=null && Model.Providers.Count>0)
+                        @if (Model?.Providers != null && Model.Providers.Count > 0)
                         {
-                       
+
                             @foreach (var item in Model.Providers)
                             {
                                 <tr class="govuk-table__row">
-                                    <td class="govuk-table__cell">@Html.ActionLink(item.RegisteredName, "ProviderOverview", "Cab", new { providerId  = item.Id}, new { @class = "govuk-link" })</td>
+                                    <td class="govuk-table__cell">@Html.ActionLink(item.RegisteredName, "ProviderOverview", "Cab", new { providerId = item.Id }, new { @class = "govuk-link" })</td>
                                     <td class="govuk-table__cell">@item.TradingName</td>
-                                    @if(item.Services!=null && item.Services.Count>0)
+                                    @if (item.Services != null && item.Services.Count > 0)
                                     {
-                                         <td class="govuk-table__cell">
-                                        @foreach(var service in item.Services)
-                                        {
-                                                @service.ServiceName<br/>
-                                        }
+                                        <td class="govuk-table__cell">
+                                            @foreach (var service in item.Services)
+                                            {
+                                                @service.ServiceName<br />
+                                            }
                                         </td>
-                                       
+
                                     }
                                     else
                                     {
-                                        <td class="govuk-table__cell">No services added</td>                                        
+                                        <td class="govuk-table__cell">No services added</td>
+
                                     }
 
 
                                     <td class="govuk-table__cell">@item.LastModified</td>
-                                    
+
                                 </tr>
 
                             }
-                       
+
                         }
                         else
                         {
-                            <tr class="govuk-table__row">                       
+                            <tr class="govuk-table__row">
                                 <td class="govuk-table__cell" colspan="4">
-                                <p class="govuk-body"><b>Your search did not match any service providers.</b> </p>
+                                    <p class="govuk-body"><b>Your search did not match any service providers.</b> </p>
                                 </td>
-                           </tr>
-                         
+                            </tr>
+
                         }
-                        </tbody>                      
-                   
+                    </tbody>
+
                 </table>
             </div>
         </div>

@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.ModelBinding
 @model DVSRegister.Models.CAB.ProfileSummaryViewModel
 @{
-    ViewData["Title"] = "The digital identity and attribute service provider’s public contact email";
+    ViewData["Title"] = "The digital identity and attribute service provider’s Public email address";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
@@ -29,7 +29,7 @@
                        }
                     }
 
-                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s public contact email</h1>
+                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s Public email address</h1>
                     <p class="govuk-body">
                         You should ask the service provider to provide this information. The email
                         address you enter will be publicly displayed on the register of digital identity
@@ -40,8 +40,9 @@
                     @{
                     var emailViewModel = new TextBoxViewModel{
                     PropertyName = "PublicContactEmail",
-                    Label = "Public contact email",
+                    Label = "Public email address",
                     Value = Model?.PublicContactEmail??string.Empty,
+                    TextBoxType = "email",
                     Class = "govuk-input",
                     Hint = "For example, sales@yourcompanyexpress.co.uk",
                     HasError = hasError,

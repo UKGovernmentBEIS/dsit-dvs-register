@@ -39,6 +39,7 @@
                             PropertyName = "Email",
                             Label = "Email address",
                             Value = Model?.Email ?? string.Empty,
+                            TextBoxType = "email",
                             Class = "govuk-input",
                             HasError = hasError,
                             ErrorMessage = hasError ? Html.ViewData?.ModelState["Email"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
