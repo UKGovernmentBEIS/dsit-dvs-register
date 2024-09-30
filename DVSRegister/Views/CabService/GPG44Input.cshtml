@@ -38,7 +38,7 @@
                        Value = Model.HasGPG44,
                        HasError = hasError,
                        FieldSet = "Is the service certified against GPG44?",
-                       ParagraphText = "This must match the information on the certificate.",
+                       ParagraphText = "This must match the information on the certificate of conformity.",
                        Heading = HeadingEnum.H1,
                        LegendStyleClass = "govuk-fieldset__legend--xl",
                        ErrorMessage = hasError ? Html.ViewData?.ModelState["HasGPG44"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
