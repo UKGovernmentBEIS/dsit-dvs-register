@@ -6,16 +6,12 @@
         public const string DbConnectionFailed = "DB connection failed:";
         public const string DbConnectionSuccess = "DB connection success:";
         public const string ApplicationSubmittedMessage = "Success";
-        public const string ConfirmationMessage = "Confirm if the information you've provided is correct";
-        public const string FailedMessage = "Failed";      
+        public const string ConfirmationMessage = "Confirm if the information you've provided is correct";  
         public const string CabRegistrationErrorPath = "/cab-service/service-error";
         public const string CommonErrorPath = "/service-error";
+         
+        public const int DaysLeftToComplete = 21;        
 
-        public const int URNExpiryDays = 60;
-        public const string URNRequiredError = "Enter a unique reference number";
-        public const string URNErrorMessage = "Invalid unique reference number. Please try again. If you are still \r\nexperiencing issues, please reach out to the digital identity and \r\nattribute service provider to confirm the correct data.";      
-        public const int DaysLeftToComplete = 21;
-        public const string SupplementarySchemeErrorMessage = "Select if the digital identity and attribute service provider is certified against any supplementary schemes on their certificate";
         public const string ConformityIssueDayError = "The certificate of conformity issue date must include a day";
         public const string ConformityIssueMonthError = "The certificate of conformity issue date must include a month";
         public const string ConformityIssueYearError = "The certificate of conformity issue date must include a year";
