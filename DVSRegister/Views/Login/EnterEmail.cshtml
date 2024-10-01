@@ -12,7 +12,7 @@
 {
     @Html.HiddenFor(m => m.PasswordReset)
     <div class="govuk-width-container">
-        <main class="govuk-main-wrapper">
+        <main id="main-content" class="govuk-main-wrapper" role="main">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
 
@@ -39,6 +39,7 @@
                             PropertyName = "Email",
                             Label = "Email address",
                             Value = Model?.Email ?? string.Empty,
+                            TextBoxType = "email",
                             Class = "govuk-input",
                             HasError = hasError,
                             ErrorMessage = hasError ? Html.ViewData?.ModelState["Email"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,

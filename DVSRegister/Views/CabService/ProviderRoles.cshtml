@@ -10,7 +10,7 @@
 
 <div class="govuk-width-container">
     @Html.ActionLink("Back", "CompanyAddress", "CabService", null, new { @class = "govuk-back-link" })
-    <main class="govuk-main-wrapper">
+    <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
 
             @using (Html.BeginForm("SaveRoles", "CabService", FormMethod.Post))
@@ -27,7 +27,7 @@
                     @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                 }              
                 <p class="govuk-body">
-                    This must match the information on the certificate.
+                    This must match the information on the certificate of conformity.
                 </p>
 
                 @if (hasError)

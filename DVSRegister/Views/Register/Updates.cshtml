@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Updates : Register of digital identity and attribute services";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
+    ViewData["ActiveUpdates"] = "govuk-header__navigation-item--active";
 }
 <div class="govuk-width-container">
     @Html.ActionLink("Back", "Register", "Register", null, new { @class = "govuk-back-link" })
