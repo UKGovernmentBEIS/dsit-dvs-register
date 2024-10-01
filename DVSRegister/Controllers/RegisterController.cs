@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
+    [Route("")]
     [Route("register")]
     public class RegisterController : Controller
     {         

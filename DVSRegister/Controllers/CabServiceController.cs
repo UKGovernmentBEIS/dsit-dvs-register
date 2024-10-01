@@ -758,7 +758,7 @@ namespace DVSRegister.Controllers
 
                     if (expiryDate.HasValue && fromSummaryPage)
                     {
-                        minIssueDate  = expiryDate.Value.AddYears(-2);
+                        minIssueDate  = expiryDate.Value.AddYears(-2).AddDays(-60);
                         if (date < minIssueDate)
                         {
                             ModelState.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
@@ -800,7 +800,7 @@ namespace DVSRegister.Controllers
                 else
                 {
                     date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
-                    var maxExpiryDate = issueDate.AddYears(2);
+                    var maxExpiryDate = issueDate.AddYears(2).AddDays(60);
                     if (date <= DateTime.Today)
                     {
                         ModelState.AddModelError("ValidDate", Constants.ConformityExpiryPastDateError);

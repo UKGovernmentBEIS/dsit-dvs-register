@@ -21,7 +21,7 @@
     @using (Html.BeginForm("SaveGPG45Input", "CabService", FormMethod.Post))
     {
         @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
-    <main class="govuk-main-wrapper">
+    <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
 
@@ -46,7 +46,7 @@
                     PropertyName = "HasGPG45",
                     Value = Model.HasGPG45,
                     FieldSet = "Is the service certified against GPG45 identity profiles?",
-                    ParagraphText = "This must match the information on the certificate.",
+                    ParagraphText = "This must match the information on the certificate of conformity.",
                     Heading = HeadingEnum.H1,
                     LegendStyleClass = "govuk-fieldset__legend--xl",
                     HasError = Html.ViewData.ModelState.ContainsKey("HasGPG45") && Html.ViewData.ModelState["HasGPG45"].Errors.Count > 0,

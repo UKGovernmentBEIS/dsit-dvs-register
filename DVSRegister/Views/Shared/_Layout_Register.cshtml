@@ -8,10 +8,11 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body class="govuk-frontend-supported govuk-template__body">
+<a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
     <header class="govuk-header" role="banner" data-module="govuk-header">
         <div class="govuk-header__container govuk-width-container">
             <div class="govuk-header__logo">
-                <a href="#" class="govuk-header__link govuk-header__link--homepage">
+                <a href="https://www.gov.uk" class="govuk-header__link govuk-header__link--homepage">
                     <svg focusable="false"
                          role="img"
                          class="govuk-header__logotype"
@@ -26,7 +27,7 @@
                 </a>
             </div>
             <div class="govuk-header__content">
-                <a href="#" class="govuk-header__link govuk-header__service-name">
+                <a href="/register" class="govuk-header__link govuk-header__service-name">
                     Register of digital identity and attribute services
                 </a>
                 <nav aria-label="Menu" class="govuk-header__navigation">
@@ -34,20 +35,16 @@
                         Menu
                     </button>
                     <ul id="navigation" class="govuk-header__navigation-list">
-                        <li class="govuk-header__navigation-item">
+                        @*<li class="govuk-header__navigation-item">
                             <a class="govuk-header__link" href="#">
                                 Guidance
                             </a>
+                        </li>*@
+                        <li class="govuk-header__navigation-item @ViewData["ActiveRegister"]">
+                            @Html.ActionLink("Search", "Register", "Register", null, new { @class = "govuk-header__link" })
                         </li>
-                        <li class="govuk-header__navigation-item govuk-header__navigation-item--active">
-                            <a class="govuk-header__link" href="#">
-                                Search
-                            </a>
-                        </li>
-                        <li class="govuk-header__navigation-item">
-                            <a class="govuk-header__link" href="#">
-                                Updates
-                            </a>
+                        <li class="govuk-header__navigation-item @ViewData["ActiveUpdates"]">
+                            @Html.ActionLink("Updates", "Updates", "Register", null, new { @class = "govuk-header__link" })
                         </li>
                     </ul>
                 </nav>
