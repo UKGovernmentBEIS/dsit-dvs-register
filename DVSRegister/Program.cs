@@ -4,6 +4,7 @@ using DVSRegister.Middleware;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseSentry(); // Initialize Sentry
 var startup = new Startup(builder.Configuration, builder.Environment);
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
