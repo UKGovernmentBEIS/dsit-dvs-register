@@ -17,9 +17,8 @@ namespace DVSRegister.Data
         public DbSet<Role> Role { get; set; }       
         public DbSet<IdentityProfile> IdentityProfile { get; set; }       
         public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }
-        public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; }       
-       // public DbSet<Provider> Provider { get; set; } //To Do : remove
-        public DbSet<ConsentToken> ConsentToken { get; set; }//To Do : update
+        public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; } 
+        
         public DbSet<RegisterPublishLog> RegisterPublishLog { get; set; } 
         public DbSet<Cab> Cab { get; set; }
         public DbSet<CabUser> CabUser { get; set; }
@@ -36,14 +35,32 @@ namespace DVSRegister.Data
         public DbSet<PublicInterestCheck> PublicInterestCheck { get; set; }
         public DbSet<PICheckLogs> PICheckLogs { get; set; }
         public DbSet<ProceedPublishConsentToken> ProceedPublishConsentToken { get; set; }
-
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+        public DbSet<TrustmarkNumber> TrustmarkNumber { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             Console.WriteLine(environment);
+
+            modelBuilder.Entity<TrustmarkNumber>()
+            .Property(t => t.TrustMarkNumber)
+            .HasComputedColumnSql("\"CompanyId\"::VARCHAR(4) || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", stored: true);
+
+            modelBuilder.Entity<TrustmarkNumber>()
+            .HasIndex(b => b.TrustMarkNumber)
+            .IsUnique(); // Trustmark number unique
+
+            modelBuilder.Entity<TrustmarkNumber>()
+            .HasIndex(p => new { p.ProviderProfileId, p.ServiceId })
+             .IsUnique();  // Second composite unique key
+
+            modelBuilder.Entity<TrustmarkNumber>()
+            .ToTable(b => b.HasCheckConstraint("CK_CompanyId", "\"CompanyId\" BETWEEN 2000 AND 9999"));
+            modelBuilder.Entity<TrustmarkNumber>()
+            .ToTable(b => b.HasCheckConstraint("CK_ServiceNumber", "\"ServiceNumber\" BETWEEN 1 AND 99"));  
+
             modelBuilder.Entity<ProviderProfile>()
             .HasGeneratedTsVectorColumn(p => p.SearchVector, "english", p => new { p.RegisteredName, p.TradingName })
             .HasIndex(p => p.SearchVector)
