@@ -17,9 +17,8 @@ namespace DVSRegister.Data
         public DbSet<Role> Role { get; set; }       
         public DbSet<IdentityProfile> IdentityProfile { get; set; }       
         public DbSet<SupplementaryScheme> SupplementaryScheme { get; set; }
-        public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; }       
-      
-        public DbSet<ConsentToken> ConsentToken { get; set; }//To Do : update
+        public DbSet<CertificateReviewRejectionReason> CertificateReviewRejectionReason { get; set; } 
+        
         public DbSet<RegisterPublishLog> RegisterPublishLog { get; set; } 
         public DbSet<Cab> Cab { get; set; }
         public DbSet<CabUser> CabUser { get; set; }
