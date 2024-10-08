@@ -41,7 +41,7 @@
 
     @if (Model.HasError || !string.IsNullOrEmpty(Model.Hint))
     {
-        @Html.TextBox(Model.PropertyName, textBoxType == "text" ? Model.Value : Model.File,
+        @Html.TextBox(Model.PropertyName, textBoxType == "file" ? Model.File : Model.Value,
         new
         {
             @id = Model.PropertyName.ToLower(),
@@ -53,7 +53,7 @@
 
     else
     {
-        @Html.TextBox(Model.PropertyName, textBoxType == "text" ? Model.Value : Model.File,
+        @Html.TextBox(Model.PropertyName, textBoxType == "file" ? Model.File : Model.Value,
         new
         {
             @id = Model.PropertyName.ToLower(),
