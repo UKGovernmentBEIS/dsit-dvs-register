@@ -44,40 +44,10 @@ namespace DVSRegister.Data.CAB
             using var transaction = context.Database.BeginTransaction();
             try
             {
-                var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfile.Id);
-
-                if (existingProvider !=null) // Update is not implemented in UI, cna be used for future enhancements
-                {
-                    existingProvider.RegisteredName = providerProfile.RegisteredName;
-                    existingProvider.TradingName = providerProfile.TradingName;
-                    existingProvider.HasRegistrationNumber = providerProfile.HasRegistrationNumber;
-                    existingProvider.CompanyRegistrationNumber = providerProfile.CompanyRegistrationNumber;
-                    existingProvider.DUNSNumber = providerProfile.DUNSNumber;
-                    existingProvider.HasParentCompany = providerProfile.HasParentCompany;
-                    existingProvider.ParentCompanyLocation = providerProfile.ParentCompanyLocation;
-                    existingProvider.ParentCompanyRegisteredName = providerProfile.ParentCompanyRegisteredName;
-                    existingProvider.PrimaryContactFullName= providerProfile.PrimaryContactFullName;
-                    existingProvider.PrimaryContactJobTitle= providerProfile.PrimaryContactJobTitle;
-                    existingProvider.PrimaryContactEmail = providerProfile.PrimaryContactEmail;
-                    existingProvider.PrimaryContactTelephoneNumber = providerProfile.PrimaryContactTelephoneNumber;
-                    existingProvider.SecondaryContactFullName = providerProfile.SecondaryContactFullName;
-                    existingProvider.SecondaryContactJobTitle = providerProfile.SecondaryContactJobTitle;
-                    existingProvider.SecondaryContactEmail = providerProfile.SecondaryContactEmail;
-                    existingProvider.SecondaryContactTelephoneNumber = providerProfile.SecondaryContactTelephoneNumber;
-                    existingProvider.PublicContactEmail= providerProfile.PublicContactEmail;
-                    existingProvider.ProviderTelephoneNumber = providerProfile.ProviderTelephoneNumber;
-                    existingProvider.ProviderWebsiteAddress = providerProfile.ProviderWebsiteAddress;
-                    existingProvider.ProviderStatus = providerProfile.ProviderStatus;
-                    existingProvider.ModifiedTime = DateTime.UtcNow;
-                    await context.SaveChangesAsync();
-                }
-                else
-                {
-                    providerProfile.CreatedTime = DateTime.UtcNow;
-                    var entity = await context.ProviderProfile.AddAsync(providerProfile);
-                    await context.SaveChangesAsync();
-                    genericResponse.InstanceId = entity.Entity.Id;
-                }
+                providerProfile.CreatedTime = DateTime.UtcNow;
+                var entity = await context.ProviderProfile.AddAsync(providerProfile);
+                await context.SaveChangesAsync();
+                genericResponse.InstanceId = entity.Entity.Id;
                 transaction.Commit();
                 genericResponse.Success = true;
 

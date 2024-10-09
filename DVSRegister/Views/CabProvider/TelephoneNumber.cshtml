@@ -32,14 +32,14 @@
                     <p class="govuk-body">
                         You should ask the service provider to provide this information. The
                         telephone number you enter will be publicly displayed on the register of
-                        digital identity and attribute services.If the provider does'nt have a public telephone number, you should leave this field blank and select Continue.
+                        digital identity and attribute services.If the provider doesn't have a public telephone number, you should leave this field blank and select Continue.
                     </p>
 
                  @{
                  var telephoneNumberViewModel = new TextBoxViewModel
                 {
                     PropertyName = "ProviderTelephoneNumber",
-                    Label = "Public telephone number(optional)",
+                    Label = "Public telephone number (optional)",
                     Value = Model?.ProviderTelephoneNumber??string.Empty,
                     Class = "govuk-input",
                     Hint = "For international numbers include the country code",
