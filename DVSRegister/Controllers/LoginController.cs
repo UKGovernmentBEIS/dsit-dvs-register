@@ -252,12 +252,12 @@ namespace DVSRegister.Controllers
                 {
                     HttpContext?.Session.Set("IdToken", mfaResponse.IdToken);
                     HttpContext?.Session.Set("AccessToken", mfaResponse.AccessToken);
-                    return RedirectToAction("LandingPage", "DigitalIdentity");
+                    return RedirectToAction("LandingPage", "Cab");
                 }
                 else
                 {
                     ModelState.AddModelError("MFACode", "Enter a valid MFA code");
-                    return View("MFAConfirmation");
+                    return View("MFAConfirmation", MFACodeViewModel);
                 }
             }
             else

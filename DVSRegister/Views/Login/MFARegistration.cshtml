@@ -1,7 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.MFARegistrationViewModel
 @{
     ViewData["Title"] = "Configure your authenticator app";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_Layout_CAB.cshtml";
     string qrCodeImageBase64 = DVSRegister.CommonUtility.Helper.GenerateQRCode(Model.SecretToken, Model.Email);
 }
 
