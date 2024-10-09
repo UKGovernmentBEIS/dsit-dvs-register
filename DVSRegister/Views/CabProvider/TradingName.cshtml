@@ -30,13 +30,15 @@
                     }
 
                     <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s trading name</h1>
-                    <p class="govuk-body">This trading name will be publicly displayed on the register of digital identity and attribute services. This should match the trading name on the certificate of conformity.</p>
+                    <p class="govuk-body">This trading name will be publicly displayed on the register of digital identity and attribute services. This should match the trading name on the certificate of conformity.
+                        If the provider doesn't have a public trading name, you should leave this field blank and select Continue.
+                    </p>
 
                     @{
                         var tradingNameViewmodel = new TextBoxViewModel
                 {
                     PropertyName = "TradingName",
-                    Label = "Trading name",
+                    Label = "Trading name (optional)",
                     Value = Model?.TradingName ?? string.Empty,
                     Class = "govuk-input",
                     HasError = hasError,
