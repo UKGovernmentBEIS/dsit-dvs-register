@@ -126,7 +126,7 @@ namespace DVSRegister.Controllers
                     if (confirmPasswordResponse.Success)
                     {
                         HttpContext?.Session.Set("MFARegistrationViewModel", new MFARegistrationViewModel { Email = email, Password = confirmPasswordViewModel.Password, SecretToken = confirmPasswordResponse.Data });
-                        return RedirectToAction("MFARegistration", "Login");
+                        return RedirectToAction("MFADescription", "Login");
                     }
                     else
                     {
@@ -143,15 +143,20 @@ namespace DVSRegister.Controllers
             }
         }
 
+        [HttpGet("mfa-description")]
+        public IActionResult MFADescription()
+        {
+            return View();
+        }
 
-
-         [HttpGet("mfa-registration")]
+        [HttpGet("mfa-registration")]
         public IActionResult MFARegistration()
         {
-            MFARegistrationViewModel MFARegistrationViewModel = HttpContext?.Session.Get<MFARegistrationViewModel>("MFARegistrationViewModel"); ;
+            MFARegistrationViewModel MFARegistrationViewModel = HttpContext?.Session.Get<MFARegistrationViewModel>("MFARegistrationViewModel");
             return View("MFARegistration", MFARegistrationViewModel);
         }
-        [HttpPost("mfa-registration")]
+
+        [HttpPost("mfa-confirmation")]
         public async Task<IActionResult> MFAConfirmationCheck(MFARegistrationViewModel viewModel)
         {
             MFARegistrationViewModel MFARegistrationViewModel = HttpContext?.Session.Get<MFARegistrationViewModel>("MFARegistrationViewModel");
@@ -167,19 +172,18 @@ namespace DVSRegister.Controllers
                 {
                     viewModel.SecretToken = MFARegistrationViewModel.SecretToken;
                     viewModel.Email = MFARegistrationViewModel.Email;
-                    ModelState.AddModelError("MFACode", "Invalid MFA code provided");
+                    ModelState.AddModelError("MFACode", "Enter a valid MFA code");
                     return View("MFARegistration", viewModel);
                 }
             }
             else
             {
-                viewModel.Email = MFARegistrationViewModel.Email;
                 viewModel.SecretToken = MFARegistrationViewModel.SecretToken;
+                viewModel.Email = MFARegistrationViewModel.Email;
                 return View("MFARegistration", viewModel);
             }
 
         }
-
 
 
 
@@ -242,14 +246,12 @@ namespace DVSRegister.Controllers
         {
             if (ModelState["MFACode"].Errors.Count == 0)
             {
-                string Session = HttpContext?.Session.Get<string>("Session");
-                string Email = HttpContext?.Session.Get<string>("Email");
-                var mfaConfirmationCheckResponse = await _signUpService.ConfirmMFAToken(Session, Email, MFACodeViewModel.MFACode);
+                var mfaResponse = await _signUpService.ConfirmMFAToken(HttpContext?.Session.Get<string>("Session"), HttpContext?.Session.Get<string>("Email"), MFACodeViewModel.MFACode);
 
-                if (mfaConfirmationCheckResponse!=null && mfaConfirmationCheckResponse.IdToken.Length > 0)
+                if (mfaResponse != null && mfaResponse.IdToken.Length > 0)
                 {
-                    HttpContext?.Session.Set("IdToken", mfaConfirmationCheckResponse.IdToken);
-                    HttpContext?.Session.Set("AccessToken", mfaConfirmationCheckResponse.AccessToken);
+                    HttpContext?.Session.Set("IdToken", mfaResponse.IdToken);
+                    HttpContext?.Session.Set("AccessToken", mfaResponse.AccessToken);
                     return RedirectToAction("LandingPage", "Cab");
                 }
                 else
@@ -265,7 +267,7 @@ namespace DVSRegister.Controllers
         }
 
 
-    
+
         #endregion
 
         [HttpGet("sign-out")]
