@@ -48,16 +48,16 @@ namespace DVSRegister.Controllers
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
             profileSummaryViewModel.FromSummaryPage = false;
-            //TODO: uncomment this check when edit option in admin portal is developed
-            //if(!string.IsNullOrEmpty(profileSummaryViewModel.RegisteredName))
-            //{
-            //    bool registeredNameExist = await cabService.CheckProviderRegisteredNameExists(profileSummaryViewModel.RegisteredName);
-            //    if(registeredNameExist)
-            //    {
-            //        ModelState.AddModelError("RegisteredName", Constants.RegisteredNameExistsError);
-            //    }
-            //}
-           
+
+            if (!string.IsNullOrEmpty(profileSummaryViewModel.RegisteredName))
+            {
+                bool registeredNameExist = await cabService.CheckProviderRegisteredNameExists(profileSummaryViewModel.RegisteredName);
+                if (registeredNameExist)
+                {
+                    ModelState.AddModelError("RegisteredName", Constants.RegisteredNameExistsError);
+                }
+            }
+
             if (ModelState["RegisteredName"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
