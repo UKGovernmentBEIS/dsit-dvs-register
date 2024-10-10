@@ -1,0 +1,129 @@
+﻿@{
+    ViewData["Title"] = "Change company information";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+@{
+    bool hasError = false;
+}
+
+<div class="govuk-width-container">
+    @*@Html.ActionLink("Back", "ProviderOverview", "Cab", new { providerId = Model.Id}, new { @class = "govuk-back-link" })*@
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                @if (Html.ViewData?.ModelState.ContainsKey("RegisteredName") == true)
+                {
+                    var errors = Html.ViewData?.ModelState["RegisteredName"]?.Errors;
+                    if (errors != null && errors.Count > 0)
+                    {
+                        hasError = true;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("RegisteredName", errors))
+                    }
+                }
+
+                <h1 class="govuk-heading-xl">
+                    Change company information
+                </h1>
+
+                @{
+                    var registeredNameViewmodel = new TextBoxViewModel
+                    {
+                        PropertyName = "RegisteredName",
+                        Label = "Registered company name",
+                        Value = Model?.RegisteredName ?? string.Empty,
+                        Class = "govuk-input",
+                        HasError = hasError,
+                        ErrorMessage = hasError ? Html.ViewData?.ModelState["RegisteredName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", registeredNameViewmodel)
+
+                @{
+                    var tradingNameViewmodel = new TextBoxViewModel
+                    {
+                        PropertyName = "TradingName",
+                        Label = "Trading name",
+                        Value = Model?.TradingName ?? string.Empty,
+                        Class = "govuk-input",
+                        HasError = hasError,
+                        ErrorMessage = hasError ? Html.ViewData?.ModelState["TradingName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", tradingNameViewmodel)
+
+                @{
+                    var parentCompanyRegName = new TextBoxViewModel
+                    {
+                        PropertyName = "ParentCompanyRegisteredName",
+                        Label = "Registered name of parent company",
+                        Value = Model?.ParentCompanyRegisteredName ?? string.Empty,
+                        Class = "govuk-input",
+                        HasError = hasError,
+                        ErrorMessage = hasError ? Html.ViewData?.ModelState["ParentCompanyRegisteredName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", parentCompanyRegName)
+
+                @{
+                    var parentCompanyLocation = new TextBoxViewModel
+                    {
+                        PropertyName = "ParentCompanyLocation",
+                        Label = "Location of parent company",
+                        Value = Model?.ParentCompanyLocation ?? string.Empty,
+                        Class = "govuk-input",
+                        HasError = hasError,
+                        ErrorMessage = hasError ? Html.ViewData?.ModelState["ParentCompanyLocation"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", parentCompanyLocation)
+
+                @{
+                    var companyViewmodel = new TextBoxViewModel
+                    {
+                        PropertyName = "CompanyRegistrationNumber",
+                        Label = "Companies House or charity registration number",
+                        Value = Model?.CompanyRegistrationNumber ?? string.Empty,
+                        Class = "govuk-input govuk-input--width-10",
+                        Hint = "In the UK it is 8 characters. For example, 01234567 or AC012345.",
+                        HasError = hasError,
+                        ErrorMessage = hasError ? Html.ViewData?.ModelState["CompanyRegistrationNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", companyViewmodel)
+
+                @{
+                    var dunsViewmodel = new TextBoxViewModel
+                    {
+                        PropertyName = "DUNSNumber",
+                        Label = "The service provider’s D-U-N-S Number",
+                        Value = Model?.DUNSNumber ?? string.Empty,
+                        Class = "govuk-input govuk-input--width-10",
+                        Hint = "The D-U-N-S number has 9 characters. For example, 012345678",
+                        HasError = hasError,
+                        ErrorMessage = hasError ? Html.ViewData?.ModelState["DUNSNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", dunsViewmodel)
+
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Change
+                    </button>
+                    <a class="govuk-link" href="#">Cancel</a>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+

@@ -122,9 +122,34 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
+        [HttpGet("edit-company-information")]
+        public IActionResult EditCompanyInformation()
+        {
+            return View("EditCompanyInformation");
+
+        }
+
+        [HttpGet("edit-primary-contact")]
+        public IActionResult EditPrimaryContact()
+        {
+            return View("EditPrimaryContact");
+
+        }
+
+        [HttpGet("edit-secondary-contact-details")]
+        public IActionResult EditSecondaryContactDetails()
+        {
+            return View("EditSecondaryContactDetails");
+
+        }
+
+        [HttpGet("edit-public-provider-information")]
+        public IActionResult EditPublicProviderInformation()
+        {
+            return View("EditPublicProviderInformation");
+
+        }
 
 
-
-       
     }
 }
