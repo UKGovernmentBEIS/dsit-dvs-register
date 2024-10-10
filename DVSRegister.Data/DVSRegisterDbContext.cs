@@ -46,7 +46,7 @@ namespace DVSRegister.Data
 
             modelBuilder.Entity<TrustmarkNumber>()
             .Property(t => t.TrustMarkNumber)
-            .HasComputedColumnSql("\"CompanyId\"::VARCHAR(4) || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", stored: true);
+            .HasComputedColumnSql("LPAD(\"CompanyId\"::VARCHAR(4), 4, '0') || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", stored: true);
 
             modelBuilder.Entity<TrustmarkNumber>()
             .HasIndex(b => b.TrustMarkNumber)
@@ -57,7 +57,7 @@ namespace DVSRegister.Data
              .IsUnique();  // Second composite unique key
 
             modelBuilder.Entity<TrustmarkNumber>()
-            .ToTable(b => b.HasCheckConstraint("CK_CompanyId", "\"CompanyId\" BETWEEN 2000 AND 9999"));
+            .ToTable(b => b.HasCheckConstraint("CK_CompanyId", "\"CompanyId\" BETWEEN 200 AND 9999"));
             modelBuilder.Entity<TrustmarkNumber>()
             .ToTable(b => b.HasCheckConstraint("CK_ServiceNumber", "\"ServiceNumber\" BETWEEN 1 AND 99"));  
 
