@@ -48,15 +48,16 @@ namespace DVSRegister.Controllers
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
             profileSummaryViewModel.FromSummaryPage = false;
-            if(!string.IsNullOrEmpty(profileSummaryViewModel.RegisteredName))
+
+            if (!string.IsNullOrEmpty(profileSummaryViewModel.RegisteredName))
             {
                 bool registeredNameExist = await cabService.CheckProviderRegisteredNameExists(profileSummaryViewModel.RegisteredName);
-                if(registeredNameExist)
+                if (registeredNameExist)
                 {
                     ModelState.AddModelError("RegisteredName", Constants.RegisteredNameExistsError);
                 }
             }
-           
+
             if (ModelState["RegisteredName"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
@@ -516,20 +517,19 @@ namespace DVSRegister.Controllers
         {
             
             ProviderProfileDto providerDto = null;
-            if (model != null && !string.IsNullOrEmpty(model.RegisteredName) && !string.IsNullOrEmpty(model.TradingName) && model.HasRegistrationNumber!=null && model.HasParentCompany!=null
+            if (model != null && !string.IsNullOrEmpty(model.RegisteredName)  && model.HasRegistrationNumber!=null && model.HasParentCompany!=null
                 && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactFullName) && !string.IsNullOrEmpty(model?.PrimaryContact.PrimaryContactJobTitle)
                 && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactEmail) && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactTelephoneNumber)
                 && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactFullName) && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactJobTitle)
                 && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactEmail) &&  !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactTelephoneNumber)
-                && !string.IsNullOrEmpty(model.PublicContactEmail) && !string.IsNullOrEmpty(model.ProviderTelephoneNumber) 
-                && !string.IsNullOrEmpty(model.ProviderWebsiteAddress) && cabUserId>0)
+                && !string.IsNullOrEmpty(model.PublicContactEmail)  && !string.IsNullOrEmpty(model.ProviderWebsiteAddress) && cabUserId>0)
             {
                 providerDto = new();
                 providerDto.RegisteredName = model.RegisteredName;
-                providerDto.TradingName = model.TradingName;
+                providerDto.TradingName = model.TradingName??string.Empty;
                 providerDto.HasRegistrationNumber = model.HasRegistrationNumber??false;
-                providerDto.CompanyRegistrationNumber = model.CompanyRegistrationNumber??string.Empty;
-                providerDto.DUNSNumber = model.DUNSNumber??string.Empty;
+                providerDto.CompanyRegistrationNumber = model.CompanyRegistrationNumber;
+                providerDto.DUNSNumber = model.DUNSNumber;
                 providerDto.HasParentCompany =  model.HasParentCompany??false;
                 providerDto.ParentCompanyRegisteredName = model.ParentCompanyRegisteredName;
                 providerDto.ParentCompanyLocation = model.ParentCompanyLocation;
