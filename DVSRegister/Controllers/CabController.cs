@@ -2,7 +2,9 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
+using DVSRegister.Models;
 using DVSRegister.Models.CAB.Provider;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -90,12 +92,24 @@ namespace DVSRegister.Controllers
            
         }
         [HttpGet("profile-information")]
-        public IActionResult ProviderProfileDetails(int providerId)
+        public async Task<IActionResult> ProviderProfileDetails(int providerId)
         {
-            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();          
-            if (providerProfileDto.Id ==  providerId)
+
+            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
+
+            if (cabId > 0)
             {
-                return View(providerProfileDto);
+                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
+                HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
+                ProviderDetailsViewModel providerDetailsViewModel = new()
+                {
+                    Provider = providerProfileDto,
+                    IsEditable = providerProfileDto.Services == null ||providerProfileDto.Services.Count==0 ||
+                providerProfileDto.Services.All(service => service.ServiceStatus == ServiceStatusEnum.Submitted)
+                };
+
+                return View(providerDetailsViewModel);
             }
             else
             {
@@ -122,33 +136,8 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
-        [HttpGet("edit-company-information")]
-        public IActionResult EditCompanyInformation()
-        {
-            return View("EditCompanyInformation");
+       
 
-        }
-
-        [HttpGet("edit-primary-contact")]
-        public IActionResult EditPrimaryContact()
-        {
-            return View("EditPrimaryContact");
-
-        }
-
-        [HttpGet("edit-secondary-contact-details")]
-        public IActionResult EditSecondaryContactDetails()
-        {
-            return View("EditSecondaryContactDetails");
-
-        }
-
-        [HttpGet("edit-public-provider-information")]
-        public IActionResult EditPublicProviderInformation()
-        {
-            return View("EditPublicProviderInformation");
-
-        }
 
 
     }

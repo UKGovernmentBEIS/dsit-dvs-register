@@ -502,6 +502,61 @@ namespace DVSRegister.Controllers
         }
 
 
+        #region Edit Company Information
+        [HttpGet("edit-company-information")]
+        public IActionResult EditCompanyInformation()
+        {
+            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+            CompanyViewModel companyViewModel = new()
+            {
+                RegisteredName = providerProfileDto.RegisteredName,
+                TradingName = providerProfileDto.TradingName,
+                HasRegistrationNumber = providerProfileDto.HasRegistrationNumber,
+                CompanyRegistrationNumber =providerProfileDto.CompanyRegistrationNumber,
+                DUNSNumber = providerProfileDto.DUNSNumber,
+                HasParentCompany = providerProfileDto.HasParentCompany,
+                ParentCompanyRegisteredName = providerProfileDto.ParentCompanyRegisteredName,
+                ParentCompanyLocation = providerProfileDto.ParentCompanyLocation,
+                ProviderId = providerProfileDto.Id
+            };
+
+            return View(companyViewModel);
+
+        }
+        [HttpPost("edit-company-information")]
+        public async Task<IActionResult> UpdateCompanyInformation(CompanyViewModel companyViewModel)
+        {
+            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+            if (ModelState.IsValid)
+            {
+                providerProfileDto.RegisteredName = companyViewModel.RegisteredName;
+                providerProfileDto.TradingName = companyViewModel.TradingName??string.Empty;              
+                providerProfileDto.CompanyRegistrationNumber =companyViewModel.CompanyRegistrationNumber;
+                providerProfileDto.DUNSNumber = companyViewModel.DUNSNumber;
+                providerProfileDto.ParentCompanyRegisteredName = companyViewModel.ParentCompanyRegisteredName;
+                providerProfileDto.ParentCompanyLocation = companyViewModel.ParentCompanyLocation;
+
+                GenericResponse genericResponse = await cabService.UpdateProviderProfile(providerProfileDto);
+                if (genericResponse.Success)
+                {
+                    return RedirectToAction("ProviderProfileDetails","Cab", new { providerId = providerProfileDto.Id });
+                }
+                else
+                {
+                    return RedirectToAction("HandleException", "Error");
+                }
+            }
+            else
+            {
+                return View("EditCompanyInformation", companyViewModel);
+            }
+
+        }
+        #endregion
+
+
+    
+
         #region Private methods
         private ProfileSummaryViewModel GetProfileSummary()
         {

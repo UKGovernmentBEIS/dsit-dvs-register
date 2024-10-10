@@ -1,4 +1,5 @@
-﻿@{
+﻿@model DVSRegister.Models.CAB.CompanyViewModel
+@{
     ViewData["Title"] = "Change company information";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
@@ -7,30 +8,29 @@
     bool hasError = false;
 }
 
-<div class="govuk-width-container">
-    @*@Html.ActionLink("Back", "ProviderOverview", "Cab", new { providerId = Model.Id}, new { @class = "govuk-back-link" })*@
-    <main id="main-content" class="govuk-main-wrapper" role="main">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
+@using (Html.BeginForm("UpdateCompanyInformation", "Cab", FormMethod.Post))
+{
+    @Html.HiddenFor(m=>m.HasRegistrationNumber)
+    @Html.HiddenFor(m => m.HasParentCompany)
+    @Html.HiddenFor(m => m.ProviderId)
+    <div class="govuk-width-container">
+        @*@Html.ActionLink("Back", "ProviderOverview", "Cab", new { providerId = Model.Id}, new { @class = "govuk-back-link" })*@
+        <main id="main-content" class="govuk-main-wrapper" role="main">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
 
-                @if (Html.ViewData?.ModelState.ContainsKey("RegisteredName") == true)
-                {
-                    var errors = Html.ViewData?.ModelState["RegisteredName"]?.Errors;
-                    if (errors != null && errors.Count > 0)
+
+                    @if (ViewData.ModelState.ErrorCount >0)
                     {
-                        hasError = true;
                         ViewData["Title"] = "Error: " + ViewData["Title"];
-                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
-                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("RegisteredName", errors))
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                     }
-                }
+                    <h1 class="govuk-heading-xl">
+                        Change company information
+                    </h1>
 
-                <h1 class="govuk-heading-xl">
-                    Change company information
-                </h1>
-
-                @{
-                    var registeredNameViewmodel = new TextBoxViewModel
+                    @{
+                        var registeredNameViewmodel = new TextBoxViewModel
                     {
                         PropertyName = "RegisteredName",
                         Label = "Registered company name",
@@ -39,12 +39,12 @@
                         HasError = hasError,
                         ErrorMessage = hasError ? Html.ViewData?.ModelState["RegisteredName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
                     };
-                }
+                    }
 
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", registeredNameViewmodel)
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", registeredNameViewmodel)
 
-                @{
-                    var tradingNameViewmodel = new TextBoxViewModel
+                    @{
+                        var tradingNameViewmodel = new TextBoxViewModel
                     {
                         PropertyName = "TradingName",
                         Label = "Trading name",
@@ -53,12 +53,14 @@
                         HasError = hasError,
                         ErrorMessage = hasError ? Html.ViewData?.ModelState["TradingName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
                     };
-                }
+                    }
 
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", tradingNameViewmodel)
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", tradingNameViewmodel)
 
-                @{
-                    var parentCompanyRegName = new TextBoxViewModel
+
+                    @if(Model.HasParentCompany == true)
+                    {                   
+                     var parentCompanyRegName = new TextBoxViewModel
                     {
                         PropertyName = "ParentCompanyRegisteredName",
                         Label = "Registered name of parent company",
@@ -67,12 +69,12 @@
                         HasError = hasError,
                         ErrorMessage = hasError ? Html.ViewData?.ModelState["ParentCompanyRegisteredName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
                     };
-                }
+                 
 
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", parentCompanyRegName)
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", parentCompanyRegName)
 
-                @{
-                    var parentCompanyLocation = new TextBoxViewModel
+                  
+                     var parentCompanyLocation = new TextBoxViewModel
                     {
                         PropertyName = "ParentCompanyLocation",
                         Label = "Location of parent company",
@@ -80,13 +82,14 @@
                         Class = "govuk-input",
                         HasError = hasError,
                         ErrorMessage = hasError ? Html.ViewData?.ModelState["ParentCompanyLocation"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
-                    };
-                }
+                    };                    
 
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", parentCompanyLocation)
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", parentCompanyLocation)
+                    }
 
-                @{
-                    var companyViewmodel = new TextBoxViewModel
+                    @if(Model.HasRegistrationNumber == true)
+                    {                        
+                     var companyViewmodel = new TextBoxViewModel
                     {
                         PropertyName = "CompanyRegistrationNumber",
                         Label = "Companies House or charity registration number",
@@ -95,13 +98,14 @@
                         Hint = "In the UK it is 8 characters. For example, 01234567 or AC012345.",
                         HasError = hasError,
                         ErrorMessage = hasError ? Html.ViewData?.ModelState["CompanyRegistrationNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
-                    };
-                }
+                    };                    
 
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", companyViewmodel)
-
-                @{
-                    var dunsViewmodel = new TextBoxViewModel
+                        @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", companyViewmodel)
+                    }
+                    else
+                    {                      
+                   
+                     var dunsViewmodel = new TextBoxViewModel
                     {
                         PropertyName = "DUNSNumber",
                         Label = "The service provider’s D-U-N-S Number",
@@ -111,19 +115,25 @@
                         HasError = hasError,
                         ErrorMessage = hasError ? Html.ViewData?.ModelState["DUNSNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
                     };
-                }
+                    
 
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", dunsViewmodel)
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", dunsViewmodel)
+                        
+                    }                    
 
-                <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button" data-module="govuk-button">
-                        Change
-                    </button>
-                    <a class="govuk-link" href="#">Cancel</a>
+
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" data-module="govuk-button">
+                            Change
+                        </button>
+                        <a href="/cab-service/profile-information?providerId=@Model.ProviderId" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                            Cancel
+                        </a>
+                    </div>
+
                 </div>
-
             </div>
-        </div>
-    </main>
-</div>
+        </main>
+    </div>
 
+}
