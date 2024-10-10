@@ -122,9 +122,13 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
+        [HttpGet("edit-company-information")]
+        public IActionResult EditCompanyInformation()
+        {
+            return View("EditCompanyInformation");
+
+        }
 
 
-
-       
     }
 }
