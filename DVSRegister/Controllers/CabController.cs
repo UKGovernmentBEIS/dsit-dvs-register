@@ -129,6 +129,13 @@ namespace DVSRegister.Controllers
 
         }
 
+        [HttpGet("edit-primary-contact")]
+        public IActionResult EditPrimaryContact()
+        {
+            return View("EditPrimaryContact");
+
+        }
+
 
     }
 }
