@@ -136,6 +136,20 @@ namespace DVSRegister.Controllers
 
         }
 
+        [HttpGet("edit-secondary-contact-details")]
+        public IActionResult EditSecondaryContactDetails()
+        {
+            return View("EditSecondaryContactDetails");
+
+        }
+
+        [HttpGet("edit-public-provider-information")]
+        public IActionResult EditPublicProviderInformation()
+        {
+            return View("EditPublicProviderInformation");
+
+        }
+
 
     }
 }
