@@ -9,6 +9,7 @@ namespace DVSRegister.Data.CAB
         public Task<List<IdentityProfile>> GetIdentityProfiles();
         public Task<List<SupplementaryScheme>> GetSupplementarySchemes();
         public Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile);
+        public Task<GenericResponse> UpdateProviderProfile(ProviderProfile providerProfile);
         public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
         public Task<GenericResponse> SaveService(Service service);
         public Task<List<ProviderProfile>> GetProviders(int cabId,string searchText = "");
