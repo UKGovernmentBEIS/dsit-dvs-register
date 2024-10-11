@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using NpgsqlTypes;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241003130912_RemovedTrustmarkNumberColumns")]
+    partial class RemovedTrustmarkNumberColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,37 +50,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9955)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 9, 11, 793, DateTimeKind.Utc).AddTicks(2376)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9958)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 9, 11, 793, DateTimeKind.Utc).AddTicks(2381)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9960)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 9, 11, 793, DateTimeKind.Utc).AddTicks(2382)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9961)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 9, 11, 793, DateTimeKind.Utc).AddTicks(2383)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9962)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 9, 11, 793, DateTimeKind.Utc).AddTicks(2385)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9964)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 9, 11, 793, DateTimeKind.Utc).AddTicks(2386)
                         });
                 });
 
@@ -265,6 +268,32 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("CetificateReviewId");
 
                     b.ToTable("CertificateReviewRejectionReasonMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ConsentToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token");
+
+                    b.HasIndex("TokenId");
+
+                    b.ToTable("ConsentToken");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.IdentityProfile", b =>
@@ -592,6 +621,7 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("ProviderTelephoneNumber")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ProviderWebsiteAddress")
@@ -1094,7 +1124,7 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("text")
-                        .HasComputedColumnSql("LPAD(\"CompanyId\"::VARCHAR(4), 4, '0') || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", true);
+                        .HasComputedColumnSql("\"CompanyId\"::VARCHAR(4) || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", true);
 
                     b.HasKey("CompanyId", "ServiceNumber");
 
@@ -1108,7 +1138,7 @@ namespace DVSRegister.Data.Migrations
 
                     b.ToTable("TrustmarkNumber", t =>
                         {
-                            t.HasCheckConstraint("CK_CompanyId", "\"CompanyId\" BETWEEN 200 AND 9999");
+                            t.HasCheckConstraint("CK_CompanyId", "\"CompanyId\" BETWEEN 2000 AND 9999");
 
                             t.HasCheckConstraint("CK_ServiceNumber", "\"ServiceNumber\" BETWEEN 1 AND 99");
                         });

@@ -27,9 +27,8 @@ namespace DVSRegister.Data.Entities
         public string SecondaryContactEmail { get; set; }
         public string SecondaryContactTelephoneNumber { get; set; }
         public string PublicContactEmail { get; set; }
-        public string ProviderTelephoneNumber { get; set; }
-        public string ProviderWebsiteAddress { get; set; }   
-        public int CompanyId {  get; set; }
+        public string? ProviderTelephoneNumber { get; set; }
+        public string ProviderWebsiteAddress { get; set; }        
 
         [ForeignKey("CabUser")]
         public int CabUserId { get; set; }

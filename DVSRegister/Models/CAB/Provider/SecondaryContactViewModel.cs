@@ -20,5 +20,7 @@ namespace DVSRegister.Models.CAB
         public string? SecondaryContactTelephoneNumber { get; set; }
 
         public bool FromSummaryPage { get; set; }
+
+        public int ProviderId {  get; set; }
     }
 }

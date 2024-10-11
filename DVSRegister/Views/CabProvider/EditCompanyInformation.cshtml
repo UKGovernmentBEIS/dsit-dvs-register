@@ -1,0 +1,152 @@
+﻿@model DVSRegister.Models.CAB.CompanyViewModel
+@{
+    ViewData["Title"] = "Change company information";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+
+
+@using (Html.BeginForm("UpdateCompanyInformation", "CabProvider", FormMethod.Post))
+{
+    @Html.HiddenFor(m=>m.HasRegistrationNumber)
+    @Html.HiddenFor(m => m.HasParentCompany)
+    @Html.HiddenFor(m => m.ProviderId)
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "ProviderProfileDetails", "Cab", new { providerId = Model.ProviderId }, new { @class = "govuk-back-link" })
+        <main id="main-content" class="govuk-main-wrapper" role="main">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+
+
+                    @if (ViewData.ModelState.ErrorCount >0)
+                    {
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                      
+                    }
+                    <h1 class="govuk-heading-xl">
+                        Change company information
+                    </h1>
+
+                    @{
+
+                        bool regNameHasError = Html.ViewData.ModelState.ContainsKey("RegisteredName")
+                        && Html?.ViewData?.ModelState["RegisteredName"]?.Errors.Count > 0;
+                        var registeredNameViewmodel = new TextBoxViewModel
+                    {
+                        PropertyName = "RegisteredName",
+                        Label = "Registered company name",
+                        Value = Model?.RegisteredName ?? string.Empty,
+                        Class = "govuk-input",
+                        HasError = regNameHasError,
+                        ErrorMessage = regNameHasError ? Html.ViewData?.ModelState["RegisteredName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                    }
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", registeredNameViewmodel)
+
+                    @{
+                        bool tradingNameHasError = Html.ViewData.ModelState.ContainsKey("TradingName")
+                        && Html?.ViewData?.ModelState["TradingName"]?.Errors.Count > 0;
+                        var tradingNameViewmodel = new TextBoxViewModel
+                    {
+                        PropertyName = "TradingName",
+                        Label = "Trading name",
+                        Value = Model?.TradingName ?? string.Empty,
+                        Class = "govuk-input",
+                        HasError = tradingNameHasError,
+                        ErrorMessage = tradingNameHasError ? Html.ViewData?.ModelState["TradingName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                    }
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", tradingNameViewmodel)
+
+
+                    @if(Model.HasParentCompany == true)
+                    {
+                    bool parentCompanyHasError = Html.ViewData.ModelState.ContainsKey("ParentCompanyRegisteredName")
+                    && Html?.ViewData?.ModelState["ParentCompanyRegisteredName"]?.Errors.Count > 0;
+                     var parentCompanyRegName = new TextBoxViewModel
+                    {
+                        PropertyName = "ParentCompanyRegisteredName",
+                        Label = "Registered name of parent company",
+                        Value = Model?.ParentCompanyRegisteredName ?? string.Empty,
+                        Class = "govuk-input",
+                        HasError = parentCompanyHasError,
+                        ErrorMessage = parentCompanyHasError ? Html.ViewData?.ModelState["ParentCompanyRegisteredName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                 
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", parentCompanyRegName)
+
+
+                    bool parentCompanyLocHasError = Html.ViewData.ModelState.ContainsKey("ParentCompanyLocation")
+                    && Html?.ViewData?.ModelState["ParentCompanyLocation"]?.Errors.Count > 0;
+                    var parentCompanyLocation = new TextBoxViewModel
+                    {
+                        PropertyName = "ParentCompanyLocation",
+                        Label = "Location of parent company",
+                        Value = Model?.ParentCompanyLocation ?? string.Empty,
+                        Class = "govuk-input",
+                        HasError = parentCompanyLocHasError,
+                        ErrorMessage = parentCompanyLocHasError ? Html.ViewData?.ModelState["ParentCompanyLocation"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };                    
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", parentCompanyLocation)
+                    }
+
+                    @if(Model.HasRegistrationNumber == true)
+                    {
+
+                    bool companyRegHasError = Html.ViewData.ModelState.ContainsKey("CompanyRegistrationNumber")
+                    && Html?.ViewData?.ModelState["CompanyRegistrationNumber"]?.Errors.Count > 0;
+                     var companyViewmodel = new TextBoxViewModel
+                    {
+                        PropertyName = "CompanyRegistrationNumber",
+                        Label = "Companies House or charity registration number",
+                        Value = Model?.CompanyRegistrationNumber ?? string.Empty,
+                        Class = "govuk-input govuk-input--width-10",
+                        Hint = "In the UK it is 8 characters. For example, 01234567 or AC012345.",
+                        HasError = companyRegHasError,
+                        ErrorMessage = companyRegHasError ? Html.ViewData?.ModelState["CompanyRegistrationNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };                    
+
+                        @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", companyViewmodel)
+                    }
+                    else
+                    {
+
+                    bool dunsNumberHasError = Html.ViewData.ModelState.ContainsKey("DUNSNumber")
+                    && Html?.ViewData?.ModelState["DUNSNumber"]?.Errors.Count > 0;
+                     var dunsViewmodel = new TextBoxViewModel
+                    {
+                        PropertyName = "DUNSNumber",
+                        Label = "The service provider’s D-U-N-S Number",
+                        Value = Model?.DUNSNumber ?? string.Empty,
+                        Class = "govuk-input govuk-input--width-10",
+                        Hint = "The D-U-N-S number has 9 characters. For example, 012345678",
+                        HasError = dunsNumberHasError,
+                        ErrorMessage = dunsNumberHasError ? Html.ViewData?.ModelState["DUNSNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    };
+                    
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", dunsViewmodel)
+                        
+                    }                    
+
+
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" data-module="govuk-button">
+                            Change
+                        </button>
+                        <a href="/cab-service/profile-information?providerId=@Model.ProviderId" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                            Cancel
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+}

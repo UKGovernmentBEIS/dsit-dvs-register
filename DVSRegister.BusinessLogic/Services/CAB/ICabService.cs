@@ -7,9 +7,10 @@ namespace DVSRegister.BusinessLogic.Services.CAB
     {
         public Task<List<RoleDto>> GetRoles();
         public Task<List<IdentityProfileDto>> GetIdentityProfiles();
-        public Task<List<SupplementarySchemeDto>> GetSupplementarySchemes();    
-        public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
+        public Task<List<SupplementarySchemeDto>> GetSupplementarySchemes();
+        public Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId = 0);
         public Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfile);
+        public Task<GenericResponse> UpdateProviderProfile(ProviderProfileDto providerProfileDto);
         public Task<GenericResponse> SaveService(ServiceDto serviceDto);
         public Task<List<ProviderProfileDto>> GetProviders(int cabId, string searchText = "");
         public Task<ProviderProfileDto> GetProvider(int providerId, int cabId);

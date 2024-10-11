@@ -34,7 +34,14 @@ namespace DVSRegister
 
             services.Configure<BasicAuthMiddlewareConfiguration>(
             configuration.GetSection(BasicAuthMiddlewareConfiguration.ConfigSection));
-            services.AddControllersWithViews();          
+            services.AddControllersWithViews();
+            //Adding strict transport security header
+            services.AddHsts(options =>
+            {
+                options.Preload = true;
+                options.IncludeSubDomains = true;
+                options.MaxAge = TimeSpan.FromDays(1);
+            });
             string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));
             services.AddDbContext<DVSRegisterDbContext>(opt =>
                 opt.UseNpgsql(connectionString));

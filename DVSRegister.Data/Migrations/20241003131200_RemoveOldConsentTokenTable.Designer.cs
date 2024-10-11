@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using NpgsqlTypes;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241003131200_RemoveOldConsentTokenTable")]
+    partial class RemoveOldConsentTokenTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,37 +50,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9955)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 11, 59, 551, DateTimeKind.Utc).AddTicks(913)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9958)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 11, 59, 551, DateTimeKind.Utc).AddTicks(917)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9960)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 11, 59, 551, DateTimeKind.Utc).AddTicks(918)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9961)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 11, 59, 551, DateTimeKind.Utc).AddTicks(920)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9962)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 11, 59, 551, DateTimeKind.Utc).AddTicks(921)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 10, 10, 10, 20, 27, 462, DateTimeKind.Utc).AddTicks(9964)
+                            CreatedTime = new DateTime(2024, 10, 3, 13, 11, 59, 551, DateTimeKind.Utc).AddTicks(922)
                         });
                 });
 
@@ -592,6 +595,7 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("ProviderTelephoneNumber")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ProviderWebsiteAddress")
@@ -1094,7 +1098,7 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("text")
-                        .HasComputedColumnSql("LPAD(\"CompanyId\"::VARCHAR(4), 4, '0') || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", true);
+                        .HasComputedColumnSql("\"CompanyId\"::VARCHAR(4) || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", true);
 
                     b.HasKey("CompanyId", "ServiceNumber");
 
@@ -1108,7 +1112,7 @@ namespace DVSRegister.Data.Migrations
 
                     b.ToTable("TrustmarkNumber", t =>
                         {
-                            t.HasCheckConstraint("CK_CompanyId", "\"CompanyId\" BETWEEN 200 AND 9999");
+                            t.HasCheckConstraint("CK_CompanyId", "\"CompanyId\" BETWEEN 2000 AND 9999");
 
                             t.HasCheckConstraint("CK_ServiceNumber", "\"ServiceNumber\" BETWEEN 1 AND 99");
                         });

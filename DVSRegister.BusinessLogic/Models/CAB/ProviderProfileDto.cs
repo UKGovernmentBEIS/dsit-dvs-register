@@ -24,7 +24,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public string SecondaryContactEmail { get; set; }
         public string SecondaryContactTelephoneNumber { get; set; }
         public string PublicContactEmail { get; set; }
-        public string ProviderTelephoneNumber { get; set; }
+        public string? ProviderTelephoneNumber { get; set; }
         public string ProviderWebsiteAddress { get; set; }
         public int CompanyId { get; set; }
         public int CabUserId { get; set; }
