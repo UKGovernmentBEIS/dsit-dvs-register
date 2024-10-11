@@ -75,6 +75,20 @@ namespace DVSRegister.Data.CAB
             }
         }
 
+        public async Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId)
+        {
+            var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.RegisteredName.ToLower() == registeredName.ToLower() && p.Id != providerId);
+
+            if (existingProvider !=null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public async Task<GenericResponse> UpdateProviderProfile(ProviderProfile providerProfile)
         {
             GenericResponse genericResponse = new();

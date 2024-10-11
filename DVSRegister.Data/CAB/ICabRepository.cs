@@ -11,6 +11,7 @@ namespace DVSRegister.Data.CAB
         public Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile);
         public Task<GenericResponse> UpdateProviderProfile(ProviderProfile providerProfile);
         public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
+        public Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId);
         public Task<GenericResponse> SaveService(Service service);
         public Task<List<ProviderProfile>> GetProviders(int cabId,string searchText = "");
         public Task<ProviderProfile> GetProvider(int providerId, int cabId);

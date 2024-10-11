@@ -106,7 +106,7 @@ namespace DVSRegister.Controllers
                 {
                     Provider = providerProfileDto,
                     IsEditable = providerProfileDto.Services == null ||providerProfileDto.Services.Count==0 ||
-                providerProfileDto.Services.All(service => service.ServiceStatus == ServiceStatusEnum.Submitted)
+                     providerProfileDto.Services.All(service => service.ServiceStatus == ServiceStatusEnum.Submitted && service.CertificateReview == null)
                 };
 
                 return View(providerDetailsViewModel);

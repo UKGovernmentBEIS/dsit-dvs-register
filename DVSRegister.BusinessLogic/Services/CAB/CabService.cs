@@ -63,9 +63,17 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return genericResponse;
         }
 
-        public async Task<bool> CheckProviderRegisteredNameExists(string registeredName)
+        public async Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId=0)
         {
-            return await cabRepository.CheckProviderRegisteredNameExists(registeredName);
+            if(providerId >0) 
+            {
+                return await cabRepository.CheckProviderRegisteredNameExists(registeredName,providerId);
+            }
+            else
+            {
+                return await cabRepository.CheckProviderRegisteredNameExists(registeredName);
+            }
+           
         }
 
         public async Task<List<ProviderProfileDto>> GetProviders(int cabId, string searchText = "")
