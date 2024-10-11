@@ -279,15 +279,18 @@
                     </div>
                 </div>
             </div>
-            <div class="govuk-grid-column-two-thirds">
-                <div class="govuk-warning-text">
-                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                    <strong class="govuk-warning-text__text">
-                        <span class="govuk-visually-hidden">Warning</span>
-                        To make changes to the information shown, contact digital.identity.register@dsit.gov.uk
-                    </strong>
+            @if (!Model.IsEditable)
+            {
+                <div class="govuk-grid-column-two-thirds">
+                    <div class="govuk-warning-text">
+                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                        <strong class="govuk-warning-text__text">
+                            <span class="govuk-visually-hidden">Warning</span>
+                            To make changes to the information shown, contact digital.identity.register@dsit.gov.uk
+                        </strong>
+                    </div>
                 </div>
-            </div>
+            }          
         </div>
     </main>
 </div>

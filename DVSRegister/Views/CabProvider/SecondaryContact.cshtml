@@ -30,75 +30,7 @@
                     You should ask the service provider to provide this information. DSIT will use the contact details you provide to confirm the provider’s agreement to proceed with the application.
                 </p>
 
-                    @{
-                        bool fullNameHasError = Html.ViewData.ModelState.ContainsKey("SecondaryContactFullName")
-                       && Html?.ViewData?.ModelState["SecondaryContactFullName"]?.Errors.Count > 0;
-                        var SecondaryContactFullName = new TextBoxViewModel
-                    {
-                        PropertyName = "SecondaryContactFullName",
-                        Label = "Full name",
-                        Value = Model?.SecondaryContactFullName ?? string.Empty,
-                        Class = "govuk-input govuk-!-width-three-quarters",
-                        HasError = fullNameHasError,
-                        ErrorMessage = fullNameHasError? Html?.ViewData?.ModelState["SecondaryContactFullName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
-                    };
-                }
-
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", SecondaryContactFullName)
-
-                   @{
-                        bool jobTitleHasError = Html.ViewData.ModelState.ContainsKey("SecondaryContactJobTitle")
-                        && Html?.ViewData?.ModelState["SecondaryContactJobTitle"]?.Errors.Count > 0;
-
-                    var SecondaryContactJobTitle = new TextBoxViewModel
-                    {
-                        PropertyName = "SecondaryContactJobTitle",
-                        Label = "Job title",
-                        Value = Model?.SecondaryContactJobTitle ?? string.Empty,
-                        Class = "govuk-input govuk-!-width-three-quarters",
-                        HasError = jobTitleHasError,
-                        ErrorMessage = jobTitleHasError ? Html?.ViewData?.ModelState["SecondaryContactJobTitle"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
-                    };
-                }
-
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", SecondaryContactJobTitle)
-
-
-
-                @{
-                    bool emailHasError = Html.ViewData.ModelState.ContainsKey("SecondaryContactEmail")
-                    && Html?.ViewData?.ModelState["SecondaryContactEmail"]?.Errors.Count > 0;
-                    var SecondaryContactEmail = new TextBoxViewModel
-                    {
-                        PropertyName = "SecondaryContactEmail",
-                        Label = "Email address",
-                        Value = Model?.SecondaryContactEmail ?? string.Empty,
-                        TextBoxType = "email",
-                        Class = "govuk-input govuk-!-width-three-quarters",
-                        HasError = emailHasError,
-                        ErrorMessage = emailHasError ? Html.ViewData?.ModelState["SecondaryContactEmail"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
-                    };
-                }
-
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", SecondaryContactEmail)
-
-
-                @{
-                    bool phoneNumberHasError = Html.ViewData.ModelState.ContainsKey("SecondaryContactTelephoneNumber")
-                    && Html?.ViewData?.ModelState["SecondaryContactTelephoneNumber"]?.Errors.Count > 0;
-                    var SecondaryContactTelephoneNumber = new TextBoxViewModel
-                    {
-                        PropertyName = "SecondaryContactTelephoneNumber",
-                        Label = "Telephone number",
-                        Value = Model?.SecondaryContactTelephoneNumber ?? string.Empty,
-                        Class = "govuk-input govuk-!-width-one-half",
-                        Hint = "For international numbers include the country code",
-                        HasError = phoneNumberHasError,
-                       ErrorMessage = phoneNumberHasError ? Html.ViewData?.ModelState["SecondaryContactTelephoneNumber"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
-                    };
-                }
-
-                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", SecondaryContactTelephoneNumber)
+                    @await Html.PartialAsync("~/Views/CabProvider/PartialViews/_SecondaryContactView.cshtml", Model)
 
                 <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button">
                     Continue

@@ -475,17 +475,15 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                return RedirectToAction("CabHandleException", "Error");
             }
           
         }
-        #endregion
-
 
         /// <summary>
         ///Final page if save success
@@ -500,6 +498,7 @@ namespace DVSRegister.Controllers
             return View();
 
         }
+        #endregion
 
 
         #region Edit Company Information
@@ -543,7 +542,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
@@ -554,8 +553,143 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
+        #region Edit primary contact
+        [HttpGet("edit-primary-contact")]
+        public IActionResult EditPrimaryContact()
+        {
+            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+            PrimaryContactViewModel primaryContactViewModel = new()
+            {
+                PrimaryContactFullName = providerProfileDto.PrimaryContactFullName,
+                PrimaryContactEmail = providerProfileDto.PrimaryContactEmail,
+                PrimaryContactJobTitle = providerProfileDto.PrimaryContactJobTitle,
+                PrimaryContactTelephoneNumber =providerProfileDto.PrimaryContactTelephoneNumber,
+                ProviderId = providerProfileDto.Id
+            };
 
-    
+            return View(primaryContactViewModel);
+
+        }
+        [HttpPost("edit-primary-contact")]
+        public async Task<IActionResult> UpdatePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
+        {
+
+            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+            if (ModelState.IsValid)
+            {
+                providerProfileDto.PrimaryContactFullName = primaryContactViewModel.PrimaryContactFullName;
+                providerProfileDto.PrimaryContactEmail = primaryContactViewModel.PrimaryContactEmail;
+                providerProfileDto.PrimaryContactJobTitle =primaryContactViewModel.PrimaryContactJobTitle;
+                providerProfileDto.PrimaryContactTelephoneNumber = primaryContactViewModel.PrimaryContactTelephoneNumber;
+
+                GenericResponse genericResponse = await cabService.UpdateProviderProfile(providerProfileDto);
+                if (genericResponse.Success)
+                {
+                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
+                }
+                else
+                {
+                    return RedirectToAction("CabHandleException", "Error");
+                }
+            }
+            else
+            {
+                return View("EditPrimaryContact", primaryContactViewModel);
+            }
+
+        }
+        #endregion
+
+        #region Edit secondary contact
+        [HttpGet("edit-secondary-contact")]
+        public IActionResult EditSecondaryContact()
+        {
+            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+            SecondaryContactViewModel secondaryContactViewModel = new()
+            {
+                SecondaryContactFullName = providerProfileDto.SecondaryContactFullName,
+                SecondaryContactEmail = providerProfileDto.SecondaryContactEmail,
+                SecondaryContactJobTitle = providerProfileDto.SecondaryContactJobTitle,
+                SecondaryContactTelephoneNumber =providerProfileDto.SecondaryContactTelephoneNumber,          
+                ProviderId = providerProfileDto.Id
+            };
+
+            return View(secondaryContactViewModel);
+
+        }
+        [HttpPost("edit-secondary-contact")]
+        public async Task<IActionResult> UpdateSecondaryContact(SecondaryContactViewModel secondaryContactViewModel)
+        {
+           
+            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+            if (ModelState.IsValid)
+            {
+                providerProfileDto.SecondaryContactFullName = secondaryContactViewModel.SecondaryContactFullName;
+                providerProfileDto.SecondaryContactEmail = secondaryContactViewModel.SecondaryContactEmail;
+                providerProfileDto.SecondaryContactJobTitle =secondaryContactViewModel.SecondaryContactJobTitle;
+                providerProfileDto.SecondaryContactTelephoneNumber = secondaryContactViewModel.SecondaryContactTelephoneNumber;
+
+                GenericResponse genericResponse = await cabService.UpdateProviderProfile(providerProfileDto);
+                if (genericResponse.Success)
+                {
+                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
+                }
+                else
+                {
+                    return RedirectToAction("CabHandleException", "Error");
+                }
+            }
+            else
+            {
+                return View("EditSecondaryContact", secondaryContactViewModel);
+            }
+
+        }
+        #endregion
+
+        #region Edit public provider information
+        [HttpGet("edit-public-provider-information")]
+        public IActionResult EditPublicProviderInformation()
+        {
+            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+            PublicContactViewModel publicContactViewModel = new()
+            {
+                PublicContactEmail = providerProfileDto.PublicContactEmail,
+                ProviderTelephoneNumber = providerProfileDto.ProviderTelephoneNumber,
+                ProviderWebsiteAddress = providerProfileDto.ProviderWebsiteAddress,              
+                ProviderId = providerProfileDto.Id
+            };
+            return View(publicContactViewModel);
+
+        }
+        [HttpPost("edit-public-provider-information")]
+        public async Task<IActionResult> UpdatePublicProviderInformation(PublicContactViewModel publicContactViewModel)
+        {
+            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+            if (ModelState.IsValid)
+            {
+                providerProfileDto.PublicContactEmail = publicContactViewModel.PublicContactEmail;
+                providerProfileDto.ProviderTelephoneNumber = publicContactViewModel.ProviderTelephoneNumber;
+                providerProfileDto.ProviderWebsiteAddress =publicContactViewModel.ProviderWebsiteAddress;        
+
+                GenericResponse genericResponse = await cabService.UpdateProviderProfile(providerProfileDto);
+                if (genericResponse.Success)
+                {
+                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
+                }
+                else
+                {
+                    return RedirectToAction("CabHandleException", "Error");
+                }
+            }
+            else
+            {
+                return View("EditPublicProviderInformation", publicContactViewModel);
+            }
+
+        }
+        #endregion
+
 
         #region Private methods
         private ProfileSummaryViewModel GetProfileSummary()
