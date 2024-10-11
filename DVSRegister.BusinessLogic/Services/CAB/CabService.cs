@@ -47,6 +47,14 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return genericResponse;
         }
 
+        public async Task<GenericResponse> UpdateProviderProfile(ProviderProfileDto providerProfileDto)
+        {
+            ProviderProfile providerProfile = new();
+            automapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await cabRepository.UpdateProviderProfile(providerProfile);
+            return genericResponse;
+        }
+
         public async Task<GenericResponse> SaveService(ServiceDto serviceDto)
         {
             Service service = new Service();
@@ -55,9 +63,17 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return genericResponse;
         }
 
-        public async Task<bool> CheckProviderRegisteredNameExists(string registeredName)
+        public async Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId=0)
         {
-            return await cabRepository.CheckProviderRegisteredNameExists(registeredName);
+            if(providerId >0) 
+            {
+                return await cabRepository.CheckProviderRegisteredNameExists(registeredName,providerId);
+            }
+            else
+            {
+                return await cabRepository.CheckProviderRegisteredNameExists(registeredName);
+            }
+           
         }
 
         public async Task<List<ProviderProfileDto>> GetProviders(int cabId, string searchText = "")
