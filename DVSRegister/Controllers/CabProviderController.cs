@@ -526,6 +526,14 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> UpdateCompanyInformation(CompanyViewModel companyViewModel)
         {
             ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+            if (!string.IsNullOrEmpty(companyViewModel.RegisteredName))
+            {
+                bool registeredNameExist = await cabService.CheckProviderRegisteredNameExists(companyViewModel.RegisteredName,companyViewModel.ProviderId);
+                if (registeredNameExist)
+                {
+                    ModelState.AddModelError("RegisteredName", Constants.RegisteredNameExistsError);
+                }
+            }
             if (ModelState.IsValid)
             {
                 providerProfileDto.RegisteredName = companyViewModel.RegisteredName;
