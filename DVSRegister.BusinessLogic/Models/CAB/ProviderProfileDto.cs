@@ -35,6 +35,6 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
-        public string LastModified { get;set; }
+        public DateTime LastModified { get;set; }
     }
 }
