@@ -43,6 +43,7 @@ namespace DVSRegister.Data
         {           
             ProviderProfile providerProfile = new ();
             providerProfile = await context.ProviderProfile
+            .Include(p => p.Services.Where(s => s.ServiceStatus == ServiceStatusEnum.Published))
            .Include(p => p.Services).ThenInclude(x => x.ServiceRoleMapping).ThenInclude(p => p.Role)
            .Include(p => p.Services).ThenInclude(x => x.ServiceIdentityProfileMapping).ThenInclude(p=>p.IdentityProfile)
            .Include(p => p.Services).ThenInclude(x => x.ServiceSupSchemeMapping).ThenInclude(p => p.SupplementaryScheme)
