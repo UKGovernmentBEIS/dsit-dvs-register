@@ -25,17 +25,17 @@ namespace DVSRegister.Controllers
         }
         [Route("")]
         [HttpGet("register-search")]
-        public async Task<IActionResult> Register(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, bool FromDeatilsPage = false, int RemoveRole = 0, int RemoveScheme = 0, string SearchAction = "", string SearchProvider = "")
+        public async Task<IActionResult> Register(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, bool FromDetailsPage = false, int RemoveRole = 0, int RemoveScheme = 0, string SearchAction = "", string SearchProvider = "")
         {
             RegisterListViewModel registerListViewModel = new ();
-            if (FromDeatilsPage)
+            if (FromDetailsPage)
             {
                 Filters filters = HttpContext?.Session.Get<Filters>("Filters")??new Filters();
                 SelectedRoleIds =  filters.SelectedRoleIds;
                 SelectedSupplementarySchemeIds= filters.SelectedSupplementarySchemeIds;
                 SearchAction =  filters.SearchAction;
                 SearchProvider = filters.SearchProvider;
-                FromDeatilsPage = filters.FromDeatilsPage;
+                FromDetailsPage = filters.FromDetailsPage;
                 RemoveRole = filters.RemoveRole;
                 RemoveScheme = filters.RemoveScheme;
 
@@ -68,7 +68,7 @@ namespace DVSRegister.Controllers
                 TempData["LastUpdated"] =   registerListViewModel.LastUpdated;
             }
 
-            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, FromDeatilsPage, RemoveRole, RemoveScheme, SearchAction, SearchProvider);
+            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, FromDetailsPage, RemoveRole, RemoveScheme, SearchAction, SearchProvider);
             return View("Register", registerListViewModel);
         }
 
@@ -96,14 +96,14 @@ namespace DVSRegister.Controllers
         }
 
         #region Private methods
-        private void SetFiltersInSession(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, bool FromDeatilsPage, int RemoveRole, int RemoveScheme, string SearchAction, string SearchProvider)
+        private void SetFiltersInSession(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, bool FromDetailsPage, int RemoveRole, int RemoveScheme, string SearchAction, string SearchProvider)
         {
             Filters filters = new Filters();
             filters.SelectedRoleIds = SelectedRoleIds;
             filters.SelectedSupplementarySchemeIds= SelectedSupplementarySchemeIds;
             filters.SearchAction = SearchAction;
             filters.SearchProvider = SearchProvider;
-            filters.FromDeatilsPage = FromDeatilsPage;
+            filters.FromDetailsPage = FromDetailsPage;
             filters.RemoveRole = RemoveRole;
             filters.RemoveScheme = RemoveScheme;
             HttpContext?.Session.Set("Filters", filters);
