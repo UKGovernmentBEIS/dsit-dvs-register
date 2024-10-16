@@ -7,6 +7,7 @@ using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB.Provider;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using System.Security.Claims;
 
 
@@ -47,7 +48,7 @@ namespace DVSRegister.Controllers
 
         #region Cab provider list screens
         [HttpGet("view-profiles")]
-        public async Task<IActionResult> ListProviders(string SearchAction = "", string SearchText = "")
+        public async Task<IActionResult> ListProviders(string ariaSort,string SearchAction = "", string SearchText = "")
         {
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
 
@@ -62,7 +63,14 @@ namespace DVSRegister.Controllers
                     providerListViewModel.SearchText = null;
                     SearchText = string.Empty;
                 }
-                providerListViewModel.Providers = await cabService.GetProviders(cabId, SearchText);
+                providerListViewModel.Providers = (await cabService.GetProviders(cabId, SearchText));
+
+                providerListViewModel.Providers = ariaSort == "ascending"
+                    ? providerListViewModel.Providers.OrderBy(p => p.LastModified).ToList() // Sort in ascending order
+                    : providerListViewModel.Providers.OrderByDescending(p => p.LastModified).ToList(); // Sort in descending order
+
+                ViewBag.CurrentAriaSort = ariaSort;
+
                 return View(providerListViewModel);
 
             }
