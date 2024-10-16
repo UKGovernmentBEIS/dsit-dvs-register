@@ -8,7 +8,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "Register", "Register", new { FromDeatilsPage  = true}, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "Register", "Register", new { FromDetailsPage  = true}, new { @class = "govuk-back-link" })
    
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
@@ -51,7 +51,7 @@
                 @foreach (var service in Model.Provider.Services)
                 {
                     
-                    <h2 class="govuk-heading-m">Service @service.ServiceNumber: @service.ServiceName</h2>
+                    <h2 class="govuk-heading-m">@service.ServiceName</h2>
                     <hr class="govuk-section-break govuk-section-break--visible">
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
 
