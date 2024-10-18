@@ -39,7 +39,7 @@ namespace DVSRegister.BusinessLogic
 
             CreateMap<ProviderProfile, ProviderProfileDto>()
             .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services))
-            .ForMember(dest => dest.LastModified, opt => opt.MapFrom<LastModifiedDateResolver>());
+          .ForMember(dest => dest.LastUpdatedInfo, opt => opt.MapFrom<LastModifiedDateResolver>());
             CreateMap<ProviderProfileDto, ProviderProfile>()
             .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services));
 
