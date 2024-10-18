@@ -2,32 +2,25 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.Data.Entities;
-using System;
-using System.Globalization;
 
 namespace DVSRegister.BusinessLogic
 {
-    public class LastModifiedDateResolver : IValueResolver<ProviderProfile, ProviderProfileDto, DateTime>
+    public class LastModifiedDateResolver : IValueResolver<ProviderProfile, ProviderProfileDto, string>
     {
-        public DateTime Resolve(ProviderProfile source, ProviderProfileDto destination, DateTime destMember, ResolutionContext context)
+        public string Resolve(ProviderProfile source, ProviderProfileDto destination, string lastModifiedDate, ResolutionContext context)
         {
-            DateTime? dateTime=null;
-            if (source.Services != null && source.Services.Any())
+            DateTime? dateTime = null;
+          
+            if (source.Services!= null && source.Services.Any())
             {
-                 dateTime = source.Services.Max(s => s.ModifiedTime ?? s.CreatedTime);
+                dateTime =   source.Services.Max(s => s.ModifiedTime ?? s.CreatedTime);
+                return Helper.GetLocalDateTime(dateTime, "dd MMM yyyy ; hh:mm tt");
             }
             else
             {
-                dateTime = source.ModifiedTime == null ? source.CreatedTime : source.ModifiedTime;
+                dateTime =  source.ModifiedTime == null ? source.CreatedTime : source.ModifiedTime;
+                return Helper.GetLocalDateTime(dateTime, "dd MMM yyyy ; hh:mm tt");                
             }
-
-            if (dateTime.HasValue)
-            {
-                return dateTime.Value;
-            }
-
-            return DateTime.MinValue;
         }
-
     }
 }

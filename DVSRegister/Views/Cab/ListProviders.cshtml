@@ -4,7 +4,6 @@
 @{
     ViewData["Title"] = "List of service providers";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    string newAriaSort = ViewBag.CurrentAriaSort == "ascending" ? "descending" : "ascending";
 }
 
 
@@ -66,16 +65,7 @@
                             <th scope="col" class="govuk-table__header" aria-sort="none">Registered name</th>
                             <th scope="col" class="govuk-table__header" aria-sort="none">Trading name</th>
                             <th scope="col" class="govuk-table__header" aria-sort="none">Services</th>
-                            <th scope="col" class="govuk-table__header"
-                                aria-sort="@ViewBag.CurrentAriaSort"
-                                style="cursor: pointer;"
-                                onclick="location.href='@Url.Action("ListProviders", new { ariaSort = (ViewBag.CurrentAriaSort == "ascending" ? "descending" : "ascending") })'">
-                                <a href="@Url.Action("ListProviders", new { ariaSort = (ViewBag.CurrentAriaSort == "ascending" ? "descending" : "ascending") })"
-                                   style="text-decoration: none; color: inherit; display: block;">
-                                    Last Updated
-                                </a>
-                            </th>
-
+                            <th scope="col" class="govuk-table__header" aria-sort="descending">Last updated</th>
                         </tr>
                     </thead>
 
