@@ -29,6 +29,17 @@ namespace DVSRegister
             this.webHostEnvironment = webHostEnvironment;
         }
 
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            app.UseMiddleware<SecurityHeadersMiddleware>();
+            app.UseStaticFiles();
+            app.UseMvc();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+        }
         public void ConfigureServices(IServiceCollection services)
         {
 
@@ -165,10 +176,10 @@ namespace DVSRegister
                 options.Cookie.Name = "Antiforgery";
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Strict;
             });
             services.AddSingleton<CookieService>();
+            services.AddMvc();
         }
-       
-
     }
 }
