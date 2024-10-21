@@ -21,7 +21,6 @@ namespace DVSRegister.Middleware
                 // Added security headers
                 context.Response.Headers["X-Frame-Options"] = "DENY";
                 context.Response.Headers["Content-Security-Policy"] = "frame-ancestors 'none'";
-                Console.WriteLine("Security headers added");
             }
 
             // Calling the next middleware in the pipeline

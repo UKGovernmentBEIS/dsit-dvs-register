@@ -31,7 +31,6 @@ namespace DVSRegister
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseMiddleware<SecurityHeadersMiddleware>();
             app.UseStaticFiles();
             app.UseMvc();
             app.UseRouting();
