@@ -12,7 +12,7 @@ using System.Security.Claims;
 
 namespace DVSRegister.Controllers
 {
-   
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     [Route("cab-service")]
     [ValidCognitoToken]
     public class CabController : Controller

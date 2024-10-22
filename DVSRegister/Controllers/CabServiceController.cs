@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     [Route("cab-service/submit-service")]
     [ValidCognitoToken]
     public class CabServiceController : Controller

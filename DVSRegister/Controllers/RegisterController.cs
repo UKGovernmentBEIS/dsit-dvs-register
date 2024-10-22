@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
+    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     [Route("")]
     [Route("register")]
     public class RegisterController : Controller
