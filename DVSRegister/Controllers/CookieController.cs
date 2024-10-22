@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 
 namespace DVSRegister.Controllers;
 
-[ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
 public class CookieController : Controller
 {
     private readonly CookieService _cookieService;

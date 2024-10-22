@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     [Route("")]
     public class ErrorController : Controller
     {       

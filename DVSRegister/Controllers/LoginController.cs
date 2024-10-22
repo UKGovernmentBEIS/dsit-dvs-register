@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-    [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
     [Route("cab-application-registration")]
     public class LoginController : Controller
     {
