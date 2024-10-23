@@ -147,5 +147,6 @@ await Html.RenderPartialAsync("_CookieBanner");
 <script>setUpGoogleAnalytics()</script>
 }
 @await RenderSectionAsync("Scripts", required: false)
+    <script nonce="@Context.GetScriptNonce()"></script>
 </body>
 </html>

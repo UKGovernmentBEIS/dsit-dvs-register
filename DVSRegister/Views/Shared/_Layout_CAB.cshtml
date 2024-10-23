@@ -142,5 +142,7 @@ await Html.RenderPartialAsync("_CookieBanner");
 <script type="module">import { initAll } from '/js/govuk.js'
         initAll()</script>
 @await RenderSectionAsync("Scripts", required: false)
+    <script nonce="@Context.GetScriptNonce()"></script>
+
 </body>
 </html>
