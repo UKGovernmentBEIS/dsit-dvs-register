@@ -21,6 +21,9 @@ namespace DVSRegister.Middleware
                 // Added security headers
                 context.Response.Headers["X-Frame-Options"] = "DENY";
                 context.Response.Headers["Content-Security-Policy"] = "frame-ancestors 'none'";
+                context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private";
+                context.Response.Headers["Pragma"] = "no-cache";
+                context.Response.Headers["Expires"] = "-1";
             }
 
             // Calling the next middleware in the pipeline
