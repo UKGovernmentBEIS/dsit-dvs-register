@@ -24,7 +24,7 @@ namespace DVSRegister.Middleware
 
                 //CSP with nonce for inline scripts
                 context.Response.Headers["Content-Security-Policy"] =
-                "script-src 'self' https:; " +
+                "script-src 'unsafe-inline' 'self' https:; " +
                 "connect-src 'self'; " +
                 "img-src 'self'; " +
                 "style-src 'self'; " +
