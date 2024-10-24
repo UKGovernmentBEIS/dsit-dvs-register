@@ -24,7 +24,8 @@ namespace DVSRegister.Middleware
 
                 //CSP with nonce for inline scripts
                 context.Response.Headers["Content-Security-Policy"] =
-                "script-src 'unsafe-inline' 'self' https:; " +
+                "script-src 'unsafe-inline' 'self' https://www.google-analytics.com https://ssl.google-analytics.com https://www.googletagmanager.com https://www.region1.google-analytics.com https://region1.google-analytics.com; " +
+                "object-src 'none'; " +
                 "connect-src 'self'; " +
                 "img-src 'self'; " +
                 "style-src 'self'; " +
