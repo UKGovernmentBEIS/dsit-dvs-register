@@ -29,7 +29,7 @@ namespace DVSRegister.Data.CAB
 
         public async Task<List<SupplementaryScheme>> GetSupplementarySchemes()
         {
-            return await context.SupplementaryScheme.OrderBy(c => c.SchemeName).ToListAsync();
+            return await context.SupplementaryScheme.OrderBy(c => c.Order).ToListAsync();
         }
 
         public async Task<List<QualityLevel>> QualityLevels()
