@@ -150,9 +150,9 @@ namespace DVSRegister.Data
                 new IdentityProfile { Id =32, IdentityProfileName = "V3A " });
 
                 modelBuilder.Entity<SupplementaryScheme>().HasData(
-                new SupplementaryScheme { Id =1, SchemeName = "Right to Work" },
-                new SupplementaryScheme { Id =2, SchemeName = "Right to Rent" },
-                new SupplementaryScheme { Id =3, SchemeName = "Disclosure and Barring Service" });
+                new SupplementaryScheme { Id =1, SchemeName = "Right to Work", Order = 2 },
+                new SupplementaryScheme { Id =2, SchemeName = "Right to Rent", Order =1 },
+                new SupplementaryScheme { Id =3, SchemeName = "Disclosure and Barring Service", Order =3 });
 
                 
 
