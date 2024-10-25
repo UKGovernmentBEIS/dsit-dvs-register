@@ -111,9 +111,9 @@ namespace DVSRegister.Data
             new CertificateReviewRejectionReason { Id =5, Reason = "Other" });
 
             modelBuilder.Entity<Role>().HasData(
-            new Role { Id =1, RoleName = "Identity Service Provider (IDSP)" },
-            new Role { Id =2, RoleName = "Attribute Service Provider (ASP)" },
-            new Role { Id =3, RoleName = "Orchestration Service Provider (OSP)" });
+            new Role { Id =1, RoleName = "Identity Service Provider (IDSP)",Order = 1 },
+            new Role { Id =2, RoleName = "Attribute Service Provider (ASP)", Order = 2 },
+            new Role { Id =3, RoleName = "Orchestration Service Provider (OSP)", Order = 3 });
 
                 modelBuilder.Entity<IdentityProfile>().HasData(
                 new IdentityProfile { Id =1, IdentityProfileName = "L1A " },
