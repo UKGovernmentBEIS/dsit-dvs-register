@@ -14,11 +14,10 @@
             if (!context.Response.HasStarted)
             {
               
-                context.Response.Headers["X-Frame-Options"] = "DENY";
-                context.Response.Headers["Content-Security-Policy"] = "frame-ancestors 'none'";
+                context.Response.Headers["X-Frame-Options"] = "DENY"; 
                 context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private";
                 context.Response.Headers["Pragma"] = "no-cache";
-               
+                context.Response.Headers["Expires"] = "-1";
                 context.Response.Headers["Content-Security-Policy"] =
                 "script-src 'unsafe-inline' 'self' " + sources +
                 "object-src 'none'; " +
