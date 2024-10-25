@@ -19,7 +19,7 @@ namespace DVSRegister.Data.CAB
 
         public async Task<List<Role>> GetRoles()
         {
-            return await context.Role.OrderBy(c => c.RoleName).ToListAsync();
+            return await context.Role.OrderBy(c => c.Order).ToListAsync();
         }
 
         public async Task<List<IdentityProfile>> GetIdentityProfiles()
