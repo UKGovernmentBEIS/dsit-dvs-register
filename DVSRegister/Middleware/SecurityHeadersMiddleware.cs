@@ -6,17 +6,19 @@
         private const string sources = "https://www.google-analytics.com https://ssl.google-analytics.com https://www.googletagmanager.com https://www.region1.google-analytics.com https://region1.google-analytics.com; ";
         public SecurityHeadersMiddleware(RequestDelegate next)
         {
-            _next = next;//Storing the reference to next middleware in pipeline
+            _next = next;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
             if (!context.Response.HasStarted)
             {
-                // Added security headers
+              
                 context.Response.Headers["X-Frame-Options"] = "DENY";
-
-                //CSP with nonce for inline scripts
+                context.Response.Headers["Content-Security-Policy"] = "frame-ancestors 'none'";
+                context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private";
+                context.Response.Headers["Pragma"] = "no-cache";
+               
                 context.Response.Headers["Content-Security-Policy"] =
                 "script-src 'unsafe-inline' 'self' " + sources +
                 "object-src 'none'; " +
@@ -27,7 +29,7 @@
                 "font-src 'self'; " +
                 "form-action 'self';";
             }
-            // Calling the next middleware in the pipeline
+           
             await _next(context);
         }
     }
