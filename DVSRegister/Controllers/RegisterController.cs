@@ -40,8 +40,6 @@ namespace DVSRegister.Controllers
                 RemoveScheme = filters.RemoveScheme;
 
             }
-            SearchAction = InputSanitizeExtensions.CleanseInput(SearchAction);
-            SearchProvider = InputSanitizeExtensions.CleanseInput(SearchProvider);
 
             await SetRoles(SelectedRoleIds, RemoveRole, registerListViewModel);
             await SetSchemes(SelectedSupplementarySchemeIds, RemoveScheme, registerListViewModel);
