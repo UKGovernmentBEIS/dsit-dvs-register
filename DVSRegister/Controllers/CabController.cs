@@ -52,8 +52,6 @@ namespace DVSRegister.Controllers
 
             if (cabId > 0)
             {
-                SearchAction = InputSanitizeExtensions.CleanseInput(SearchAction);
-                SearchText = InputSanitizeExtensions.CleanseInput(SearchText);
                 ProviderListViewModel providerListViewModel = new();
                 if (SearchAction == "clearSearch")
                 {
