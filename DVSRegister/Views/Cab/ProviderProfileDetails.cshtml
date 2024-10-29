@@ -23,7 +23,7 @@
                             Company information
                         </h2>
 
-                       @if(Model.IsEditable)
+                       @if(Model.IsCompanyInfoEditable)
                         {
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
@@ -121,8 +121,7 @@
                         <h2 class="govuk-summary-card__title">
                             Primary contact’s details
                         </h2>
-                        @if (Model.IsEditable)
-                        {
+                       
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
                                     @Html.ActionLink("Change", "EditPrimaryContact", "CabProvider", new { fromSummaryPage = true },
@@ -133,7 +132,7 @@
                                     })
                                 </li>
                             </ul>
-                        }
+                       
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
@@ -178,8 +177,7 @@
                         <h2 class="govuk-summary-card__title">
                             Secondary contact’s details
                         </h2>
-                        @if (Model.IsEditable)
-                        {
+                       
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
                                     @Html.ActionLink("Change", "EditSecondaryContact", "CabProvider", new { fromSummaryPage = true },
@@ -190,7 +188,7 @@
                                     })
                                 </li>
                             </ul>
-                        }
+                      
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
@@ -235,8 +233,7 @@
                         <h2 class="govuk-summary-card__title">
                             Public provider information
                         </h2>
-                        @if (Model.IsEditable)
-                        {
+                       
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
                                     @Html.ActionLink("Change", "EditPublicProviderInformation", "CabProvider", new { fromSummaryPage = true },
@@ -247,7 +244,7 @@
                                     })
                                 </li>
                             </ul>
-                        }
+                     
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
@@ -279,7 +276,7 @@
                     </div>
                 </div>
             </div>
-            @if (!Model.IsEditable)
+            @if (!Model.IsCompanyInfoEditable)
             {
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-warning-text">

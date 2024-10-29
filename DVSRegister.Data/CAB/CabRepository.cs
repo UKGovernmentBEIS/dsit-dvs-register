@@ -19,7 +19,7 @@ namespace DVSRegister.Data.CAB
 
         public async Task<List<Role>> GetRoles()
         {
-            return await context.Role.OrderBy(c => c.RoleName).ToListAsync();
+            return await context.Role.OrderBy(c => c.Order).ToListAsync();
         }
 
         public async Task<List<IdentityProfile>> GetIdentityProfiles()
@@ -29,7 +29,7 @@ namespace DVSRegister.Data.CAB
 
         public async Task<List<SupplementaryScheme>> GetSupplementarySchemes()
         {
-            return await context.SupplementaryScheme.OrderBy(c => c.SchemeName).ToListAsync();
+            return await context.SupplementaryScheme.OrderBy(c => c.Order).ToListAsync();
         }
 
         public async Task<List<QualityLevel>> QualityLevels()

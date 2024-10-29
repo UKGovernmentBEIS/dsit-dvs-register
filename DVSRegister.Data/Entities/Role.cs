@@ -11,5 +11,6 @@ namespace DVSRegister.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string RoleName { get; set; }
+        public int Order { get; set; }
     }
 }

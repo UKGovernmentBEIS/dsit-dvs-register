@@ -36,8 +36,7 @@ namespace DVSRegister.Models.CAB
         public string? FileLink { get; set; }
         public decimal? FileSizeInKb { get; set; }
         public DateTime? ConformityIssueDate { get; set; }
-        public DateTime? ConformityExpiryDate { get; set; }
-        public CertificateInfoStatusEnum CertificateInfoStatus { get; set; }
+        public DateTime? ConformityExpiryDate { get; set; }      
         public int CabUserId { get; set; }
         public int CabId { get; set; }
         public bool FromSummaryPage { get;set; }
