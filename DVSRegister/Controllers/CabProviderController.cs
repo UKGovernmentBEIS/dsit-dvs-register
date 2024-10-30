@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab-service/create-profile")]
+     [Route("cab-service/create-profile")]
     [ValidCognitoToken]
     public class CabProviderController : Controller
     {

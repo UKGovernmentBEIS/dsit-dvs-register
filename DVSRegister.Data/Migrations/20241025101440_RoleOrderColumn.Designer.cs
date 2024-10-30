@@ -3,6 +3,7 @@ using System;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using NpgsqlTypes;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241025101440_RoleOrderColumn")]
+    partial class RoleOrderColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,37 +50,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 10, 25, 11, 27, 48, 869, DateTimeKind.Utc).AddTicks(1304)
+                            CreatedTime = new DateTime(2024, 10, 25, 10, 14, 39, 690, DateTimeKind.Utc).AddTicks(8112)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 10, 25, 11, 27, 48, 869, DateTimeKind.Utc).AddTicks(1307)
+                            CreatedTime = new DateTime(2024, 10, 25, 10, 14, 39, 690, DateTimeKind.Utc).AddTicks(8115)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 10, 25, 11, 27, 48, 869, DateTimeKind.Utc).AddTicks(1308)
+                            CreatedTime = new DateTime(2024, 10, 25, 10, 14, 39, 690, DateTimeKind.Utc).AddTicks(8116)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 10, 25, 11, 27, 48, 869, DateTimeKind.Utc).AddTicks(1309)
+                            CreatedTime = new DateTime(2024, 10, 25, 10, 14, 39, 690, DateTimeKind.Utc).AddTicks(8117)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 10, 25, 11, 27, 48, 869, DateTimeKind.Utc).AddTicks(1310)
+                            CreatedTime = new DateTime(2024, 10, 25, 10, 14, 39, 690, DateTimeKind.Utc).AddTicks(8118)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 10, 25, 11, 27, 48, 869, DateTimeKind.Utc).AddTicks(1311)
+                            CreatedTime = new DateTime(2024, 10, 25, 10, 14, 39, 690, DateTimeKind.Utc).AddTicks(8119)
                         });
                 });
 
@@ -1053,9 +1056,6 @@ namespace DVSRegister.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
-
                     b.Property<string>("SchemeName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1068,19 +1068,16 @@ namespace DVSRegister.Data.Migrations
                         new
                         {
                             Id = 1,
-                            Order = 2,
                             SchemeName = "Right to Work"
                         },
                         new
                         {
                             Id = 2,
-                            Order = 1,
                             SchemeName = "Right to Rent"
                         },
                         new
                         {
                             Id = 3,
-                            Order = 3,
                             SchemeName = "Disclosure and Barring Service"
                         });
                 });

@@ -12,7 +12,6 @@ using System.Security.Claims;
 
 namespace DVSRegister.Controllers
 {
-   
     [Route("cab-service")]
     [ValidCognitoToken]
     public class CabController : Controller
@@ -53,8 +52,6 @@ namespace DVSRegister.Controllers
 
             if (cabId > 0)
             {
-                SearchAction = InputSanitizeExtensions.CleanseInput(SearchAction);
-                SearchText = InputSanitizeExtensions.CleanseInput(SearchText);
                 ProviderListViewModel providerListViewModel = new();
                 if (SearchAction == "clearSearch")
                 {
@@ -105,8 +102,8 @@ namespace DVSRegister.Controllers
                 ProviderDetailsViewModel providerDetailsViewModel = new()
                 {
                     Provider = providerProfileDto,
-                    IsEditable = providerProfileDto.Services == null ||providerProfileDto.Services.Count==0 ||
-                     providerProfileDto.Services.All(service => service.ServiceStatus == ServiceStatusEnum.Submitted && service.CertificateReview == null)
+                    IsCompanyInfoEditable = providerProfileDto.Services == null ||providerProfileDto.Services.Count==0 ||
+                    providerProfileDto.Services.All(service => service.ServiceStatus == ServiceStatusEnum.Submitted && service.CertificateReview == null)
                 };
 
                 return View(providerDetailsViewModel);

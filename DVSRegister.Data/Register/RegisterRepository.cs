@@ -19,10 +19,14 @@ namespace DVSRegister.Data
         {
 
             IQueryable<ProviderProfile> providerQuery = context.ProviderProfile;
-            providerQuery = providerQuery.Where(p => p.ProviderStatus == ProviderStatusEnum.Published &&
+            providerQuery = providerQuery.Where(p => (p.ProviderStatus == ProviderStatusEnum.Published 
+            || p.ProviderStatus == ProviderStatusEnum.PublishedActionRequired) &&
             (string.IsNullOrEmpty(searchText) || p.SearchVector.Matches(searchText)))
             .Include(p => p.Services).ThenInclude(ci => ci.ServiceRoleMapping)
-            .Include(p => p.Services).ThenInclude(ci => ci.ServiceSupSchemeMapping);
+            .Include(p => p.Services).ThenInclude(ci => ci.ServiceSupSchemeMapping)
+            .OrderByDescending(p => p.PublishedTime)
+            .ThenBy(p => p.RegisteredName)
+            .AsSplitQuery(); 
             // Include roles and schemes filters
 
             providerQuery = providerQuery.Include(p => p.Services

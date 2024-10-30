@@ -217,16 +217,9 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    if (loginResponse == Constants.IncorrectPassword)
-                    {
-                        ModelState.AddModelError("Password", Constants.IncorrectLoginDetails);
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("Email", Constants.IncorrectLoginDetails);
-                    }
+                    ModelState.AddModelError("Email", Constants.IncorrectLoginDetails);
 
-                    return View("LoginPage");
+                    return View("LoginPage", loginViewModel);
                 }
             }
             else

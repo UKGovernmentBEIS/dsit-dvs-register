@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-
     [Route("")]
     public class ErrorController : Controller
     {       
