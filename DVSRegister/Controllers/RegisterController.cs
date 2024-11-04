@@ -79,7 +79,7 @@ namespace DVSRegister.Controllers
             ProviderDetailsViewModel providerDetailsViewModel = new()
             {
                 Provider = providerProfileDto,
-                LastUpdated = TempData.Peek("LastUpdated") as string ?? string.Empty
+                LastUpdated = providerProfileDto.PublishedTime?.ToString("dd MMMM yyyy") ?? string.Empty
             };
             return View(providerDetailsViewModel);
         }
