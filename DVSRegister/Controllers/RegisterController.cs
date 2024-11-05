@@ -63,7 +63,6 @@ namespace DVSRegister.Controllers
             if (list!=null && list.Any())
             {
                 registerListViewModel.LastUpdated =  list[0].CreatedTime.ToString("dd MMMM yyyy");
-                TempData["LastUpdated"] =   registerListViewModel.LastUpdated;
             }
 
             SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, FromDetailsPage, RemoveRole, RemoveScheme, SearchAction, SearchProvider);
@@ -79,7 +78,6 @@ namespace DVSRegister.Controllers
             ProviderDetailsViewModel providerDetailsViewModel = new()
             {
                 Provider = providerProfileDto,
-                LastUpdated = providerProfileDto.PublishedTime?.ToString("dd MMMM yyyy") ?? string.Empty
             };
             return View(providerDetailsViewModel);
         }
