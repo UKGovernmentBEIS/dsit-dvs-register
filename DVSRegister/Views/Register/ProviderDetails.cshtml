@@ -16,7 +16,10 @@
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-xl">@Model.Provider.RegisteredName</h1>
                 <h2 class="govuk-heading-m">Trading Name: @Model.Provider.TradingName</h2>
-                <p class="govuk-body govuk-!-margin-bottom-7">  Last updated @Model.LastUpdated </p>
+                <p class="govuk-body govuk-!-margin-bottom-7">
+                    Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime, "dd MMMM yyyy")
+                </p>
+
 
                 <h2 class="govuk-heading-m">Basic information</h2>
                 <hr class="govuk-section-break govuk-section-break--visible">
