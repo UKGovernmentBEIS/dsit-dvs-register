@@ -92,18 +92,7 @@
                                             Status
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @if (item.CertificateReview != null && item.CertificateReview.CertificateReviewStatus == CertificateReviewEnum.Rejected)
-                                            {
-                                                @HtmlExtensions.ToStyledStrongTag(item.CertificateReview.CertificateReviewStatus)
-                                            }
-                                            else if (item.ServiceStatus == ServiceStatusEnum.Received || item.ServiceStatus == ServiceStatusEnum.ReadyToPublish)
-                                            {
-                                                @HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Submitted) <!-- Display "Submitted" if status is Received or ReadyToPublish -->
-                                            }
-                                            else
-                                            {
-                                                @HtmlExtensions.ToStyledStrongTag(item.ServiceStatus) <!-- Display actual ServiceStatus -->
-                                            }
+                                           @HtmlExtensions.GetStyledStatusTag(item.CertificateReview, item.ServiceStatus)
 
                                         </dd>
                                     </div>
