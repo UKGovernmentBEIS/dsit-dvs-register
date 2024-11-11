@@ -27,7 +27,7 @@
                         {
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditCompanyInformation", "CabProvider", new { fromSummaryPage = true },
+                                    @Html.ActionLink("Change", "EditCompanyInformation", "CabProvider", new { providerId = Model.Provider.Id },
                                     new
                                     {
                                         @class = "govuk-link",
@@ -124,7 +124,7 @@
                        
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditPrimaryContact", "CabProvider", new { fromSummaryPage = true },
+                                @Html.ActionLink("Change", "EditPrimaryContact", "CabProvider", new { providerId = Model.Provider.Id },
                                     new
                                     {
                                         @class = "govuk-link",
@@ -180,7 +180,7 @@
                        
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditSecondaryContact", "CabProvider", new { fromSummaryPage = true },
+                                @Html.ActionLink("Change", "EditSecondaryContact", "CabProvider", new { providerId = Model.Provider.Id },
                                     new
                                     {
                                         @class = "govuk-link",
@@ -236,7 +236,7 @@
                        
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditPublicProviderInformation", "CabProvider", new { fromSummaryPage = true },
+                                @Html.ActionLink("Change", "EditPublicProviderInformation", "CabProvider", new { providerId = Model.Provider.Id },
                                     new
                                     {
                                         @class = "govuk-link",
