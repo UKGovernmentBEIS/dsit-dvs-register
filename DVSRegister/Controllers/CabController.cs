@@ -102,8 +102,7 @@ namespace DVSRegister.Controllers
                 ProviderDetailsViewModel providerDetailsViewModel = new()
                 {
                     Provider = providerProfileDto,
-                    IsCompanyInfoEditable = providerProfileDto.Services == null ||providerProfileDto.Services.Count==0 ||
-                    providerProfileDto.Services.All(service => service.ServiceStatus == ServiceStatusEnum.Submitted && service.CertificateReview == null)
+                    IsCompanyInfoEditable =  cabService.CheckCompanyInfoEditable(providerProfileDto)
                 };
 
                 return View(providerDetailsViewModel);
