@@ -1,4 +1,5 @@
-﻿using DVSRegister.CommonUtility.Models;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using Microsoft.AspNetCore.Html;
 using System.ComponentModel;
@@ -56,11 +57,31 @@ namespace DVSRegister.Extensions
             var test = sb.ToString();
             return new HtmlString(sb.ToString());
         }
+
+
+        public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview, ServiceStatusEnum serviceStatus)
+        {
+            // Check for Certificate Review Rejected
+            if (certificateReview != null && certificateReview.CertificateReviewStatus == CertificateReviewEnum.Rejected)
+            {
+                return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
+            }
+
+            // Check for ServiceStatus Received or ReadyToPublish
+            if (serviceStatus == ServiceStatusEnum.Received || serviceStatus == ServiceStatusEnum.ReadyToPublish)
+            {
+                return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Submitted);
+            }
+
+            // Default to displaying the actual ServiceStatus
+            return HtmlExtensions.ToStyledStrongTag(serviceStatus);
+        }
         private static string GetDescription<TEnum>(TEnum value) where TEnum : struct, Enum
         {
             FieldInfo field = value.GetType().GetField(value.ToString());
             DescriptionAttribute attribute = field.GetCustomAttribute<DescriptionAttribute>();
             return attribute == null ? value.ToString() : attribute.Description;
         }
+
     }
 }

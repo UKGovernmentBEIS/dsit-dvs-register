@@ -1,6 +1,7 @@
 ﻿@using DVSRegister.BusinessLogic.Models.CAB;
 @using DVSRegister.Extensions
 @using DVSRegister.CommonUtility.Models;
+@using DVSRegister.CommonUtility.Models.Enums;
 
 @model ProviderProfileDto
 @{
@@ -91,14 +92,7 @@
                                             Status
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @if (item.CertificateReview!= null && item.ServiceStatus == ServiceStatusEnum.Submitted)
-                                            {
-                                                @HtmlExtensions.ToStyledStrongTag(item.CertificateReview.CertificateReviewStatus)
-                                            }
-                                            else
-                                            {
-                                                @HtmlExtensions.ToStyledStrongTag(item.ServiceStatus)
-                                            }
+                                           @HtmlExtensions.GetStyledStatusTag(item.CertificateReview, item.ServiceStatus)
 
                                         </dd>
                                     </div>
@@ -108,8 +102,6 @@
                     }
                    
                 }              
-               
-
             </div>
 
             <div class="govuk-grid-column-two-thirds">
