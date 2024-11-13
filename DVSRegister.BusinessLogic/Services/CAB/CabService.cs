@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CAB;
@@ -35,49 +34,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         {
             var list = await cabRepository.GetIdentityProfiles();
             return automapper.Map<List<IdentityProfileDto>>(list);
-        }
-
-
-
-        public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto)
-        {
-            ProviderProfile providerProfile = new();
-            automapper.Map(providerProfileDto, providerProfile);
-            GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfile);
-            return genericResponse;
-        }
-
-        public async Task<GenericResponse> UpdateCompanyInfo(ProviderProfileDto providerProfileDto)
-        {
-            ProviderProfile providerProfile = new();
-            automapper.Map(providerProfileDto, providerProfile);
-            GenericResponse genericResponse = await cabRepository.UpdateCompanyInfo(providerProfile);
-            return genericResponse;
-        }
-
-        public async Task<GenericResponse> UpdatePrimaryContact(ProviderProfileDto providerProfileDto)
-        {
-            ProviderProfile providerProfile = new();
-            automapper.Map(providerProfileDto, providerProfile);
-            GenericResponse genericResponse = await cabRepository.UpdatePrimaryContact(providerProfile);
-            return genericResponse;
-        }
-
-        public async Task<GenericResponse> UpdateSecondaryContact(ProviderProfileDto providerProfileDto)
-        {
-            ProviderProfile providerProfile = new();
-            automapper.Map(providerProfileDto, providerProfile);
-            GenericResponse genericResponse = await cabRepository.UpdateSecondaryContact(providerProfile);
-            return genericResponse;
-        }
-
-        public async Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfileDto providerProfileDto)
-        {
-            ProviderProfile providerProfile = new();
-            automapper.Map(providerProfileDto, providerProfile);
-            GenericResponse genericResponse = await cabRepository.UpdatePublicProviderInformation(providerProfile);
-            return genericResponse;
-        }
+        }      
 
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto)
         {
@@ -86,15 +43,6 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             providerProfileDto.Services.All(service => service.CertificateReview == null
             || service.CertificateReview.CertificateReviewStatus != CertificateReviewEnum.Approved); //none of the services has an Approved status;
         }
-
-        public async Task<GenericResponse> SaveService(ServiceDto serviceDto)
-        {
-            Service service = new Service();
-            automapper.Map(serviceDto, service);
-            GenericResponse genericResponse = await cabRepository.SaveService(service);
-            return genericResponse;
-        }
-
         public async Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId=0)
         {
             if(providerId >0) 
@@ -138,5 +86,53 @@ namespace DVSRegister.BusinessLogic.Services.CAB
 
         }
 
+        #region Save/ update
+        public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
+        {
+            ProviderProfile providerProfile = new();
+            automapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfile, loggedInUserEmail);
+            return genericResponse;
+        }
+        public async Task<GenericResponse> SaveService(ServiceDto serviceDto, string loggedInUserEmail)
+        {
+            Service service = new Service();
+            automapper.Map(serviceDto, service);
+            GenericResponse genericResponse = await cabRepository.SaveService(service, loggedInUserEmail);
+            return genericResponse;
+        }
+
+        public async Task<GenericResponse> UpdateCompanyInfo(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
+        {
+            ProviderProfile providerProfile = new();
+            automapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await cabRepository.UpdateCompanyInfo(providerProfile, loggedInUserEmail);
+            return genericResponse;
+        }
+
+        public async Task<GenericResponse> UpdatePrimaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
+        {
+            ProviderProfile providerProfile = new();
+            automapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await cabRepository.UpdatePrimaryContact(providerProfile, loggedInUserEmail);
+            return genericResponse;
+        }
+
+        public async Task<GenericResponse> UpdateSecondaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
+        {
+            ProviderProfile providerProfile = new();
+            automapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await cabRepository.UpdateSecondaryContact(providerProfile, loggedInUserEmail);
+            return genericResponse;
+        }
+
+        public async Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
+        {
+            ProviderProfile providerProfile = new();
+            automapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await cabRepository.UpdatePublicProviderInformation(providerProfile, loggedInUserEmail);
+            return genericResponse;
+        }
+        #endregion
     }
 }

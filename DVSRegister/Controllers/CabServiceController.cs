@@ -22,7 +22,7 @@ namespace DVSRegister.Controllers
         private readonly IBucketService bucketService;
         private readonly IUserService userService;
         private readonly IEmailSender emailSender;
-
+        private string UserEmail => HttpContext.Session.Get<string>("Email")??string.Empty;
         public CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IEmailSender emailSender)
         {
             this.cabService = cabService;
@@ -658,7 +658,7 @@ namespace DVSRegister.Controllers
             ServiceDto serviceDto = MapViewModelToDto(summaryViewModel);
             if(serviceDto!=null)
             {
-                GenericResponse genericResponse = await cabService.SaveService(serviceDto);
+                GenericResponse genericResponse = await cabService.SaveService(serviceDto, UserEmail);
                 if (genericResponse.Success)
                 {
                     return RedirectToAction("InformationSubmitted");
