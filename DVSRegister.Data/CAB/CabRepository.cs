@@ -178,6 +178,7 @@ namespace DVSRegister.Data.CAB
                 int nextServiceNumber = serviceNumbers.Any() ? serviceNumbers.Max() + 1 : 1;
                 service.ServiceNumber = nextServiceNumber;
                 service.CreatedTime = DateTime.UtcNow;
+                AttachListToDbContext(service);
                 var entity = await context.Service.AddAsync(service);
                 await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddService, loggedInUserEmail);
                 genericResponse.InstanceId = entity.Entity.Id;
@@ -193,6 +194,9 @@ namespace DVSRegister.Data.CAB
             }
             return genericResponse;
         }
+
+     
+
         public async Task<GenericResponse> UpdateCompanyInfo(ProviderProfile providerProfile, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();
@@ -324,6 +328,35 @@ namespace DVSRegister.Data.CAB
                 logger.LogError(ex, "Error in UpdatePublicProviderInformation");
             }
             return genericResponse;
+        }
+        #endregion
+
+
+        #region private methods
+
+        // For event logs, need to attach each item to context
+        private void AttachListToDbContext(Service service)
+        {
+            foreach (var mapping in service.ServiceRoleMapping)
+            {
+                context.Entry(mapping).State = EntityState.Added;
+            }
+            foreach (var mapping in service.ServiceIdentityProfileMapping)
+            {
+                context.Entry(mapping).State = EntityState.Added;
+            }
+            foreach (var mapping in service.ServiceIdentityProfileMapping)
+            {
+                context.Entry(mapping).State = EntityState.Added;
+            }
+            foreach (var mapping in service.ServiceQualityLevelMapping)
+            {
+                context.Entry(mapping).State = EntityState.Added;
+            }
+            foreach (var mapping in service.ServiceSupSchemeMapping)
+            {
+                context.Entry(mapping).State = EntityState.Added;
+            }
         }
         #endregion
     }

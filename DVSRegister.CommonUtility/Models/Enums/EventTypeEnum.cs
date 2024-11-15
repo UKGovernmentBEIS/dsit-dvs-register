@@ -3,17 +3,24 @@
     public enum EventTypeEnum
     {
         NA = 0,
-        CertificateReview = 1,       
-        OpeningLoop = 2,       
-        PICheck = 3,      
-        ClosingTheLoop = 4,        
-        RegisterManagement = 5,
-        AddProvider = 6,
-        AddService = 7,
-        CompanyInfoUpdate = 8,
-        PrimaryContactUpdate = 9,
-        SecondaryContactUpdate = 10,
-        PublicContactUpdate = 11,
-        Adduser = 12
+        Adduser = 1,
+        AddProvider = 2,
+        AddService = 3,
+        CompanyInfoUpdate = 4,
+        PrimaryContactUpdate = 5,
+        SecondaryContactUpdate = 6,
+        PublicContactUpdate = 7,
+        CertificateReview = 8,
+        RestoreCertificateReview = 9,
+        AddOpeningLoopToken = 10,
+        OpeningLoop = 11,
+        RemoveOpeningLoopToken = 12,
+        PICheck = 13,
+        PICheckLog = 14,
+        TrustmarkNumberGeneration = 15,
+        AddClosingLoopToken = 16,
+        ClosingTheLoop = 17,
+        RemoveClosingLoopToken = 18,
+        RegisterManagement = 19
     }
 }
