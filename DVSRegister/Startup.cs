@@ -7,6 +7,7 @@ using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
+using DVSRegister.CommonUtility.JWT;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Cookies;
 using DVSRegister.Data;
@@ -65,6 +66,7 @@ namespace DVSRegister
             ConfigureCookieService(services);
             ConfigureS3Client(services);
             ConfigureS3FileWriter(services);
+            ConfigureJwtServices(services);
         }
 
        
@@ -98,6 +100,8 @@ namespace DVSRegister
             services.AddScoped<IBucketService, BucketService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IConsentRepository, ConsentRepository>();
+            services.AddScoped<IConsentService, ConsentService>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));
@@ -180,5 +184,13 @@ namespace DVSRegister
             services.AddSingleton<CookieService>();
             services.AddMvc();
         }
+
+        private void ConfigureJwtServices(IServiceCollection services)
+        {
+            services.AddScoped<IJwtService, JwtService>();
+            services.Configure<JwtSettings>(
+                configuration.GetSection(JwtSettings.ConfigSection));
+        }
+
     }
 }

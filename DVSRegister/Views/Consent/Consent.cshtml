@@ -1,0 +1,91 @@
+﻿@model ConsentViewModel
+@{
+    ViewData["Title"] = "You are about to agree to publish your service on the register";
+    Layout = "~/Views/Shared/_LayoutConsent.cshtml";
+}
+
+@{
+    ViewData["HidePublishStatus"] = true;// setting variable to hide status field in partial view
+
+}
+@using (Html.BeginForm("GiveConsent", "Consent", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.token)
+   
+    <div class="govuk-width-container">
+        @Html.ActionLink("Back", "ProviderReview", "ProviderReview", null, new { @class = "govuk-back-link" })
+        <main id="main-content" class="govuk-main-wrapper" role="main">
+            <div class="govuk-grid-row">
+
+                <div class="govuk-grid-column-full">
+                    @if (ViewData.ModelState.ErrorCount >0)
+                    {
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
+                    }
+                    <h1 class="govuk-heading-xl">You are about to agree to publish your service on the register</h1>
+                    <p class="govuk-body">To agree to publish your service on the register, please select ‘I agree to publish these details on the register’ and then select ‘Confirm’ to continue.</p>
+                    <h2 class="govuk-heading-m">Basic information</h2>
+                    <dl class="govuk-summary-list govuk-!-margin-bottom-8">
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Public contact email
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @Model.Service.Provider.PublicContactEmail
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Public telephone number
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @Model.Service.Provider.ProviderTelephoneNumber
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Website address
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @Model.Service.Provider.ProviderWebsiteAddress
+                            </dd>
+                        </div>
+                    </dl>
+
+
+
+                    <h2 class="govuk-heading-m">@Model.Service.ServiceName </h2>
+
+                    @await Html.PartialAsync("~/Views/Consent/PartialViews/_ServiceDetailsView.cshtml", Model.Service)
+
+                    <hr class="govuk-section-break govuk-section-break--m">              
+
+
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_CheckBoxView.cshtml", new ConsentCheckBoxViewModel
+                   {
+                        PropertyName = "HasConsent",
+                        Value = Model.HasConsent,
+                        HasError = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0,
+                        ErrorMessage = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0 ?
+                        Html.ViewData.ModelState["HasConsent"].Errors[0].ErrorMessage : string.Empty,
+                        Label = "I agree to publish these details on the register"
+                     
+                   })
+                    <div class="govuk-button-group" id="submitvalidation">
+                        <button type="submit" class="govuk-button" data-module="govuk-button" name="confirm" value="approve">
+                            Confirm
+                        </button>
+                    </div>
+                    <p class="govuk-body">Once you agree for the details to be published, it may take up to 5 working days for your service to appear on the register.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+}
+
+
