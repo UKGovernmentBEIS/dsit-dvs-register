@@ -1,4 +1,5 @@
-﻿using DVSRegister.Data.Entities;
+﻿using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DVSRegister.Data.Repositories
@@ -24,7 +25,7 @@ namespace DVSRegister.Data.Repositories
                 {
                     user.CreatedTime = DateTime.UtcNow;
                     var entity = await context.CabUser.AddAsync(user);
-                    context.SaveChanges();
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddService, user.CabEmail);
                     transaction.Commit();                    
                     return user;
 

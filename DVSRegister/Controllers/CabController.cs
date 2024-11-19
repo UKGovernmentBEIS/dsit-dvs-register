@@ -2,7 +2,6 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB.Provider;
@@ -19,7 +18,7 @@ namespace DVSRegister.Controllers
     
         private readonly ICabService cabService;      
         private readonly IUserService userService;
-
+        private string UserEmail => HttpContext.Session.Get<string>("Email")??string.Empty;
         public CabController(ICabService cabService, IUserService userService)
         {           
             this.cabService = cabService;          
@@ -30,13 +29,13 @@ namespace DVSRegister.Controllers
         [HttpGet("home")]
         public async Task<IActionResult> LandingPage()
         {
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty; 
+           
             string cab = string.Empty;
             var identity = HttpContext?.User.Identity as ClaimsIdentity;
             var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
             if (profileClaim != null)
                 cab = profileClaim.Value;
-            CabUserDto cabUser = await userService.SaveUser(email,cab);
+            CabUserDto cabUser = await userService.SaveUser(UserEmail,cab);
             HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
             return cabUser.CabId>0 ? View() : RedirectToAction("HandleException", "Error");
            

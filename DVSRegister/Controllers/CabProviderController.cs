@@ -19,7 +19,7 @@ namespace DVSRegister.Controllers
 
         private readonly ICabService cabService;
         private readonly IUserService userService;
-
+        private string UserEmail => HttpContext.Session.Get<string>("Email")??string.Empty;
 
         public CabProviderController(ICabService cabService, IUserService userService)
         {
@@ -468,7 +468,7 @@ namespace DVSRegister.Controllers
             ProviderProfileDto providerDto = MapViewModelToDto(summaryViewModel,cabUserDto.Id);
             if(providerDto !=null)
             {
-                GenericResponse genericResponse = await cabService.SaveProviderProfile(providerDto);
+                GenericResponse genericResponse = await cabService.SaveProviderProfile(providerDto, UserEmail);
                 if (genericResponse.Success)
                 {
                     return RedirectToAction("InformationSubmitted");
@@ -567,7 +567,7 @@ namespace DVSRegister.Controllers
                     ParentCompanyLocation = companyViewModel.ParentCompanyLocation
                 };
 
-                GenericResponse genericResponse = await cabService.UpdateCompanyInfo(providerProfileDto);
+                GenericResponse genericResponse = await cabService.UpdateCompanyInfo(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
                     return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
@@ -624,7 +624,7 @@ namespace DVSRegister.Controllers
                     Id = primaryContactViewModel.ProviderId
                 };
 
-                GenericResponse genericResponse = await cabService.UpdatePrimaryContact(providerProfileDto);
+                GenericResponse genericResponse = await cabService.UpdatePrimaryContact(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
                     return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
@@ -680,7 +680,7 @@ namespace DVSRegister.Controllers
                     SecondaryContactTelephoneNumber = secondaryContactViewModel.SecondaryContactTelephoneNumber,
                     Id = secondaryContactViewModel.ProviderId
                 };
-                GenericResponse genericResponse = await cabService.UpdateSecondaryContact(providerProfileDto);
+                GenericResponse genericResponse = await cabService.UpdateSecondaryContact(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
                     return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
@@ -724,15 +724,18 @@ namespace DVSRegister.Controllers
         [HttpPost("edit-public-provider-information")]
         public async Task<IActionResult> UpdatePublicProviderInformation(PublicContactViewModel publicContactViewModel)
         {
-            ProviderProfileDto providerProfileDto = HttpContext?.Session.Get<ProviderProfileDto>("ProviderProfile")??new();
+
             if (ModelState.IsValid)
             {
-                providerProfileDto.PublicContactEmail = publicContactViewModel.PublicContactEmail;
-                providerProfileDto.ProviderTelephoneNumber = publicContactViewModel.ProviderTelephoneNumber;
-                providerProfileDto.ProviderWebsiteAddress =publicContactViewModel.ProviderWebsiteAddress;
-                providerProfileDto.Id = publicContactViewModel.ProviderId;
-
-                GenericResponse genericResponse = await cabService.UpdatePublicProviderInformation(providerProfileDto);
+                ProviderProfileDto providerProfileDto = new()
+                {
+                    PublicContactEmail = publicContactViewModel.PublicContactEmail,
+                    ProviderTelephoneNumber = publicContactViewModel.ProviderTelephoneNumber,
+                    ProviderWebsiteAddress = publicContactViewModel.ProviderWebsiteAddress,
+                    Id = publicContactViewModel.ProviderId
+                };
+            
+                GenericResponse genericResponse = await cabService.UpdatePublicProviderInformation(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
                     return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
