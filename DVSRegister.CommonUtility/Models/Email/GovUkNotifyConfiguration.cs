@@ -17,5 +17,8 @@
         public CabInformationSubmittedTemplate CabInformationSubmittedTemplate { get; set; }
         public CabSignUpActivationTemplate CabSignUpActivationTemplate { get; set; }  
         public CabSubmittedDSITEmailTemplate CabSubmittedDSITEmailTemplate { get; set; }
+
+        public AgreementToPublishTemplate AgreementToPublishTemplate { get; set; }
+        public AgreementToPublishToDSITTemplate AgreementToPublishToDSITTemplate { get; set; }
     }
 }

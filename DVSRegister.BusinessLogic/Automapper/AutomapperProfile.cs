@@ -69,6 +69,16 @@ namespace DVSRegister.BusinessLogic
            .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
            .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview));
+
+            CreateMap<ProceedApplicationConsentToken, ProceedApplicationConsentTokenDto>()
+           .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
+            CreateMap<ProceedApplicationConsentTokenDto, ProceedApplicationConsentToken>()
+            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
+
+            CreateMap<ProceedPublishConsentToken, ProceedPublishConsentTokenDto>()
+            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
+            CreateMap<ProceedPublishConsentTokenDto, ProceedPublishConsentToken>()
+            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
         }
     }
 }

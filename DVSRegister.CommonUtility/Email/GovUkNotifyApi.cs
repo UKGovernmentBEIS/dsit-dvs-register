@@ -173,5 +173,45 @@ namespace DVSRegister.CommonUtility.Email
             };
             return await SendEmail(emailModel);
         }
+
+        #region closing the loop
+        public async Task<bool> SendAgreementToPublishToDIP(string companyName, string serviceName, string recipientName, string emailAddress)
+        {
+            var template = govUkNotifyConfig.AgreementToPublishTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+
+                { template.ServiceName,  serviceName},
+                { template.CompanyName,  companyName},
+                { template.RecipientName,  recipientName},
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> SendAgreementToPublishToDSIT(string companyName, string serviceName)
+        {
+            var template = govUkNotifyConfig.AgreementToPublishToDSITTemplate;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.CompanyName,  companyName},
+                { template.ServiceName,  serviceName}
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+        #endregion
     }
 }

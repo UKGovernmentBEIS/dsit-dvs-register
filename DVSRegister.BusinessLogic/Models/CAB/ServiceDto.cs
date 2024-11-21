@@ -1,5 +1,6 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Entities;
+using System.Text.Json.Serialization;
 
 namespace DVSRegister.BusinessLogic.Models.CAB
 {
@@ -33,5 +34,10 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
         public CertificateReviewDto CertificateReview { get; set; }
+        [JsonIgnore]
+        public ProceedApplicationConsentTokenDto ProceedApplicationConsentToken { get; set; }
+
+        [JsonIgnore]
+        public ProceedPublishConsentTokenDto ProceedPublishConsentToken { get; set; }
     }
 }
