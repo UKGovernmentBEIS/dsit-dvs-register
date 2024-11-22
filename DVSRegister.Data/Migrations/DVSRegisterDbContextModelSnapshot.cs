@@ -48,37 +48,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 11, 21, 16, 23, 37, 185, DateTimeKind.Utc).AddTicks(3429)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2100)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 11, 21, 16, 23, 37, 185, DateTimeKind.Utc).AddTicks(3432)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2110)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 11, 21, 16, 23, 37, 185, DateTimeKind.Utc).AddTicks(3433)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2110)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 11, 21, 16, 23, 37, 185, DateTimeKind.Utc).AddTicks(3434)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2110)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 11, 21, 16, 23, 37, 185, DateTimeKind.Utc).AddTicks(3435)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2110)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 11, 21, 16, 23, 37, 185, DateTimeKind.Utc).AddTicks(3436)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2110)
                         });
                 });
 
@@ -710,34 +710,34 @@ namespace DVSRegister.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsBannedPoliticalApproved")
+                    b.Property<bool?>("IsBannedPoliticalApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsCompanyHouseNumberApproved")
+                    b.Property<bool?>("IsCompanyHouseNumberApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsDirectorshipsAndRelationApproved")
+                    b.Property<bool?>("IsDirectorshipsAndRelationApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsDirectorshipsApproved")
+                    b.Property<bool?>("IsDirectorshipsApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsECCheckApproved")
+                    b.Property<bool?>("IsECCheckApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsProvidersWebpageApproved")
+                    b.Property<bool?>("IsProvidersWebpageApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsSanctionListApproved")
+                    b.Property<bool?>("IsSanctionListApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsTARICApproved")
+                    b.Property<bool?>("IsTARICApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsTradingAddressApproved")
+                    b.Property<bool?>("IsTradingAddressApproved")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsUNFCApproved")
+                    b.Property<bool?>("IsUNFCApproved")
                         .HasColumnType("boolean");
 
                     b.Property<string>("PrimaryCheckComment")
