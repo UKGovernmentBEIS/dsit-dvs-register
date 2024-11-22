@@ -11,6 +11,7 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl">Updates : Register of digital identity and attribute services</h1>
+                @Html.Partial("~/Views/Register/PartialViews/_NotificationBanner.cshtml")
                 @foreach (var item in Model.RegisterPublishLog)
                 {
                     <h2 class="govuk-heading-m">@item.CreatedTime.ToString("dd MMMM yyyy")</h2>
