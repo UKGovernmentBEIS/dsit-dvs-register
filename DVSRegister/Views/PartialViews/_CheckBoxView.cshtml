@@ -1,0 +1,34 @@
+﻿@model DVSRegister.Models.ConsentCheckBoxViewModel
+
+<div class="govuk-form-group @(Model.HasError ? "govuk-form-group--error" : "")">
+    @if (Model.HasError)
+    {
+        <fieldset class="govuk-fieldset" aria-describedby="@(Model.PropertyName.ToLower())-error">
+            <p id="@(Model.PropertyName.ToLower())-error" class="govuk-error-message">
+                <span class="govuk-visually-hidden">Error:</span> @Model.ErrorMessage
+            </p>
+            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                    @Html.CheckBox(Model.PropertyName, null, new { @id = Model.PropertyName.ToLower(), @class = "govuk-checkboxes__input" })
+
+                    <label class="govuk-label govuk-checkboxes__label" for="@Model.PropertyName.ToLower()">
+                        @Model.Label
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+    }
+    else
+    {
+        <fieldset class="govuk-fieldset">
+            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                    @Html.CheckBox(Model.PropertyName, null, new { @id = Model.PropertyName.ToLower(), @class = "govuk-checkboxes__input" })
+                    <label class="govuk-label govuk-checkboxes__label" for="@Model.PropertyName.ToLower()">
+                        @Model.Label
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+    }
+</div>
