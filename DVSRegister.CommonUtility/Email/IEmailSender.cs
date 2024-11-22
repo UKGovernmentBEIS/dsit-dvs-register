@@ -12,5 +12,9 @@ namespace DVSRegister.CommonUtility.Email
         public Task<bool> SendEmailCabInformationSubmitted(string emailAddress, string recipientName);
         public Task<bool> SendCertificateInfoSubmittedToDSIT();
 
+        //closing the loop
+        public Task<bool> SendAgreementToPublishToDSIT(string companyName, string serviceName);
+        public Task<bool> SendAgreementToPublishToDIP(string companyName, string serviceName, string recipientName, string emailAddress);
+
     }
 }
