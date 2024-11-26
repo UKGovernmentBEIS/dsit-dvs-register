@@ -15,6 +15,7 @@
 
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-xl">@Model.Provider.RegisteredName</h1>
+                @Html.Partial("~/Views/Register/PartialViews/_NotificationBanner.cshtml")
                 <h2 class="govuk-heading-m">Trading Name: @Model.Provider.TradingName</h2>
                 <p class="govuk-body govuk-!-margin-bottom-7">
                     Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime, "dd MMMM yyyy")
