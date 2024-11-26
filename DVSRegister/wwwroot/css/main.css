@@ -7909,6 +7909,10 @@ x:-moz-any-link {
   top: 2px;
 }
 
+.dsit-notification-banner-content > * {
+  max-width: none;
+}
+
 .dsit-secondary-text-colour {
   color: #505a5f;
 }
