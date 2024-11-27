@@ -130,18 +130,18 @@ namespace DVSRegister.Controllers
                     ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByConsentToken(tokenDetails.Token, tokenDetails.TokenId);
                     if(serviceDto== null || serviceDto?.ServiceStatus == ServiceStatusEnum.ReadyToPublish)
                     {
-                        return RedirectToAction(Constants.CommonErrorPath);
+                        return RedirectToAction("ConsentErrorAlreadyAgreed");
                     }
                     consentViewModel.Service = serviceDto;
                 }
                 else
                 {
-                    return RedirectToAction(Constants.CommonErrorPath);
+                    return RedirectToAction("ConsentErrorURLExpired");
                 }
             }
             else
             {
-                return RedirectToAction(Constants.CommonErrorPath);
+                return RedirectToAction("ConsentError");
             }
                
            
@@ -171,7 +171,7 @@ namespace DVSRegister.Controllers
                         }
                         else
                         {
-                            return RedirectToAction(Constants.CommonErrorPath);
+                            return RedirectToAction("ConsentError");
                         } 
                     }
                     else
@@ -184,12 +184,12 @@ namespace DVSRegister.Controllers
                 else
                 {
                     await consentService.RemoveConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
-                    return RedirectToAction(Constants.CommonErrorPath);
+                    return RedirectToAction("ConsentErrorURLExpired");
                 }
             }
             else
             {
-                return RedirectToAction(Constants.CommonErrorPath);
+                return RedirectToAction("ConsentError");
             }         
             
         }
@@ -199,9 +199,29 @@ namespace DVSRegister.Controllers
         {
             return View();
         }
+
+        [HttpGet("consent-error-already-agreed")]
+        public ActionResult ConsentErrorAlreadyAgreed()
+        {
+            return View();
+        }
+
+        [HttpGet("consent-error")]
+        public ActionResult ConsentErrorError()
+        {
+            return View();
+        }
+
+        [HttpGet("consent-error-url-expired")]
+        public ActionResult ConsentErrorURLExpired()
+        {
+            return View();
+        }
+
+
         #endregion
 
-    
+
 
 
     }
