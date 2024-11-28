@@ -103,31 +103,42 @@
                         }
                        
 
-                        @if (service.ServiceQualityLevelMapping!=null)
-                        {
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    GPG44 quality of authenticator
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG44 quality of authenticator
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (service.ServiceQualityLevelMapping != null && service.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                {
+                                    foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                                     {
                                         <div>@item.QualityLevel.Level</div>
                                     }
-                                </dd>
-                            </div>
+                                }
+                                else
+                                {
+                                    <div>Not certified against GPG44</div>
+                                }
+                            </dd>
+                        </div>
 
-
-
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    GPG44 level of protection
-                                </dt>
-                                <dd class="govuk-summary-list__value">
+                        
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG44 level of protection
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (service.ServiceQualityLevelMapping != null && service.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                {
                                     @foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
                                     {
                                         <div>@item.QualityLevel.Level</div>
                                     }
+                                }
+                                else
+                                {
+                                    <div>Not certified against GPG44</div>
+                                }
                                 </dd>
                             </div>
                         }
@@ -150,7 +161,6 @@
                                 }
                             </dd>
                         </div>
-
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 Certificate of conformity's date of expiry
