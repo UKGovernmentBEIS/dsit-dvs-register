@@ -8,8 +8,8 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "Register", "Register", new { FromDetailsPage  = true}, new { @class = "govuk-back-link" })
-   
+    @Html.ActionLink("Back", "Register", "Register", new { FromDetailsPage = true }, new { @class = "govuk-back-link" })
+
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
 
@@ -54,7 +54,6 @@
 
                 @foreach (var service in Model.Provider.Services)
                 {
-                    
                     <h2 class="govuk-heading-m">@service.ServiceName</h2>
                     <hr class="govuk-section-break govuk-section-break--visible">
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
@@ -80,14 +79,14 @@
                                 Roles certified against
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                 @foreach (var item in service.ServiceRoleMapping)
+                                @foreach (var item in service.ServiceRoleMapping)
                                 {
                                     <div>@Enum.GetName(typeof(RoleEnum), item.RoleId)</div>
                                 }
                             </dd>
                         </div>
 
-                        @if (service.ServiceIdentityProfileMapping!=null)
+                        @if (service.ServiceIdentityProfileMapping != null)
                         {
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
@@ -101,36 +100,47 @@
                                 </dd>
                             </div>
                         }
-                       
 
-                        @if (service.ServiceQualityLevelMapping!=null)
-                        {
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    GPG44 quality of authenticator
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG44 quality of authenticator
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (service.ServiceQualityLevelMapping != null && service.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                {
+                                    foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                                     {
                                         <div>@item.QualityLevel.Level</div>
                                     }
-                                </dd>
-                            </div>
+                                }
+                                else
+                                {
+                                    <div>Not certified against GPG44</div>
+                                }
+                            </dd>
+                        </div>
 
 
-
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    GPG44 level of protection
-                                </dt>
-                                <dd class="govuk-summary-list__value">
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG44 level of protection
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (service.ServiceQualityLevelMapping != null && service.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                {
                                     @foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
                                     {
                                         <div>@item.QualityLevel.Level</div>
                                     }
-                                </dd>
-                            </div>
-                        }
+                                }
+                                else
+                                {
+                                    <div>Not certified against GPG44</div>
+                                }
+                            </dd>
+                        </div>
+
 
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
@@ -168,9 +178,15 @@
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-7">
                 <h3 class="govuk-heading-m">Explore the topic</h3>
                 <ul class="govuk-list">
-                    <li><a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role type</a></li>
-                    <li><a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a></li>
-                    <li><a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary schemes</a></li>
+                    <li>
+                        <a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role type</a>
+                    </li>
+                    <li>
+                        <a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a>
+                    </li>
+                    <li>
+                        <a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary schemes</a>
+                    </li>
                 </ul>
 
             </div>
@@ -178,5 +194,3 @@
     </main>
 
 </div>
-
-
