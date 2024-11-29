@@ -43,9 +43,13 @@ namespace DVSRegister.BusinessLogic.Services
                 return null ;
             }
         }
-        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail)
+        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string companyName, string serviceName)
         {
             GenericResponse genericResponse = await consentRepository.UpdateServiceStatus(serviceId, ServiceStatusEnum.Received, providerEmail);
+            if(genericResponse.Success) 
+            {
+                await emailSender.SendAgreementToProceedApplicationToDSIT(companyName, serviceName);
+            }
             return genericResponse;
         }
 

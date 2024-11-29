@@ -20,5 +20,6 @@
 
         public AgreementToPublishTemplate AgreementToPublishTemplate { get; set; }
         public AgreementToPublishToDSITTemplate AgreementToPublishToDSITTemplate { get; set; }
+        public AgreementToProceedApplicationToDSIT AgreementToProceedApplicationToDSIT { get; set; }
     }
 }

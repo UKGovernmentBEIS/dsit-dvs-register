@@ -70,7 +70,7 @@ namespace DVSRegister.Controllers
 
                     if (ModelState.IsValid)
                     {
-                        GenericResponse genericResponse = await consentService.UpdateServiceStatus(serviceDto.Id, email);
+                        GenericResponse genericResponse = await consentService.UpdateServiceStatus(serviceDto.Id, email, serviceDto?.Provider?.RegisteredName??string.Empty, serviceDto?.ServiceName??string.Empty);
                         if (genericResponse.Success)
                         {
                             await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
