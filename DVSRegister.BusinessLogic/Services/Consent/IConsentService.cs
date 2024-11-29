@@ -8,7 +8,7 @@ namespace DVSRegister.BusinessLogic.Services
         //opening loop
         public Task<bool> RemoveConsentToken(string token, string tokenId, string loggedInUserEmail);
         public Task<ServiceDto?> GetProviderAndCertificateDetailsByToken(string token, string tokenId);
-        public Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail);
+        public Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string companyName, string serviceName);
 
 
         //closing loop
