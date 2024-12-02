@@ -97,21 +97,24 @@
         </div>
     }
 
-    @if (Model.ServiceIdentityProfileMapping != null)
-    {
-        <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-                GPG45 identity profiles
-            </dt>
-            <dd class="govuk-summary-list__value">
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            GPG45 identity profiles
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @if (Model.ServiceIdentityProfileMapping != null && Model.ServiceIdentityProfileMapping.Any())
+            {
                 @foreach (var item in Model.ServiceIdentityProfileMapping)
                 {
                     <div>@item.IdentityProfile.IdentityProfileName</div>
                 }
-            </dd>
-        </div>
-
-    }
+            }
+            else
+            {
+                <div>Not certified against GPG45</div>
+            }
+        </dd>
+    </div>
 
 
     @if (Model.HasSupplementarySchemes && Model.ServiceSupSchemeMapping != null)
