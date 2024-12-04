@@ -1,3 +1,4 @@
-﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+﻿@using DVSRegister.Middleware
+<script nonce="@Context.GetScriptNonce()" src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script nonce="@Context.GetScriptNonce()"  src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
