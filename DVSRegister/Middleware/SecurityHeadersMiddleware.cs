@@ -1,4 +1,6 @@
-﻿namespace DVSRegister.Middleware
+﻿using Microsoft.AspNetCore.Html;
+
+namespace DVSRegister.Middleware
 {
     public class SecurityHeadersMiddleware
     {
@@ -13,23 +15,30 @@
         {
             if (!context.Response.HasStarted)
             {
-              
-                context.Response.Headers["X-Frame-Options"] = "DENY"; 
+                var nonce = Guid.NewGuid().ToString("N");
+                context.Items["Nonce"] = nonce;
+
+                context.Response.Headers["X-Frame-Options"] = "DENY";
                 context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private";
                 context.Response.Headers["Pragma"] = "no-cache";
                 context.Response.Headers["Expires"] = "-1";
                 context.Response.Headers["Content-Security-Policy"] =
-                "script-src 'unsafe-inline' 'self' " + sources +
                 "object-src 'none'; " +
-                "connect-src 'self' " + sources +
-                "img-src 'self' " + sources +
-                "style-src 'self'; " +
-                "base-uri 'self'; " +
-                "font-src 'self'; " +
-                "form-action 'self';";
+                "base-uri 'none';" +
+                $"script-src 'nonce-{nonce}' 'unsafe-inline' 'strict-dynamic' https:; ";
+
             }
-           
+
             await _next(context);
+        }
+
+
+    }
+    public static class SecurityContextExtensions
+    {
+        public static HtmlString GetScriptNonce(this HttpContext context)
+        {
+            return new HtmlString(Convert.ToString(context.Items["Nonce"]));
         }
     }
 }
