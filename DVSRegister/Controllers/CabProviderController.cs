@@ -31,7 +31,14 @@ namespace DVSRegister.Controllers
         public IActionResult BeforeYouStart()
         {            
             return View();
-        }     
+        } 
+        
+        public record FieldComparisonConfig(
+            string PrimaryFieldName,
+            string SecondaryFieldName,
+            string PrimaryErrorMessage,
+            string SecondaryErrorMessage
+        );
 
 
         #region Registered Name
@@ -319,11 +326,37 @@ namespace DVSRegister.Controllers
         [HttpPost("primary-contact-information")]
         public IActionResult SavePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
         {
-            bool fromSummaryPage = primaryContactViewModel.FromSummaryPage;        
+            bool fromSummaryPage = primaryContactViewModel.FromSummaryPage;
             primaryContactViewModel.FromSummaryPage = false;
+
+            ProfileSummaryViewModel profileSummary = GetProfileSummary();
+
+            ValidateDuplicateFields(
+                primaryValue: primaryContactViewModel.PrimaryContactEmail,
+                secondaryValue: profileSummary.SecondaryContact?.SecondaryContactEmail,
+                isSecondaryBeingValidated: false,
+                config: new FieldComparisonConfig(
+                    PrimaryFieldName: "PrimaryContactEmail",
+                    SecondaryFieldName: "SecondaryContactEmail",
+                    PrimaryErrorMessage: "The primary email address cannot be the same as the secondary email address",
+                    SecondaryErrorMessage: "The secondary email address cannot be the same as the primary email address"
+                )
+            );
+            
+            ValidateDuplicateFields(
+                primaryValue: primaryContactViewModel.PrimaryContactTelephoneNumber,
+                secondaryValue: profileSummary.SecondaryContact?.SecondaryContactTelephoneNumber,
+                isSecondaryBeingValidated: false,
+                config: new FieldComparisonConfig(
+                    PrimaryFieldName: "PrimaryContactTelephoneNumber",
+                    SecondaryFieldName: "SecondaryContactTelephoneNumber",
+                    PrimaryErrorMessage: "Telephone number of primary contact cannot be the same as secondary contact",
+                    SecondaryErrorMessage: "Telephone number of secondary contact cannot be the same as primary contact"
+                )
+            );
+            
             if (ModelState.IsValid)
             {
-                ProfileSummaryViewModel profileSummary = GetProfileSummary();             
                 profileSummary.PrimaryContact = primaryContactViewModel;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
                 return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("SecondaryContact");
@@ -350,9 +383,35 @@ namespace DVSRegister.Controllers
         {
             bool fromSummaryPage = secondaryContactViewModel.FromSummaryPage;
             secondaryContactViewModel.FromSummaryPage = false;
+
+            ProfileSummaryViewModel profileSummary = GetProfileSummary();
+            
+            ValidateDuplicateFields(
+                primaryValue: profileSummary.PrimaryContact?.PrimaryContactEmail,
+                secondaryValue: secondaryContactViewModel.SecondaryContactEmail,
+                isSecondaryBeingValidated: true,
+                config: new FieldComparisonConfig(
+                    PrimaryFieldName: "PrimaryContactEmail",
+                    SecondaryFieldName: "SecondaryContactEmail",
+                    PrimaryErrorMessage: "The primary email address cannot be the same as the secondary email address",
+                    SecondaryErrorMessage: "The secondary email address cannot be the same as the primary email address"
+                )
+            );
+            
+            ValidateDuplicateFields(
+                primaryValue: profileSummary.PrimaryContact?.PrimaryContactTelephoneNumber,
+                secondaryValue: secondaryContactViewModel.SecondaryContactTelephoneNumber,
+                isSecondaryBeingValidated: true,
+                config: new FieldComparisonConfig(
+                    PrimaryFieldName: "PrimaryContactTelephoneNumber",
+                    SecondaryFieldName: "SecondaryContactTelephoneNumber",
+                    PrimaryErrorMessage: "Telephone number of primary contact cannot be the same as secondary contact",
+                    SecondaryErrorMessage: "Telephone number of secondary contact cannot be the same as primary contact"
+                )
+            );
+
             if (ModelState.IsValid)
             {
-                ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.SecondaryContact = secondaryContactViewModel;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
                 return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PublicContactEmail");
@@ -613,13 +672,39 @@ namespace DVSRegister.Controllers
         [HttpPost("edit-primary-contact")]
         public async Task<IActionResult> UpdatePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
         {
+            ProfileSummaryViewModel profileSummary = GetProfileSummary();
+            
+            ValidateDuplicateFields(
+                primaryValue: primaryContactViewModel.PrimaryContactEmail,
+                secondaryValue: profileSummary.SecondaryContact?.SecondaryContactEmail,
+                isSecondaryBeingValidated: false,
+                config: new FieldComparisonConfig(
+                    PrimaryFieldName: "PrimaryContactEmail",
+                    SecondaryFieldName: "SecondaryContactEmail",
+                    PrimaryErrorMessage: "The primary email address cannot be the same as the secondary email address",
+                    SecondaryErrorMessage: "The secondary email address cannot be the same as the primary email address"
+                )
+            );
+            
+            ValidateDuplicateFields(
+                primaryValue: primaryContactViewModel.PrimaryContactTelephoneNumber,
+                secondaryValue: profileSummary.SecondaryContact?.SecondaryContactTelephoneNumber,
+                isSecondaryBeingValidated: false,
+                config: new FieldComparisonConfig(
+                    PrimaryFieldName: "PrimaryContactTelephoneNumber",
+                    SecondaryFieldName: "SecondaryContactTelephoneNumber",
+                    PrimaryErrorMessage: "Telephone number of primary contact cannot be the same as secondary contact",
+                    SecondaryErrorMessage: "Telephone number of secondary contact cannot be the same as primary contact"
+                )
+            );
+
             if (ModelState.IsValid)
             {
                 ProviderProfileDto providerProfileDto = new()
                 {
                     PrimaryContactFullName = primaryContactViewModel.PrimaryContactFullName,
                     PrimaryContactEmail = primaryContactViewModel.PrimaryContactEmail,
-                    PrimaryContactJobTitle =primaryContactViewModel.PrimaryContactJobTitle,
+                    PrimaryContactJobTitle = primaryContactViewModel.PrimaryContactJobTitle,
                     PrimaryContactTelephoneNumber = primaryContactViewModel.PrimaryContactTelephoneNumber,
                     Id = primaryContactViewModel.ProviderId
                 };
@@ -670,13 +755,39 @@ namespace DVSRegister.Controllers
         [HttpPost("edit-secondary-contact")]
         public async Task<IActionResult> UpdateSecondaryContact(SecondaryContactViewModel secondaryContactViewModel)
         {
+            ProfileSummaryViewModel profileSummary = GetProfileSummary();
+            
+            ValidateDuplicateFields(
+                primaryValue: profileSummary.PrimaryContact?.PrimaryContactEmail,
+                secondaryValue: secondaryContactViewModel.SecondaryContactEmail,
+                isSecondaryBeingValidated: true,
+                config: new FieldComparisonConfig(
+                    PrimaryFieldName: "PrimaryContactEmail",
+                    SecondaryFieldName: "SecondaryContactEmail",
+                    PrimaryErrorMessage: "The primary email address cannot be the same as the secondary email address",
+                    SecondaryErrorMessage: "The secondary email address cannot be the same as the primary email address"
+                )
+            );
+            
+            ValidateDuplicateFields(
+                primaryValue: profileSummary.PrimaryContact?.PrimaryContactTelephoneNumber,
+                secondaryValue: secondaryContactViewModel.SecondaryContactTelephoneNumber,
+                isSecondaryBeingValidated: true,
+                config: new FieldComparisonConfig(
+                    PrimaryFieldName: "PrimaryContactTelephoneNumber",
+                    SecondaryFieldName: "SecondaryContactTelephoneNumber",
+                    PrimaryErrorMessage: "Telephone number of primary contact cannot be the same as secondary contact",
+                    SecondaryErrorMessage: "Telephone number of secondary contact cannot be the same as primary contact"
+                )
+            );
+
             if (ModelState.IsValid)
             {
                 ProviderProfileDto providerProfileDto = new()
                 {
                     SecondaryContactFullName = secondaryContactViewModel.SecondaryContactFullName,
                     SecondaryContactEmail = secondaryContactViewModel.SecondaryContactEmail,
-                    SecondaryContactJobTitle =secondaryContactViewModel.SecondaryContactJobTitle,
+                    SecondaryContactJobTitle = secondaryContactViewModel.SecondaryContactJobTitle,
                     SecondaryContactTelephoneNumber = secondaryContactViewModel.SecondaryContactTelephoneNumber,
                     Id = secondaryContactViewModel.ProviderId
                 };
@@ -805,6 +916,27 @@ namespace DVSRegister.Controllers
             return providerDto;
 
         }
+        private void ValidateDuplicateFields(
+            string? primaryValue,
+            string? secondaryValue,
+            bool isSecondaryBeingValidated,
+            FieldComparisonConfig config)
+        {
+            if (!string.IsNullOrEmpty(primaryValue) &&
+                !string.IsNullOrEmpty(secondaryValue) &&
+                primaryValue.Equals(secondaryValue, StringComparison.OrdinalIgnoreCase))
+            {
+                if (isSecondaryBeingValidated)
+                {
+                    ModelState.AddModelError(config.SecondaryFieldName, config.SecondaryErrorMessage);
+                }
+                else
+                {
+                    ModelState.AddModelError(config.PrimaryFieldName, config.PrimaryErrorMessage);
+                }
+            }
+        }
+
         #endregion
 
     }
