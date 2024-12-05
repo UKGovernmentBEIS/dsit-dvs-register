@@ -5,7 +5,7 @@ namespace DVSRegister.Middleware
     public class SecurityHeadersMiddleware
     {
         private readonly RequestDelegate _next;
-        private const string sources = "https://www.google-analytics.com https://ssl.google-analytics.com https://www.googletagmanager.com https://www.region1.google-analytics.com https://region1.google-analytics.com; ";
+       
         public SecurityHeadersMiddleware(RequestDelegate next)
         {
             _next = next;
