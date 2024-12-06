@@ -147,10 +147,7 @@ await Html.RenderPartialAsync("_CookieBanner");
         import { initAll } from "/js/govuk.js";
     initAll();</script>
 
-@if (CookieService.HasAcceptedGoogleAnalytics(Context.Request))
-{
- <script nonce="@Context.GetScriptNonce()">setUpGoogleAnalytics()</script>
-}
+
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
