@@ -7,7 +7,7 @@ namespace DVSRegister.Models.CAB
     {
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
-        [AcceptedCharacters(@"^[A-Za-zÀ-ž&@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters.")]
+        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters.")]
         public string? RegisteredName { get; set; }       
         public string? TradingName { get; set; }
 
@@ -29,11 +29,13 @@ namespace DVSRegister.Models.CAB
 
         [Required(ErrorMessage = "Enter the registered name of your parent company")]
         [MaximumLength(160, ErrorMessage = "Your company's registered name must be less than 161 characters")]
-        [AcceptedCharacters(@"^[A-Za-zÀ-ž&@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "Your parent company's registered name must contain only letters, numbers and accepted characters.")]
+        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "Your parent company's registered name must contain only letters, numbers and accepted characters.")]
         
         public string? ParentCompanyRegisteredName { get; set; }
 
         [Required(ErrorMessage = "Enter the location of your parent company")]
+        [MaximumLength(160, ErrorMessage = "Your company's location must be less than 161 characters")]
+        [AcceptedCharacters(@"^[A-Za-z .,:-]+$", ErrorMessage = "Your parent company's location must contain only letters, numbers and accepted characters.")]
         public string? ParentCompanyLocation { get; set; }
 
         public PrimaryContactViewModel? PrimaryContact { get; set; }

@@ -9,7 +9,7 @@ namespace Unit_testing
         [SetUp]
         public void Setup()
         {
-            _pattern = @"^[A-Za-zÀ-ž&@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$";
+            _pattern = @"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$";
         }
 
         [Test]
@@ -29,6 +29,7 @@ namespace Unit_testing
         [TestCase("NameWithSolidus\\/\\", true)]
         [TestCase("NameWithSigns*=", true)]
         [TestCase("NameWithSymbols#%+", true)]
+        [TestCase("Name With Spaces", true)]
         public void TestAcceptedCharacters(string input, bool expectedIsValid)
         {
             var isValid = Regex.IsMatch(input, _pattern);
