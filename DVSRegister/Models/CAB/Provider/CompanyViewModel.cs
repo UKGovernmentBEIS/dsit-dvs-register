@@ -30,6 +30,8 @@ namespace DVSRegister.Models.CAB
         public string? ParentCompanyRegisteredName { get; set; }
 
         [RequiredIf("HasParentCompany", true,ErrorMessage = "Enter the location of your parent company")]
+        [MaximumLength(160, ErrorMessage = "Your company's location must be less than 161 characters")]
+        [AcceptedCharacters(@"^[A-Za-z.,:-]+$", ErrorMessage = "Your parent company's location must contain only letters, numbers and accepted characters.")]
         public string? ParentCompanyLocation { get; set; }
     }
 }
