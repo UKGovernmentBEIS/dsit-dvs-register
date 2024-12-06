@@ -10,7 +10,7 @@ namespace DVSRegister.Models.CAB
 
         [Required(ErrorMessage = "Enter the service name")]
         [MaximumLength(160, ErrorMessage = "The service name must be less than 161 characters.")]
-        [AcceptedCharacters(@"^[A-Za-z0-9 &@£$€¥#.,:;-]+$", ErrorMessage = "The service name must contain only letters, numbers and accepted characters.")]
+        [AcceptedCharacters(@"^[A-Za-z0-9 &@#().:-]+$", ErrorMessage = "The service name must contain only letters, numbers and accepted characters.")]
         public string? ServiceName { get; set; }
 
         [Required(ErrorMessage = "Enter the service website address")]
