@@ -18,7 +18,7 @@
                 @Html.Partial("~/Views/Register/PartialViews/_NotificationBanner.cshtml")
                 <h2 class="govuk-heading-m">Trading Name: @Model.Provider.TradingName</h2>
                 <p class="govuk-body govuk-!-margin-bottom-7">
-                    Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime, "dd MMMM yyyy")
+                    Last updated (UTC) @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime)
                 </p>
 
 

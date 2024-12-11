@@ -65,7 +65,7 @@
                             <th scope="col" class="govuk-table__header" aria-sort="none">Registered name</th>
                             <th scope="col" class="govuk-table__header" aria-sort="none">Trading name</th>
                             <th scope="col" class="govuk-table__header" aria-sort="none">Services</th>
-                            <th scope="col" class="govuk-table__header" aria-sort="descending">Last updated</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="descending">Last updated (UTC)</th>
                         </tr>
                     </thead>
 
@@ -96,7 +96,7 @@
 
 
                                     <td class="govuk-table__cell" data-sort-value="@item.LastUpdatedInfo.EpochTime">
-                                        @item.LastUpdatedInfo.LastModifiedTime.ToString("dd MMM yyyy hh:mm tt")
+                                        @DateTimeExtensions.FormatDateTime(@item.LastUpdatedInfo.LastModifiedTime)
                                     </td>
 
                                 </tr>
