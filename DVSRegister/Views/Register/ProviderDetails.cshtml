@@ -100,14 +100,20 @@
                                     Identity profiles
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @foreach (var item in service.ServiceIdentityProfileMapping)
+                                    @if (service.ServiceIdentityProfileMapping != null && service.ServiceIdentityProfileMapping.Any())
                                     {
-                                        <div>@item.IdentityProfile.IdentityProfileName</div>
+                                        foreach (var item in service.ServiceIdentityProfileMapping)
+                                        {
+                                            <div>@item.IdentityProfile.IdentityProfileName</div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div>Not certified against any identity profiles</div>
                                     }
                                 </dd>
                             </div>
                         }
-
 
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
