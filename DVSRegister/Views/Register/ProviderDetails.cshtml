@@ -171,6 +171,15 @@
 
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
+                                Certificate of conformity's date of issue
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @DateTimeExtensions.FormatDateTime(@service.ConformityIssueDate, "dd MMMM yyyy")
+                            </dd>
+                        </div>
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
                                 Certificate of conformity's date of expiry
                             </dt>
                             <dd class="govuk-summary-list__value">
