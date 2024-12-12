@@ -57,21 +57,20 @@
                     <h2 class="govuk-heading-m">@service.ServiceName</h2>
                     <hr class="govuk-section-break govuk-section-break--visible">
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
-
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Company address details
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @HtmlExtensions.ToStringWithLineBreaks(@service.CompanyAddress)
-                            </dd>
-                        </div>
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 Name of service
                             </dt>
                             <dd class="govuk-summary-list__value">
                                 @service.ServiceName
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Company address details
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @HtmlExtensions.ToStringWithLineBreaks(@service.CompanyAddress)
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -100,8 +99,6 @@
                                 </dd>
                             </div>
                         }
-
-
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 GPG44 quality of authenticator
