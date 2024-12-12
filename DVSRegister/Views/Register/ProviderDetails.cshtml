@@ -18,7 +18,7 @@
                 @Html.Partial("~/Views/Register/PartialViews/_NotificationBanner.cshtml")
                 <h2 class="govuk-heading-m">Trading Name: @Model.Provider.TradingName</h2>
                 <p class="govuk-body govuk-!-margin-bottom-7">
-                    Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime, "dd MMMM yyyy")
+                    Last updated (UTC) @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime)
                 </p>
 
 
@@ -38,7 +38,14 @@
                             Public telephone number
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @Model.Provider.ProviderTelephoneNumber
+                            @if (!string.IsNullOrEmpty(Model.Provider.ProviderTelephoneNumber))
+                            {
+                               <div> @Model.Provider.ProviderTelephoneNumber </div>
+                            }
+                            else
+                            {
+                                <div>No public telephone number</div>
+                            }
                         </dd>
                     </div>
                     <div class="govuk-summary-list__row">
@@ -84,21 +91,6 @@
                                 }
                             </dd>
                         </div>
-
-                        @if (service.ServiceIdentityProfileMapping != null)
-                        {
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Identity profiles
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @foreach (var item in service.ServiceIdentityProfileMapping)
-                                    {
-                                        <div>@item.IdentityProfile.IdentityProfileName</div>
-                                    }
-                                </dd>
-                            </div>
-                        }
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 GPG44 quality of authenticator
