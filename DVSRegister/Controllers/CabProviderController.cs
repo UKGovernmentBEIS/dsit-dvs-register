@@ -7,19 +7,19 @@ using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
+using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace DVSRegister.Controllers
 {
-     [Route("cab-service/create-profile")]
+    [Route("cab-service/create-profile")]
     [ValidCognitoToken]
     public class CabProviderController : Controller
     {
-
         private readonly ICabService cabService;
         private readonly IUserService userService;
-        private string UserEmail => HttpContext.Session.Get<string>("Email")??string.Empty;
+        private string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
 
         public CabProviderController(ICabService cabService, IUserService userService)
         {
@@ -29,9 +29,9 @@ namespace DVSRegister.Controllers
 
         [HttpGet("before-you-start")]
         public IActionResult BeforeYouStart()
-        {            
+        {
             return View();
-        }     
+        }
 
 
         #region Registered Name
@@ -43,6 +43,7 @@ namespace DVSRegister.Controllers
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             return View("RegisteredName", profileSummaryViewModel);
         }
+
         [HttpPost("reg-name")]
         public async Task<IActionResult> SaveRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
         {
@@ -51,7 +52,8 @@ namespace DVSRegister.Controllers
 
             if (!string.IsNullOrEmpty(profileSummaryViewModel.RegisteredName))
             {
-                bool registeredNameExist = await cabService.CheckProviderRegisteredNameExists(profileSummaryViewModel.RegisteredName);
+                bool registeredNameExist =
+                    await cabService.CheckProviderRegisteredNameExists(profileSummaryViewModel.RegisteredName);
                 if (registeredNameExist)
                 {
                     ModelState.AddModelError("RegisteredName", Constants.RegisteredNameExistsError);
@@ -69,8 +71,8 @@ namespace DVSRegister.Controllers
             {
                 return View("RegisteredName", profileSummaryViewModel);
             }
-
         }
+
         #endregion
 
 
@@ -83,6 +85,7 @@ namespace DVSRegister.Controllers
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             return View("TradingName", profileSummaryViewModel);
         }
+
         [HttpPost("trading-name")]
         public IActionResult SaveTradingName(ProfileSummaryViewModel profileSummaryViewModel)
         {
@@ -99,12 +102,13 @@ namespace DVSRegister.Controllers
             {
                 return View("TradingName", profileSummaryViewModel);
             }
-
         }
+
         #endregion
 
 
         #region HasCompanyRegistrationNumber
+
         [HttpGet("company-number")]
         public IActionResult HasRegistrationNumber(bool fromSummaryPage)
         {
@@ -122,7 +126,7 @@ namespace DVSRegister.Controllers
             profileSummaryViewModel.FromSummaryPage = false;
             if (ModelState["HasRegistrationNumber"].Errors.Count == 0)
             {
-                summaryViewModel.HasRegistrationNumber = profileSummaryViewModel.HasRegistrationNumber;               
+                summaryViewModel.HasRegistrationNumber = profileSummaryViewModel.HasRegistrationNumber;
                 if (Convert.ToBoolean(summaryViewModel.HasRegistrationNumber))
                 {
                     summaryViewModel.DUNSNumber = null;
@@ -140,10 +144,10 @@ namespace DVSRegister.Controllers
             {
                 return View("HasRegistrationNumber", profileSummaryViewModel);
             }
-
         }
+
         #endregion
-      
+
         #region Registration number
 
         [HttpGet("company-number-input")]
@@ -162,7 +166,7 @@ namespace DVSRegister.Controllers
             if (ModelState["CompanyRegistrationNumber"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
-                profileSummary.CompanyRegistrationNumber = profileSummaryViewModel.CompanyRegistrationNumber;           
+                profileSummary.CompanyRegistrationNumber = profileSummaryViewModel.CompanyRegistrationNumber;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
                 return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("HasParentCompany");
             }
@@ -170,11 +174,12 @@ namespace DVSRegister.Controllers
             {
                 return View("CompanyRegistrationNumber", profileSummaryViewModel);
             }
-
         }
+
         #endregion
 
         #region DUNSNumber
+
         [HttpGet("duns-number")]
         public IActionResult DUNSNumber(bool fromSummaryPage)
         {
@@ -191,7 +196,7 @@ namespace DVSRegister.Controllers
             if (ModelState["DUNSNumber"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
-                profileSummary.DUNSNumber = profileSummaryViewModel.DUNSNumber;               
+                profileSummary.DUNSNumber = profileSummaryViewModel.DUNSNumber;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
                 return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("HasParentCompany");
             }
@@ -199,8 +204,8 @@ namespace DVSRegister.Controllers
             {
                 return View("DUNSNumber", profileSummaryViewModel);
             }
-
         }
+
         #endregion
 
         #region HasParentCompany
@@ -219,12 +224,13 @@ namespace DVSRegister.Controllers
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
             profileSummaryViewModel.FromSummaryPage = false;
-            profileSummaryViewModel.HasRegistrationNumber = summaryViewModel.HasRegistrationNumber; // required to add condition for back link
+            profileSummaryViewModel.HasRegistrationNumber =
+                summaryViewModel.HasRegistrationNumber; // required to add condition for back link
             if (ModelState["HasParentCompany"].Errors.Count == 0)
             {
                 summaryViewModel.HasParentCompany = profileSummaryViewModel.HasParentCompany;
                 if (Convert.ToBoolean(summaryViewModel.HasParentCompany))
-                {                   
+                {
                     HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
                     return RedirectToAction("ParentCompanyRegisteredName", new { fromSummaryPage = fromSummaryPage });
                 }
@@ -240,7 +246,6 @@ namespace DVSRegister.Controllers
             {
                 return View("HasParentCompany", profileSummaryViewModel);
             }
-
         }
 
         #endregion
@@ -255,7 +260,7 @@ namespace DVSRegister.Controllers
             return View(summaryViewModel);
         }
 
-        
+
         [HttpPost("parent-company-registered-name-input")]
         public IActionResult SaveParentCompanyRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
         {
@@ -272,8 +277,8 @@ namespace DVSRegister.Controllers
             {
                 return View("ParentCompanyRegisteredName", profileSummaryViewModel);
             }
-
         }
+
         #endregion
 
         #region Parent company location
@@ -302,28 +307,54 @@ namespace DVSRegister.Controllers
             {
                 return View("ParentCompanyLocation", profileSummaryViewModel);
             }
-
         }
 
         #endregion
 
         #region Primary Contact
+
         [HttpGet("primary-contact-information")]
         public IActionResult PrimaryContact(bool fromSummaryPage)
         {
-            ViewBag.fromSummaryPage = fromSummaryPage;           
+            ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
-            ViewBag.hasParentCompany = profileSummaryViewModel.HasParentCompany;          
+            ViewBag.hasParentCompany = profileSummaryViewModel.HasParentCompany;
             return View(profileSummaryViewModel.PrimaryContact);
         }
+
         [HttpPost("primary-contact-information")]
         public IActionResult SavePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
         {
-            bool fromSummaryPage = primaryContactViewModel.FromSummaryPage;        
+            bool fromSummaryPage = primaryContactViewModel.FromSummaryPage;
             primaryContactViewModel.FromSummaryPage = false;
+
+            ProfileSummaryViewModel profileSummary = GetProfileSummary();
+
+
+            ValidationHelper.ValidateDuplicateFields(
+                ModelState,
+                primaryContactViewModel.PrimaryContactEmail,
+                profileSummary.SecondaryContact?.SecondaryContactEmail,
+                new ValidationHelper.FieldComparisonConfig(
+                    "PrimaryContactEmail",
+                    "SecondaryContactEmail",
+                    "Email address of secondary contact cannot be the same as primary contact"
+                )
+            );
+
+            ValidationHelper.ValidateDuplicateFields(
+                ModelState,
+                primaryValue: primaryContactViewModel.PrimaryContactTelephoneNumber,
+                secondaryValue: profileSummary.SecondaryContact?.SecondaryContactTelephoneNumber,
+                new ValidationHelper.FieldComparisonConfig(
+                    "PrimaryContactTelephoneNumber",
+                    "SecondaryContactTelephoneNumber",
+                    "Telephone number of secondary contact cannot be the same as primary contact"
+                )
+            );
+
             if (ModelState.IsValid)
             {
-                ProfileSummaryViewModel profileSummary = GetProfileSummary();             
                 profileSummary.PrimaryContact = primaryContactViewModel;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
                 return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("SecondaryContact");
@@ -333,9 +364,11 @@ namespace DVSRegister.Controllers
                 return View("PrimaryContact", primaryContactViewModel);
             }
         }
+
         #endregion
 
         #region Secondary Contact
+
         [HttpGet("secondary-contact-information")]
         public IActionResult SecondaryContact(bool fromSummaryPage)
         {
@@ -350,9 +383,33 @@ namespace DVSRegister.Controllers
         {
             bool fromSummaryPage = secondaryContactViewModel.FromSummaryPage;
             secondaryContactViewModel.FromSummaryPage = false;
+
+            ProfileSummaryViewModel profileSummary = GetProfileSummary();
+
+            ValidationHelper.ValidateDuplicateFields(
+                ModelState,
+                primaryValue: profileSummary.PrimaryContact?.PrimaryContactEmail,
+                secondaryValue: secondaryContactViewModel.SecondaryContactEmail,
+                new ValidationHelper.FieldComparisonConfig(
+                    "PrimaryContactEmail",
+                    "SecondaryContactEmail",
+                    "Email address of secondary contact cannot be the same as primary contact"
+                )
+            );
+
+            ValidationHelper.ValidateDuplicateFields(
+                ModelState,
+                primaryValue: profileSummary.PrimaryContact?.PrimaryContactTelephoneNumber,
+                secondaryValue: secondaryContactViewModel.SecondaryContactTelephoneNumber,
+                new ValidationHelper.FieldComparisonConfig(
+                    "PrimaryContactTelephoneNumber",
+                    "SecondaryContactTelephoneNumber",
+                    "Telephone number of secondary contact cannot be the same as primary contact"
+                )
+            );
+
             if (ModelState.IsValid)
             {
-                ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.SecondaryContact = secondaryContactViewModel;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
                 return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PublicContactEmail");
@@ -362,6 +419,7 @@ namespace DVSRegister.Controllers
                 return View("SecondaryContact", secondaryContactViewModel);
             }
         }
+
         #endregion
 
         #region Public contact email
@@ -390,11 +448,12 @@ namespace DVSRegister.Controllers
             {
                 return View("PublicContactEmail", profileSummaryViewModel);
             }
-
         }
+
         #endregion
 
         #region Telephone number
+
         [HttpGet("public-telephone")]
         public IActionResult TelephoneNumber(bool fromSummaryPage)
         {
@@ -408,7 +467,7 @@ namespace DVSRegister.Controllers
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
             profileSummaryViewModel.FromSummaryPage = false;
-            if (ModelState["ProviderTelephoneNumber"]?.Errors.Count ==0)
+            if (ModelState["ProviderTelephoneNumber"]?.Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.ProviderTelephoneNumber = profileSummaryViewModel.ProviderTelephoneNumber;
@@ -420,9 +479,11 @@ namespace DVSRegister.Controllers
                 return View("TelephoneNumber", profileSummaryViewModel);
             }
         }
+
         #endregion
 
         #region Website address
+
         [HttpGet("public-website")]
         public IActionResult WebsiteAddress(bool fromSummaryPage)
         {
@@ -448,6 +509,7 @@ namespace DVSRegister.Controllers
                 return View("WebsiteAddress", profileSummaryViewModel);
             }
         }
+
         #endregion
 
 
@@ -459,14 +521,15 @@ namespace DVSRegister.Controllers
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
             return View(summaryViewModel);
         }
+
         [HttpPost("check-answers")]
         public async Task<IActionResult> SaveProfileSummary()
         {
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+            string email = HttpContext?.Session.Get<string>("Email") ?? string.Empty;
             CabUserDto cabUserDto = await userService.GetUser(email);
-            ProviderProfileDto providerDto = MapViewModelToDto(summaryViewModel,cabUserDto.Id);
-            if(providerDto !=null)
+            ProviderProfileDto providerDto = MapViewModelToDto(summaryViewModel, cabUserDto.Id);
+            if (providerDto != null)
             {
                 GenericResponse genericResponse = await cabService.SaveProviderProfile(providerDto, UserEmail);
                 if (genericResponse.Success)
@@ -482,7 +545,6 @@ namespace DVSRegister.Controllers
             {
                 return RedirectToAction("CabHandleException", "Error");
             }
-          
         }
 
         /// <summary>
@@ -492,21 +554,22 @@ namespace DVSRegister.Controllers
         [HttpGet("profile-submitted")]
         public IActionResult InformationSubmitted()
         {
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+            string email = HttpContext?.Session.Get<string>("Email") ?? string.Empty;
             HttpContext?.Session.Remove("ProfileSummary");
             ViewBag.Email = email;
             return View();
-
         }
+
         #endregion
 
 
         #region Edit Company Information
+
         [HttpGet("edit-company-information")]
         public async Task<IActionResult> EditCompanyInformation(int providerId)
         {
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0 && providerId>0)
+            if (cabId > 0 && providerId > 0)
             {
                 ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
 
@@ -518,7 +581,7 @@ namespace DVSRegister.Controllers
                         RegisteredName = providerProfileDto.RegisteredName,
                         TradingName = providerProfileDto.TradingName,
                         HasRegistrationNumber = providerProfileDto.HasRegistrationNumber,
-                        CompanyRegistrationNumber =providerProfileDto.CompanyRegistrationNumber,
+                        CompanyRegistrationNumber = providerProfileDto.CompanyRegistrationNumber,
                         DUNSNumber = providerProfileDto.DUNSNumber,
                         HasParentCompany = providerProfileDto.HasParentCompany,
                         ParentCompanyRegisteredName = providerProfileDto.ParentCompanyRegisteredName,
@@ -532,36 +595,35 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("CabHandleException", "Error");
                 }
-
             }
             else
             {
                 return RedirectToAction("CabHandleException", "Error");
             }
-
-
-
-
         }
+
         [HttpPost("edit-company-information")]
         public async Task<IActionResult> UpdateCompanyInformation(CompanyViewModel companyViewModel)
         {
             if (!string.IsNullOrEmpty(companyViewModel.RegisteredName))
             {
-                bool registeredNameExist = await cabService.CheckProviderRegisteredNameExists(companyViewModel.RegisteredName, companyViewModel.ProviderId);
+                bool registeredNameExist =
+                    await cabService.CheckProviderRegisteredNameExists(companyViewModel.RegisteredName,
+                        companyViewModel.ProviderId);
                 if (registeredNameExist)
                 {
                     ModelState.AddModelError("RegisteredName", Constants.RegisteredNameExistsError);
                 }
             }
+
             if (ModelState.IsValid)
             {
                 ProviderProfileDto providerProfileDto = new()
                 {
                     Id = companyViewModel.ProviderId,
                     RegisteredName = companyViewModel.RegisteredName,
-                    TradingName = companyViewModel.TradingName??string.Empty,
-                    CompanyRegistrationNumber =companyViewModel.CompanyRegistrationNumber,
+                    TradingName = companyViewModel.TradingName ?? string.Empty,
+                    CompanyRegistrationNumber = companyViewModel.CompanyRegistrationNumber,
                     DUNSNumber = companyViewModel.DUNSNumber,
                     ParentCompanyRegisteredName = companyViewModel.ParentCompanyRegisteredName,
                     ParentCompanyLocation = companyViewModel.ParentCompanyLocation
@@ -570,7 +632,8 @@ namespace DVSRegister.Controllers
                 GenericResponse genericResponse = await cabService.UpdateCompanyInfo(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
-                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
+                    return RedirectToAction("ProviderProfileDetails", "Cab",
+                        new { providerId = providerProfileDto.Id });
                 }
                 else
                 {
@@ -581,16 +644,17 @@ namespace DVSRegister.Controllers
             {
                 return View("EditCompanyInformation", companyViewModel);
             }
-
         }
+
         #endregion
 
         #region Edit primary contact
+
         [HttpGet("edit-primary-contact")]
         public async Task<IActionResult> EditPrimaryContact(int providerId)
         {
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0 && providerId>0)
+            if (cabId > 0 && providerId > 0)
             {
                 ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
                 PrimaryContactViewModel primaryContactViewModel = new()
@@ -598,7 +662,7 @@ namespace DVSRegister.Controllers
                     PrimaryContactFullName = providerProfileDto.PrimaryContactFullName,
                     PrimaryContactEmail = providerProfileDto.PrimaryContactEmail,
                     PrimaryContactJobTitle = providerProfileDto.PrimaryContactJobTitle,
-                    PrimaryContactTelephoneNumber =providerProfileDto.PrimaryContactTelephoneNumber,
+                    PrimaryContactTelephoneNumber = providerProfileDto.PrimaryContactTelephoneNumber,
                     ProviderId = providerProfileDto.Id
                 };
 
@@ -608,18 +672,42 @@ namespace DVSRegister.Controllers
             {
                 return RedirectToAction("CabHandleException", "Error");
             }
-
         }
+
         [HttpPost("edit-primary-contact")]
         public async Task<IActionResult> UpdatePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
         {
+            ProfileSummaryViewModel profileSummary = GetProfileSummary();
+
+            ValidationHelper.ValidateDuplicateFields(
+                ModelState,
+                primaryContactViewModel.PrimaryContactEmail,
+                profileSummary.SecondaryContact?.SecondaryContactEmail,
+                new ValidationHelper.FieldComparisonConfig(
+                    "PrimaryContactEmail",
+                    "SecondaryContactEmail",
+                    "Email address of secondary contact cannot be the same as primary contact"
+                )
+            );
+
+            ValidationHelper.ValidateDuplicateFields(
+                ModelState,
+                primaryValue: primaryContactViewModel.PrimaryContactTelephoneNumber,
+                secondaryValue: profileSummary.SecondaryContact?.SecondaryContactTelephoneNumber,
+                new ValidationHelper.FieldComparisonConfig(
+                    "PrimaryContactTelephoneNumber",
+                    "SecondaryContactTelephoneNumber",
+                    "Telephone number of secondary contact cannot be the same as primary contact"
+                )
+            );
+
             if (ModelState.IsValid)
             {
                 ProviderProfileDto providerProfileDto = new()
                 {
                     PrimaryContactFullName = primaryContactViewModel.PrimaryContactFullName,
                     PrimaryContactEmail = primaryContactViewModel.PrimaryContactEmail,
-                    PrimaryContactJobTitle =primaryContactViewModel.PrimaryContactJobTitle,
+                    PrimaryContactJobTitle = primaryContactViewModel.PrimaryContactJobTitle,
                     PrimaryContactTelephoneNumber = primaryContactViewModel.PrimaryContactTelephoneNumber,
                     Id = primaryContactViewModel.ProviderId
                 };
@@ -627,7 +715,8 @@ namespace DVSRegister.Controllers
                 GenericResponse genericResponse = await cabService.UpdatePrimaryContact(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
-                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
+                    return RedirectToAction("ProviderProfileDetails", "Cab",
+                        new { providerId = providerProfileDto.Id });
                 }
                 else
                 {
@@ -638,16 +727,17 @@ namespace DVSRegister.Controllers
             {
                 return View("EditPrimaryContact", primaryContactViewModel);
             }
-
         }
+
         #endregion
 
         #region Edit secondary contact
+
         [HttpGet("edit-secondary-contact")]
         public async Task<IActionResult> EditSecondaryContact(int providerId)
         {
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0 && providerId>0)
+            if (cabId > 0 && providerId > 0)
             {
                 ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
                 SecondaryContactViewModel secondaryContactViewModel = new()
@@ -655,7 +745,7 @@ namespace DVSRegister.Controllers
                     SecondaryContactFullName = providerProfileDto.SecondaryContactFullName,
                     SecondaryContactEmail = providerProfileDto.SecondaryContactEmail,
                     SecondaryContactJobTitle = providerProfileDto.SecondaryContactJobTitle,
-                    SecondaryContactTelephoneNumber =providerProfileDto.SecondaryContactTelephoneNumber,
+                    SecondaryContactTelephoneNumber = providerProfileDto.SecondaryContactTelephoneNumber,
                     ProviderId = providerProfileDto.Id
                 };
 
@@ -665,25 +755,51 @@ namespace DVSRegister.Controllers
             {
                 return RedirectToAction("CabHandleException", "Error");
             }
-
         }
+
         [HttpPost("edit-secondary-contact")]
         public async Task<IActionResult> UpdateSecondaryContact(SecondaryContactViewModel secondaryContactViewModel)
         {
+            ProfileSummaryViewModel profileSummary = GetProfileSummary();
+
+            ValidationHelper.ValidateDuplicateFields(
+                ModelState,
+                primaryValue: profileSummary.PrimaryContact?.PrimaryContactEmail,
+                secondaryValue: secondaryContactViewModel.SecondaryContactEmail,
+                new ValidationHelper.FieldComparisonConfig(
+                    "PrimaryContactEmail",
+                    "SecondaryContactEmail",
+                    "Email address of secondary contact cannot be the same as primary contact"
+                )
+            );
+
+            ValidationHelper.ValidateDuplicateFields(
+                ModelState,
+                primaryValue: profileSummary.PrimaryContact?.PrimaryContactTelephoneNumber,
+                secondaryValue: secondaryContactViewModel.SecondaryContactTelephoneNumber,
+                new ValidationHelper.FieldComparisonConfig(
+                    "PrimaryContactTelephoneNumber",
+                    "SecondaryContactTelephoneNumber",
+                    "Telephone number of secondary contact cannot be the same as primary contact"
+                )
+            );
+
             if (ModelState.IsValid)
             {
                 ProviderProfileDto providerProfileDto = new()
                 {
                     SecondaryContactFullName = secondaryContactViewModel.SecondaryContactFullName,
                     SecondaryContactEmail = secondaryContactViewModel.SecondaryContactEmail,
-                    SecondaryContactJobTitle =secondaryContactViewModel.SecondaryContactJobTitle,
+                    SecondaryContactJobTitle = secondaryContactViewModel.SecondaryContactJobTitle,
                     SecondaryContactTelephoneNumber = secondaryContactViewModel.SecondaryContactTelephoneNumber,
                     Id = secondaryContactViewModel.ProviderId
                 };
-                GenericResponse genericResponse = await cabService.UpdateSecondaryContact(providerProfileDto, UserEmail);
+                GenericResponse genericResponse =
+                    await cabService.UpdateSecondaryContact(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
-                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
+                    return RedirectToAction("ProviderProfileDetails", "Cab",
+                        new { providerId = providerProfileDto.Id });
                 }
                 else
                 {
@@ -694,16 +810,17 @@ namespace DVSRegister.Controllers
             {
                 return View("EditSecondaryContact", secondaryContactViewModel);
             }
-
         }
+
         #endregion
 
         #region Edit public provider information
+
         [HttpGet("edit-public-provider-information")]
         public async Task<IActionResult> EditPublicProviderInformation(int providerId)
         {
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0 && providerId>0)
+            if (cabId > 0 && providerId > 0)
             {
                 ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
                 PublicContactViewModel publicContactViewModel = new()
@@ -719,12 +836,11 @@ namespace DVSRegister.Controllers
             {
                 return RedirectToAction("CabHandleException", "Error");
             }
-
         }
+
         [HttpPost("edit-public-provider-information")]
         public async Task<IActionResult> UpdatePublicProviderInformation(PublicContactViewModel publicContactViewModel)
         {
-
             if (ModelState.IsValid)
             {
                 ProviderProfileDto providerProfileDto = new()
@@ -734,11 +850,13 @@ namespace DVSRegister.Controllers
                     ProviderWebsiteAddress = publicContactViewModel.ProviderWebsiteAddress,
                     Id = publicContactViewModel.ProviderId
                 };
-            
-                GenericResponse genericResponse = await cabService.UpdatePublicProviderInformation(providerProfileDto, UserEmail);
+
+                GenericResponse genericResponse =
+                    await cabService.UpdatePublicProviderInformation(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
-                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
+                    return RedirectToAction("ProviderProfileDetails", "Cab",
+                        new { providerId = providerProfileDto.Id });
                 }
                 else
                 {
@@ -749,40 +867,47 @@ namespace DVSRegister.Controllers
             {
                 return View("EditPublicProviderInformation", publicContactViewModel);
             }
-
         }
+
         #endregion
 
 
         #region Private methods
+
         private ProfileSummaryViewModel GetProfileSummary()
         {
-            ProfileSummaryViewModel model = HttpContext?.Session.Get<ProfileSummaryViewModel>("ProfileSummary") ?? new ProfileSummaryViewModel
-            {
-                PrimaryContact = new PrimaryContactViewModel(),
-                SecondaryContact = new SecondaryContactViewModel()
-            };
+            ProfileSummaryViewModel model = HttpContext?.Session.Get<ProfileSummaryViewModel>("ProfileSummary") ??
+                                            new ProfileSummaryViewModel
+                                            {
+                                                PrimaryContact = new PrimaryContactViewModel(),
+                                                SecondaryContact = new SecondaryContactViewModel()
+                                            };
             return model;
         }
 
         private ProviderProfileDto MapViewModelToDto(ProfileSummaryViewModel model, int cabUserId)
         {
-            
             ProviderProfileDto providerDto = null;
-            if (model != null && !string.IsNullOrEmpty(model.RegisteredName)  && model.HasRegistrationNumber!=null && model.HasParentCompany!=null
-                && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactFullName) && !string.IsNullOrEmpty(model?.PrimaryContact.PrimaryContactJobTitle)
-                && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactEmail) && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactTelephoneNumber)
-                && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactFullName) && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactJobTitle)
-                && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactEmail) &&  !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactTelephoneNumber)
-                && !string.IsNullOrEmpty(model.PublicContactEmail)  && !string.IsNullOrEmpty(model.ProviderWebsiteAddress) && cabUserId>0)
+            if (model != null && !string.IsNullOrEmpty(model.RegisteredName) && model.HasRegistrationNumber != null &&
+                model.HasParentCompany != null
+                && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactFullName) &&
+                !string.IsNullOrEmpty(model?.PrimaryContact.PrimaryContactJobTitle)
+                && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactEmail) &&
+                !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactTelephoneNumber)
+                && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactFullName) &&
+                !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactJobTitle)
+                && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactEmail) &&
+                !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactTelephoneNumber)
+                && !string.IsNullOrEmpty(model.PublicContactEmail) &&
+                !string.IsNullOrEmpty(model.ProviderWebsiteAddress) && cabUserId > 0)
             {
                 providerDto = new();
                 providerDto.RegisteredName = model.RegisteredName;
-                providerDto.TradingName = model.TradingName??string.Empty;
-                providerDto.HasRegistrationNumber = model.HasRegistrationNumber??false;
+                providerDto.TradingName = model.TradingName ?? string.Empty;
+                providerDto.HasRegistrationNumber = model.HasRegistrationNumber ?? false;
                 providerDto.CompanyRegistrationNumber = model.CompanyRegistrationNumber;
                 providerDto.DUNSNumber = model.DUNSNumber;
-                providerDto.HasParentCompany =  model.HasParentCompany??false;
+                providerDto.HasParentCompany = model.HasParentCompany ?? false;
                 providerDto.ParentCompanyRegisteredName = model.ParentCompanyRegisteredName;
                 providerDto.ParentCompanyLocation = model.ParentCompanyLocation;
                 providerDto.PrimaryContactFullName = model.PrimaryContact.PrimaryContactFullName;
@@ -793,7 +918,7 @@ namespace DVSRegister.Controllers
                 providerDto.SecondaryContactJobTitle = model.SecondaryContact.SecondaryContactJobTitle;
                 providerDto.SecondaryContactEmail = model.SecondaryContact.SecondaryContactEmail;
                 providerDto.SecondaryContactTelephoneNumber = model.SecondaryContact.SecondaryContactTelephoneNumber;
-                providerDto.PublicContactEmail= model.PublicContactEmail;
+                providerDto.PublicContactEmail = model.PublicContactEmail;
                 providerDto.ProviderTelephoneNumber = model.ProviderTelephoneNumber;
                 providerDto.ProviderWebsiteAddress = model.ProviderWebsiteAddress;
                 providerDto.CabUserId = cabUserId;
@@ -803,9 +928,8 @@ namespace DVSRegister.Controllers
 
 
             return providerDto;
-
         }
-        #endregion
 
+        #endregion
     }
 }

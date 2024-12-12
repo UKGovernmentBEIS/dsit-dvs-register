@@ -154,12 +154,7 @@ await Html.RenderPartialAsync("_CookieBanner");
     <script nonce="@Context.GetScriptNonce()">document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
     <script nonce="@Context.GetScriptNonce()" type="module" src="/js/govuk.js"></script>
     <script nonce="@Context.GetScriptNonce()" type="module">import { initAll } from '/js/govuk.js'
-            initAll()</script>
-    @if (CookieService.HasAcceptedGoogleAnalytics(Context.Request))
-    {
-        <script nonce="@Context.GetScriptNonce()">setUpGoogleAnalytics()</script>
-    }
+            initAll()</script>   
         @await RenderSectionAsync("Scripts", required: false)
-
 </body>
 </html>
