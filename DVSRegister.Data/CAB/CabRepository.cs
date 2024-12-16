@@ -76,13 +76,12 @@ namespace DVSRegister.Data.CAB
             .OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime);
             if (!string.IsNullOrEmpty(searchText))
             {
-                searchText = searchText.Trim().ToLower();              
-                providerQuery = providerQuery.Where(p => p.SearchVector.Matches(searchText) ||
-                                                         p.Services.Any(s => s.SearchVector.Matches(searchText)));
-            }           
+                searchText = searchText.Trim().ToLower();
+                providerQuery = providerQuery.Where(p => p.Services.Any(s => EF.Functions.TrigramsSimilarity(s.ServiceName.ToLower(), searchText.ToLower()) > .1));
+            }
             var searchResults = await providerQuery.ToListAsync();
             return searchResults;
-        }
+        }        
 
         public async Task<ProviderProfile> GetProvider(int providerId,int cabId)
         {
