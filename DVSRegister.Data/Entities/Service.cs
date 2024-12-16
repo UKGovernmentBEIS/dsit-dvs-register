@@ -40,8 +40,7 @@ namespace DVSRegister.Data.Entities
         public CabUser CabUser { get; set; }
         public int ServiceNumber { get;set; }
       
-        public ServiceStatusEnum ServiceStatus { get; set; }
-        public NpgsqlTsVector SearchVector { get; set; }
+        public ServiceStatusEnum ServiceStatus { get; set; }      
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
