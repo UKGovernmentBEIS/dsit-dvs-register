@@ -34,8 +34,7 @@ namespace DVSRegister.Data.Entities
         public int CabUserId { get; set; }
         public CabUser CabUser { get; set; }
         public ProviderStatusEnum ProviderStatus { get; set; }       
-        public ICollection<Service>? Services { get; set; }
-        public NpgsqlTsVector SearchVector { get; set; }
+        public ICollection<Service>? Services { get; set; }    
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
