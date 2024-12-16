@@ -64,21 +64,20 @@
                     <h2 class="govuk-heading-m">@service.ServiceName</h2>
                     <hr class="govuk-section-break govuk-section-break--visible">
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
-
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Company address details
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @HtmlExtensions.ToStringWithLineBreaks(@service.CompanyAddress)
-                            </dd>
-                        </div>
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 Name of service
                             </dt>
                             <dd class="govuk-summary-list__value">
                                 @service.ServiceName
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Company address details
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @HtmlExtensions.ToStringWithLineBreaks(@service.CompanyAddress)
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -92,29 +91,6 @@
                                 }
                             </dd>
                         </div>
-
-                        @if (service.ServiceIdentityProfileMapping != null)
-                        {
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Identity profiles
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @if (service.ServiceIdentityProfileMapping != null && service.ServiceIdentityProfileMapping.Any())
-                                    {
-                                        foreach (var item in service.ServiceIdentityProfileMapping)
-                                        {
-                                            <div>@item.IdentityProfile.IdentityProfileName</div>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <div>Not certified against any identity profiles</div>
-                                    }
-                                </dd>
-                            </div>
-                        }
-
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 GPG44 quality of authenticator
@@ -190,6 +166,15 @@
                                 {
                                     <div>Not certified against any supplementary schemes</div>
                                 }
+                            </dd>
+                        </div>
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Certificate of conformity's date of issue
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @DateTimeExtensions.FormatDateTime(@service.ConformityIssueDate, "dd MMMM yyyy")
                             </dd>
                         </div>
 
