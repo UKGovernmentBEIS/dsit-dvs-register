@@ -676,47 +676,53 @@ namespace DVSRegister.Controllers
 
         [HttpPost("edit-primary-contact")]
         public async Task<IActionResult> UpdatePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
-        {
-            ProfileSummaryViewModel profileSummary = GetProfileSummary();
+        { 
+            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId")); 
+            if (cabId <= 0 || primaryContactViewModel.ProviderId <= 0)
+            { 
+                return RedirectToAction("CabHandleException", "Error"); 
+            }
 
+            // Fetch the latest provider data from the database
+            ProviderProfileDto providerProfileDto = await cabService.GetProvider(primaryContactViewModel.ProviderId, cabId); 
+            if (providerProfileDto == null) 
+            { 
+                return RedirectToAction("CabHandleException", "Error"); 
+            } 
+            
             ValidationHelper.ValidateDuplicateFields(
-                ModelState,
-                primaryContactViewModel.PrimaryContactEmail,
-                profileSummary.SecondaryContact?.SecondaryContactEmail,
+                ModelState, 
+                primaryValue: primaryContactViewModel.PrimaryContactEmail,
+                secondaryValue: providerProfileDto.SecondaryContactEmail,
                 new ValidationHelper.FieldComparisonConfig(
                     "PrimaryContactEmail",
                     "SecondaryContactEmail",
                     "Email address of secondary contact cannot be the same as primary contact"
-                )
-            );
+                    )
+                ); 
 
             ValidationHelper.ValidateDuplicateFields(
-                ModelState,
+                ModelState, 
                 primaryValue: primaryContactViewModel.PrimaryContactTelephoneNumber,
-                secondaryValue: profileSummary.SecondaryContact?.SecondaryContactTelephoneNumber,
+                secondaryValue: providerProfileDto.SecondaryContactTelephoneNumber,
                 new ValidationHelper.FieldComparisonConfig(
                     "PrimaryContactTelephoneNumber",
                     "SecondaryContactTelephoneNumber",
                     "Telephone number of secondary contact cannot be the same as primary contact"
-                )
-            );
-
-            if (ModelState.IsValid)
+                    )
+                );
+            
+            if (ModelState.IsValid) 
             {
-                ProviderProfileDto providerProfileDto = new()
-                {
-                    PrimaryContactFullName = primaryContactViewModel.PrimaryContactFullName,
-                    PrimaryContactEmail = primaryContactViewModel.PrimaryContactEmail,
-                    PrimaryContactJobTitle = primaryContactViewModel.PrimaryContactJobTitle,
-                    PrimaryContactTelephoneNumber = primaryContactViewModel.PrimaryContactTelephoneNumber,
-                    Id = primaryContactViewModel.ProviderId
-                };
-
-                GenericResponse genericResponse = await cabService.UpdatePrimaryContact(providerProfileDto, UserEmail);
-                if (genericResponse.Success)
-                {
-                    return RedirectToAction("ProviderProfileDetails", "Cab",
-                        new { providerId = providerProfileDto.Id });
+                providerProfileDto.PrimaryContactFullName = primaryContactViewModel.PrimaryContactFullName; 
+                providerProfileDto.PrimaryContactEmail = primaryContactViewModel.PrimaryContactEmail; 
+                providerProfileDto.PrimaryContactJobTitle = primaryContactViewModel.PrimaryContactJobTitle; 
+                providerProfileDto.PrimaryContactTelephoneNumber = primaryContactViewModel.PrimaryContactTelephoneNumber; 
+                
+                GenericResponse genericResponse = await cabService.UpdatePrimaryContact(providerProfileDto, UserEmail); 
+                if (genericResponse.Success) 
+                { 
+                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id }); 
                 }
                 else
                 {
@@ -728,7 +734,7 @@ namespace DVSRegister.Controllers
                 return View("EditPrimaryContact", primaryContactViewModel);
             }
         }
-
+        
         #endregion
 
         #region Edit secondary contact
@@ -758,48 +764,54 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("edit-secondary-contact")]
-        public async Task<IActionResult> UpdateSecondaryContact(SecondaryContactViewModel secondaryContactViewModel)
-        {
-            ProfileSummaryViewModel profileSummary = GetProfileSummary();
-
+        public async Task<IActionResult> UpdateSecondaryContact(SecondaryContactViewModel secondaryContactViewModel) 
+        { 
+            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId")); 
+            if (cabId <= 0 || secondaryContactViewModel.ProviderId <= 0) 
+            { 
+                return RedirectToAction("CabHandleException", "Error"); 
+            } 
+            
+            // Fetch the latest provider data from the database
+            ProviderProfileDto providerProfileDto = await cabService.GetProvider(secondaryContactViewModel.ProviderId, cabId); 
+            if (providerProfileDto == null) 
+            { 
+                return RedirectToAction("CabHandleException", "Error"); 
+            } 
+            
             ValidationHelper.ValidateDuplicateFields(
-                ModelState,
-                primaryValue: profileSummary.PrimaryContact?.PrimaryContactEmail,
+                ModelState, 
+                primaryValue: providerProfileDto.PrimaryContactEmail,
                 secondaryValue: secondaryContactViewModel.SecondaryContactEmail,
                 new ValidationHelper.FieldComparisonConfig(
                     "PrimaryContactEmail",
                     "SecondaryContactEmail",
                     "Email address of secondary contact cannot be the same as primary contact"
-                )
-            );
-
+                    )
+                ); 
+            
             ValidationHelper.ValidateDuplicateFields(
-                ModelState,
-                primaryValue: profileSummary.PrimaryContact?.PrimaryContactTelephoneNumber,
+                ModelState, 
+                primaryValue: providerProfileDto.PrimaryContactTelephoneNumber,
                 secondaryValue: secondaryContactViewModel.SecondaryContactTelephoneNumber,
                 new ValidationHelper.FieldComparisonConfig(
                     "PrimaryContactTelephoneNumber",
                     "SecondaryContactTelephoneNumber",
                     "Telephone number of secondary contact cannot be the same as primary contact"
-                )
-            );
-
-            if (ModelState.IsValid)
-            {
-                ProviderProfileDto providerProfileDto = new()
-                {
-                    SecondaryContactFullName = secondaryContactViewModel.SecondaryContactFullName,
-                    SecondaryContactEmail = secondaryContactViewModel.SecondaryContactEmail,
-                    SecondaryContactJobTitle = secondaryContactViewModel.SecondaryContactJobTitle,
-                    SecondaryContactTelephoneNumber = secondaryContactViewModel.SecondaryContactTelephoneNumber,
-                    Id = secondaryContactViewModel.ProviderId
-                };
-                GenericResponse genericResponse =
-                    await cabService.UpdateSecondaryContact(providerProfileDto, UserEmail);
-                if (genericResponse.Success)
-                {
-                    return RedirectToAction("ProviderProfileDetails", "Cab",
-                        new { providerId = providerProfileDto.Id });
+                    )
+                );
+            
+            if (ModelState.IsValid) 
+            { 
+                providerProfileDto.SecondaryContactFullName = secondaryContactViewModel.SecondaryContactFullName; 
+                providerProfileDto.SecondaryContactEmail = secondaryContactViewModel.SecondaryContactEmail; 
+                providerProfileDto.SecondaryContactJobTitle = secondaryContactViewModel.SecondaryContactJobTitle; 
+                providerProfileDto.SecondaryContactTelephoneNumber = secondaryContactViewModel.SecondaryContactTelephoneNumber; 
+                
+                GenericResponse genericResponse = await cabService.UpdateSecondaryContact(providerProfileDto, UserEmail); 
+                if (genericResponse.Success) 
+                { 
+                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id }); 
                 }
                 else
                 {
