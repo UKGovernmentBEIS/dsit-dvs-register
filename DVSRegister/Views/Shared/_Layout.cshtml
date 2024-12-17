@@ -20,7 +20,7 @@ string assetsPath = "/assets/images";
     <link rel="apple-touch-icon" href="/assets/images/govuk-icon-180.png">
     <link rel="stylesheet" href="~/css/main.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-    <script>
+    <script nonce="@Context.GetScriptNonce()">
         // Default Consent Mode - Deny all
         window.dataLayer = window.dataLayer || [];
         function gtag() {
@@ -65,7 +65,7 @@ ViewData["ServiceName"] = "register of digital identity and attribute services";
 await Html.RenderPartialAsync("_CookieBanner");
 }
 <!-- Google Tag Manager (noscript) -->
-<noscript>
+    <noscript>
     <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NZ96NTWC"
             height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
@@ -140,16 +140,14 @@ await Html.RenderPartialAsync("_CookieBanner");
     </div>
 </footer>
 
-<script src="~/js/site.js" asp-append-version="true"></script>
-<script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
-<script type="module" src="~/js/govuk.js"></script>
-<script type="module">import { initAll } from "/js/govuk.js";
+    <script nonce="@Context.GetScriptNonce()"  src="~/js/site.js" asp-append-version="true"></script>
+    <script nonce="@Context.GetScriptNonce()">document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+    <script nonce="@Context.GetScriptNonce()" type="module" src="~/js/govuk.js"></script>
+    <script nonce="@Context.GetScriptNonce()"  type="module">
+        import { initAll } from "/js/govuk.js";
     initAll();</script>
 
-@if (CookieService.HasAcceptedGoogleAnalytics(Context.Request))
-{
-<script>setUpGoogleAnalytics()</script>
-}
+
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

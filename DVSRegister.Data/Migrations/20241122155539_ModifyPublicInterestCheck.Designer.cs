@@ -4,17 +4,21 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using NpgsqlTypes;
 
 #nullable disable
 
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241122155539_ModifyPublicInterestCheck")]
+    partial class ModifyPublicInterestCheck
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,37 +51,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5909)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2100)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5911)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2110)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5912)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2110)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5913)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2110)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5914)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2110)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5915)
+                            CreatedTime = new DateTime(2024, 11, 22, 15, 55, 39, 258, DateTimeKind.Utc).AddTicks(2110)
                         });
                 });
 
@@ -663,6 +667,13 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "RegisteredName", "TradingName" });
+
                     b.Property<string>("SecondaryContactEmail")
                         .IsRequired()
                         .HasColumnType("text");
@@ -686,6 +697,10 @@ namespace DVSRegister.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CabUserId");
+
+                    b.HasIndex("SearchVector");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.ToTable("ProviderProfile");
                 });
@@ -962,6 +977,13 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("PublishedTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<NpgsqlTsVector>("SearchVector")
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("tsvector")
+                        .HasAnnotation("Npgsql:TsVectorConfig", "english")
+                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "ServiceName" });
+
                     b.Property<string>("ServiceName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -981,6 +1003,10 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("CabUserId");
 
                     b.HasIndex("ProviderProfileId");
+
+                    b.HasIndex("SearchVector");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.ToTable("Service");
                 });
