@@ -124,15 +124,6 @@ namespace DVSRegister.Data
             modelBuilder.Entity<TrustmarkNumber>()
             .ToTable(b => b.HasCheckConstraint("CK_ServiceNumber", "\"ServiceNumber\" BETWEEN 1 AND 99"));  
 
-            modelBuilder.Entity<ProviderProfile>()
-            .HasGeneratedTsVectorColumn(p => p.SearchVector, "english", p => new { p.RegisteredName, p.TradingName })
-            .HasIndex(p => p.SearchVector)
-            .HasMethod("GIN");
-
-            modelBuilder.Entity<Service>()
-           .HasGeneratedTsVectorColumn(p => p.SearchVector, "english", p => new { p.ServiceName })
-           .HasIndex(p => p.SearchVector)
-           .HasMethod("GIN");
 
             modelBuilder.Entity<QualityLevel>().HasData(
             new QualityLevel { Id =1, Level = "Low", QualityType = QualityTypeEnum.Authentication },

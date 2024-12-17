@@ -20,7 +20,7 @@ string assetsPath = "/assets/images";
     <link rel="apple-touch-icon" href="/assets/images/govuk-icon-180.png">
     <link rel="stylesheet" href="~/css/main.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-    <script>
+    <script nonce="@Context.GetScriptNonce()">
         // Default Consent Mode - Deny all
         window.dataLayer = window.dataLayer || [];
         function gtag() {
@@ -158,12 +158,12 @@ await Html.RenderPartialAsync("_CookieBanner");
     </div>
 </footer>
 
-<script src="~/js/site.js" asp-append-version="true"></script>
-<script src="~/js/jquery-3.7.1.min.js"></script>
-<script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
-<script type="module" src="~/js/govuk.js"></script>
-<script type="module" src="~/js/all.js"></script>
-<script type="module">
+    <script nonce="@Context.GetScriptNonce()"  src="~/js/site.js" asp-append-version="true"></script>
+    <script nonce="@Context.GetScriptNonce()" src="~/js/jquery-3.7.1.min.js"></script>
+    <script nonce="@Context.GetScriptNonce()">document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+    <script nonce="@Context.GetScriptNonce()"  type="module" src="~/js/govuk.js"></script>
+    <script nonce="@Context.GetScriptNonce()" type="module" src="~/js/all.js"></script>
+    <script nonce="@Context.GetScriptNonce()" type="module">
             import { initAll } from "/js/govuk.js";
             initAll();
             var SortableTable = window.MOJFrontend.SortableTable;

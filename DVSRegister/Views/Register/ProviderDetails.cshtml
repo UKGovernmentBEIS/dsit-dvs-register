@@ -8,20 +8,23 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "Register", "Register", new { FromDetailsPage  = true}, new { @class = "govuk-back-link" })
-   
+    @Html.ActionLink("Back", "Register", "Register", new { FromDetailsPage = true }, new { @class = "govuk-back-link" })
+
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
 
             <div class="govuk-grid-column-full">
-                <h1 class="govuk-heading-xl">@Model.Provider.RegisteredName</h1>
+                <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
+                    @Model.Provider.RegisteredName
+                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime) (UTC)</span>
+                </h1>
                 @Html.Partial("~/Views/Register/PartialViews/_NotificationBanner.cshtml")
-                <h2 class="govuk-heading-m">Trading Name: @Model.Provider.TradingName</h2>
-                <p class="govuk-body govuk-!-margin-bottom-7">
-                    Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime, "dd MMMM yyyy")
-                </p>
-
-
+                
+                @if (!string.IsNullOrEmpty(Model.Provider.TradingName))
+                {
+                    <p class="govuk-body-l govuk-!-margin-bottom-7">Trading name: @Model.Provider.TradingName</p>
+                }
+                                                      
                 <h2 class="govuk-heading-m">Basic information</h2>
                 <hr class="govuk-section-break govuk-section-break--visible">
                 <dl class="govuk-summary-list govuk-!-margin-bottom-8">
@@ -38,7 +41,14 @@
                             Public telephone number
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @Model.Provider.ProviderTelephoneNumber
+                            @if (!string.IsNullOrEmpty(Model.Provider.ProviderTelephoneNumber))
+                            {
+                               <div> @Model.Provider.ProviderTelephoneNumber </div>
+                            }
+                            else
+                            {
+                                <div>No public telephone number</div>
+                            }
                         </dd>
                     </div>
                     <div class="govuk-summary-list__row">
@@ -54,19 +64,9 @@
 
                 @foreach (var service in Model.Provider.Services)
                 {
-                    
-                    <h2 class="govuk-heading-m">@service.ServiceName</h2>
+                    <h2 class="govuk-heading-m">Service Details: @service.ServiceName</h2>
                     <hr class="govuk-section-break govuk-section-break--visible">
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
-
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Company address details
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @HtmlExtensions.ToStringWithLineBreaks(@service.CompanyAddress)
-                            </dd>
-                        </div>
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 Name of service
@@ -77,63 +77,110 @@
                         </div>
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
+                                Company address details
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @HtmlExtensions.ToStringWithLineBreaks(@service.CompanyAddress)
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
                                 Roles certified against
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                 @foreach (var item in service.ServiceRoleMapping)
+                                @foreach (var item in service.ServiceRoleMapping)
                                 {
                                     <div>@Enum.GetName(typeof(RoleEnum), item.RoleId)</div>
                                 }
                             </dd>
                         </div>
-
-                        @if (service.ServiceIdentityProfileMapping!=null)
-                        {
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Identity profiles
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @foreach (var item in service.ServiceIdentityProfileMapping)
-                                    {
-                                        <div>@item.IdentityProfile.IdentityProfileName</div>
-                                    }
-                                </dd>
-                            </div>
-                        }
-                       
-
-                        @if (service.ServiceQualityLevelMapping!=null)
-                        {
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    GPG44 quality of authenticator
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG44 quality of authenticator
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (service.ServiceQualityLevelMapping != null && service.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                {
+                                    foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                                     {
                                         <div>@item.QualityLevel.Level</div>
                                     }
-                                </dd>
-                            </div>
+                                }
+                                else
+                                {
+                                    <div>Not certified against GPG44</div>
+                                }
+                            </dd>
+                        </div>
 
 
-
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    GPG44 level of protection
-                                </dt>
-                                <dd class="govuk-summary-list__value">
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG44 level of protection
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (service.ServiceQualityLevelMapping != null && service.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                {
                                     @foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
                                     {
                                         <div>@item.QualityLevel.Level</div>
                                     }
-                                </dd>
-                            </div>
-                        }
+                                }
+                                else
+                                {
+                                    <div>Not certified against GPG44</div>
+                                }
+                            </dd>
+                        </div>
 
-                       
-                    
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG45 identity profiles
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (service.ServiceIdentityProfileMapping != null && service.ServiceIdentityProfileMapping.Any()) 
+                                { 
+                                    @foreach (var item in service.ServiceIdentityProfileMapping) 
+                                    { 
+                                        <div>@item.IdentityProfile.IdentityProfileName</div> 
+                                    }
+                                }
+                                else
+                                { 
+                                    <div>Not certified against GPG45</div>
+                                }
+                            </dd>
+                        </div>
+
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Supplementary Schemes
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (service.ServiceSupSchemeMapping.Any())
+                                {
+                                    @foreach (var item in service.ServiceSupSchemeMapping)
+                                    {
+                                        <div>@item.SupplementaryScheme.SchemeName</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div>Not certified against any supplementary schemes</div>
+                                }
+                            </dd>
+                        </div>
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Certificate of conformity's date of issue
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @DateTimeExtensions.FormatDateTime(@service.ConformityIssueDate, "dd MMMM yyyy")
+                            </dd>
+                        </div>
+
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 Certificate of conformity's date of expiry
@@ -151,9 +198,15 @@
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-7">
                 <h3 class="govuk-heading-m">Explore the topic</h3>
                 <ul class="govuk-list">
-                    <li><a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role type</a></li>
-                    <li><a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a></li>
-                    <li><a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary schemes</a></li>
+                    <li>
+                        <a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role type</a>
+                    </li>
+                    <li>
+                        <a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a>
+                    </li>
+                    <li>
+                        <a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary schemes</a>
+                    </li>
                 </ul>
 
             </div>
@@ -161,5 +214,3 @@
     </main>
 
 </div>
-
-

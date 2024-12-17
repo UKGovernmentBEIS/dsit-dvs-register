@@ -21,7 +21,9 @@ namespace DVSRegister.Data
             IQueryable<ProviderProfile> providerQuery = context.ProviderProfile;
             providerQuery = providerQuery.Where(p => (p.ProviderStatus == ProviderStatusEnum.Published 
             || p.ProviderStatus == ProviderStatusEnum.PublishedActionRequired) &&
-            (string.IsNullOrEmpty(searchText) || p.SearchVector.Matches(searchText)))
+            (string.IsNullOrEmpty(searchText)
+            || EF.Functions.TrigramsSimilarity(p.RegisteredName.ToLower(), searchText.ToLower()) > .3
+             || EF.Functions.TrigramsSimilarity(p.TradingName!.ToLower(), searchText.ToLower()) > .3))            
             .Include(p => p.Services).ThenInclude(ci => ci.ServiceRoleMapping)
             .Include(p => p.Services).ThenInclude(ci => ci.ServiceSupSchemeMapping)
             .OrderByDescending(p => p.PublishedTime)
