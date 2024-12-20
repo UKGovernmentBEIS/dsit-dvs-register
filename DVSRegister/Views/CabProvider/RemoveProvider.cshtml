@@ -1,0 +1,137 @@
+﻿@model DVSRegister.Models.CAB.RemoveProviderViewModel
+@{
+ViewData["Title"] = "You are about to send a request to remove a provider’s whole record from the register";
+Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <a class="govuk-back-link" href="/cab-service/create-profile/profile-summary?providerId=@Model.ProviderId">
+        Back
+    </a>
+
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
+            You are about to send a request to remove a provider’s whole record from the register
+        </h1>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">Service provider</th>
+                        <th scope="col" class="govuk-table__header">Publication status</th>
+                        <th scope="col" class="govuk-table__header">
+                            Date and time of <br/>provider agreement <br/>to publish (UTC)
+                        </th>
+                        <th scope="col" class="govuk-table__header">Conformity Assessment Body</th>
+                        <th scope="col" class="govuk-table__header">Services</th>
+                    </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                    @foreach (var service in Model.Services)
+                    {
+                    <tr class="govuk-table__row">
+                        <td class="govuk-table__cell">@service.ServiceProviderName</td>
+                        <td class="govuk-table__cell">
+                            @if (service.PublicationStatus?.Equals("Published", StringComparison.OrdinalIgnoreCase) == true)
+                            {
+                            <strong class="govuk-tag govuk-tag--green">Published</strong>
+                            }
+                            else if (service.PublicationStatus?.Equals("Not Published", StringComparison.OrdinalIgnoreCase) == true)
+                            {
+                            <strong class="govuk-tag govuk-tag--grey">Not published</strong>
+                            }
+                            else
+                            {
+                            <strong class="govuk-tag govuk-tag--yellow">Pending</strong>
+                            }
+                        </td>
+                        <td class="govuk-table__cell">@service.AgreementDateTimeUtc</td>
+                        <td class="govuk-table__cell">@service.ConformityAssessmentBody</td>
+                        <td class="govuk-table__cell">@service.ServicesOffered</td>
+                    </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-three-quarters">
+
+                <h2 class="govuk-heading-l govuk-!-margin-top-6">
+                    Selected reason for removing this service
+                </h2>
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Reason for removal</dt>
+                        <dd class="govuk-summary-list__value">@Model.RemovalReason</dd>
+                    </div>
+                </dl>
+
+                <h2 class="govuk-heading-l govuk-!-margin-top-6">
+                    Who will receive the request
+                </h2>
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Email address of <br/> primary contact
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.PrimaryContactEmail
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Email address of <br/> secondary contact
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.SecondaryContactEmail
+                        </dd>
+                    </div>
+                </dl>
+
+                <h2 class="govuk-heading-l govuk-!-margin-top-6">What will happen next</h2>
+                <p class="govuk-body">
+                    The named contacts above will be sent an email asking them to confirm that the details should be removed.
+                    Once they confirm, the details will be automatically removed from the register. The service provider and
+                    Conformity Assessment Body will receive an email confirmation of the removal.
+                </p>
+                <p class="govuk-body">
+                    If the contact does not confirm the removal, the details will remain published
+                    in the register of digital identity and attribute services.
+                </p>
+
+                <div class="govuk-warning-text govuk-!-margin-top-5">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-visually-hidden">Warning</span>
+                        Once you request the removal, the action can't be undone.
+                    </strong>
+                </div>
+
+                @using (Html.BeginForm("RequestProviderRemoval", "CabProvider", FormMethod.Post))
+                {
+                @Html.HiddenFor(m => m.ProviderId)
+
+                <div class="govuk-button-group govuk-!-margin-top-6">
+                    <button type="submit"
+                            class="govuk-button govuk-button--warning"
+                            data-module="govuk-button">
+                        Request provider removal
+                    </button>
+
+                    <a class="govuk-button govuk-button--secondary"
+                       href="/cab-service/create-profile/profile-summary?providerId=@Model.ProviderId">
+                        Cancel
+                    </a>
+                </div>
+                }
+            </div>
+        </div>
+
+    </main>
+</div>
