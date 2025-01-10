@@ -40,6 +40,7 @@ namespace DVSRegister.Data
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         public DbSet<TrustmarkNumber> TrustmarkNumber { get; set; }
         public DbSet<Event> EventLogs { get; set; }
+        public DbSet<RemovalReasons> RemovalReasons { get; set; }
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
             if (actorId !=null)
@@ -208,7 +209,19 @@ namespace DVSRegister.Data
                 new SupplementaryScheme { Id =2, SchemeName = "Right to Rent", Order =1 },
                 new SupplementaryScheme { Id =3, SchemeName = "Disclosure and Barring Service", Order =3 });
 
-                
+            modelBuilder.Entity<RemovalReasons>().HasData(
+            new RemovalReasons { RemovalReasonId = 1, RemovalReason = "The service provider has requested to remove the whole provider record" },
+            //new RemovalReasons { RemovalReasonId = 2, RemovalReason = "The Conformity Assessment Body has withdrawn the certificate for the service and there are no other services published for this provider",
+            //    RequiresAdditionalInfo = true },
+            new RemovalReasons { RemovalReasonId = 3, RemovalReason = "The service provider no longer exists" },
+            new RemovalReasons { RemovalReasonId = 4, RemovalReason = "The service provider has failed to provide the Secretary of State with information requested in accordance with a notice" },
+            new RemovalReasons { RemovalReasonId = 5, RemovalReason = "The Secretary of State is satisfied that the provider is failing to comply with the trust framework" },
+            new RemovalReasons { RemovalReasonId = 6, RemovalReason = "The Secretary of State is satisfied that the provider is failing to comply with the supplementary code" },
+            new RemovalReasons { RemovalReasonId = 7, RemovalReason = "The Secretary of State considers removal necessary is the interests of national security" });
+
+
+
+
 
 
         }
