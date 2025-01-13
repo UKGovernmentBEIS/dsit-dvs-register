@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250107110245_SeedRemovalReasonsData")]
+    partial class SeedRemovalReasonsData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,37 +50,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(5984)
+                            CreatedTime = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7643)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(5988)
+                            CreatedTime = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7646)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(5989)
+                            CreatedTime = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7647)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(5990)
+                            CreatedTime = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7648)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(5991)
+                            CreatedTime = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7649)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(5992)
+                            CreatedTime = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7650)
                         });
                 });
 
@@ -666,9 +669,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<string>("RemovalReason")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("RemovalRequestTime")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<string>("SecondaryContactEmail")
                         .IsRequired()
                         .HasColumnType("text");
@@ -911,8 +911,8 @@ namespace DVSRegister.Data.Migrations
                             IsActiveReason = true,
                             RemovalReason = "The service provider has requested to remove the whole provider record",
                             RequiresAdditionalInfo = false,
-                            TimeCreated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6203),
-                            TimeUpdated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6203)
+                            TimeCreated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7808),
+                            TimeUpdated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7809)
                         },
                         new
                         {
@@ -920,8 +920,8 @@ namespace DVSRegister.Data.Migrations
                             IsActiveReason = true,
                             RemovalReason = "The Conformity Assessment Body has withdrawn the certificate for the service and there are no other services published for this provider",
                             RequiresAdditionalInfo = true,
-                            TimeCreated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6206),
-                            TimeUpdated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6206)
+                            TimeCreated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7811),
+                            TimeUpdated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7811)
                         },
                         new
                         {
@@ -929,8 +929,8 @@ namespace DVSRegister.Data.Migrations
                             IsActiveReason = true,
                             RemovalReason = "The service provider no longer exists",
                             RequiresAdditionalInfo = false,
-                            TimeCreated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6207),
-                            TimeUpdated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6207)
+                            TimeCreated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7812),
+                            TimeUpdated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7813)
                         },
                         new
                         {
@@ -938,8 +938,8 @@ namespace DVSRegister.Data.Migrations
                             IsActiveReason = true,
                             RemovalReason = "The service provider has failed to provide the Secretary of State with information requested in accordance with a notice",
                             RequiresAdditionalInfo = false,
-                            TimeCreated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6208),
-                            TimeUpdated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6208)
+                            TimeCreated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7813),
+                            TimeUpdated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7814)
                         },
                         new
                         {
@@ -947,8 +947,8 @@ namespace DVSRegister.Data.Migrations
                             IsActiveReason = true,
                             RemovalReason = "The Secretary of State is satisfied that the provider is failing to comply with the trust framework",
                             RequiresAdditionalInfo = false,
-                            TimeCreated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6209),
-                            TimeUpdated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6209)
+                            TimeCreated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7814),
+                            TimeUpdated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7815)
                         },
                         new
                         {
@@ -956,8 +956,8 @@ namespace DVSRegister.Data.Migrations
                             IsActiveReason = true,
                             RemovalReason = "The Secretary of State is satisfied that the provider is failing to comply with the supplementary code",
                             RequiresAdditionalInfo = false,
-                            TimeCreated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6209),
-                            TimeUpdated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6210)
+                            TimeCreated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7815),
+                            TimeUpdated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7815)
                         },
                         new
                         {
@@ -965,8 +965,8 @@ namespace DVSRegister.Data.Migrations
                             IsActiveReason = true,
                             RemovalReason = "The Secretary of State considers removal necessary is the interests of national security",
                             RequiresAdditionalInfo = false,
-                            TimeCreated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6210),
-                            TimeUpdated = new DateTime(2025, 1, 9, 11, 16, 20, 850, DateTimeKind.Utc).AddTicks(6210)
+                            TimeCreated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7816),
+                            TimeUpdated = new DateTime(2025, 1, 7, 11, 2, 45, 176, DateTimeKind.Utc).AddTicks(7816)
                         });
                 });
 
