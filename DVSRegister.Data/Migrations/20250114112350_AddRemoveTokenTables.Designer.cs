@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250114112350_AddRemoveTokenTables")]
+    partial class AddRemoveTokenTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,42 +51,36 @@ namespace DVSRegister.Data.Migrations
                             Id = 1,
                             CabName = "EY",
                             CreatedTime = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3348)
-                            CreatedTime = new DateTime(2025, 1, 15, 14, 38, 48, 915, DateTimeKind.Utc).AddTicks(2089)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
                             CreatedTime = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3353)
-                            CreatedTime = new DateTime(2025, 1, 15, 14, 38, 48, 915, DateTimeKind.Utc).AddTicks(2093)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
                             CreatedTime = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3354)
-                            CreatedTime = new DateTime(2025, 1, 15, 14, 38, 48, 915, DateTimeKind.Utc).AddTicks(2093)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
                             CreatedTime = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3355)
-                            CreatedTime = new DateTime(2025, 1, 15, 14, 38, 48, 915, DateTimeKind.Utc).AddTicks(2094)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
                             CreatedTime = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3356)
-                            CreatedTime = new DateTime(2025, 1, 15, 14, 38, 48, 915, DateTimeKind.Utc).AddTicks(2095)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
                             CreatedTime = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3357)
-                            CreatedTime = new DateTime(2025, 1, 15, 14, 38, 48, 915, DateTimeKind.Utc).AddTicks(2096)
                         });
                 });
 
@@ -669,8 +666,8 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("RemovalReason")
-                        .HasColumnType("integer");
+                    b.Property<string>("RemovalReason")
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("RemovalRequestTime")
                         .HasColumnType("timestamp without time zone");
@@ -879,6 +876,144 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("ProviderProfileId");
 
                     b.ToTable("RegisterPublishLog");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.RemovalReasons", b =>
+                {
+                    b.Property<int>("RemovalReasonId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RemovalReasonId"));
+
+                    b.Property<bool>("IsActiveReason")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RemovalReason")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<bool>("RequiresAdditionalInfo")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("TimeCreated")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("TimeUpdated")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("RemovalReasonId");
+
+                    b.ToTable("RemovalReasons");
+
+                    b.HasData(
+                        new
+                        {
+                            RemovalReasonId = 1,
+                            IsActiveReason = true,
+                            RemovalReason = "The service provider has requested to remove the whole provider record",
+                            RequiresAdditionalInfo = false,
+                            TimeCreated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3511),
+                            TimeUpdated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3511)
+                        },
+                        new
+                        {
+                            RemovalReasonId = 3,
+                            IsActiveReason = true,
+                            RemovalReason = "The service provider no longer exists",
+                            RequiresAdditionalInfo = false,
+                            TimeCreated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3514),
+                            TimeUpdated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3514)
+                        },
+                        new
+                        {
+                            RemovalReasonId = 4,
+                            IsActiveReason = true,
+                            RemovalReason = "The service provider has failed to provide the Secretary of State with information requested in accordance with a notice",
+                            RequiresAdditionalInfo = false,
+                            TimeCreated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3515),
+                            TimeUpdated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3515)
+                        },
+                        new
+                        {
+                            RemovalReasonId = 5,
+                            IsActiveReason = true,
+                            RemovalReason = "The Secretary of State is satisfied that the provider is failing to comply with the trust framework",
+                            RequiresAdditionalInfo = false,
+                            TimeCreated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3516),
+                            TimeUpdated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3516)
+                        },
+                        new
+                        {
+                            RemovalReasonId = 6,
+                            IsActiveReason = true,
+                            RemovalReason = "The Secretary of State is satisfied that the provider is failing to comply with the supplementary code",
+                            RequiresAdditionalInfo = false,
+                            TimeCreated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3517),
+                            TimeUpdated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3517)
+                        },
+                        new
+                        {
+                            RemovalReasonId = 7,
+                            IsActiveReason = true,
+                            RemovalReason = "The Secretary of State considers removal necessary is the interests of national security",
+                            RequiresAdditionalInfo = false,
+                            TimeCreated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3518),
+                            TimeUpdated = new DateTime(2025, 1, 14, 11, 23, 49, 142, DateTimeKind.Utc).AddTicks(3518)
+                        });
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveProviderToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("ProviderProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderProfileId");
+
+                    b.ToTable("RemoveProviderToken");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveTokenServiceMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RemoveProviderTokenId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RemoveProviderTokenId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("RemoveTokenServiceMapping");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Role", b =>

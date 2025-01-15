@@ -29,6 +29,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public int CompanyId { get; set; }
         public int CabUserId { get; set; }
         public ProviderStatusEnum ProviderStatus { get; set; }
+        public RemovalReasonsEnum RemovalReason { get; set; }
 
         [JsonIgnore]
         public ICollection<ServiceDto>? Services { get; set; }  
