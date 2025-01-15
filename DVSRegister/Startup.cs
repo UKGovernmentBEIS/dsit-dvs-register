@@ -102,6 +102,8 @@ namespace DVSRegister
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IConsentRepository, ConsentRepository>();
             services.AddScoped<IConsentService, ConsentService>();
+            services.AddScoped<IRemoveProvider2iService, RemoveProvider2iService>();
+            services.AddScoped<IRemoveProvider2iRepository, RemoveProvider2iRepository>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));
