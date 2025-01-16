@@ -1,7 +1,7 @@
 ﻿using DVSRegister.CommonUtility.Models.Enums;
-using NpgsqlTypes;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using DVSAdmin.CommonUtility.Models.Enums;
 
 namespace DVSRegister.Data.Entities
 {
@@ -29,7 +29,7 @@ namespace DVSRegister.Data.Entities
         public string PublicContactEmail { get; set; }
         public string? ProviderTelephoneNumber { get; set; }
         public string ProviderWebsiteAddress { get; set; }
-        public string? RemovalReason { get; set; }
+        public RemovalReasonsEnum? RemovalReason { get; set; }
 
         [ForeignKey("CabUser")]
         public int CabUserId { get; set; }
