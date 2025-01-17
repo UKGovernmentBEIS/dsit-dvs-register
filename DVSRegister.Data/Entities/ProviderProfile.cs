@@ -41,5 +41,6 @@ namespace DVSRegister.Data.Entities
         public DateTime? PublishedTime { get; set; }
         public DateTime? CabEditedTime { get; set; }
         public DateTime? RemovalRequestTime { get; set; }
+        public DateTime? RemovedTime { get; set; }
     }
 }
