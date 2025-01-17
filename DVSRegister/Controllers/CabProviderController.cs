@@ -943,5 +943,50 @@ namespace DVSRegister.Controllers
         }
 
         #endregion
+        
+        #region Remove Service
+        [HttpGet("remove-service")]
+        public IActionResult RemoveService(int providerId)
+        {
+            // Mock data
+            var model = new RemoveServiceViewModel
+            {
+                ProviderId = 123,
+                ProviderName = "Thirdfort",
+                ProviderStatus = "Published",
+                PublishedTime = "3 Mar 2024; 10:24 am",
+                CabName = "Kantara",
+                PublicContactEmail = "public@thirdfort.co.uk",
+                ProviderTelephoneNumber = "07532167283",
+                ProviderWebsiteAddress = "www.thirdfort.co.uk",
+                PrimaryContactEmail = "primary@thirdfort.co.uk",
+                SecondaryContactEmail = "secondary@thirdfort.co.uk",
+                Services = new List<RemoveServiceDetails>
+                {
+                    new RemoveServiceDetails
+                    {
+                        ServiceId = 1,
+                        ServiceName = "Tenant eligibility checker",
+                        PublicationStatus = "Published"
+                    },
+                    new RemoveServiceDetails
+                    {
+                        ServiceId = 2,
+                        ServiceName = "Online identity assurance",
+                        PublicationStatus = "Not published"
+                    }
+                }
+            };
+
+            return View("RemoveService", model);
+        }
+
+        [HttpPost("submit-service-removal")]
+        public IActionResult SubmitServiceRemoval(RemoveServiceViewModel model)
+        {
+            return RedirectToAction("ProfileSummary", new { providerId = model.ProviderId });
+        }
+        #endregion
+        
     }
 }

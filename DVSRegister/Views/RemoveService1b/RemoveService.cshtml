@@ -1,0 +1,127 @@
+﻿@model DVSRegister.Models.CAB.RemoveServiceViewModel
+@{
+ViewData["Title"] = "Remove provider from register";
+Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <a class="govuk-back-link" href="/cab-service/create-profile/profile-summary?providerId=@Model.ProviderId">
+        Back
+    </a>
+
+    <main class="govuk-main-wrapper" id="main-content" role="main">
+        <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">@Model.ProviderName</h1>
+
+        <table class="govuk-table govuk-!-margin-bottom-6">
+            <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Publication status</th>
+                <th scope="col" class="govuk-table__header">Date and time of publication (UTC)</th>
+                <th scope="col" class="govuk-table__header">Conformity Assessment Body</th>
+                <th scope="col" class="govuk-table__header">Services</th>
+            </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">
+                    @if (@Model.ProviderStatus?.Equals("Published", StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                    <strong class="govuk-tag govuk-tag--green">Published</strong>
+                    }
+                    else
+                    {
+                    <strong class="govuk-tag govuk-tag--grey">Not published</strong>
+                    }
+                </td>
+                <td class="govuk-table__cell">@Model.PublishedTime</td>
+                <td class="govuk-table__cell">@Model.CabName</td>
+                <td class="govuk-table__cell">
+                    @foreach (var svc in Model.Services)
+                    {
+                    <div>@svc.ServiceName</div>
+                    }
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Provider contact information</h2>
+        <dl class="govuk-summary-list govuk-!-margin-bottom-6">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Email address of primary contact</dt>
+                <dd class="govuk-summary-list__value">@Model.PrimaryContactEmail</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Email address of secondary contact</dt>
+                <dd class="govuk-summary-list__value">@Model.SecondaryContactEmail</dd>
+            </div>
+        </dl>
+
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Register publication overview</h2>
+        <dl class="govuk-summary-list govuk-!-margin-bottom-6">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Public contact email</dt>
+                <dd class="govuk-summary-list__value">@Model.PublicContactEmail</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Telephone number</dt>
+                <dd class="govuk-summary-list__value">@Model.ProviderTelephoneNumber</dd>
+            </div>
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">Website address</dt>
+                <dd class="govuk-summary-list__value">@Model.ProviderWebsiteAddress</dd>
+            </div>
+        </dl>
+
+        @foreach (var svc in Model.Services)
+        {
+        <div class="govuk-summary-card govuk-!-margin-bottom-6">
+            <div class="govuk-summary-card__title-wrapper">
+                <h3 class="govuk-summary-card__title">
+                    Service: @svc.ServiceName
+                </h3>
+                <ul class="govuk-summary-card__actions">
+                    <li class="govuk-summary-card__action">
+                        <a class="govuk-link" href="/cab-service/create-profile/view-service-details?serviceId=@svc.ServiceId">
+                            View service details
+                        </a>
+                    </li>
+                    <li class="govuk-summary-card__action">
+                        <a class="govuk-link" href="/cab-service/create-profile/remove-single-service?serviceId=@svc.ServiceId">
+                            Remove service
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Service name</dt>
+                        <dd class="govuk-summary-list__value">@svc.ServiceName</dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Publication status</dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (svc.PublicationStatus?.Equals("Published", StringComparison.OrdinalIgnoreCase) == true)
+                            {
+                            <strong class="govuk-tag govuk-tag--green">Published</strong>
+                            }
+                            else
+                            {
+                            <strong class="govuk-tag govuk-tag--grey">Not published</strong>
+                            }
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+        }
+
+        <form asp-action="SubmitServiceRemoval" asp-controller="CabProvider" method="post">
+            @Html.HiddenFor(m => m.ProviderId)
+            <button type="submit" class="govuk-button govuk-button--warning govuk-!-margin-top-6">
+                Remove provider from register
+            </button>
+        </form>
+    </main>
+</div>
