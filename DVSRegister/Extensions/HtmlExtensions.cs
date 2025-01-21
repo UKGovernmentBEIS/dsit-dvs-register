@@ -34,6 +34,7 @@ namespace DVSRegister.Extensions
                 case CertificateReviewEnum.Rejected:
                     return "govuk-tag govuk-tag--red";
 
+                case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
                 case CertificateReviewEnum.InReview:
                     return "govuk-tag govuk-tag--yellow";
 

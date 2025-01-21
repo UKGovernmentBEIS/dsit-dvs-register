@@ -75,6 +75,13 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
             return serviceDto;
         }
+
+        public async Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId)
+        {
+            var service = await cabRepository.GetServiceDetailsWithProvider(serviceId, cabId);
+            ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
+            return serviceDto;
+        }
         public async Task<List<QualityLevelDto>> GetQualitylevels()
         {
             var list = await cabRepository.QualityLevels();

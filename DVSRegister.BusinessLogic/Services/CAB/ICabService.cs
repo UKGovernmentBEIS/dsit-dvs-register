@@ -15,6 +15,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<List<QualityLevelDto>> GetQualitylevels();
         public Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId);
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto);
+        public Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId);
 
         #region Save/update
         public Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfile, string loggedInUserEmail);

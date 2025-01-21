@@ -67,6 +67,13 @@
                                     <li class="govuk-summary-card__action">
                                         <a class="govuk-link" href="/cab-service/service-details?serviceId=@item.Id">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceNumber</span></a>
                                     </li>
+                                    @if(item.ServiceStatus == ServiceStatusEnum.Published)
+                                    {
+                                        <li class="govuk-summary-card__action">
+                                            <a class="govuk-link" href="/cab-service/remove/reason-for-removing?providerid=@item.ProviderProfileId&serviceId=@item.Id">Remove Service <span class="govuk-visually-hidden"> Service number @item.ServiceNumber</span></a>
+                                        </li>
+                                    }
+                                  
                                 </ul>
                             </div>
                             <div class="govuk-summary-card__content">
