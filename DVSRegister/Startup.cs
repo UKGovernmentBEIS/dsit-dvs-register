@@ -12,6 +12,7 @@ using DVSRegister.CommonUtility.Models;
 using DVSRegister.Cookies;
 using DVSRegister.Data;
 using DVSRegister.Data.CAB;
+using DVSRegister.Data.CabRemovalRequest;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
 using Microsoft.AspNetCore.DataProtection;
@@ -104,6 +105,8 @@ namespace DVSRegister
             services.AddScoped<IConsentService, ConsentService>();
             services.AddScoped<IRemoveProvider2iService, RemoveProvider2iService>();
             services.AddScoped<IRemoveProvider2iRepository, RemoveProvider2iRepository>();
+            services.AddScoped<ICabRemovalRequestService, CabRemovalRequestService>();
+            services.AddScoped<ICabRemovalRequestRepository, CabRemovalRequestRepository>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));

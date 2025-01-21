@@ -48,6 +48,7 @@ namespace DVSRegister.Data.Entities
         public CertificateReview CertificateReview { get; set; }
         public ProceedApplicationConsentToken ProceedApplicationConsentToken { get; set; }
         public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
+        public string? RemovalReasonByCab { get; set; }
         public DateTime? RemovalRequestTime { get; set; }
         public DateTime? RemovedTime { get; set; }
     }

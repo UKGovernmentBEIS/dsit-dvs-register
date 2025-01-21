@@ -92,8 +92,19 @@ namespace DVSRegister.Data.CAB
             return provider;
         }
 
-        public async Task<Service> GetServiceDetails(int serviceId, int cabId)
-        {
+            public async Task<Service> GetServiceDetailsWithProvider(int serviceId, int cabId)
+            {
+
+            Service service = new();
+            service = await context.Service.Include(p => p.CabUser).ThenInclude(p => p.Cab)
+            .Include(p => p.Provider)
+            .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId).FirstOrDefaultAsync() ?? new Service();
+            return service;
+
+            }
+
+            public async Task<Service> GetServiceDetails(int serviceId, int cabId)
+            {
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)

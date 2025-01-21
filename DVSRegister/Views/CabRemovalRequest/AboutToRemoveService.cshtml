@@ -1,0 +1,141 @@
+﻿@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.Extensions
+@using DVSRegister.CommonUtility.Models;
+@using DVSRegister.CommonUtility.Models.Enums;
+@model ServiceDto;
+@{
+    ViewData["Title"] = " You are about to send a request to remove a service from the register";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ReasonForRemoval", "CabRemovalRequest", new { @providerid = Model.ProviderProfileId, @serviceId = Model.Id}, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <h1 class="govuk-heading-xl">
+                    You are about to send a request to remove a service from the register
+                </h1>
+            </div>
+            <div class="govuk-grid-column-full">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Service: @Model.ServiceName
+                        </h2>
+                       
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Service name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.ServiceName
+                                </dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                   Status
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @HtmlExtensions.ToStyledStrongTag(Model.ServiceStatus)
+                                </dd>
+                            </div>
+
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Provider registered name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.Provider.RegisteredName
+                                </dd>
+                            </div>
+
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Conformity Assessment Body
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.CabUser.Cab.CabName
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+           
+            </div>
+
+         
+
+        </div>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-three-quarters">
+
+                <h2 class="govuk-heading-m govuk-!-margin-top-6">
+                    Selected reason for removing this service
+                </h2>
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-0" />
+                <dl class="govuk-summary-list govuk-!-margin-bottom-8">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Reason for removal</dt>
+                        <dd class="govuk-summary-list__value">@Model.RemovalReasonByCab</dd>
+                    </div>
+                </dl>
+             </<div>
+
+
+                    <h2 class="govuk-heading-m govuk-!-margin-top-8">What will happen next</h2>
+                    <p class="govuk-body">
+                        DSIT will be sent an email asking to confirm that the details should be
+                        removed. Once they accept the request, the details will be automatically
+                        removed from the register. You will receive an email confirmation of the
+                        removal.
+                    </p>
+                    <p class="govuk-body">
+                        The provider will also receive an email notification when the details have been
+                        removed from the register.
+                    </p>
+
+                    <p class="govuk-body">
+                        If DSIT does not confirm the removal, the details will remain published in the
+                        register of digital identity and attribute services.
+                    </p>
+
+                    <div class="govuk-warning-text govuk-!-margin-top-8">
+                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                        <strong class="govuk-warning-text__text">
+                            <span class="govuk-visually-hidden">Warning</span>
+                            Once you request the removal, the action can't be undone.
+                        </strong>
+                    </div>
+
+                    @using (Html.BeginForm("RequestServiceRemoval", "CabRemovalRequest", FormMethod.Post))
+                    {
+                        <input type="hidden" name="serviceId" value="@Model.Id" />
+                        <input type="hidden" name="providerId" value="@Model.ProviderProfileId" />
+                       
+                        <div class="govuk-button-group govuk-!-margin-top-8 govuk-!-margin-bottom-8">
+                            <button type="submit"
+                                    class="govuk-button govuk-button--warning"
+                                    data-module="govuk-button">
+                                Request service removal
+                            </button>
+
+                            <a class="govuk-button govuk-button--secondary"
+                               href="/cab-service/remove/reason-for-removing?providerId=@Model.ProviderProfileId&serviceId=@Model.Id">
+                                Cancel
+                            </a>
+                        </div>
+                    }
+
+        </div>
+    </main>
+</div>
+
+
+
