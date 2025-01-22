@@ -72,7 +72,7 @@
                         <fieldset class="govuk-fieldset">
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                                 <h3 class="govuk-fieldset__heading">
-                                    Supplementary schemes
+                                    Supplementary codes
                                 </h3>
                             </legend>
                             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
@@ -151,7 +151,7 @@
                                                 <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(", ", service.ServiceRoleMapping.Select(x => Enum.GetName(typeof(RoleEnum), x.RoleId)).ToList())</p>
                                                 @if (@service.ServiceSupSchemeMapping != null && @service.ServiceSupSchemeMapping.Any())
                                                 {
-                                                    <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Supplementary schemes:   @string.Join(", ", service.ServiceSupSchemeMapping.Select(x => x.SupplementaryScheme.SchemeName).ToList())</p>
+                                                    <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Supplementary codes:   @string.Join(", ", service.ServiceSupSchemeMapping.Select(x => x.SupplementaryScheme.SchemeName).ToList())</p>
                                                 }
                                                 <p class="govuk-body-s dsit-secondary-text-colour">Address: @service.CompanyAddress</p>
                                             </li>
@@ -192,7 +192,7 @@
             <ul class="govuk-list">
                 <li><a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role type</a></li>
                 <li><a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a></li>
-                <li><a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary schemes</a></li>
+                <li><a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary codes</a></li>
             </ul>
         </main>
     }

@@ -64,7 +64,7 @@
 
                 @foreach (var service in Model.Provider.Services)
                 {
-                    <h2 class="govuk-heading-m">Service Details: @service.ServiceName</h2>
+                    <h2 class="govuk-heading-m">Service details: @service.ServiceName</h2>
                     <hr class="govuk-section-break govuk-section-break--visible">
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
                         <div class="govuk-summary-list__row">
@@ -155,7 +155,7 @@
 
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
-                                Supplementary Schemes
+                                Supplementary codes
                             </dt>
                             <dd class="govuk-summary-list__value">
                                 @if (service.ServiceSupSchemeMapping.Any())
@@ -167,7 +167,7 @@
                                 }
                                 else
                                 {
-                                    <div>Not certified against any supplementary schemes</div>
+                                    <div>Not certified against any supplementary codes</div>
                                 }
                             </dd>
                         </div>
@@ -205,7 +205,7 @@
                         <a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a>
                     </li>
                     <li>
-                        <a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary schemes</a>
+                        <a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary codes</a>
                     </li>
                 </ul>
 
