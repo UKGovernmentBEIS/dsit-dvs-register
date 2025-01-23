@@ -14,7 +14,7 @@ namespace DVSRegister.Models.CAB
         [Required(ErrorMessage = "Enter a valid password")]
         [MinLength(8, ErrorMessage = "Password length must be minimum 8 characters")]
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match")]
         public string? ConfirmPassword { get; set; }
 
         public bool? PasswordReset { get; set; }

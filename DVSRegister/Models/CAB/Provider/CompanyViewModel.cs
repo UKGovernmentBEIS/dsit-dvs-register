@@ -8,14 +8,14 @@ namespace DVSRegister.Models.CAB
         public int ProviderId { get; set; }
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
-        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters.")]
+        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
         public string? RegisteredName { get; set; }
         public string? TradingName { get; set; }       
         public bool? HasRegistrationNumber { get; set; }
 
         [RequiredIf("HasRegistrationNumber", true, ErrorMessage = "Enter a Companies House or charity registration number")]
-        [RequiredLength(8, ErrorMessage = "Your Companies House number must be 8 characters long.")]
-        [AcceptedCharacters(@"^[a-zA-Z0-9]*$", ErrorMessage = "Your Companies House number must contain only letters and numbers.")]
+        [RequiredLength(8, ErrorMessage = "Your Companies House number must be 8 characters long")]
+        [AcceptedCharacters(@"^[a-zA-Z0-9]*$", ErrorMessage = "Your Companies House number must contain only letters and numbers")]
         public string? CompanyRegistrationNumber { get; set; }
 
         [RequiredIf("HasRegistrationNumber", false, ErrorMessage = "Enter a D-U-N-S number")]        
@@ -26,12 +26,12 @@ namespace DVSRegister.Models.CAB
 
         [RequiredIf("HasParentCompany",true, ErrorMessage = "Enter the registered name of your parent company")]
         [MaximumLength(160, ErrorMessage = "Your company's registered name must be less than 161 characters")]
-        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "Your parent company's registered name must contain only letters, numbers and accepted characters.")]
+        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "Your parent company's registered name must contain only letters, numbers and accepted characters")]
         public string? ParentCompanyRegisteredName { get; set; }
 
         [RequiredIf("HasParentCompany", true,ErrorMessage = "Enter the location of your parent company")]
         [MaximumLength(160, ErrorMessage = "Your company's location must be less than 161 characters")]
-        [AcceptedCharacters(@"^[A-Za-z .,:-]+$", ErrorMessage = "Your parent company's location must contain only letters, numbers and accepted characters.")]
+        [AcceptedCharacters(@"^[A-Za-z .,:-]+$", ErrorMessage = "Your parent company's location must contain only letters, numbers and accepted characters")]
         public string? ParentCompanyLocation { get; set; }
     }
 }
