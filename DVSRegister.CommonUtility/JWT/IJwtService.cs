@@ -5,6 +5,6 @@ namespace DVSRegister.CommonUtility.JWT
     public interface IJwtService
     {
         public TokenDetails GenerateToken();
-        public Task<TokenDetails> ValidateToken(string token);
+        public Task<TokenDetails> ValidateToken(string token, string audience = "");
     }
 }

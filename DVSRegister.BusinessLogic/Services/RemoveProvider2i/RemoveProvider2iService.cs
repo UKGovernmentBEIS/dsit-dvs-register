@@ -28,8 +28,20 @@ namespace DVSRegister.BusinessLogic.Services
             if (removeProviderToken.Provider != null)
             {
                 var provider = await removeProvider2iRepository.GetProviderDetails(removeProviderToken.ProviderProfileId);
-                ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(provider);
-                return providerProfileDto;
+                if (removeProviderToken.RemoveTokenServiceMapping != null && removeProviderToken.RemoveTokenServiceMapping.Count>0)
+                {
+                    var mappedServiceIds = removeProviderToken.RemoveTokenServiceMapping.Where(mapping => mapping.RemoveProviderTokenId == removeProviderToken.Id).Select(mapping => mapping.ServiceId).ToList();
+                    ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(provider);
+                    providerProfileDto.Services = providerProfileDto.Services.Where(service => mappedServiceIds.Contains(service.Id)).ToList();
+                    return providerProfileDto;
+
+                }
+                else
+                {
+                    ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(provider);                    
+                    return providerProfileDto;
+                }
+             
             }
             else
             {
@@ -37,26 +49,42 @@ namespace DVSRegister.BusinessLogic.Services
             }
         }
 
-        public async Task<GenericResponse> UpdateRemovalStatus(string token, string tokenId, ProviderProfileDto providerDto, string loggedInUserEmail)
+        public async Task<GenericResponse> UpdateRemovalStatus(TeamEnum team, string token, string tokenId, ProviderProfileDto providerDto, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();
             RemoveProviderToken removeProviderToken = await removeProvider2iRepository.GetRemoveProviderToken(token, tokenId);
-            TeamEnum teamEnum = TeamEnum.Provider;// To Do : update after correcting Removal Reason to int
+            
+            
+          
             if (!string.IsNullOrEmpty(removeProviderToken.Token) && !string.IsNullOrEmpty(removeProviderToken.TokenId))   //proceed update status if token exists           
             {
                 if (removeProviderToken.RemoveTokenServiceMapping != null && removeProviderToken.RemoveTokenServiceMapping.Count > 0) // remove selected services in this case
                 {
-                    List<int> serviceIds = removeProviderToken.RemoveTokenServiceMapping.Select(mapping => mapping.ServiceId).ToList();
-                    genericResponse = await removeProvider2iRepository.UpdateRemovalStatus(providerDto.Id, teamEnum, EventTypeEnum.RemoveServices2i, serviceIds, loggedInUserEmail);
+                    List<int> serviceIds = providerDto.Services.Select(s => s.Id).ToList();
+                    genericResponse = await removeProvider2iRepository.UpdateRemovalStatus(providerDto.Id, team, EventTypeEnum.RemoveServices2i, serviceIds, loggedInUserEmail);
+                    // get updated service list and decide provider status
+                    ProviderProfile providerProfile = await removeProvider2iRepository.GetProviderWithAllServices(providerDto.Id);
+                    // update provider status
+                    ProviderStatusEnum providerStatus = GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
+                    genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerDto.Id, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);
+
                 }
                 else
-                {
-                    genericResponse = await removeProvider2iRepository.UpdateRemovalStatus(providerDto.Id, teamEnum, EventTypeEnum.RemoveServices2i, null, loggedInUserEmail);
+                {                    
+                    genericResponse = await removeProvider2iRepository.UpdateRemovalStatus(providerDto.Id, team, EventTypeEnum.RemoveServices2i, null, loggedInUserEmail);
                 }
-
+               
                 if (genericResponse.Success)
                 {
-                    // ToDo : send email confirmation                
+                    if(team == TeamEnum.Provider) 
+                    {
+                        await emailSender.SendRemovalRequestConfirmedToDIP(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);
+                    }
+
+                    if (team == TeamEnum.DSIT)
+                    {
+                       //to do
+                    }
                 }
 
             }
@@ -67,5 +95,49 @@ namespace DVSRegister.BusinessLogic.Services
         {
             return await removeProvider2iRepository.RemoveRemovalToken(token, tokenId, loggedInUserEmail);
         }
+
+        #region private methods
+        private ProviderStatusEnum GetProviderStatus(ICollection<Service> services, ProviderStatusEnum currentStatus)
+        {
+            ProviderStatusEnum providerStatus = currentStatus;
+            if (services != null && services.Count > 0)
+            {
+
+                if (services.All(service => service.ServiceStatus == ServiceStatusEnum.Removed))
+                {
+                    providerStatus = ProviderStatusEnum.RemovedFromRegister;
+                }
+
+                var priorityOrder = new List<ServiceStatusEnum>
+                    {
+                        ServiceStatusEnum.CabAwaitingRemovalConfirmation,
+                        ServiceStatusEnum.ReadyToPublish,
+                        ServiceStatusEnum.AwaitingRemovalConfirmation,
+                        ServiceStatusEnum.Published,
+                        ServiceStatusEnum.Removed
+                    };
+
+                ServiceStatusEnum highestPriorityStatus = services.Select(service => service.ServiceStatus).OrderBy(status => priorityOrder.IndexOf(status)).FirstOrDefault();
+
+
+                switch (highestPriorityStatus)
+                {
+                    case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
+                        return ProviderStatusEnum.CabAwaitingRemovalConfirmation;
+                    case ServiceStatusEnum.ReadyToPublish:
+                        bool hasPublishedServices = services.Any(service => service.ServiceStatus == ServiceStatusEnum.Published);
+                        return hasPublishedServices ? ProviderStatusEnum.PublishedActionRequired : ProviderStatusEnum.ActionRequired;
+                    case ServiceStatusEnum.AwaitingRemovalConfirmation:
+                        return ProviderStatusEnum.AwaitingRemovalConfirmation;
+                    case ServiceStatusEnum.Published:
+                        return ProviderStatusEnum.Published;
+                    default:
+                        return ProviderStatusEnum.AwaitingRemovalConfirmation;
+                }
+
+            }
+            return providerStatus;
+        }
+        #endregion
     }
 }

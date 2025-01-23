@@ -19,5 +19,10 @@ namespace DVSRegister.CommonUtility.Email
         public Task<bool> SendAgreementToPublishToDSIT(string companyName, string serviceName);
         public Task<bool> SendAgreementToPublishToDIP(string companyName, string serviceName, string recipientName, string emailAddress);
 
+        //remove emails
+
+        public Task<bool> SendRemovalRequestConfirmedToDIP(string recipientName, string emailAddress);
+
+
     }
 }
