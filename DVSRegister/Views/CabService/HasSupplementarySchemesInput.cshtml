@@ -1,7 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @using DVSRegister.Models.UI.Enums
 @{
-    ViewData["Title"] = "Is the service certified against any supplementary schemes?";
+    ViewData["Title"] = "Is the service certified against any supplementary codes?";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -46,7 +46,7 @@
                     PropertyName = "HasSupplementarySchemes",
                     Value = Model.HasSupplementarySchemes,
                     HasError = hasError,
-                    FieldSet = "Is the service certified against any supplementary schemes?",
+                    FieldSet = "Is the service certified against any supplementary codes?",
                     Heading = HeadingEnum.H1,
                     LegendStyleClass = "govuk-fieldset__legend--xl",
                     ErrorMessage = hasError ?
