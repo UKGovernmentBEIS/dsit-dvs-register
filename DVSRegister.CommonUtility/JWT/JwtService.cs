@@ -48,7 +48,7 @@ namespace DVSRegister.CommonUtility.JWT
             return tokenDetails;
         }
 
-        public async Task<TokenDetails> ValidateToken(string token)
+        public async Task<TokenDetails> ValidateToken(string token, string audience = "")
         {
           
             TokenDetails tokenDetails = new TokenDetails();
@@ -60,7 +60,7 @@ namespace DVSRegister.CommonUtility.JWT
                 ValidateLifetime = false,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtSettings.Issuer,
-                ValidAudience = jwtSettings.Audience,
+                ValidAudience = string.IsNullOrEmpty(audience)?  jwtSettings.Audience: "DSIT",
                 RequireExpirationTime = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
             };

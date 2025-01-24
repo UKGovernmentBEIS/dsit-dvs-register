@@ -55,7 +55,7 @@ namespace DVSRegister.Controllers
         [HttpPost("provider/provider-details")]
         public async Task<IActionResult> RemoveProviderDetails(RemoveProviderViewModel removeProviderViewModel, string action)
         {
-            string user = string.Empty;// To Do : update based on reason in provider
+            string user = "Provider";
 
             if (!string.IsNullOrEmpty(removeProviderViewModel.token))
             {
@@ -66,9 +66,10 @@ namespace DVSRegister.Controllers
                     if (tokenDetails != null && tokenDetails.IsAuthorised)
                     {
                         ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
+                        user = provider.PrimaryContactEmail + ";" + provider.SecondaryContactEmail;
                         if (ModelState.IsValid)
                         {
-                            GenericResponse genericResponse = await removeProvider2iService.UpdateRemovalStatus(tokenDetails.Token, tokenDetails.TokenId, provider, user);
+                            GenericResponse genericResponse = await removeProvider2iService.UpdateRemovalStatus(TeamEnum.Provider, tokenDetails.Token, tokenDetails.TokenId, provider, user);
                             if (genericResponse.Success)
                             {
                                 await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
@@ -123,7 +124,7 @@ namespace DVSRegister.Controllers
             if (!string.IsNullOrEmpty(token))
             {
                 removeProviderViewModel.token = token;
-                TokenDetails tokenDetails = await jwtService.ValidateToken(token);
+                TokenDetails tokenDetails = await jwtService.ValidateToken(token, "DSIT");
                 if (tokenDetails != null && tokenDetails.IsAuthorised)
                 {
                     ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
@@ -150,20 +151,20 @@ namespace DVSRegister.Controllers
         [HttpPost("dsit/provider-details")]
         public async Task<IActionResult> RemoveProviderDetailsDSIT(RemoveProviderViewModel removeProviderViewModel, string action)
         {
-            string user = string.Empty;// To Do : update based on reason in provider
+            string user = "DSIT";
 
             if (!string.IsNullOrEmpty(removeProviderViewModel.token))
             {
 
                 if (action == "remove")
                 {
-                    TokenDetails tokenDetails = await jwtService.ValidateToken(removeProviderViewModel.token);
+                    TokenDetails tokenDetails = await jwtService.ValidateToken(removeProviderViewModel.token, "DSIT");
                     if (tokenDetails != null && tokenDetails.IsAuthorised)
                     {
                         ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
                         if (ModelState.IsValid)
                         {
-                            GenericResponse genericResponse = await removeProvider2iService.UpdateRemovalStatus(tokenDetails.Token, tokenDetails.TokenId, provider, user);
+                            GenericResponse genericResponse = await removeProvider2iService.UpdateRemovalStatus(TeamEnum.DSIT,tokenDetails.Token, tokenDetails.TokenId, provider, user);
                             if (genericResponse.Success)
                             {
                                 await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);

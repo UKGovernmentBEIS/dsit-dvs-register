@@ -1,7 +1,6 @@
-﻿using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.CommonUtility.Models;
+﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
-using DVSRegister.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -20,11 +19,18 @@ namespace DVSRegister.Data
         #region Remove provider
         public async Task<RemoveProviderToken> GetRemoveProviderToken(string token, string tokenId)
         {
-            return await context.RemoveProviderToken.Include(p => p.Provider).ThenInclude(p => p.Services)
+            return await context.RemoveProviderToken.Include(p => p.Provider).ThenInclude(p => p.Services).Include(p=>p.RemoveTokenServiceMapping)
             .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new RemoveProviderToken();
         }
 
 
+        public async Task<ProviderProfile> GetProviderWithAllServices(int providerId)
+        {
+            ProviderProfile provider = new();
+            provider = await context.ProviderProfile.Include(p => p.Services)
+            .Where(p => p.Id == providerId).FirstOrDefaultAsync() ?? new ProviderProfile();
+            return provider;
+        }
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
         {
             ProviderProfile provider = new();
@@ -81,14 +87,20 @@ namespace DVSRegister.Data
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                if (serviceIds != null || serviceIds?.Count > 0)// remove only selected services
+                if (serviceIds != null && serviceIds.Count > 0)// remove only selected services
                 {
-                    var existingServices = await context.Service.Where(e => e.ProviderProfileId == providerProfileId && serviceIds.Contains(e.Id)).ToListAsync();
-                    foreach (var existingService in existingServices)
+                    foreach (var item in serviceIds)
                     {
-                        existingService.ServiceStatus = ServiceStatusEnum.Removed;
-                        existingService.ModifiedTime = DateTime.UtcNow;
+                        var service = await context.Service.Where(s => s.Id == item && s.ProviderProfileId == providerProfileId).FirstOrDefaultAsync();
+                        if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
+                        {
+                            service.ServiceStatus = ServiceStatusEnum.Removed;
+                            service.ModifiedTime = DateTime.UtcNow;
+                            service.RemovedTime = DateTime.UtcNow;
+                        }
+                       
                     }
+                   
                 }
                 else // remove all services and provider
                 {
@@ -97,14 +109,18 @@ namespace DVSRegister.Data
                     {
                         existingProvider.ModifiedTime = DateTime.UtcNow;
                         existingProvider.ProviderStatus = ProviderStatusEnum.RemovedFromRegister;
-
+                        existingProvider.RemovedTime = DateTime.UtcNow;
                         // Update the status of each service
                         if (existingProvider.Services != null)
                         {
                             foreach (var service in existingProvider.Services)
                             {
-                                service.ServiceStatus = ServiceStatusEnum.Removed;
-                                service.ModifiedTime = DateTime.UtcNow;
+                                if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation )
+                                {
+                                    service.ServiceStatus = ServiceStatusEnum.Removed;
+                                    service.ModifiedTime = DateTime.UtcNow;
+                                    service.RemovedTime = DateTime.UtcNow;
+                                }                               
                             }
                         }
                     }
@@ -137,7 +153,40 @@ namespace DVSRegister.Data
 
             return false;
         }
+
+
+        public async Task<GenericResponse> UpdateProviderStatus(int providerProfileId, ProviderStatusEnum providerStatus, string loggedInUserEmail, EventTypeEnum eventType)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfileId);
+                if (existingProvider != null)
+                {
+
+                    existingProvider.ModifiedTime = DateTime.UtcNow;
+                    existingProvider.ProviderStatus = providerStatus;
+
+                    if (providerStatus == ProviderStatusEnum.RemovedFromRegister)
+                    {
+                        existingProvider.RemovedTime = DateTime.UtcNow;
+                    }
+                   
+                }
+                await context.SaveChangesAsync(TeamEnum.DSIT, eventType, loggedInUserEmail);
+                await transaction.CommitAsync();
+                genericResponse.Success = true;
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                await transaction.RollbackAsync();
+                logger.LogError(ex.Message);
+            }
+            return genericResponse;
+        }
         #endregion
 
-    }
+  }
 }

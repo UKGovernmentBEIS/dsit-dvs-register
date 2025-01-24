@@ -233,6 +233,27 @@ namespace DVSRegister.CommonUtility.Email
             };
             return await SendEmail(emailModel);
         }
+
+        #endregion
+
+        #region Remove
+        public async Task<bool> SendRemovalRequestConfirmedToDIP(string recipientName, string emailAddress)
+        {
+            var template = govUkNotifyConfig.ProviderRemovalRequestConfirmed;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientName,  recipientName}
+              
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
         #endregion
     }
 }
