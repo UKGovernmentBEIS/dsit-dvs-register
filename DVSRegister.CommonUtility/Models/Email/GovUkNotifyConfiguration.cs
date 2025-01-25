@@ -22,5 +22,14 @@
         public AgreementToPublishToDSITTemplate AgreementToPublishToDSITTemplate { get; set; }
         public AgreementToProceedApplicationToDSIT AgreementToProceedApplicationToDSIT { get; set; }
         public ProviderRemovalRequestConfirmed ProviderRemovalRequestConfirmed { get; set; }
+
+        public ProviderRemovalConfirmationToDSIT ProviderRemovalConfirmationToDSIT { get; set; }
+
+        public RecordRemovedToDSIT RecordRemovedToDSIT { get; set; }
+
+        public RemovalRequestDeclinedToProvider RemovalRequestDeclinedToProvider { get; set; }
+        public RemovalRequestDeclinedToDSIT RemovalRequestDeclinedToDSIT { get; set; }
+
+        public _2iCheckDeclinedNotificationToDSIT _2iCheckDeclinedNotificationToDSIT { get; set; }
     }
 }

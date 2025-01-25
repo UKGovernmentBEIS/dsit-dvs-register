@@ -22,7 +22,12 @@ namespace DVSRegister.CommonUtility.Email
         //remove emails
 
         public Task<bool> SendRemovalRequestConfirmedToDIP(string recipientName, string emailAddress);
+        public Task<bool> SendProviderRemovalConfirmationToDSIT(string companyName, string serviceName);
+        public Task<bool> SendRecordRemovedToDSIT(string companyName, string serviceName, string reasonForRemoval);
 
+        public Task<bool> RemovalRequestDeclinedToProvider(string recipientName, string emailAddress);
+        public Task<bool> RemovalRequestDeclinedToDSIT(string companyName, string serviceName);
 
+        public Task<bool> _2iCheckDeclinedNotificationToDSIT(string companyName, string serviceName, string reasonForRemoval);
     }
 }

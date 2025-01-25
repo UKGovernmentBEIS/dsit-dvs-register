@@ -1,8 +1,8 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility.JWT;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -59,13 +59,12 @@ namespace DVSRegister.Controllers
 
             if (!string.IsNullOrEmpty(removeProviderViewModel.token))
             {
-
-                if (action == "remove")
+                TokenDetails tokenDetails = await jwtService.ValidateToken(removeProviderViewModel.token);
+                ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
+                if (tokenDetails != null && tokenDetails.IsAuthorised)
                 {
-                    TokenDetails tokenDetails = await jwtService.ValidateToken(removeProviderViewModel.token);
-                    if (tokenDetails != null && tokenDetails.IsAuthorised)
+                    if (action == "remove")
                     {
-                        ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
                         user = provider.PrimaryContactEmail + ";" + provider.SecondaryContactEmail;
                         if (ModelState.IsValid)
                         {
@@ -86,23 +85,29 @@ namespace DVSRegister.Controllers
                             return View("RemoveProviderDetails", removeProviderViewModel);
                         }
                     }
+                    else if (action == "cancel")
+                    {
+                        GenericResponse genericResponse = await removeProvider2iService.CancelRemovalRequest(TeamEnum.Provider, tokenDetails.Token, tokenDetails.TokenId, provider, user);
+                        if (genericResponse.Success)
+                        {
+                            await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
+                            return RedirectToAction("RemoveProviderCancel");
+                        }
+                        else
+                        {
+                            return RedirectToAction("RemoveProviderError");
+                        }
+                    }
                     else
                     {
-                        await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
-                        return RedirectToAction("RemoveProviderURLExpired");
+                        return RedirectToAction("RemoveProviderError");
                     }
-                }
-
-                else if (action == "cancel")
-                {
-                    return RedirectToAction("RemoveProviderCancel");
                 }
                 else
                 {
-                    return RedirectToAction("RemoveProviderError");
+                    await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
+                    return RedirectToAction("RemoveProviderURLExpired");
                 }
-
-
             }
             else
             {
@@ -155,16 +160,15 @@ namespace DVSRegister.Controllers
 
             if (!string.IsNullOrEmpty(removeProviderViewModel.token))
             {
-
-                if (action == "remove")
+                TokenDetails tokenDetails = await jwtService.ValidateToken(removeProviderViewModel.token, "DSIT");
+                if (tokenDetails != null && tokenDetails.IsAuthorised)
                 {
-                    TokenDetails tokenDetails = await jwtService.ValidateToken(removeProviderViewModel.token, "DSIT");
-                    if (tokenDetails != null && tokenDetails.IsAuthorised)
+                    ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
+                    if (action == "remove")
                     {
-                        ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
                         if (ModelState.IsValid)
                         {
-                            GenericResponse genericResponse = await removeProvider2iService.UpdateRemovalStatus(TeamEnum.DSIT,tokenDetails.Token, tokenDetails.TokenId, provider, user);
+                            GenericResponse genericResponse = await removeProvider2iService.UpdateRemovalStatus(TeamEnum.DSIT, tokenDetails.Token, tokenDetails.TokenId, provider, user);
                             if (genericResponse.Success)
                             {
                                 await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
@@ -181,27 +185,35 @@ namespace DVSRegister.Controllers
                             return View("RemoveProviderDetails", removeProviderViewModel);
                         }
                     }
+                    else if (action == "cancel")
+                    {
+                        GenericResponse genericResponse = await removeProvider2iService.CancelRemovalRequest(TeamEnum.DSIT, tokenDetails.Token, tokenDetails.TokenId, provider, user);
+                        if(genericResponse.Success)
+                        {
+                            await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
+                            return RedirectToAction("RemoveProviderCancel");
+                        }
+                        else
+                        {
+                            return RedirectToAction("RemoveProviderError");
+                        }
+
+                    }
                     else
                     {
-                        await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
-                        return RedirectToAction("RemoveProviderURLExpired");
+                        return RedirectToAction("RemoveProviderError");
                     }
-                }
 
-                else if (action == "cancel")
-                {
-                    return RedirectToAction("RemoveProviderCancel");
                 }
                 else
                 {
-                    return RedirectToAction("RemoveProviderError");
+                    await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
+                    return RedirectToAction("RemoveProviderURLExpired");
                 }
-
-
             }
             else
             {
-                return RedirectToAction("ConsentError");
+                return RedirectToAction("RemoveProviderError");
             }
 
         }

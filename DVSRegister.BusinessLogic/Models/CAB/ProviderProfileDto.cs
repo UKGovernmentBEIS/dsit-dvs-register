@@ -1,5 +1,5 @@
-﻿using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.Data.Entities;
+﻿using DVSAdmin.CommonUtility.Models.Enums;
+using DVSRegister.CommonUtility.Models.Enums;
 using System.Text.Json.Serialization;
 
 namespace DVSRegister.BusinessLogic.Models.CAB
@@ -36,5 +36,6 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
         public DateTimeInfoDto LastUpdatedInfo { get; set; }
+        public RemovalReasonsEnum? RemovalReason { get; set; }
     }
 }

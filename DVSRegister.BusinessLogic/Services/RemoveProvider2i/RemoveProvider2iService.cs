@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DVSAdmin.CommonUtility.Models.Enums;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
@@ -52,15 +53,19 @@ namespace DVSRegister.BusinessLogic.Services
         public async Task<GenericResponse> UpdateRemovalStatus(TeamEnum team, string token, string tokenId, ProviderProfileDto providerDto, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();
+            string serviceNames = string.Empty;
+            string removalReason = RemovalReasonsEnumExtensions.GetDescription(providerDto.RemovalReason.Value);
+
+            List<int> serviceIds = providerDto.Services.Select(s => s.Id).ToList();
+            var filteredServiceNames = providerDto.Services.Select(s => s.ServiceName).ToList();
+            serviceNames = string.Join("\r", filteredServiceNames);
+
+
             RemoveProviderToken removeProviderToken = await removeProvider2iRepository.GetRemoveProviderToken(token, tokenId);
-            
-            
-          
             if (!string.IsNullOrEmpty(removeProviderToken.Token) && !string.IsNullOrEmpty(removeProviderToken.TokenId))   //proceed update status if token exists           
             {
                 if (removeProviderToken.RemoveTokenServiceMapping != null && removeProviderToken.RemoveTokenServiceMapping.Count > 0) // remove selected services in this case
-                {
-                    List<int> serviceIds = providerDto.Services.Select(s => s.Id).ToList();
+                {                   
                     genericResponse = await removeProvider2iRepository.UpdateRemovalStatus(providerDto.Id, team, EventTypeEnum.RemoveServices2i, serviceIds, loggedInUserEmail);
                     // get updated service list and decide provider status
                     ProviderProfile providerProfile = await removeProvider2iRepository.GetProviderWithAllServices(providerDto.Id);
@@ -70,22 +75,89 @@ namespace DVSRegister.BusinessLogic.Services
 
                 }
                 else
-                {                    
+                {                 
+                    //remove provider
                     genericResponse = await removeProvider2iRepository.UpdateRemovalStatus(providerDto.Id, team, EventTypeEnum.RemoveServices2i, null, loggedInUserEmail);
+
+
+                    if (genericResponse.Success)
+                    {
+                        if (team == TeamEnum.Provider) // if provider confirms
+                        {
+                            await emailSender.SendRemovalRequestConfirmedToDIP(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);
+                            await emailSender.SendRemovalRequestConfirmedToDIP(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail);
+                            await emailSender.SendProviderRemovalConfirmationToDSIT(providerDto.RegisteredName, serviceNames);
+                            await emailSender.SendRecordRemovedToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
+                        }
+
+                        else if (team == TeamEnum.DSIT)
+                        {
+                            //to do 48/DSIT/2i removal check approved
+
+                        }
+                    }
                 }
                
-                if (genericResponse.Success)
+               
+
+            }
+            return genericResponse;
+        }
+
+
+        public async Task<GenericResponse> CancelRemovalRequest(TeamEnum team, string token, string tokenId, ProviderProfileDto providerDto, string loggedInUserEmail)
+        {
+            GenericResponse genericResponse = new();
+            string serviceNames = string.Empty;
+            string removalReason = string.Empty;
+
+            List<int> serviceIds = providerDto.Services.Select(s => s.Id).ToList();
+            var filteredServiceNames = providerDto.Services.Select(s => s.ServiceName).ToList();
+            serviceNames = string.Join("\r", filteredServiceNames);
+
+
+            RemoveProviderToken removeProviderToken = await removeProvider2iRepository.GetRemoveProviderToken(token, tokenId);
+            if (!string.IsNullOrEmpty(removeProviderToken.Token) && !string.IsNullOrEmpty(removeProviderToken.TokenId))   //proceed update status if token exists           
+            {
+                if (removeProviderToken.RemoveTokenServiceMapping != null && removeProviderToken.RemoveTokenServiceMapping.Count > 0) // remove selected services in this case
                 {
-                    if(team == TeamEnum.Provider) 
+                   
+                    genericResponse = await removeProvider2iRepository.CancelServiceRemoval(providerDto.Id, team, EventTypeEnum.RemoveServices2i, serviceIds, loggedInUserEmail);
+                    // get updated service list and decide provider status
+                    ProviderProfile providerProfile = await removeProvider2iRepository.GetProviderWithAllServices(providerDto.Id);
+                    // update provider status
+                    ProviderStatusEnum providerStatus = GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
+                    genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerDto.Id, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);
+
+                }
+                else
+                {
+                    removalReason = RemovalReasonsEnumExtensions.GetDescription(providerDto.RemovalReason.Value);
+                    ProviderProfile providerProfile = await removeProvider2iRepository.GetProviderWithAllServices(providerDto.Id);
+                    serviceIds = providerProfile.Services.Select(s => s.Id).ToList(); // for all services
+                                                                                    
+                    genericResponse = await removeProvider2iRepository.CancelServiceRemoval(providerDto.Id, team, EventTypeEnum.RemoveServices2i, serviceIds, loggedInUserEmail);
+                    ProviderStatusEnum providerStatus = GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
+                    genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerDto.Id, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);
+
+                    if (team == TeamEnum.Provider)
                     {
-                        await emailSender.SendRemovalRequestConfirmedToDIP(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);
+                        await emailSender.RemovalRequestDeclinedToProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);
+                        await emailSender.RemovalRequestDeclinedToProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail);
+                        await emailSender.RemovalRequestDeclinedToDSIT(providerDto.RegisteredName, serviceNames);
+                    }
+                    else if (team == TeamEnum.DSIT)
+                    {
+                        //to do : 49/DSIT/2i check declined
+
+                        await emailSender._2iCheckDeclinedNotificationToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
                     }
 
-                    if (team == TeamEnum.DSIT)
-                    {
-                       //to do
-                    }
                 }
+
+              
+
+
 
             }
             return genericResponse;
