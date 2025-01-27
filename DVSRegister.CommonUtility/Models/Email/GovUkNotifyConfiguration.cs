@@ -31,5 +31,9 @@
         public RemovalRequestDeclinedToDSIT RemovalRequestDeclinedToDSIT { get; set; }
 
         public _2iCheckDeclinedNotificationToDSIT _2iCheckDeclinedNotificationToDSIT { get; set; }
+
+        public _2iCheckApprovedNotificationToDSIT _2iCheckApprovedNotificationToDSIT { get;set; }
+
+        public RecordRemovedConfirmedToCabOrProvider RecordRemovedConfirmedToCabOrProvider { get; set; }
     }
 }

@@ -205,7 +205,7 @@ namespace DVSRegister.CommonUtility.Email
 
                 { template.ServiceName,  serviceName},
                 { template.CompanyName,  companyName},
-                { template.RecipientName,  recipientName},
+                { template.RecipientName,  recipientName}
              };
             var emailModel = new GovUkNotifyEmailModel
             {
@@ -336,6 +336,45 @@ namespace DVSRegister.CommonUtility.Email
             var emailModel = new GovUkNotifyEmailModel
             {
                 EmailAddress = govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> _2iCheckApprovedNotificationToDSIT(string companyName, string serviceName, string reasonForRemoval)
+        {
+
+            var template = govUkNotifyConfig._2iCheckApprovedNotificationToDSIT;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.CompanyName,  companyName},
+                { template.ServiceName,  serviceName},
+                { template.ReasonForRemoval,  reasonForRemoval},
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> RecordRemovedConfirmedToCabOrProvider(string recipientName, string emailAddress, string companyName, string serviceName, string reasonForRemoval)
+        {
+
+            var template = govUkNotifyConfig.RecordRemovedConfirmedToCabOrProvider;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                 { template.RecipientName,  recipientName},
+                { template.CompanyName,  companyName},
+                { template.ServiceName,  serviceName},
+                { template.ReasonForRemoval,  reasonForRemoval},
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = emailAddress ,
                 TemplateId = template.Id,
                 Personalisation = personalisation
             };

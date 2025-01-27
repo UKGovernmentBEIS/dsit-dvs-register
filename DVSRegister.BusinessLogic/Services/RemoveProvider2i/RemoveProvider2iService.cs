@@ -87,12 +87,16 @@ namespace DVSRegister.BusinessLogic.Services
                             await emailSender.SendRemovalRequestConfirmedToDIP(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);
                             await emailSender.SendRemovalRequestConfirmedToDIP(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail);
                             await emailSender.SendProviderRemovalConfirmationToDSIT(providerDto.RegisteredName, serviceNames);
+
+                            await Task.Delay(1000);
                             await emailSender.SendRecordRemovedToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
+                            await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail,providerDto.RegisteredName, serviceNames, removalReason);
+                            await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail, providerDto.RegisteredName, serviceNames, removalReason);
                         }
 
-                        else if (team == TeamEnum.DSIT)
-                        {
-                            //to do 48/DSIT/2i removal check approved
+                        else if (team == TeamEnum.DSIT) //if dsit confirms 2i check
+                        {                            
+                            await emailSender._2iCheckApprovedNotificationToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
 
                         }
                     }
@@ -148,7 +152,7 @@ namespace DVSRegister.BusinessLogic.Services
                     }
                     else if (team == TeamEnum.DSIT)
                     {
-                        //to do : 49/DSIT/2i check declined
+                     
 
                         await emailSender._2iCheckDeclinedNotificationToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
                     }

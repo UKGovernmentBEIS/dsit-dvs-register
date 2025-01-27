@@ -29,5 +29,9 @@ namespace DVSRegister.CommonUtility.Email
         public Task<bool> RemovalRequestDeclinedToDSIT(string companyName, string serviceName);
 
         public Task<bool> _2iCheckDeclinedNotificationToDSIT(string companyName, string serviceName, string reasonForRemoval);
+
+        public Task<bool> _2iCheckApprovedNotificationToDSIT(string companyName, string serviceName, string reasonForRemoval);
+
+        public Task<bool> RecordRemovedConfirmedToCabOrProvider(string recipientName, string emailAddress,string companyName, string serviceName, string reasonForRemoval);
     }
 }
