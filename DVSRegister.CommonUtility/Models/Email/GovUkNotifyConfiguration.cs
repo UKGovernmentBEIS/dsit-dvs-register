@@ -22,5 +22,26 @@
         public AgreementToPublishToDSITTemplate AgreementToPublishToDSITTemplate { get; set; }
         public AgreementToProceedApplicationToDSIT AgreementToProceedApplicationToDSIT { get; set; }
         public ProviderRemovalRequestConfirmed ProviderRemovalRequestConfirmed { get; set; }
+
+        public ProviderRemovalConfirmationToDSIT ProviderRemovalConfirmationToDSIT { get; set; }
+
+        public RecordRemovedToDSIT RecordRemovedToDSIT { get; set; }
+
+        public RemovalRequestDeclinedToProvider RemovalRequestDeclinedToProvider { get; set; }
+        public RemovalRequestDeclinedToDSIT RemovalRequestDeclinedToDSIT { get; set; }
+
+        public _2iCheckDeclinedNotificationToDSIT _2iCheckDeclinedNotificationToDSIT { get; set; }
+
+        public _2iCheckApprovedNotificationToDSIT _2iCheckApprovedNotificationToDSIT { get;set; }
+
+        public RecordRemovedConfirmedToCabOrProvider RecordRemovedConfirmedToCabOrProvider { get; set; }
+
+        public RemoveServiceConfirmationToProvider RemoveServiceConfirmationToProvider { get; set; }
+        public ServiceRemovalConfirmationToDSIT ServiceRemovalConfirmationToDSIT { get; set; }
+
+        public ServiceRemovedConfirmedToCabOrProvider ServiceRemovedConfirmedToCabOrProvider { get;set;}
+        public ServiceRemovedToDSIT ServiceRemovedToDSIT { get; set; }  
+        public CabServiceRemovalRequested CabServiceRemovalRequested { get; set; }
+        public CabServiceRemovalRequestedToDSIT CabServiceRemovalRequestedToDSIT { get; set; }
     }
 }

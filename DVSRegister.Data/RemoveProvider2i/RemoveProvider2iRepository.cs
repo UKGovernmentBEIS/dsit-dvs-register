@@ -34,7 +34,7 @@ namespace DVSRegister.Data
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.Services)
+            provider = await context.ProviderProfile.Include(p => p.Services).Include(p=>p.CabUser)
             .Where(p => p.Id == providerId).FirstOrDefaultAsync() ?? new ProviderProfile();
 
 
@@ -138,6 +138,45 @@ namespace DVSRegister.Data
             return genericResponse;
         }
 
+
+
+
+        public async Task<GenericResponse> CancelServiceRemoval(int providerProfileId, TeamEnum teamEnum, EventTypeEnum eventType, List<int>? serviceIds, string loggedInUserEmail)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                if (serviceIds != null && serviceIds.Count > 0)// republish services
+                {
+                    foreach (var item in serviceIds)
+                    {
+                        var service = await context.Service.Where(s => s.Id == item && s.ProviderProfileId == providerProfileId).FirstOrDefaultAsync();
+                        if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
+                        {
+                            service.ServiceStatus = ServiceStatusEnum.Published;
+                            service.ModifiedTime = DateTime.UtcNow;
+                           
+                        }
+
+                    }
+
+                }               
+                await context.SaveChangesAsync(teamEnum, eventType, loggedInUserEmail);
+                await transaction.CommitAsync();
+                genericResponse.Success = true;
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                await transaction.RollbackAsync();
+                logger.LogError(ex.Message);
+            }
+            return genericResponse;
+        }
+
+
+        
 
         public async Task<bool> RemoveRemovalToken(string token, string tokenId, string loggedInUserEmail)
         {

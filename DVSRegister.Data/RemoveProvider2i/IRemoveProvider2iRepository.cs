@@ -16,6 +16,8 @@ namespace DVSRegister.Data
 
         public Task<ProviderProfile> GetProviderWithAllServices(int providerId);
         public Task<GenericResponse> UpdateProviderStatus(int providerProfileId, ProviderStatusEnum providerStatus, string loggedInUserEmail, EventTypeEnum eventType);
+
+        public Task<GenericResponse> CancelServiceRemoval(int providerProfileId, TeamEnum teamEnum, EventTypeEnum eventType, List<int>? serviceIds, string loggedInUserEmail);
         #endregion
     }
 }
