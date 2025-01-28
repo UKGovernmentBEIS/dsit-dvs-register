@@ -69,7 +69,7 @@ namespace DVSRegister.BusinessLogic.Services
                     // get updated service list and decide provider status
                     ProviderProfile providerProfile = await removeProvider2iRepository.GetProviderWithAllServices(providerDto.Id);
                     // update provider status
-                    ProviderStatusEnum providerStatus = GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
+                    ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
                     genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerDto.Id, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);
 
                     if (genericResponse.Success)
@@ -151,7 +151,7 @@ namespace DVSRegister.BusinessLogic.Services
                     // get updated service list and decide provider status
                     ProviderProfile providerProfile = await removeProvider2iRepository.GetProviderWithAllServices(providerDto.Id);
                     // update provider status
-                    ProviderStatusEnum providerStatus = GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
+                    ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
                     genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerDto.Id, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);
 
                 }
@@ -162,7 +162,7 @@ namespace DVSRegister.BusinessLogic.Services
                     serviceIds = providerProfile.Services.Select(s => s.Id).ToList(); // for all services
                                                                                     
                     genericResponse = await removeProvider2iRepository.CancelServiceRemoval(providerDto.Id, team, EventTypeEnum.RemoveServices2i, serviceIds, loggedInUserEmail);
-                    ProviderStatusEnum providerStatus = GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
+                    ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
                     genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerDto.Id, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);                                    
 
                 }
@@ -188,52 +188,7 @@ namespace DVSRegister.BusinessLogic.Services
         }
 
         #region private methods
-        private ProviderStatusEnum GetProviderStatus(ICollection<Service> services, ProviderStatusEnum currentStatus)
-        {
-            ProviderStatusEnum providerStatus = currentStatus;
-            if (services != null && services.Count > 0)
-            {
-
-                if (services.All(service => service.ServiceStatus == ServiceStatusEnum.Removed))
-                {
-                    providerStatus = ProviderStatusEnum.RemovedFromRegister;
-                }
-
-                else
-                {
-                    var priorityOrder = new List<ServiceStatusEnum>
-                    {
-                        ServiceStatusEnum.CabAwaitingRemovalConfirmation,
-                        ServiceStatusEnum.ReadyToPublish,
-                        ServiceStatusEnum.AwaitingRemovalConfirmation,
-                        ServiceStatusEnum.Published,
-                        ServiceStatusEnum.Removed
-                    };
-
-                    ServiceStatusEnum highestPriorityStatus = services.Select(service => service.ServiceStatus).OrderBy(status => priorityOrder.IndexOf(status)).FirstOrDefault();
-
-
-                    switch (highestPriorityStatus)
-                    {
-                        case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
-                            return ProviderStatusEnum.CabAwaitingRemovalConfirmation;
-                        case ServiceStatusEnum.ReadyToPublish:
-                            bool hasPublishedServices = services.Any(service => service.ServiceStatus == ServiceStatusEnum.Published);
-                            return hasPublishedServices ? ProviderStatusEnum.PublishedActionRequired : ProviderStatusEnum.ActionRequired;
-                        case ServiceStatusEnum.AwaitingRemovalConfirmation:
-                            return ProviderStatusEnum.AwaitingRemovalConfirmation;
-                        case ServiceStatusEnum.Published:
-                            return ProviderStatusEnum.Published;
-                        default:
-                            return ProviderStatusEnum.AwaitingRemovalConfirmation;
-                    }
-                }
-
-               
-
-            }
-            return providerStatus;
-        }
+       
         #endregion
     }
 }

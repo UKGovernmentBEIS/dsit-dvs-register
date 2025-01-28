@@ -27,18 +27,7 @@ namespace DVSRegister.Data.CabRemovalRequest
                 service.ModifiedTime = DateTime.UtcNow;
                 service.RemovalRequestTime = DateTime.UtcNow;
                 service.RemovalReasonByCab = removalReasonByCab;
-                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveServiceRequestedByCab, loggedInUserEmail);
-               
-
-                var provider = await context.ProviderProfile.Include(p=>p.Services).Where(p => p.Id== providerProfileId && p.CabUser.CabId == cabId).FirstOrDefaultAsync();
-                if (provider.Services.All(service => service.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation))
-                {
-                    provider.ProviderStatus = ProviderStatusEnum.CabAwaitingRemovalConfirmation;
-                    provider.RemovalRequestTime = DateTime.UtcNow;
-                    provider.ModifiedTime = DateTime.UtcNow;
-                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveServiceRequestedByCab, loggedInUserEmail);
-                }
-
+                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveServiceRequestedByCab, loggedInUserEmail);    
                 await transaction.CommitAsync();
                 genericResponse.Success = true;
             }
