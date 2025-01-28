@@ -32,12 +32,15 @@ namespace DVSRegister.CommonUtility.Email
 
         public Task<bool> _2iCheckApprovedNotificationToDSIT(string companyName, string serviceName, string reasonForRemoval);
 
-        public Task<bool> RecordRemovedConfirmedToCabOrProvider(string recipientName, string emailAddress,string companyName, string serviceName, string reasonForRemoval);
+        public Task<bool> RecordRemovedConfirmedToCabOrProvider(string recipientName, string emailAddress, string companyName, string serviceName, string reasonForRemoval);
 
         public Task<bool> RemoveServiceConfirmationToProvider(string recipientName, string emailAddress,string serviceName, string reasonForRemoval);
         public Task<bool > ServiceRemovalConfirmationToDSIT(string companyName, string serviceName, string reasonForRemoval);
         public Task <bool > ServiceRemovedConfirmedToCabOrProvider(string recipientName, string emailAddress, string serviceName, string reasonForRemoval);
         public Task<bool> ServiceRemovedToDSIT(string serviceName, string reasonForRemoval);
+
+        public Task<bool> CabServiceRemovalRequested(string recipientName, string emailAddress, string companyName, string serviceName, string reasonForRemoval);
+        public Task<bool> CabServiceRemovalRequestedToDSIT(string companyName, string serviceName, string reasonForRemoval);
 
 
 

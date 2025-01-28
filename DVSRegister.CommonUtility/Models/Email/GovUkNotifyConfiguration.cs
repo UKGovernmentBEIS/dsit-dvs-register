@@ -41,5 +41,7 @@
 
         public ServiceRemovedConfirmedToCabOrProvider ServiceRemovedConfirmedToCabOrProvider { get;set;}
         public ServiceRemovedToDSIT ServiceRemovedToDSIT { get; set; }  
+        public CabServiceRemovalRequested CabServiceRemovalRequested { get; set; }
+        public CabServiceRemovalRequestedToDSIT CabServiceRemovalRequestedToDSIT { get; set; }
     }
 }
