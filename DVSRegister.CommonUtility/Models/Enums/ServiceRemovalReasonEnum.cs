@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
 
 namespace DVSRegister.CommonUtility.Models.Enums
 {
@@ -12,5 +13,14 @@ namespace DVSRegister.CommonUtility.Models.Enums
         ProviderRequestedRemoval,
         [Description("The service provider no longer provides the listed service")]
         ProviderNotExists,
+    }
+    public static class ServiceRemovalReasonEnumExtensions
+    {
+        public static string GetDescription(this ServiceRemovalReasonEnum value)
+        {
+            FieldInfo field = value.GetType().GetField(value.ToString());
+            DescriptionAttribute attribute = field.GetCustomAttribute<DescriptionAttribute>();
+            return attribute == null ? value.ToString() : attribute.Description;
+        }
     }
 }

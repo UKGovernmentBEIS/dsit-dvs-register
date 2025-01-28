@@ -35,5 +35,11 @@
         public _2iCheckApprovedNotificationToDSIT _2iCheckApprovedNotificationToDSIT { get;set; }
 
         public RecordRemovedConfirmedToCabOrProvider RecordRemovedConfirmedToCabOrProvider { get; set; }
+
+        public RemoveServiceConfirmationToProvider RemoveServiceConfirmationToProvider { get; set; }
+        public ServiceRemovalConfirmationToDSIT ServiceRemovalConfirmationToDSIT { get; set; }
+
+        public ServiceRemovedConfirmedToCabOrProvider ServiceRemovedConfirmedToCabOrProvider { get;set;}
+        public ServiceRemovedToDSIT ServiceRemovedToDSIT { get; set; }  
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DVSAdmin.CommonUtility.Models.Enums;
 using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data.Entities;
 using System.Text.Json.Serialization;
 
 namespace DVSRegister.BusinessLogic.Models.CAB
@@ -28,6 +29,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public string ProviderWebsiteAddress { get; set; }
         public int CompanyId { get; set; }
         public int CabUserId { get; set; }
+        public CabUser CabUser { get; set; }
         public ProviderStatusEnum ProviderStatus { get; set; }
 
         [JsonIgnore]

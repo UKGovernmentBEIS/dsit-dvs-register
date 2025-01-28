@@ -380,6 +380,78 @@ namespace DVSRegister.CommonUtility.Email
             };
             return await SendEmail(emailModel);
         }
+
+        public async Task<bool> RemoveServiceConfirmationToProvider(string recipientName, string emailAddress, string serviceName, string reasonForRemoval)
+        {
+            var template = govUkNotifyConfig.RemoveServiceConfirmationToProvider;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                 { template.RecipientName,  recipientName},               
+                { template.ServiceName,  serviceName},
+                { template.ReasonForRemoval,  reasonForRemoval},
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> ServiceRemovalConfirmationToDSIT(string companyName, string serviceName, string reasonForRemoval)
+        {
+            var template = govUkNotifyConfig.ServiceRemovalConfirmationToDSIT;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                 { template.CompanyName,  companyName},
+                { template.ServiceName,  serviceName},
+                { template.ReasonForRemoval,  reasonForRemoval},
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> ServiceRemovedConfirmedToCabOrProvider(string recipientName, string emailAddress, string serviceName, string reasonForRemoval)
+        {
+            var template = govUkNotifyConfig.ServiceRemovedConfirmedToCabOrProvider;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                 { template.RecipientName,  recipientName},
+                { template.ServiceName,  serviceName},
+                { template.ReasonForRemoval,  reasonForRemoval},
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> ServiceRemovedToDSIT(string serviceName, string reasonForRemoval)
+        {
+            var template = govUkNotifyConfig.ServiceRemovedToDSIT;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+               
+                { template.ServiceName,  serviceName},
+                { template.ReasonForRemoval,  reasonForRemoval},
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
         #endregion
     }
 }

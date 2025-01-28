@@ -34,7 +34,7 @@ namespace DVSRegister.Data
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.Services)
+            provider = await context.ProviderProfile.Include(p => p.Services).Include(p=>p.CabUser)
             .Where(p => p.Id == providerId).FirstOrDefaultAsync() ?? new ProviderProfile();
 
 
