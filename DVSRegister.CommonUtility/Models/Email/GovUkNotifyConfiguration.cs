@@ -43,5 +43,9 @@
         public ServiceRemovedToDSIT ServiceRemovedToDSIT { get; set; }  
         public CabServiceRemovalRequested CabServiceRemovalRequested { get; set; }
         public CabServiceRemovalRequestedToDSIT CabServiceRemovalRequestedToDSIT { get; set; }
+
+        public RecordRemovalRequestByCabToDSIT RecordRemovalRequestByCabToDSIT { get; set; }
+
+        public RecordRemovalRequestConfirmationToCab RecordRemovalRequestConfirmationToCab { get;set; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
@@ -14,14 +13,12 @@ namespace DVSRegister.Controllers
     public class CabRemovalRequestController : Controller
     {
         private readonly ICabService cabService;
-        private readonly ICabRemovalRequestService cabRemovalRequestService;
-        private readonly IEmailSender emailSender;
+        private readonly ICabRemovalRequestService cabRemovalRequestService;  
 
         private string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
-        public CabRemovalRequestController(ICabService cabService,  ICabRemovalRequestService cabRemovalRequestService, IEmailSender emailSender)
+        public CabRemovalRequestController(ICabService cabService,  ICabRemovalRequestService cabRemovalRequestService)
         {
-            this.cabService = cabService;          
-            this.emailSender = emailSender;
+            this.cabService = cabService;
             this.cabRemovalRequestService = cabRemovalRequestService;
             
         }
@@ -73,12 +70,8 @@ namespace DVSRegister.Controllers
                TempData.Clear();
                GenericResponse genericResponse =  await cabRemovalRequestService.UpdateRemovalStatus(cabId, providerId, serviceId, UserEmail, removalReasonByCab);
                if(genericResponse.Success)
-                {                   
-                    ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, cabId);
-                    //45 / CAB / Service removal requested
-                    await emailSender.CabServiceRemovalRequested(UserEmail, UserEmail, serviceDto.Provider.RegisteredName, serviceDto.ServiceName, removalReasonByCab);
-                    //46/DSIT/CAB service removal request
-                    await emailSender.CabServiceRemovalRequestedToDSIT(serviceDto.Provider.RegisteredName, serviceDto.ServiceName, removalReasonByCab);
+                {
+                    ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, cabId);  
                     return View("ServiceRemovalRequested",serviceDto);
                 }
                 else
