@@ -39,7 +39,8 @@ namespace DVSRegister.BusinessLogic.Services
                 }
                 else
                 {
-                    ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(provider);                    
+                    ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(provider);
+                    providerProfileDto.Services = providerProfileDto.Services.Where(service => service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation).ToList();
                     return providerProfileDto;
                 }
              
