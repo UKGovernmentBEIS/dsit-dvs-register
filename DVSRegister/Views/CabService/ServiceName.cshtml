@@ -53,7 +53,9 @@
 
                     @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", serviceNameViewmodel)
                 
-                <button type="submit" class="govuk-button govuk-!-margin-top-2">Continue</button>
+                <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="continue">Continue</button>
+                    <button type="submit" role="link" class="govuk-link" name="action" value="draft">  Save and continue </button>
+                   
             </div>
         </div>
     </main>

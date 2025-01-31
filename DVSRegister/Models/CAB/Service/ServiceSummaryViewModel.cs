@@ -40,5 +40,6 @@ namespace DVSRegister.Models.CAB
         public int CabUserId { get; set; }
         public int CabId { get; set; }
         public bool FromSummaryPage { get;set; }
+        public int ServiceId { get; set; }
     }
 }

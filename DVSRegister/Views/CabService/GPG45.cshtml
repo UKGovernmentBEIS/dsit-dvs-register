@@ -92,9 +92,10 @@
                                  new Tuple<string, DVSRegister.Models.CAB.IdentityProfileViewModel, IEnumerable<DVSRegister.BusinessLogic.Models.CAB.IdentityProfileDto>, bool, int>("Very high confidence", Model, veryHighConfidenceList, false,lowConfCount +medConfCount+ highConfCount))
                     }
 
-                <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button">
+                    <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button" name="action" value="continue">
                     Continue
                 </button>
+                    <button type="submit" role="link" class="govuk-link" name="action" value="draft">  Save and continue </button>
                 }
             </div>
         </div>

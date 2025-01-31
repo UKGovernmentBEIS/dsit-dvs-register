@@ -15,7 +15,7 @@
 
                 <h1 class="govuk-heading-xl">
                     Service @Model.ServiceNumber details
-                </h1>
+                </h1>       
             </div>
             <div class="govuk-grid-column-full">
                 <div class="govuk-summary-card">
@@ -23,6 +23,16 @@
                         <p class="govuk-summary-card__title">
                             Service @Model.ServiceNumber details
                         </p>
+
+                        @if (Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                        {
+                            <ul class="govuk-summary-card__actions">
+                                <li class="govuk-summary-card__action">
+                                    <a class="govuk-link" href="/cab-service/submit-service/resume-submission?serviceId=@Model.Id">Resume submission<span class="govuk-visually-hidden"> of University of Gloucestershire (University of Gloucestershire)</span></a>
+                                </li>
+
+                            </ul>
+                        }
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
@@ -34,17 +44,33 @@
                                    @Model.ServiceName
                                 </dd>
                             </div>
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Publication date (UTC)
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @if (@Model.PublishedTime != null)
-                                    {
-                                        @DateTimeExtensions.FormatDateTime(@Model.PublishedTime)
-                                    }
-                                </dd>
-                            </div>
+
+                            @if(Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Last updated date (GMT)
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @DateTimeExtensions.FormatDateTime(@Model.ModifiedTime)
+                                    </dd>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Publication date (UTC)
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @if (@Model.PublishedTime != null)
+                                        {
+                                            @DateTimeExtensions.FormatDateTime(@Model.PublishedTime)
+                                        }
+                                    </dd>
+                                </div>
+                            }
+                           
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     Status
@@ -83,7 +109,7 @@
                                 </dd>
                             </div>
 
-                            @if (Model.HasGPG44 &&  Model.ServiceQualityLevelMapping!=null)
+                            @if (  Convert.ToBoolean(Model.HasGPG44) &&  Model.ServiceQualityLevelMapping!=null)
                             {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
@@ -123,7 +149,7 @@
                                 </dd>
                             </div>
 
-                            @if(Model.HasSupplementarySchemes && Model.ServiceSupSchemeMapping!=null)
+                            @if( Convert.ToBoolean(Model.HasSupplementarySchemes) && Model.ServiceSupSchemeMapping!=null)
                             {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
