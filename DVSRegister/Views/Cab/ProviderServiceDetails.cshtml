@@ -132,18 +132,14 @@
                                 </dd>
                             </div>
 
-                          @*   @if (Convert.ToBoolean(Model.HasGPG44) &&  Model.ServiceQualityLevelMapping!=null)
-                            { *@
+                           @if (Convert.ToBoolean(Model.HasGPG44) &&  Model.ServiceQualityLevelMapping!=null)
+                            {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
                                         GPG44 quality of authenticator
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-
-
-                                        @if (Convert.ToBoolean(Model.HasGPG44))
-                                        {
-                                            if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                            @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                                             {
                                                 foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                                                 {
@@ -154,9 +150,6 @@
                                             {
                                                 @:Incomplete
                                             }
-                                        }
-
-                                        
                                     </dd>
                                 </div>
 
@@ -179,7 +172,7 @@
                                     </dd>
                                 </div>
                                 
-                       @*      } *@
+                             } 
                             @if (Convert.ToBoolean(Model.HasGPG45) && Model.ServiceIdentityProfileMapping != null)
                             {
                             <div class="govuk-summary-list__row">

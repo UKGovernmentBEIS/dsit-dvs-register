@@ -9,8 +9,6 @@ using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Diagnostics;
 
 
 namespace DVSRegister.Controllers
@@ -397,13 +395,11 @@ namespace DVSRegister.Controllers
                 {
                     if (Convert.ToBoolean(summaryViewModel.HasGPG45))
                     {
-                        Debug.WriteLine($"pressed yes {summaryViewModel.HasGPG45}");
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return RedirectToAction("GPG45", new { fromSummaryPage = fromSummaryPage });
                     }
                     else
                     {
-                        Debug.WriteLine($"pressed no {summaryViewModel.HasGPG45}");
                         summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = new List<IdentityProfileDto>();
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("HasSupplementarySchemesInput");
@@ -773,27 +769,16 @@ namespace DVSRegister.Controllers
 
         [HttpGet("enter-expiry-date")]
         public IActionResult ConfirmityExpiryDate()
-        {
-            Debug.WriteLine("Entering ConfirmityExpiryDate action.");
-
+        {  
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            Debug.WriteLine("Retrieved ServiceSummaryViewModel.");
-
+            
             DateViewModel dateViewModel = new DateViewModel();
             dateViewModel.PropertyName = "ConfirmityExpiryDate";
-            Debug.WriteLine($"Initial DateViewModel PropertyName: {dateViewModel.PropertyName}");
-
+            
             if (summaryViewModel.ConformityExpiryDate != null)
             {
-                Debug.WriteLine($"ConformityExpiryDate found: {summaryViewModel.ConformityExpiryDate}");
                 dateViewModel = GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
-                Debug.WriteLine($"DateViewModel updated with day, month, year: {dateViewModel.Day}, {dateViewModel.Month}, {dateViewModel.Year}");
             }
-            else
-            {
-                Debug.WriteLine("ConformityExpiryDate is null.");
-            }
-
             return View(dateViewModel);
         }
 
