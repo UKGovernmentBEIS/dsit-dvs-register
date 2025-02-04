@@ -219,7 +219,10 @@ namespace DVSRegister.Data.CAB
                     existingService.ServiceStatus = service.ServiceStatus;
                     existingService.ModifiedTime = DateTime.UtcNow;                   
                     genericResponse.InstanceId = existingService.Id;
+                    if(service.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
+                    else
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddService, loggedInUserEmail);
                     transaction.Commit();
                     genericResponse.Success = true;
                 }
@@ -233,8 +236,11 @@ namespace DVSRegister.Data.CAB
                     service.CreatedTime = DateTime.UtcNow;
                     if(service.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
                     {
-                        service.ModifiedTime = DateTime.UtcNow;
+                        service.ModifiedTime = DateTime.UtcNow;                       
                     }
+                    service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue ? null : service.ConformityExpiryDate;
+                    service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;
+
                     AttachListToDbContext(service);
                     var entity = await context.Service.AddAsync(service);
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddService, loggedInUserEmail);

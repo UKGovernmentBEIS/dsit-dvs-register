@@ -622,64 +622,63 @@ namespace DVSRegister.Controllers
         [HttpPost("certificate-upload")]
         public async Task<IActionResult> SaveCertificate(CertificateFileViewModel certificateFileViewModel, string action)
         {
-
             bool fromSummaryPage = certificateFileViewModel.FromSummaryPage;
-
-            certificateFileViewModel.FromSummaryPage = false;          
-            if  (ModelState["File"].Errors.Count == 0)
+            certificateFileViewModel.FromSummaryPage = false;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == false)
             {
-                Debug.WriteLine("File not uploaded successfully and no model state errors.");
-
-                using (var memoryStream = new MemoryStream())
+                if (ModelState["File"].Errors.Count == 0)
                 {
-                    Debug.WriteLine("Copying file to memory stream.");
-                    await certificateFileViewModel.File.CopyToAsync(memoryStream);
-                    Debug.WriteLine("File copied to memory stream.");
 
-                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
-                    Debug.WriteLine($"S3 upload response: Success = {genericResponse.Success}");
-
-                    if (genericResponse.Success)
-                    {
-                        ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-                        summaryViewModel.FileName = certificateFileViewModel.File.FileName;
-                        summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
-                        summaryViewModel.FileLink = genericResponse.Data;
-                        certificateFileViewModel.FileUploadedSuccessfully = true;
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-
-                        Debug.WriteLine($"File uploaded successfully: {summaryViewModel.FileName}, Size: {summaryViewModel.FileSizeInKb} KB");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("File", "Unable to upload the file provided");
-                        Debug.WriteLine("Error uploading file: Unable to upload the file provided.");
-                        return View("CertificateUploadPage", certificateFileViewModel);
-                    }
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await certificateFileViewModel.File.CopyToAsync(memoryStream);
+                            GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                            if (genericResponse.Success)
+                            {
+                               
+                                summaryViewModel.FileName = certificateFileViewModel.File.FileName;
+                                summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
+                                summaryViewModel.FileLink = genericResponse.Data;
+                                certificateFileViewModel.FileUploadedSuccessfully = true;
+                                certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
+                                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                                if (action == "continue")
+                                {                                 
+                                    return View("CertificateUploadPage", certificateFileViewModel);
+                                }
+                                else if (action == "draft")
+                                {
+                                    return await SaveAsDraftAndRedirect(summaryViewModel);
+                                }
+                                else
+                                {
+                                    return RedirectToAction("HandleException", "Error");
+                                }
+                             }
+                            else
+                            {
+                                ModelState.AddModelError("File", "Unable to upload the file provided");
+                                return View("CertificateUploadPage", certificateFileViewModel);
+                            }
+                       }                    
+                   
+                }
+               
+                else
+                {
+                    return View("CertificateUploadPage", certificateFileViewModel);
                 }
             }
-
-            if (action == "continue")
+            else if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == true && action == "draft")
             {
-                Debug.WriteLine("Action is continue.");
-                if (ModelState.IsValid)
-                {
-                    Debug.WriteLine("Model state is valid. Redirecting...");
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ConfirmityIssueDate");
-                }
+                return RedirectToAction("ProviderServiceDetails", "Cab", new { serviceId = summaryViewModel.ServiceId });
             }
-            else if (action == "draft")
+            else
             {
-                Debug.WriteLine("Action is draft.");
-                if (ModelState.IsValid)
-                {
-                    Debug.WriteLine("Model state is valid. Saving as draft and redirecting...");
-                    return await SaveAsDraftAndRedirect(GetServiceSummary());
-                }
-            }
+                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ConfirmityIssueDate");
 
-            Debug.WriteLine("Returning to CertificateUploadPage.");
-            return View("CertificateUploadPage", certificateFileViewModel);
+            }
         }
 
 
@@ -888,169 +887,8 @@ namespace DVSRegister.Controllers
 
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="serviceId"></param>
-        /// <returns></returns>
-        [HttpGet("resume-submission")]
-        public async Task<IActionResult> ResumeSubmission(int serviceId)
-        {
-
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0)
-            {
-                ServiceDto serviceDto = await cabService.GetServiceDetails(serviceId, cabId);
-                RoleViewModel roleViewModel = new()
-                {                   
-                    SelectedRoles = new List<RoleDto>()
-                };
-                QualityLevelViewModel qualityLevelViewModel = new()
-                {
-                    SelectedLevelOfProtections = new List<QualityLevelDto>(),
-                    SelectedQualityofAuthenticators = new List<QualityLevelDto>()
-                };
-
-                IdentityProfileViewModel identityProfileViewModel = new()
-                {
-                    SelectedIdentityProfiles = new List<IdentityProfileDto>()
-                };
-
-                SupplementarySchemeViewModel supplementarySchemeViewModel = new()
-                {
-                    SelectedSupplementarySchemes = new List<SupplementarySchemeDto>()
-                };
-
-
-                if (serviceDto.ServiceRoleMapping != null && serviceDto.ServiceRoleMapping.Count > 0)
-                {
-                    roleViewModel.SelectedRoles = serviceDto.ServiceRoleMapping.Select(mapping => mapping.Role).ToList();
-                }
-
-                if (serviceDto.ServiceQualityLevelMapping != null && serviceDto.ServiceQualityLevelMapping.Count > 0)
-                {
-                    var protectionLevels = serviceDto.ServiceQualityLevelMapping
-                    .Where(item => item.QualityLevel.QualityType == QualityTypeEnum.Protection)
-                    .Select(item => item.QualityLevel);
-
-                    var authenticatorLevels = serviceDto.ServiceQualityLevelMapping
-                    .Where(item => item.QualityLevel.QualityType == QualityTypeEnum.Authentication)
-                    .Select(item => item.QualityLevel);
-
-                    foreach(var item in protectionLevels)
-                    {
-                        qualityLevelViewModel.SelectedLevelOfProtections.Add(item);
-                    }
-
-                    foreach (var item in authenticatorLevels)
-                    {
-                        qualityLevelViewModel.SelectedQualityofAuthenticators.Add(item);
-                    }
-                   
-
-                }
-                if(serviceDto.ServiceIdentityProfileMapping!= null && serviceDto.ServiceIdentityProfileMapping.Count > 0)
-                {
-                    identityProfileViewModel.SelectedIdentityProfiles = serviceDto.ServiceIdentityProfileMapping.Select(mapping => mapping.IdentityProfile).ToList();
-                }
-                if(serviceDto.ServiceSupSchemeMapping != null && serviceDto.ServiceSupSchemeMapping.Count>0)
-                {
-                    supplementarySchemeViewModel.SelectedSupplementarySchemes = serviceDto.ServiceSupSchemeMapping.Select(mapping => mapping.SupplementaryScheme).ToList();
-                }
-
-              
-                ServiceSummaryViewModel serviceSummary = new ServiceSummaryViewModel
-                {
-                    ServiceName = serviceDto.ServiceName,
-                    ServiceURL = serviceDto.WebSiteAddress,
-                    CompanyAddress = serviceDto.CompanyAddress,
-                    RoleViewModel = roleViewModel,
-                    IdentityProfileViewModel = identityProfileViewModel,
-                    QualityLevelViewModel = qualityLevelViewModel,
-                    HasSupplementarySchemes = serviceDto.HasSupplementarySchemes,
-                    HasGPG44 = serviceDto.HasGPG44,
-                    HasGPG45 = serviceDto.HasGPG45,
-                    SupplementarySchemeViewModel= supplementarySchemeViewModel,
-                    FileLink = serviceDto.FileLink,
-                    FileName = serviceDto.FileName,
-                    FileSizeInKb = serviceDto.FileSizeInKb,
-                    ConformityIssueDate = serviceDto.ConformityIssueDate,
-                    ConformityExpiryDate = serviceDto.ConformityExpiryDate,
-                    ServiceId = serviceDto.Id,
-                    ProviderProfileId = serviceDto.ProviderProfileId,
-                    CabId = cabId,
-                    CabUserId = serviceDto.CabUserId
-                };
-                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-
-                DateTime minDate = new DateTime(1900, 1, 1);
-                if (string.IsNullOrEmpty(serviceSummary.ServiceName))
-                {
-                    return RedirectToAction("ServiceName", new { providerProfileId = serviceDto.ProviderProfileId}); 
-                }
-                else if (string.IsNullOrEmpty(serviceSummary.ServiceURL))
-                {
-                    return RedirectToAction("ServiceURL", new { providerProfileId = serviceDto.ProviderProfileId }); 
-                }
-                 else if (string.IsNullOrEmpty(serviceSummary.CompanyAddress))
-                {
-                    return RedirectToAction("CompanyAddress");
-                }
-                else if (serviceSummary.RoleViewModel.SelectedRoles == null || serviceSummary.RoleViewModel.SelectedRoles.Count == 0)
-                {
-                    return RedirectToAction("ProviderRoles");
-                }
-                else if (serviceSummary.HasGPG44 == null)
-                {
-                    return RedirectToAction("GPG44Input");
-                }
-                else if (serviceSummary.HasGPG44 == true && (serviceSummary.QualityLevelViewModel.SelectedQualityofAuthenticators.Count == 0 || 
-                    serviceSummary.QualityLevelViewModel.SelectedLevelOfProtections.Count == 0))
-                {
-                    return RedirectToAction("GPG44");
-                }
-                else if (serviceSummary.HasGPG45 == null)
-                {
-                    return RedirectToAction("GPG45Input");
-                }
-                else if (serviceSummary.HasGPG45 == true && serviceSummary.IdentityProfileViewModel.SelectedIdentityProfiles.Count == 0)
-                {
-                    return RedirectToAction("GPG45");
-                }
-                else if (serviceSummary.HasSupplementarySchemes == null)
-                {
-                    return RedirectToAction("HasSupplementarySchemesInput");
-                }
-                else if (serviceSummary.HasSupplementarySchemes == true && serviceSummary.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count == 0)
-                {
-                    return RedirectToAction("SupplementarySchemes");
-                }
-                else if (serviceSummary.FileName == null)
-                {
-                    return RedirectToAction("CertificateUploadPage");
-                }
-                else if (serviceSummary.ConformityIssueDate < minDate)
-                {
-                    return RedirectToAction("ConfirmityIssueDate"); 
-                }
-                else if (serviceSummary.ConformityExpiryDate < minDate)
-                {
-                    return RedirectToAction("ConfirmityExpiryDate");
-                }
-                else
-                {
-                    return RedirectToAction("ServiceName", new { providerProfileId = serviceDto.ProviderProfileId });
-                }
-            }
-            else
-            {
-                return RedirectToAction("HandleException", "Error");
-            }
-
-
-
-
-        }
+       
+       
 
         #endregion
 
