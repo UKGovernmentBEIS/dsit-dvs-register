@@ -207,7 +207,7 @@ namespace DVSRegister.Data.CAB
                     existingService.ServiceQualityLevelMapping = service.ServiceQualityLevelMapping;
                     existingService.HasSupplementarySchemes = service.HasSupplementarySchemes;
                     existingService.HasGPG44 = service.HasGPG44 ;
-                    existingService.HasGPG45 = service.HasGPG44;
+                    existingService.HasGPG45 = service.HasGPG45;
                     if (existingService.ServiceSupSchemeMapping != null & existingService.ServiceSupSchemeMapping?.Count > 0)
                         context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
                     existingService.ServiceSupSchemeMapping = service.ServiceSupSchemeMapping;

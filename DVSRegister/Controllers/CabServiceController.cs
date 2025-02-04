@@ -9,6 +9,8 @@ using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Diagnostics;
 
 
 namespace DVSRegister.Controllers
@@ -395,11 +397,13 @@ namespace DVSRegister.Controllers
                 {
                     if (Convert.ToBoolean(summaryViewModel.HasGPG45))
                     {
+                        Debug.WriteLine($"pressed yes {summaryViewModel.HasGPG45}");
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return RedirectToAction("GPG45", new { fromSummaryPage = fromSummaryPage });
                     }
                     else
                     {
+                        Debug.WriteLine($"pressed no {summaryViewModel.HasGPG45}");
                         summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = new List<IdentityProfileDto>();
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("HasSupplementarySchemesInput");
@@ -431,7 +435,6 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();            
             IdentityProfileViewModel identityProfileViewModel = new IdentityProfileViewModel();
-            identityProfileViewModel.HasGPG44 = summaryViewModel.HasGPG44;
             identityProfileViewModel.SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList();
             identityProfileViewModel.AvailableIdentityProfiles = await cabService.GetIdentityProfiles();
             return View(identityProfileViewModel);
@@ -617,47 +620,70 @@ namespace DVSRegister.Controllers
         /// <returns></returns>
 
         [HttpPost("certificate-upload")]
-        public async Task<IActionResult> SaveCertificate(CertificateFileViewModel certificateFileViewModel)
+        public async Task<IActionResult> SaveCertificate(CertificateFileViewModel certificateFileViewModel, string action)
         {
+
             bool fromSummaryPage = certificateFileViewModel.FromSummaryPage;
-            certificateFileViewModel.FromSummaryPage = false;
-            if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == false)
+
+            certificateFileViewModel.FromSummaryPage = false;          
+            if  (ModelState["File"].Errors.Count == 0)
             {
-                if (ModelState["File"].Errors.Count == 0)
+                Debug.WriteLine("File not uploaded successfully and no model state errors.");
+
+                using (var memoryStream = new MemoryStream())
                 {
-                    using (var memoryStream = new MemoryStream())
+                    Debug.WriteLine("Copying file to memory stream.");
+                    await certificateFileViewModel.File.CopyToAsync(memoryStream);
+                    Debug.WriteLine("File copied to memory stream.");
+
+                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                    Debug.WriteLine($"S3 upload response: Success = {genericResponse.Success}");
+
+                    if (genericResponse.Success)
                     {
-                        await certificateFileViewModel.File.CopyToAsync(memoryStream);
-                        GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
-                        if (genericResponse.Success)
-                        {
-                            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-                            summaryViewModel.FileName = certificateFileViewModel.File.FileName;
-                            summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
-                            summaryViewModel.FileLink = genericResponse.Data;
-                            certificateFileViewModel.FileUploadedSuccessfully = true;
-                            certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
-                            HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                            return View("CertificateUploadPage", certificateFileViewModel);
-                        }
-                        else
-                        {
-                            ModelState.AddModelError("File", "Unable to upload the file provided");
-                            return View("CertificateUploadPage", certificateFileViewModel);
-                        }
+                        ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+                        summaryViewModel.FileName = certificateFileViewModel.File.FileName;
+                        summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
+                        summaryViewModel.FileLink = genericResponse.Data;
+                        certificateFileViewModel.FileUploadedSuccessfully = true;
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+
+                        Debug.WriteLine($"File uploaded successfully: {summaryViewModel.FileName}, Size: {summaryViewModel.FileSizeInKb} KB");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("File", "Unable to upload the file provided");
+                        Debug.WriteLine("Error uploading file: Unable to upload the file provided.");
+                        return View("CertificateUploadPage", certificateFileViewModel);
                     }
                 }
-                else
+            }
+
+            if (action == "continue")
+            {
+                Debug.WriteLine("Action is continue.");
+                if (ModelState.IsValid)
                 {
-                    return View("CertificateUploadPage", certificateFileViewModel);
+                    Debug.WriteLine("Model state is valid. Redirecting...");
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ConfirmityIssueDate");
                 }
             }
-            else
+            else if (action == "draft")
             {
-                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ConfirmityIssueDate");
-
+                Debug.WriteLine("Action is draft.");
+                if (ModelState.IsValid)
+                {
+                    Debug.WriteLine("Model state is valid. Saving as draft and redirecting...");
+                    return await SaveAsDraftAndRedirect(GetServiceSummary());
+                }
             }
+
+            Debug.WriteLine("Returning to CertificateUploadPage.");
+            return View("CertificateUploadPage", certificateFileViewModel);
         }
+
+
+
 
         /// <summary>
         /// download from s3
@@ -713,7 +739,7 @@ namespace DVSRegister.Controllers
         /// <param name="viewModel"></param>
         /// <returns></returns>
         [HttpPost("enter-issue-date")]
-        public IActionResult SaveConfirmityIssueDate(DateViewModel dateViewModel)
+        public async Task<IActionResult> SaveConfirmityIssueDate(DateViewModel dateViewModel, string action)
         {
             bool fromSummaryPage = dateViewModel.FromSummaryPage;
             dateViewModel.FromSummaryPage = false;
@@ -722,29 +748,56 @@ namespace DVSRegister.Controllers
             DateTime? conformityIssueDate = ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage);
             if (ModelState.IsValid)
             {
-                summaryViewModel.ConformityIssueDate =conformityIssueDate;
+                summaryViewModel.ConformityIssueDate = conformityIssueDate;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ConfirmityExpiryDate");
+
+                if (action == "continue")
+                {
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("ConfirmityExpiryDate");
+                }
+                else if (action == "draft")
+                {
+                    return await SaveAsDraftAndRedirect(summaryViewModel);
+                }
+                else
+                {
+                    return RedirectToAction("HandleException", "Error");
+                }
             }
             else
             {
                 return View("ConfirmityIssueDate", dateViewModel);
             }
-
         }
+
+
 
         [HttpGet("enter-expiry-date")]
         public IActionResult ConfirmityExpiryDate()
         {
+            Debug.WriteLine("Entering ConfirmityExpiryDate action.");
+
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            Debug.WriteLine("Retrieved ServiceSummaryViewModel.");
+
             DateViewModel dateViewModel = new DateViewModel();
             dateViewModel.PropertyName = "ConfirmityExpiryDate";
+            Debug.WriteLine($"Initial DateViewModel PropertyName: {dateViewModel.PropertyName}");
+
             if (summaryViewModel.ConformityExpiryDate != null)
             {
+                Debug.WriteLine($"ConformityExpiryDate found: {summaryViewModel.ConformityExpiryDate}");
                 dateViewModel = GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
+                Debug.WriteLine($"DateViewModel updated with day, month, year: {dateViewModel.Day}, {dateViewModel.Month}, {dateViewModel.Year}");
             }
+            else
+            {
+                Debug.WriteLine("ConformityExpiryDate is null.");
+            }
+
             return View(dateViewModel);
         }
+
 
         /// <summary>
         /// Updates confirmity issue expiry date variable in session 
@@ -752,23 +805,37 @@ namespace DVSRegister.Controllers
         /// <param name="viewModel"></param>
         /// <returns></returns>
         [HttpPost("enter-expiry-date")]
-        public IActionResult SaveConfirmityExpiryDate(DateViewModel dateViewModel)
+        public async Task<IActionResult> SaveConfirmityExpiryDate(DateViewModel dateViewModel, string action)
         {
             dateViewModel.PropertyName = "ConfirmityExpiryDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+
             DateTime? conformityExpiryDate = ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate));
+
             if (ModelState.IsValid)
             {
                 summaryViewModel.ConformityExpiryDate = conformityExpiryDate;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return RedirectToAction("ServiceSummary"); 
+
+                if (action == "continue")
+                {
+                    return RedirectToAction("ServiceSummary");
+                }
+                else if (action == "draft")
+                {
+                    return await SaveAsDraftAndRedirect(summaryViewModel);
+                }
+                else
+                {
+                    return RedirectToAction("HandleException", "Error");
+                }
             }
             else
             {
                 return View("ConfirmityExpiryDate", dateViewModel);
-
             }
         }
+
         #endregion
 
         #region Summary and save to database
@@ -891,7 +958,7 @@ namespace DVSRegister.Controllers
                     supplementarySchemeViewModel.SelectedSupplementarySchemes = serviceDto.ServiceSupSchemeMapping.Select(mapping => mapping.SupplementaryScheme).ToList();
                 }
 
-
+              
                 ServiceSummaryViewModel serviceSummary = new ServiceSummaryViewModel
                 {
                     ServiceName = serviceDto.ServiceName,
@@ -902,7 +969,7 @@ namespace DVSRegister.Controllers
                     QualityLevelViewModel = qualityLevelViewModel,
                     HasSupplementarySchemes = serviceDto.HasSupplementarySchemes,
                     HasGPG44 = serviceDto.HasGPG44,
-                    HasGPG45 = serviceDto.HasGPG44,
+                    HasGPG45 = serviceDto.HasGPG45,
                     SupplementarySchemeViewModel= supplementarySchemeViewModel,
                     FileLink = serviceDto.FileLink,
                     FileName = serviceDto.FileName,
@@ -915,7 +982,8 @@ namespace DVSRegister.Controllers
                     CabUserId = serviceDto.CabUserId
                 };
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-               
+
+                DateTime minDate = new DateTime(1900, 1, 1);
                 if (string.IsNullOrEmpty(serviceSummary.ServiceName))
                 {
                     return RedirectToAction("ServiceName", new { providerProfileId = serviceDto.ProviderProfileId}); 
@@ -936,32 +1004,43 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("GPG44Input");
                 }
-                else if (serviceSummary.QualityLevelViewModel.SelectedQualityofAuthenticators == null || serviceSummary.QualityLevelViewModel.SelectedQualityofAuthenticators.Count == 0
-                    || serviceSummary.QualityLevelViewModel.SelectedLevelOfProtections ==null || serviceSummary.QualityLevelViewModel.SelectedLevelOfProtections.Count == 0)
+                else if (serviceSummary.HasGPG44 == true && (serviceSummary.QualityLevelViewModel.SelectedQualityofAuthenticators.Count == 0 || 
+                    serviceSummary.QualityLevelViewModel.SelectedLevelOfProtections.Count == 0))
                 {
                     return RedirectToAction("GPG44");
                 }
-
                 else if (serviceSummary.HasGPG45 == null)
                 {
                     return RedirectToAction("GPG45Input");
                 }
-                else if (Convert.ToBoolean(serviceSummary.HasGPG45) == true &&  serviceSummary.IdentityProfileViewModel.SelectedIdentityProfiles == null
-                    || serviceSummary.IdentityProfileViewModel.SelectedIdentityProfiles.Count== 0)
+                else if (serviceSummary.HasGPG45 == true && serviceSummary.IdentityProfileViewModel.SelectedIdentityProfiles.Count == 0)
                 {
                     return RedirectToAction("GPG45");
                 }
-                else if (Convert.ToBoolean(serviceSummary.HasGPG45) == false && serviceSummary.IdentityProfileViewModel.SelectedIdentityProfiles == null
-                  || serviceSummary.IdentityProfileViewModel.SelectedIdentityProfiles.Count == 0)
+                else if (serviceSummary.HasSupplementarySchemes == null)
                 {
                     return RedirectToAction("HasSupplementarySchemesInput");
                 }
+                else if (serviceSummary.HasSupplementarySchemes == true && serviceSummary.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count == 0)
+                {
+                    return RedirectToAction("SupplementarySchemes");
+                }
+                else if (serviceSummary.FileName == null)
+                {
+                    return RedirectToAction("CertificateUploadPage");
+                }
+                else if (serviceSummary.ConformityIssueDate < minDate)
+                {
+                    return RedirectToAction("ConfirmityIssueDate"); 
+                }
+                else if (serviceSummary.ConformityExpiryDate < minDate)
+                {
+                    return RedirectToAction("ConfirmityExpiryDate");
+                }
                 else
                 {
-                    return RedirectToAction("ServiceName");
+                    return RedirectToAction("ServiceName", new { providerProfileId = serviceDto.ProviderProfileId });
                 }
-
-
             }
             else
             {
@@ -1164,9 +1243,9 @@ namespace DVSRegister.Controllers
                 serviceDto.ServiceRoleMapping = serviceRoleMappings;
                 serviceDto.ServiceIdentityProfileMapping= serviceIdentityProfileMappings;
                 serviceDto.ServiceQualityLevelMapping = serviceQualityLevelMappings;
-                serviceDto.HasSupplementarySchemes =  model.HasSupplementarySchemes??false;
+                serviceDto.HasSupplementarySchemes =  model.HasSupplementarySchemes;
                 serviceDto.HasGPG44 = model.HasGPG44;
-                serviceDto.HasGPG45 = model.HasGPG44;
+                serviceDto.HasGPG45 = model.HasGPG45;
                 serviceDto.ServiceSupSchemeMapping = serviceSupSchemeMappings;
                 serviceDto.FileLink = model.FileLink;
                 serviceDto.FileName = model.FileName;
