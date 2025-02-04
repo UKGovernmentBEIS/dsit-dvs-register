@@ -15,7 +15,7 @@
 
                 <h1 class="govuk-heading-xl">
                     Service @Model.ServiceNumber details
-                </h1>
+                </h1>       
             </div>
             <div class="govuk-grid-column-full">
                 <div class="govuk-summary-card">
@@ -23,6 +23,16 @@
                         <p class="govuk-summary-card__title">
                             Service @Model.ServiceNumber details
                         </p>
+
+                        @if (Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                        {
+                            <ul class="govuk-summary-card__actions">
+                                <li class="govuk-summary-card__action">
+                                    <a class="govuk-link" href="@Url.Action("ResumeSubmission", "CabServiceReApplication", new { serviceId = @Model.Id })">Resume submission<span class="govuk-visually-hidden"> of @Model.ServiceName</span></a>
+                                </li>
+
+                            </ul>
+                        }
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
@@ -34,17 +44,33 @@
                                    @Model.ServiceName
                                 </dd>
                             </div>
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Publication date (UTC)
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @if (@Model.PublishedTime != null)
-                                    {
-                                        @DateTimeExtensions.FormatDateTime(@Model.PublishedTime)
-                                    }
-                                </dd>
-                            </div>
+
+                            @if(Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Last updated date (GMT)
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @DateTimeExtensions.FormatDateTime(@Model.ModifiedTime)
+                                    </dd>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Publication date (UTC)
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @if (@Model.PublishedTime != null)
+                                        {
+                                            @DateTimeExtensions.FormatDateTime(@Model.PublishedTime)
+                                        }
+                                    </dd>
+                                </div>
+                            }
+                           
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     Status
@@ -59,7 +85,15 @@
                                     URL link to the service
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @Model.WebSiteAddress
+                                    @if (Model.WebSiteAddress !=null)
+                                    {
+                                        @Model.WebSiteAddress
+                                    }
+                                    else 
+                                    {
+                                        @:Incomplete
+                                    }
+                                    
                                 </dd>
                             </div>
                            
@@ -68,7 +102,15 @@
                                     Company address details
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @HtmlExtensions.ToStringWithLineBreaks(Model.CompanyAddress)
+                                    @if (Model.CompanyAddress != null)
+                                    {
+                                        @HtmlExtensions.ToStringWithLineBreaks(Model.CompanyAddress)
+                                    }
+                                    else
+                                    {
+                                        @:Incomplete
+                                    }
+                                   
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
@@ -76,24 +118,38 @@
                                     Roles certified against
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                   @foreach(var item in Model.ServiceRoleMapping)
+                                    @if (Model.ServiceRoleMapping.Count > 0)
                                     {
-                                        @item.Role.RoleName <br/>
+                                        @foreach(var item in Model.ServiceRoleMapping)
+                                        {
+                                            @item.Role.RoleName <br/>
+                                        }
                                     }
+                                    else
+                                    {
+                                        @:Incomplete
+                                    }                                                
                                 </dd>
                             </div>
 
-                            @if (Model.HasGPG44 &&  Model.ServiceQualityLevelMapping!=null)
+                           @if (Convert.ToBoolean(Model.HasGPG44) &&  Model.ServiceQualityLevelMapping!=null)
                             {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
                                         GPG44 quality of authenticator
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @foreach (var item in Model.ServiceQualityLevelMapping.Where(s=>s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
-                                        {
-                                            @item.QualityLevel.Level <br />
-                                        }
+                                            @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                            {
+                                                foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                                {
+                                                    @item.QualityLevel.Level <br />
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @:Incomplete
+                                            }
                                     </dd>
                                 </div>
 
@@ -102,37 +158,60 @@
                                         GPG44 level of protection
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                        @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
                                         {
-                                            @item.QualityLevel.Level <br />
+                                            foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                            {
+                                                @item.QualityLevel.Level <br />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @:Incomplete
                                         }
                                     </dd>
                                 </div>
                                 
-                            }
-
+                             } 
+                            @if (Convert.ToBoolean(Model.HasGPG45) && Model.ServiceIdentityProfileMapping != null)
+                            {
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     GPG45 identity profiles
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @foreach (var item in Model.ServiceIdentityProfileMapping)
-                                    {
-                                        @item.IdentityProfile.IdentityProfileName <br />
-                                    }
+                                        @if (Model.ServiceIdentityProfileMapping.Count > 0)
+                                        {
+                                            @foreach (var item in Model.ServiceIdentityProfileMapping)
+                                            {
+                                                @item.IdentityProfile.IdentityProfileName <br />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @:Incomplete
+                                        }
                                 </dd>
                             </div>
+                            }
 
-                            @if(Model.HasSupplementarySchemes && Model.ServiceSupSchemeMapping!=null)
+                            @if( Convert.ToBoolean(Model.HasSupplementarySchemes) && Model.ServiceSupSchemeMapping!=null)
                             {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
                                         Supplementary codes
                                     </dt>
-                                    <dd class="govuk-summary-list__value">
-                                        @foreach (var item in Model.ServiceSupSchemeMapping)
+                                    <dd class="govuk-summary-list__value">                                        
+                                        @if (Model.ServiceSupSchemeMapping.Count > 0)
                                         {
-                                            @item.SupplementaryScheme.SchemeName <br />
+                                            @foreach (var item in Model.ServiceSupSchemeMapping)
+                                            {
+                                                @item.SupplementaryScheme.SchemeName <br />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            @:Incomplete
                                         }
                                     </dd>
                                 </div>
@@ -140,29 +219,52 @@
                            
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
-                                    Service provider’s certificate
-                                    of conformity
+                                    Service provider’s certificate of conformity
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                   @Model.FileName
+                                    @if (!string.IsNullOrEmpty(Model.FileName))
+                                    {
+                                        @Model.FileName
+                                    }
+                                    else
+                                    {
+                                        @:Incomplete
+                                    }
                                 </dd>
                             </div>
+
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     Date of issue
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
+                                    @if (Model.ConformityIssueDate != DateTime.MinValue)
+                                    {
+                                        @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
+                                    }
+                                    else
+                                    {
+                                        @:Incomplete
+                                    }
                                 </dd>
                             </div>
+
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     Date of expiry
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @DateTimeExtensions.FormatDateTime(@Model.ConformityExpiryDate, "dd MMM yyyy")
+                                    @if (Model.ConformityExpiryDate != DateTime.MinValue)
+                                    {
+                                        @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMM yyyy")
+                                    }
+                                    else
+                                    {
+                                        @:Incomplete
+                                    }
                                 </dd>
                             </div>
+
                         </dl>
                     </div>
                 </div>

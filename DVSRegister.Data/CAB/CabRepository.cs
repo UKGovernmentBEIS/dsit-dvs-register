@@ -182,18 +182,74 @@ namespace DVSRegister.Data.CAB
             using var transaction = context.Database.BeginTransaction();
             try
             {
-                // Get the current highest ServiceNumber for the given ProviderProfileId
-                var serviceNumbers = await context.Service.Where(s => s.ProviderProfileId == service.ProviderProfileId)
-                .Select(s => s.ServiceNumber).ToListAsync();
-                int nextServiceNumber = serviceNumbers.Any() ? serviceNumbers.Max() + 1 : 1;
-                service.ServiceNumber = nextServiceNumber;
-                service.CreatedTime = DateTime.UtcNow;
-                AttachListToDbContext(service);
-                var entity = await context.Service.AddAsync(service);
-                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddService, loggedInUserEmail);
-                genericResponse.InstanceId = entity.Entity.Id;
-                transaction.Commit();
-                genericResponse.Success = true;
+
+                var existingService = await context.Service.Include(x=>x.ServiceRoleMapping).Include(x=>x.ServiceIdentityProfileMapping)
+                .Include(x=>x.ServiceQualityLevelMapping).Include(x=>x.ServiceSupSchemeMapping)              
+                 .Where(x=>x.Id == service.Id).FirstOrDefaultAsync();                
+                if(existingService != null && existingService.Id>0) 
+                {
+                    
+                    existingService.ServiceName = service.ServiceName;
+                    existingService.WebSiteAddress = service.WebSiteAddress;
+                    existingService.CompanyAddress = service.CompanyAddress;
+
+                    if (existingService.ServiceRoleMapping != null & existingService.ServiceRoleMapping?.Count > 0)
+                        context.ServiceRoleMapping.RemoveRange(existingService.ServiceRoleMapping);            
+                    existingService.ServiceRoleMapping = service.ServiceRoleMapping ;
+
+                    if (existingService.ServiceIdentityProfileMapping != null & existingService.ServiceIdentityProfileMapping?.Count > 0)
+                        context.ServiceIdentityProfileMapping.RemoveRange(existingService.ServiceIdentityProfileMapping);
+                    existingService.ServiceIdentityProfileMapping = service.ServiceIdentityProfileMapping;
+
+                    if (existingService.ServiceQualityLevelMapping != null & existingService.ServiceQualityLevelMapping?.Count > 0)
+                        context.ServiceQualityLevelMapping.RemoveRange(existingService.ServiceQualityLevelMapping);
+
+                    existingService.ServiceQualityLevelMapping = service.ServiceQualityLevelMapping;
+                    existingService.HasSupplementarySchemes = service.HasSupplementarySchemes;
+                    existingService.HasGPG44 = service.HasGPG44 ;
+                    existingService.HasGPG45 = service.HasGPG45;
+                    if (existingService.ServiceSupSchemeMapping != null & existingService.ServiceSupSchemeMapping?.Count > 0)
+                        context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
+                    existingService.ServiceSupSchemeMapping = service.ServiceSupSchemeMapping;
+                    existingService.FileLink = service.FileLink;
+                    existingService.FileName = service.FileName;
+                    existingService.FileSizeInKb = service.FileSizeInKb;
+                    existingService.ConformityIssueDate = service.ConformityIssueDate;
+                    existingService.ConformityExpiryDate = service.ConformityExpiryDate;                  
+                    existingService.ServiceStatus = service.ServiceStatus;
+                    existingService.ModifiedTime = DateTime.UtcNow;                   
+                    genericResponse.InstanceId = existingService.Id;
+                    if(service.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
+                    else
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddService, loggedInUserEmail);
+                    transaction.Commit();
+                    genericResponse.Success = true;
+                }
+                else
+                {
+                    // Get the current highest ServiceNumber for the given ProviderProfileId
+                    var serviceNumbers = await context.Service.Where(s => s.ProviderProfileId == service.ProviderProfileId)
+                    .Select(s => s.ServiceNumber).ToListAsync();
+                    int nextServiceNumber = serviceNumbers.Any() ? serviceNumbers.Max() + 1 : 1;
+                    service.ServiceNumber = nextServiceNumber;
+                    service.CreatedTime = DateTime.UtcNow;
+                    if(service.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                    {
+                        service.ModifiedTime = DateTime.UtcNow;                       
+                    }
+                    service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue ? null : service.ConformityExpiryDate;
+                    service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;
+
+                    AttachListToDbContext(service);
+                    var entity = await context.Service.AddAsync(service);
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddService, loggedInUserEmail);
+                    genericResponse.InstanceId = entity.Entity.Id;
+                    transaction.Commit();
+                    genericResponse.Success = true;
+                }
+
+              
 
             }
             catch (Exception ex)
@@ -347,25 +403,36 @@ namespace DVSRegister.Data.CAB
         // For event logs, need to attach each item to context
         private void AttachListToDbContext(Service service)
         {
-            foreach (var mapping in service.ServiceRoleMapping)
+            if(service.ServiceRoleMapping != null)
             {
-                context.Entry(mapping).State = EntityState.Added;
+                foreach (var mapping in service.ServiceRoleMapping)
+                {
+                    context.Entry(mapping).State = EntityState.Added;
+                }
             }
-            foreach (var mapping in service.ServiceIdentityProfileMapping)
+          
+            if(service.ServiceIdentityProfileMapping!=null)
             {
-                context.Entry(mapping).State = EntityState.Added;
+                foreach (var mapping in service.ServiceIdentityProfileMapping)
+                {
+                    context.Entry(mapping).State = EntityState.Added;
+                }
             }
-            foreach (var mapping in service.ServiceIdentityProfileMapping)
+
+
+            if (service.ServiceQualityLevelMapping != null)
             {
-                context.Entry(mapping).State = EntityState.Added;
+                foreach (var mapping in service.ServiceQualityLevelMapping)
+                {
+                    context.Entry(mapping).State = EntityState.Added;
+                } 
             }
-            foreach (var mapping in service.ServiceQualityLevelMapping)
+            if (service.ServiceSupSchemeMapping !=null )
             {
-                context.Entry(mapping).State = EntityState.Added;
-            }
-            foreach (var mapping in service.ServiceSupSchemeMapping)
-            {
-                context.Entry(mapping).State = EntityState.Added;
+                foreach (var mapping in service.ServiceSupSchemeMapping)
+                {
+                    context.Entry(mapping).State = EntityState.Added;
+                } 
             }
         }
         #endregion
