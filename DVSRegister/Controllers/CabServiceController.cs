@@ -870,11 +870,6 @@ namespace DVSRegister.Controllers
 
         }
 
-
-
-       
-       
-
         #endregion
 
 

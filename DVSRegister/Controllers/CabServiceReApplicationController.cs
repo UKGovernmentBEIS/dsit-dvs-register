@@ -1,7 +1,4 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility.Models;
-using DVSRegister.Extensions;
+﻿using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,15 +6,7 @@ namespace DVSRegister.Controllers
 {
     [Route("cab-service/re-application")]
     public class CabServiceReApplicationController : Controller
-    {
-
-        private readonly ICabService cabService;
-
-        public CabServiceReApplicationController(ICabService cabService)
-        {
-            this.cabService = cabService;            
-        }
-
+    { 
         [HttpGet("resume-submission")]
         public async Task<IActionResult> ResumeSubmission(int serviceId)
         {
@@ -25,89 +14,8 @@ namespace DVSRegister.Controllers
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
             if (cabId > 0)
             {
-                ServiceDto serviceDto = await cabService.GetServiceDetails(serviceId, cabId);
-                RoleViewModel roleViewModel = new()
-                {
-                    SelectedRoles = new List<RoleDto>()
-                };
-                QualityLevelViewModel qualityLevelViewModel = new()
-                {
-                    SelectedLevelOfProtections = new List<QualityLevelDto>(),
-                    SelectedQualityofAuthenticators = new List<QualityLevelDto>()
-                };
-
-                IdentityProfileViewModel identityProfileViewModel = new()
-                {
-                    SelectedIdentityProfiles = new List<IdentityProfileDto>()
-                };
-
-                SupplementarySchemeViewModel supplementarySchemeViewModel = new()
-                {
-                    SelectedSupplementarySchemes = new List<SupplementarySchemeDto>()
-                };
-
-
-                if (serviceDto.ServiceRoleMapping != null && serviceDto.ServiceRoleMapping.Count > 0)
-                {
-                    roleViewModel.SelectedRoles = serviceDto.ServiceRoleMapping.Select(mapping => mapping.Role).ToList();
-                }
-
-                if (serviceDto.ServiceQualityLevelMapping != null && serviceDto.ServiceQualityLevelMapping.Count > 0)
-                {
-                    var protectionLevels = serviceDto.ServiceQualityLevelMapping
-                    .Where(item => item.QualityLevel.QualityType == QualityTypeEnum.Protection)
-                    .Select(item => item.QualityLevel);
-
-                    var authenticatorLevels = serviceDto.ServiceQualityLevelMapping
-                    .Where(item => item.QualityLevel.QualityType == QualityTypeEnum.Authentication)
-                    .Select(item => item.QualityLevel);
-
-                    foreach (var item in protectionLevels)
-                    {
-                        qualityLevelViewModel.SelectedLevelOfProtections.Add(item);
-                    }
-
-                    foreach (var item in authenticatorLevels)
-                    {
-                        qualityLevelViewModel.SelectedQualityofAuthenticators.Add(item);
-                    }
-
-
-                }
-                if (serviceDto.ServiceIdentityProfileMapping != null && serviceDto.ServiceIdentityProfileMapping.Count > 0)
-                {
-                    identityProfileViewModel.SelectedIdentityProfiles = serviceDto.ServiceIdentityProfileMapping.Select(mapping => mapping.IdentityProfile).ToList();
-                }
-                if (serviceDto.ServiceSupSchemeMapping != null && serviceDto.ServiceSupSchemeMapping.Count > 0)
-                {
-                    supplementarySchemeViewModel.SelectedSupplementarySchemes = serviceDto.ServiceSupSchemeMapping.Select(mapping => mapping.SupplementaryScheme).ToList();
-                }
-
-
-                ServiceSummaryViewModel serviceSummary = new ServiceSummaryViewModel
-                {
-                    ServiceName = serviceDto.ServiceName,
-                    ServiceURL = serviceDto.WebSiteAddress,
-                    CompanyAddress = serviceDto.CompanyAddress,
-                    RoleViewModel = roleViewModel,
-                    IdentityProfileViewModel = identityProfileViewModel,
-                    QualityLevelViewModel = qualityLevelViewModel,
-                    HasSupplementarySchemes = serviceDto.HasSupplementarySchemes,
-                    HasGPG44 = serviceDto.HasGPG44,
-                    HasGPG45 = serviceDto.HasGPG45,
-                    SupplementarySchemeViewModel = supplementarySchemeViewModel,
-                    FileLink = serviceDto.FileLink,
-                    FileName = serviceDto.FileName,
-                    FileSizeInKb = serviceDto.FileSizeInKb,
-                    ConformityIssueDate = serviceDto.ConformityIssueDate == DateTime.MinValue ? null : serviceDto.ConformityIssueDate,
-                    ConformityExpiryDate = serviceDto.ConformityExpiryDate == DateTime.MinValue ? null : serviceDto.ConformityExpiryDate,
-                    ServiceId = serviceDto.Id,
-                    ProviderProfileId = serviceDto.ProviderProfileId,
-                    CabId = cabId,
-                    CabUserId = serviceDto.CabUserId
-                };
-                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return RedirectToNextEmptyField(serviceDto, serviceSummary);
+                ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
+                return RedirectToNextEmptyField(serviceSummary);
             }
             else
             {
@@ -117,15 +25,15 @@ namespace DVSRegister.Controllers
 
 
         #region Private method
-        private IActionResult RedirectToNextEmptyField(ServiceDto serviceDto, ServiceSummaryViewModel serviceSummary)
+        private IActionResult RedirectToNextEmptyField( ServiceSummaryViewModel serviceSummary)
         {
             if (string.IsNullOrEmpty(serviceSummary.ServiceName))
             {
-                return RedirectToAction("ServiceName", "CabService", new { providerProfileId = serviceDto.ProviderProfileId });
+                return RedirectToAction("ServiceName", "CabService", new { providerProfileId = serviceSummary.ProviderProfileId });
             }
             else if (string.IsNullOrEmpty(serviceSummary.ServiceURL))
             {
-                return RedirectToAction("ServiceURL", "CabService", new { providerProfileId = serviceDto.ProviderProfileId });
+                return RedirectToAction("ServiceURL", "CabService", new { providerProfileId = serviceSummary.ProviderProfileId });
             }
             else if (string.IsNullOrEmpty(serviceSummary.CompanyAddress))
             {
