@@ -47,37 +47,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5909)
+                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8647)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5911)
+                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8650)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5912)
+                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8652)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5913)
+                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8654)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5914)
+                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8655)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 12, 16, 11, 27, 16, 904, DateTimeKind.Utc).AddTicks(5915)
+                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8657)
                         });
                 });
 
@@ -663,6 +663,15 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("RemovalReason")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RemovalRequestTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("RemovedTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("SecondaryContactEmail")
                         .IsRequired()
                         .HasColumnType("text");
@@ -869,6 +878,58 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("RegisterPublishLog");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveProviderToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("ProviderProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderProfileId");
+
+                    b.ToTable("RemoveProviderToken");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveTokenServiceMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RemoveProviderTokenId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RemoveProviderTokenId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("RemoveTokenServiceMapping");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -962,11 +1023,23 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("PublishedTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("RemovalReasonByCab")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RemovalRequestTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("RemovedTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("ServiceName")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("ServiceNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ServiceRemovalReason")
                         .HasColumnType("integer");
 
                     b.Property<int>("ServiceStatus")
@@ -1182,6 +1255,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("Profile")
+                        .HasColumnType("text");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1355,6 +1431,36 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Provider");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveProviderToken", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
+                        .WithMany()
+                        .HasForeignKey("ProviderProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Provider");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveTokenServiceMapping", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.RemoveProviderToken", "RemoveProviderToken")
+                        .WithMany("RemoveTokenServiceMapping")
+                        .HasForeignKey("RemoveProviderTokenId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RemoveProviderToken");
+
+                    b.Navigation("Service");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.CabUser", "CabUser")
@@ -1477,6 +1583,11 @@ namespace DVSRegister.Data.Migrations
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
                 {
                     b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveProviderToken", b =>
+                {
+                    b.Navigation("RemoveTokenServiceMapping");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>

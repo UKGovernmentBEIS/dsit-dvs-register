@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using NpgsqlTypes;
+using DVSRegister.CommonUtility.Models.Enums;
 
 namespace DVSRegister.Data.Entities
 {
@@ -46,5 +47,9 @@ namespace DVSRegister.Data.Entities
         public DateTime? PublishedTime { get; set; }
         public CertificateReview CertificateReview { get; set; }
         public ProceedApplicationConsentToken ProceedApplicationConsentToken { get; set; }
+        public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
+        public string? RemovalReasonByCab { get; set; }
+        public DateTime? RemovalRequestTime { get; set; }
+        public DateTime? RemovedTime { get; set; }
     }
 }

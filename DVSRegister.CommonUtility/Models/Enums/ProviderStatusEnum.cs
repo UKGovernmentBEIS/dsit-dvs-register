@@ -7,13 +7,18 @@ namespace DVSRegister.CommonUtility.Models.Enums
         //New entries should be added at the last
         [Description("Unpublished")]
         Unpublished = 1,
-        [Description("Action required")]
-        ActionRequired = 2,
+        [Description("Ready to publish")] // Action required
+        ReadyToPublish = 2,
         [Description("Published")]
         Published = 3,
-        [Description("Published - action required")]
-        PublishedActionRequired = 4,
+        [Description("Ready to publish")] //Published - action required
+        ReadyToPublishNext = 4,
         [Description("Removed from register")]
-        RemovedFromRegister = 5
+        RemovedFromRegister = 5,
+        [Description("Awaiting removal confirmation")]
+        AwaitingRemovalConfirmation = 6,
+        [Description("Awaiting removal confirmation")]
+        CabAwaitingRemovalConfirmation = 7
+       
     }
 }

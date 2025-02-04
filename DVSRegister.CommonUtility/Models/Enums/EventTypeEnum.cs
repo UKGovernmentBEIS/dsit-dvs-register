@@ -21,6 +21,14 @@
         AddClosingLoopToken = 16,
         ClosingTheLoop = 17,
         RemoveClosingLoopToken = 18,
-        RegisterManagement = 19
+        RegisterManagement = 19,
+        RemoveProvider = 20,
+        RemoveService = 21,
+        RemoveProvider2i = 22,
+        RemoveServices2i = 23,
+        RemoveProviderRemovalToken = 24,
+        RemovedByCronJob = 25,
+        RemoveServiceRequestedByCab = 25,
+        UpdateUser = 26
     }
 }

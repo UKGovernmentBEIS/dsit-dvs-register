@@ -36,7 +36,7 @@
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "ServiceName", "CabService", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                                                 new { @class = "govuk-link", @aria_label = "Change service provider certified against any supplementary schemes on their certificate" })
+                                                 new { @class = "govuk-link", @aria_label = "Change service provider certified against any supplementary codes on their certificate" })
                                     </dd>
                                 </div>
 
@@ -118,7 +118,7 @@
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromSummaryPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change has supplementary scheme" })
+                                                     new { @class = "govuk-link", @aria_label = "Change supplementary code" })
                                         </dd>
                                     }
 
@@ -201,7 +201,7 @@
 
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
-                                        Supplementary schemes
+                                        Supplementary codes
                                     </dt>
 
                                     @if (Model.SupplementarySchemeViewModel != null && Convert.ToBoolean(Model.HasSupplementarySchemes))
@@ -219,7 +219,7 @@
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "SupplementarySchemes", "CabService", new { fromSummaryPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change relevant supplementary schemes" })
+                                                     new { @class = "govuk-link", @aria_label = "Change relevant supplementary codes" })
                                         </dd>
                                     }
                                     else
@@ -229,7 +229,7 @@
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromSummaryPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change has supplementary scheme" })
+                                                     new { @class = "govuk-link", @aria_label = "Change supplementary code" })
                                         </dd>
                                     }
 
@@ -285,7 +285,7 @@
                         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                         <strong class="govuk-warning-text__text">
                             <span class="govuk-visually-hidden">Warning</span>
-                            If DSIT approves this submission, the information you have provided
+                            If OfDIA approves this submission, the information you have provided
                             will be publicly available
                         </strong>
                     </div>

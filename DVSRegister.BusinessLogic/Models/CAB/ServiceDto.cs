@@ -1,4 +1,5 @@
 ﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using System.Text.Json.Serialization;
 
@@ -39,5 +40,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
 
         [JsonIgnore]
         public ProceedPublishConsentTokenDto ProceedPublishConsentToken { get; set; }
+        public string? RemovalReasonByCab { get; set; }
+
+        public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
     }
 }

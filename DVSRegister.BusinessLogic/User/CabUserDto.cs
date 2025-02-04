@@ -1,4 +1,5 @@
-﻿using DVSRegister.Data.Entities;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic.Models
 {
@@ -7,5 +8,6 @@ namespace DVSRegister.BusinessLogic.Models
         public int Id { get; set; }
         public int CabId { get; set; }     
         public string CabEmail { get; set; }
+        public CabDto Cab { get; set; }
     }
 }

@@ -33,7 +33,9 @@ namespace DVSRegister.Extensions
                 case ServiceStatusEnum.Removed:
                 case CertificateReviewEnum.Rejected:
                     return "govuk-tag govuk-tag--red";
-
+                
+                case ServiceStatusEnum.AwaitingRemovalConfirmation:
+                case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
                 case CertificateReviewEnum.InReview:
                     return "govuk-tag govuk-tag--yellow";
 
@@ -68,9 +70,15 @@ namespace DVSRegister.Extensions
             }
 
             // Check for ServiceStatus Received or ReadyToPublish
-            if (serviceStatus == ServiceStatusEnum.Received || serviceStatus == ServiceStatusEnum.ReadyToPublish)
+            else if (serviceStatus == ServiceStatusEnum.Received || serviceStatus == ServiceStatusEnum.ReadyToPublish)
             {
                 return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Submitted);
+            }
+
+            // if status is under 2i review with admin return published
+            else if (serviceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
+            {
+                return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Published);
             }
 
             // Default to displaying the actual ServiceStatus
