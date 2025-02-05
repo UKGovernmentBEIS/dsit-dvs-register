@@ -28,6 +28,7 @@
                 @using (Html.BeginForm("SaveGPG45", "CabService", FormMethod.Post))
                 {                   
                     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
                     @if (ViewData.ModelState.ErrorCount >0)
                     {
                         hasError = true;

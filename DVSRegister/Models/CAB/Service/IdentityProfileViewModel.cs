@@ -11,6 +11,7 @@ namespace DVSRegister.Models.CAB
         public List<int>? SelectedIdentityProfileIds { get; set; }
         public List<IdentityProfileDto>? SelectedIdentityProfiles { get; set; }
         public bool FromSummaryPage { get; set; }
+        public bool FromDetailsPage { get; set; }
         public bool? HasGPG44 { get; set; }
         public bool? HasGPG45 { get; set; }
     }

@@ -51,7 +51,7 @@
                                 @if (isDraft && hasValue)
                                 {
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "ServiceName", "CabService", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
+                                        @Html.ActionLink("Change", "ServiceName", "CabService", new { fromDetailsPage = true, providerProfileId = Model.ProviderProfileId },
                                                  new { @class = "govuk-link", @aria_label = "Change service name" })
                                     </dd>
                                 }

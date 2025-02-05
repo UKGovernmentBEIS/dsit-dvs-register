@@ -9,6 +9,7 @@
 @using (Html.BeginForm("SaveServiceURL", "CabService", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
 
 <div class="govuk-width-container">
         @Html.ActionLink("Back", "ServiceName", "CabService", new { providerProfileId  = Model.ProviderProfileId}, new { @class = "govuk-back-link" })

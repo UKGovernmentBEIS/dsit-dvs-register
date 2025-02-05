@@ -21,6 +21,7 @@
     @using (Html.BeginForm("SaveGPG45Input", "CabService", FormMethod.Post))
     {
         @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+        @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">

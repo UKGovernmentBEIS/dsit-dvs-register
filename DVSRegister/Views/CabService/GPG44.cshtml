@@ -14,6 +14,7 @@
 @using (Html.BeginForm("SaveGPG44", "CabService", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
     <div class="govuk-width-container">
         @Html.ActionLink("Back", "GPG44Input", "CabService", null, new { @class = "govuk-back-link" })
         <main id="main-content" class="govuk-main-wrapper" role="main">

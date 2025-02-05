@@ -11,6 +11,7 @@
 @using (Html.BeginForm("SaveCertificate", "CabService", FormMethod.Post, new { enctype ="multipart/form-data"}))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
    
     <div class="govuk-width-container">
         @if (Convert.ToBoolean(Model.HasSupplementarySchemes) == true)
@@ -78,7 +79,7 @@
                                     @Model.FileName
                                 </dd>
                                 <dd class="govuk-summary-list__actions">
-                                    <a class="govuk-link" href="/cab-service/submit-service/certificate-upload?fromSummaryPage=@ViewBag.fromSummaryPage&remove=true" aria-label="Remove service provider’s certificate of conformity ">Remove<span class="govuk-visually-hidden"> Remove file</span></a>
+                                    <a class="govuk-link" href="/cab-service/submit-service/certificate-upload?fromSummaryPage=@ViewBag.fromSummaryPage&remove=true&fromDetailsPage=@ViewBag.fromDetailsPage" aria-label="Remove service provider’s certificate of conformity ">Remove<span class="govuk-visually-hidden"> Remove file</span></a>
                                     
                                 </dd>
                             </div>

@@ -7,6 +7,7 @@
         public int? Year { get; set; }
         public string? ValidDate { get; set; }
         public bool FromSummaryPage { get; set; }
+        public bool FromDetailsPage { get; set; }
         public string? PropertyName { get; set; }       
       
     }
