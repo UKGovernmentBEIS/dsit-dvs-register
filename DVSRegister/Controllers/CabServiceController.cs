@@ -34,6 +34,7 @@ namespace DVSRegister.Controllers
         [HttpGet("before-you-start")]
         public async Task<IActionResult> BeforeYouStart(int providerProfileId)
         {
+            HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.ProviderProfileId = providerProfileId;
             string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
             CabUserDto cabUserDto = await userService.GetUser(email);

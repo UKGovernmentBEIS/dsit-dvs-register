@@ -74,6 +74,7 @@ namespace DVSRegister.Controllers
         [HttpGet("profile-overview")]
         public async Task<IActionResult> ProviderOverview(int providerId)
         {
+            HttpContext?.Session.Remove("ServiceSummary");
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
 
             if (cabId > 0) 
@@ -92,7 +93,7 @@ namespace DVSRegister.Controllers
         [HttpGet("profile-information")]
         public async Task<IActionResult> ProviderProfileDetails(int providerId)
         {
-            HttpContext?.Session.Remove("ServiceSummary");
+          
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
 
             if (cabId > 0)
