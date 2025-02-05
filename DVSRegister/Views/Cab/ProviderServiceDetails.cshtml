@@ -6,6 +6,10 @@
     ViewData["Title"] = "Service details";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
+@{
+    bool isDraft = Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft ? true:false ;
+    bool hasValue = true;
+}
 
 <div class="govuk-width-container">
     @Html.ActionLink("Back", "ProviderOverview", "Cab", new { providerId = Model.ProviderProfileId }, new { @class = "govuk-back-link" })
@@ -24,8 +28,9 @@
                             Service @Model.ServiceNumber details
                         </p>
 
-                        @if (Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                        @if (isDraft)
                         {
+                           
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
                                     <a class="govuk-link" href="@Url.Action("ResumeSubmission", "CabServiceReApplication", new { serviceId = @Model.Id })">Resume submission<span class="govuk-visually-hidden"> of @Model.ServiceName</span></a>
@@ -43,9 +48,16 @@
                                 <dd class="govuk-summary-list__value">
                                    @Model.ServiceName
                                 </dd>
+                                @if (isDraft && hasValue)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "ServiceName", "CabService", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
+                                                 new { @class = "govuk-link", @aria_label = "Change service name" })
+                                    </dd>
+                                }
                             </div>
 
-                            @if(Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                            @if (isDraft)
                             {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
@@ -91,10 +103,18 @@
                                     }
                                     else 
                                     {
+                                        hasValue = false;
                                         @:Incomplete
                                     }
                                     
                                 </dd>
+                                @if (isDraft && hasValue)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "ServiceURL", "CabService", new { fromDetailsPage = true },
+                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
+                                    </dd>
+                                }
                             </div>
                            
                             <div class="govuk-summary-list__row">
@@ -108,10 +128,19 @@
                                     }
                                     else
                                     {
+                                        hasValue = false;
                                         @:Incomplete
                                     }
                                    
                                 </dd>
+
+                                @if(isDraft && hasValue)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "CompanyAddress", "CabService", new { fromDetailsPage = true },
+                                                 new { @class = "govuk-link", @aria_label = "Change company address details" })
+                                    </dd>
+                                }
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
@@ -127,9 +156,19 @@
                                     }
                                     else
                                     {
+                                        hasValue = false;
                                         @:Incomplete
                                     }                                                
                                 </dd>
+
+                                @if (isDraft && hasValue)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "ProviderRoles", "CabService", new { fromDetailsPage = true },
+                                                 new { @class = "govuk-link", @aria_label = "Change the roles from the UK digital identity and attributes trust framework that apply to the provider's service" })
+                                    </dd>
+                                }
+
                             </div>
 
                            @if (Convert.ToBoolean(Model.HasGPG44) &&  Model.ServiceQualityLevelMapping!=null)
@@ -148,9 +187,17 @@
                                             }
                                             else
                                             {
-                                                @:Incomplete
+                                            hasValue = false;
+                                             @:Incomplete
                                             }
                                     </dd>
+                                    @if (isDraft && hasValue)
+                                    {
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "GPG44", "CabService", new { fromDetailsPage = true },
+                                                     new { @class = "govuk-link", @aria_label = "Change GPG44 quality of authenticator" })
+                                        </dd>
+                                    }
                                 </div>
 
                                 <div class="govuk-summary-list__row">
@@ -167,9 +214,17 @@
                                         }
                                         else
                                         {
+                                            hasValue = false;
                                             @:Incomplete
                                         }
                                     </dd>
+                                    @if (isDraft && hasValue)
+                                    {
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "GPG44", "CabService", new { fromDetailsPage = true },
+                                                     new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
+                                        </dd>
+                                    }
                                 </div>
                                 
                              } 
@@ -189,9 +244,17 @@
                                         }
                                         else
                                         {
+                                            hasValue = false;
                                             @:Incomplete
                                         }
                                 </dd>
+                                    @if (isDraft && hasValue)
+                                    {
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "GPG45", "CabService", new { fromDetailsPage = true },
+                                                     new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
+                                        </dd>
+                                    }
                             </div>
                             }
 
@@ -211,9 +274,18 @@
                                         }
                                         else
                                         {
+                                            hasValue = false;
                                             @:Incomplete
                                         }
                                     </dd>
+
+                                    @if (isDraft && hasValue)
+                                    {
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "SupplementarySchemes", "CabService", new { fromDetailsPage = true },
+                                                     new { @class = "govuk-link", @aria_label = "Change relevant supplementary codes" })
+                                        </dd>
+                                    }
                                 </div>
                             }
                            
@@ -228,9 +300,17 @@
                                     }
                                     else
                                     {
+                                        hasValue = false;
                                         @:Incomplete
                                     }
                                 </dd>
+                                @if (isDraft && hasValue)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "CertificateUploadPage", "CabService", new { fromDetailsPage = true },
+                                                 new { @class = "govuk-link", @aria_label = "Change service provider's certificate of conformity" })
+                                    </dd>
+                                }
                             </div>
 
                             <div class="govuk-summary-list__row">
@@ -244,9 +324,17 @@
                                     }
                                     else
                                     {
+                                        hasValue = false;
                                         @:Incomplete
                                     }
                                 </dd>
+                                @if (isDraft && hasValue)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "ConfirmityIssueDate", "CabService",
+                                                 new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change date of issue" })
+                                    </dd>
+                                }
                             </div>
 
                             <div class="govuk-summary-list__row">
@@ -263,6 +351,13 @@
                                         @:Incomplete
                                     }
                                 </dd>
+
+                                @if (isDraft && hasValue)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "ConfirmityExpiryDate", "CabService", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change date of expiry" })
+                                    </dd>
+                                }
                             </div>
 
                         </dl>
