@@ -9,419 +9,446 @@
 @{
     bool isDraft = Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft ? true:false ;
     bool hasValue = true;
+    
+    var notificationBanner = new NotificationBannerViewModel
+    {
+        Title = "Important",
+        Heading = "You have a pending submission which is incomplete",
+        HtmlContent = "Select 'Resume submission' to continue your submission."
+    };
 }
 
 <div class="govuk-width-container">
     @Html.ActionLink("Back", "ProviderOverview", "Cab", new { providerId = Model.ProviderProfileId }, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
 
-                <h1 class="govuk-heading-xl">
-                    Service @Model.ServiceNumber details
-                </h1>       
-            </div>
-            <div class="govuk-grid-column-full">
-                <div class="govuk-summary-card">
-                    <div class="govuk-summary-card__title-wrapper">
-                        <p class="govuk-summary-card__title">
-                            Service @Model.ServiceNumber details
-                        </p>
+            <h1 class="govuk-heading-xl">
+                Service @Model.ServiceNumber details
+            </h1>       
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        @if (isDraft)
+        {
+        @Html.Partial("~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-m">
+                Pending submission
+            </h2>
+        </div>
+        }
+        <div class="govuk-grid-column-full">
+        <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+            <p class="govuk-summary-card__title">
+                Service @Model.ServiceNumber details
+            </p>
 
-                        @if (isDraft)
-                        {
+            @if (isDraft)
+            {
+                                   
+                <ul class="govuk-summary-card__actions">
+                    <li class="govuk-summary-card__action">
+                        <a class="govuk-link" href="@Url.Action("ResumeSubmission", "CabServiceReApplication", new { serviceId = @Model.Id })">Resume submission<span class="govuk-visually-hidden"> of @Model.ServiceName</span></a>
+                    </li>
+
+                </ul>
+            }
+        </div>
+        <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Name of service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.ServiceName
+                    </dd>
+                    @if (isDraft && hasValue)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "ServiceName", "CabService", new { fromDetailsPage = true, providerProfileId = Model.ProviderProfileId },
+                                new { @class = "govuk-link", @aria_label = "Change service name" })
+                        </dd>
+                    }
+                </div>
+
+                @if (isDraft)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Last updated date (GMT)
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @DateTimeExtensions.FormatDateTime(@Model.ModifiedTime)
+                        </dd>
+                    </div>
+                }
+                else
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Publication date (UTC)
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (@Model.PublishedTime != null)
+                            {
+                                @DateTimeExtensions.FormatDateTime(@Model.PublishedTime)
+                            }
+                        </dd>
+                    </div>
+                }
                            
-                            <ul class="govuk-summary-card__actions">
-                                <li class="govuk-summary-card__action">
-                                    <a class="govuk-link" href="@Url.Action("ResumeSubmission", "CabServiceReApplication", new { serviceId = @Model.Id })">Resume submission<span class="govuk-visually-hidden"> of @Model.ServiceName</span></a>
-                                </li>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Status
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview, Model.ServiceStatus)
+                    </dd>
+                </div>
 
-                            </ul>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        URL link to the service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model.WebSiteAddress !=null)
+                        {
+                            @Model.WebSiteAddress
+                        }
+                        else 
+                        {
+                            hasValue = false;
+                            @:Incomplete
+                        }
+                                    
+                    </dd>
+                    @if (isDraft && hasValue)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "ServiceURL", "CabService", new { fromDetailsPage = true },
+                                new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
+                        </dd>
+                    }
+                </div>
+                           
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Company address details
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model.CompanyAddress != null)
+                        {
+                            @HtmlExtensions.ToStringWithLineBreaks(Model.CompanyAddress)
+                        }
+                        else
+                        {
+                            hasValue = false;
+                            @:Incomplete
+                        }
+                                   
+                    </dd>
+
+                    @if(isDraft && hasValue)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "CompanyAddress", "CabService", new { fromDetailsPage = true },
+                                new { @class = "govuk-link", @aria_label = "Change company address details" })
+                        </dd>
+                    }
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Roles certified against
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model.ServiceRoleMapping.Count > 0)
+                        {
+                            @foreach(var item in Model.ServiceRoleMapping)
+                            {
+                                @item.Role.RoleName <br/>
+                            }
+                        }
+                        else
+                        {
+                            hasValue = false;
+                            @:Incomplete
+                        }                                                
+                    </dd>
+
+                    @if (isDraft && hasValue)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "ProviderRoles", "CabService", new { fromDetailsPage = true },
+                                new { @class = "govuk-link", @aria_label = "Change the roles from the UK digital identity and attributes trust framework that apply to the provider's service" })
+                        </dd>
+                    }
+
+                </div>
+
+                @if (Model.HasGPG44 == false)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG44 quality levels
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            None
+                        </dd>
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
+                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG44" })
+                            </dd>
                         }
                     </div>
-                    <div class="govuk-summary-card__content">
-                        <dl class="govuk-summary-list">
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Name of service
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                   @Model.ServiceName
-                                </dd>
-                                @if (isDraft && hasValue)
-                                {
-                                    <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "ServiceName", "CabService", new { fromDetailsPage = true, providerProfileId = Model.ProviderProfileId },
-                                                 new { @class = "govuk-link", @aria_label = "Change service name" })
-                                    </dd>
-                                }
-                            </div>
-
-                            @if (isDraft)
-                            {
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
-                                        Last updated date (GMT)
-                                    </dt>
-                                    <dd class="govuk-summary-list__value">
-                                        @DateTimeExtensions.FormatDateTime(@Model.ModifiedTime)
-                                    </dd>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
-                                        Publication date (UTC)
-                                    </dt>
-                                    <dd class="govuk-summary-list__value">
-                                        @if (@Model.PublishedTime != null)
-                                        {
-                                            @DateTimeExtensions.FormatDateTime(@Model.PublishedTime)
-                                        }
-                                    </dd>
-                                </div>
-                            }
-                           
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Status
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview, Model.ServiceStatus)
-                                </dd>
-                            </div>
-
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    URL link to the service
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @if (Model.WebSiteAddress !=null)
-                                    {
-                                        @Model.WebSiteAddress
-                                    }
-                                    else 
-                                    {
-                                        hasValue = false;
-                                        @:Incomplete
-                                    }
-                                    
-                                </dd>
-                                @if (isDraft && hasValue)
-                                {
-                                    <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "ServiceURL", "CabService", new { fromDetailsPage = true },
-                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
-                                    </dd>
-                                }
-                            </div>
-                           
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Company address details
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @if (Model.CompanyAddress != null)
-                                    {
-                                        @HtmlExtensions.ToStringWithLineBreaks(Model.CompanyAddress)
-                                    }
-                                    else
-                                    {
-                                        hasValue = false;
-                                        @:Incomplete
-                                    }
-                                   
-                                </dd>
-
-                                @if(isDraft && hasValue)
-                                {
-                                    <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "CompanyAddress", "CabService", new { fromDetailsPage = true },
-                                                 new { @class = "govuk-link", @aria_label = "Change company address details" })
-                                    </dd>
-                                }
-                            </div>
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Roles certified against
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @if (Model.ServiceRoleMapping.Count > 0)
-                                    {
-                                        @foreach(var item in Model.ServiceRoleMapping)
-                                        {
-                                            @item.Role.RoleName <br/>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        hasValue = false;
-                                        @:Incomplete
-                                    }                                                
-                                </dd>
-
-                                @if (isDraft && hasValue)
-                                {
-                                    <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "ProviderRoles", "CabService", new { fromDetailsPage = true },
-                                                 new { @class = "govuk-link", @aria_label = "Change the roles from the UK digital identity and attributes trust framework that apply to the provider's service" })
-                                    </dd>
-                                }
-
-                            </div>
-
-                           @if (Model.HasGPG44 == false)
-                           {
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
-                                        GPG44 quality levels
-                                    </dt>
-                                    <dd class="govuk-summary-list__value">
-                                        None
-                                    </dd>
-                                    @if (isDraft && hasValue)
-                                    {
-                                        <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change whether certified against GPG44" })
-                                        </dd>
-                                    }
-                                </div>
-                            }
-                           else
-                           {
+                }
+                else
+                {
                                
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
-                                        GPG44 quality of authenticator
-                                    </dt>
-                                    <dd class="govuk-summary-list__value">
-                                            @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
-                                            {
-                                                foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
-                                                {
-                                                    @item.QualityLevel.Level <br />
-                                                }
-                                            }
-                                            else
-                                            {
-                                            hasValue = false;
-                                             @:Incomplete
-                                            }
-                                    </dd>
-                                    @if (isDraft && hasValue)
-                                    {
-                                        <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "GPG44", "CabService", new { fromDetailsPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change GPG44 quality of authenticator" })
-                                        </dd>
-                                    }
-                                </div>
-
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
-                                        GPG44 level of protection
-                                    </dt>
-                                    <dd class="govuk-summary-list__value">
-                                        @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
-                                        {
-                                            foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
-                                            {
-                                                @item.QualityLevel.Level <br />
-                                            }
-                                        }
-                                        else
-                                        {
-                                            hasValue = false;
-                                            @:Incomplete
-                                        }
-                                    </dd>
-                                    @if (isDraft && hasValue)
-                                    {
-                                        <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "GPG44", "CabService", new { fromDetailsPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
-                                        </dd>
-                                    }
-                                </div>
-                                    
-                           }
-                            @if (Model.HasGPG45 == false)
-                            {                           
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
-                                        GPG45 identity profiles
-                                    </dt>
-                                    <dd class="govuk-summary-list__value">
-                                        None
-                                    </dd>
-                                    @if (isDraft && hasValue)
-                                    {
-                                        <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change whether certified against GPG45" })
-                                        </dd>
-                                    }
-                                </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG44 quality of authenticator
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                            {
+                                foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                {
+                                    @item.QualityLevel.Level <br />
+                                }
                             }
                             else
                             {
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
-                                        GPG45 identity profiles
-                                    </dt>
-                                    <dd class="govuk-summary-list__value">
-                                        @if (Model.ServiceIdentityProfileMapping.Count > 0)
-                                        {
-                                            @foreach (var item in Model.ServiceIdentityProfileMapping)
-                                            {
-                                                @item.IdentityProfile.IdentityProfileName <br />
-                                            }
-                                        }
-                                        else
-                                        {
-                                            hasValue = false;
-                                            @:Incomplete
-                                        }
-                                    </dd>
-                                    @if (isDraft && hasValue)
-                                    {
-                                        <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "GPG45", "CabService", new { fromDetailsPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
-                                        </dd>
-                                    }
-                                </div>                          
+                                hasValue = false;
+                                @:Incomplete
                             }
-
-                            @if(Model.HasSupplementarySchemes == false)
-                            {
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
-                                        Supplementary codes
-                                    </dt>
-                                    <dd class="govuk-summary-list__value">
-                                        None
-                                    </dd>
-
-                                    @if (isDraft && hasValue)
-                                    {
-                                        <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "SupplementarySchemes", "CabService", new { fromDetailsPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change relevant supplementary codes" })
-                                        </dd>
-                                    }
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">
-                                        Supplementary codes
-                                    </dt>
-                                    <dd class="govuk-summary-list__value">
-                                        @if (Model.ServiceSupSchemeMapping.Count > 0)
-                                        {
-                                            @foreach (var item in Model.ServiceSupSchemeMapping)
-                                            {
-                                                @item.SupplementaryScheme.SchemeName <br />
-                                            }
-                                        }
-                                        else
-                                        {
-                                            hasValue = false;
-                                            @:Incomplete
-                                        }
-                                    </dd>
-
-                                    @if (isDraft && hasValue)
-                                    {
-                                        <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change whether certified against supplementary schemes" })
-                                        </dd>
-                                    }
-                                </div>
-
-                            }
-                           
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Service provider’s certificate of conformity
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @if (!string.IsNullOrEmpty(Model.FileName))
-                                    {
-                                        @Model.FileName
-                                    }
-                                    else
-                                    {
-                                        hasValue = false;
-                                        @:Incomplete
-                                    }
-                                </dd>
-                                @if (isDraft && hasValue)
-                                {
-                                    <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "CertificateUploadPage", "CabService", new { fromDetailsPage = true },
-                                                 new { @class = "govuk-link", @aria_label = "Change service provider's certificate of conformity" })
-                                    </dd>
-                                }
-                            </div>
-
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Date of issue
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @if (Model.ConformityIssueDate != DateTime.MinValue)
-                                    {
-                                        @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
-                                    }
-                                    else
-                                    {
-                                        hasValue = false;
-                                        @:Incomplete
-                                    }
-                                </dd>
-                                @if (isDraft && hasValue)
-                                {
-                                    <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "ConfirmityIssueDate", "CabService",
-                                                 new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change date of issue" })
-                                    </dd>
-                                }
-                            </div>
-
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Date of expiry
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @if (Model.ConformityExpiryDate != DateTime.MinValue)
-                                    {
-                                        @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMM yyyy")
-                                    }
-                                    else
-                                    {
-                                        @:Incomplete
-                                    }
-                                </dd>
-
-                                @if (isDraft && hasValue)
-                                {
-                                    <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "ConfirmityExpiryDate", "CabService", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change date of expiry" })
-                                    </dd>
-                                }
-                            </div>
-
-                        </dl>
+                        </dd>
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "GPG44", "CabService", new { fromDetailsPage = true },
+                                    new { @class = "govuk-link", @aria_label = "Change GPG44 quality of authenticator" })
+                            </dd>
+                        }
                     </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG44 level of protection
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                            {
+                                foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                {
+                                    @item.QualityLevel.Level <br />
+                                }
+                            }
+                            else
+                            {
+                                hasValue = false;
+                                @:Incomplete
+                            }
+                        </dd>
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "GPG44", "CabService", new { fromDetailsPage = true },
+                                    new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
+                            </dd>
+                        }
+                    </div>
+                                    
+                }
+                @if (Model.HasGPG45 == false)
+                {                           
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG45 identity profiles
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            None
+                        </dd>
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
+                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG45" })
+                            </dd>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG45 identity profiles
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ServiceIdentityProfileMapping.Count > 0)
+                            {
+                                @foreach (var item in Model.ServiceIdentityProfileMapping)
+                                {
+                                    @item.IdentityProfile.IdentityProfileName <br />
+                                }
+                            }
+                            else
+                            {
+                                hasValue = false;
+                                @:Incomplete
+                            }
+                        </dd>
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "GPG45", "CabService", new { fromDetailsPage = true },
+                                    new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
+                            </dd>
+                        }
+                    </div>                          
+                }
+
+                @if(Model.HasSupplementarySchemes == false)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Supplementary codes
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            None
+                        </dd>
+
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "SupplementarySchemes", "CabService", new { fromDetailsPage = true },
+                                    new { @class = "govuk-link", @aria_label = "Change relevant supplementary codes" })
+                            </dd>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Supplementary codes
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ServiceSupSchemeMapping.Count > 0)
+                            {
+                                @foreach (var item in Model.ServiceSupSchemeMapping)
+                                {
+                                    @item.SupplementaryScheme.SchemeName <br />
+                                }
+                            }
+                            else
+                            {
+                                hasValue = false;
+                                @:Incomplete
+                            }
+                        </dd>
+
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
+                                    new { @class = "govuk-link", @aria_label = "Change whether certified against supplementary schemes" })
+                            </dd>
+                        }
+                    </div>
+
+                }
+                           
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service provider’s certificate of conformity
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (!string.IsNullOrEmpty(Model.FileName))
+                        {
+                            @Model.FileName
+                        }
+                        else
+                        {
+                            hasValue = false;
+                            @:Incomplete
+                        }
+                    </dd>
+                    @if (isDraft && hasValue)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "CertificateUploadPage", "CabService", new { fromDetailsPage = true },
+                                new { @class = "govuk-link", @aria_label = "Change service provider's certificate of conformity" })
+                        </dd>
+                    }
                 </div>
-            </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Date of issue
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model.ConformityIssueDate != DateTime.MinValue)
+                        {
+                            @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
+                        }
+                        else
+                        {
+                            hasValue = false;
+                            @:Incomplete
+                        }
+                    </dd>
+                    @if (isDraft && hasValue)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "ConfirmityIssueDate", "CabService",
+                                new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change date of issue" })
+                        </dd>
+                    }
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Date of expiry
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model.ConformityExpiryDate != DateTime.MinValue)
+                        {
+                            @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMM yyyy")
+                        }
+                        else
+                        {
+                            @:Incomplete
+                        }
+                    </dd>
+
+                    @if (isDraft && hasValue)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "ConfirmityExpiryDate", "CabService", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change date of expiry" })
+                        </dd>
+                    }
+                </div>
+
+            </dl>
         </div>
+        </div>
+        </div>
+        @if (isDraft)
+        {
+            <div class="govuk-grid-column-full">
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                <h2 class="govuk-heading-m">
+                    Previously submitted
+                </h2>
+                <p class="govuk-body">You don't have any previous submissions for this service</p>
+            </div>
+        }
+    </div>
     </main>
 </div>
-
