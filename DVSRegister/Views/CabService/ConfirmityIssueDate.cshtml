@@ -50,7 +50,8 @@
 
                 @using (Html.BeginForm("SaveConfirmityIssueDate", "CabService", FormMethod.Post))
                 {
-                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })                   
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
                     <p class="govuk-body">
                         This must match the date on the certificate of conformity. The issue date cannot be greater
                         than today.

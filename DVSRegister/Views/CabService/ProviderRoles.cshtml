@@ -20,6 +20,7 @@
                     Select the applicable roles from the UK digital identity and attributes trust framework for this service
                 </h1>
                 @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                 @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
                 @if (ViewData.ModelState.ErrorCount > 0)
                 {
                     hasError = true;

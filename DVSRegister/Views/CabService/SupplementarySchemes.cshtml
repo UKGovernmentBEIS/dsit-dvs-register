@@ -27,6 +27,7 @@
                 @using (Html.BeginForm("SaveSupplementarySchemes", "CabService", FormMethod.Post))
                 {
                 @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
                 <p class="govuk-body">
                     Select all supplementary codes that the service  is certified against on the certificate of conformity.
                 </p>
