@@ -527,6 +527,41 @@ namespace DVSRegister.CommonUtility.Email
             };
             return await SendEmail(emailModel);
         }
+
+        public async Task<bool> Service2iCheckDeclinedToDSIT(string serviceName)
+        {
+            var template = govUkNotifyConfig.Service2iCheckDeclinedToDSIT;
+            var personalisation = new Dictionary<string, dynamic>
+            {              
+              { template.ServiceName,  serviceName}
+             
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> Service2iCheckApprovedToDSIT(string serviceName, string reasonForRemoval)
+        {
+            var template = govUkNotifyConfig.Service2iCheckApprovedToDSIT;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+              { template.ServiceName,  serviceName},
+              { template.ReasonForRemoval,  reasonForRemoval}
+
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = govUkNotifyConfig.OfDiaEmailId,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
         #endregion
     }
 }
