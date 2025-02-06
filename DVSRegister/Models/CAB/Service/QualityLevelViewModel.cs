@@ -17,5 +17,6 @@ namespace DVSRegister.Models.CAB
         public List<int>? SelectedLevelOfProtectionIds { get; set; }
         public List<QualityLevelDto>? SelectedLevelOfProtections { get; set; }
         public bool FromSummaryPage { get; set; }
+        public bool FromDetailsPage { get; set; }
     }
 }

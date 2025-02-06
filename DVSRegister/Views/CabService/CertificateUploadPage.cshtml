@@ -11,6 +11,7 @@
 @using (Html.BeginForm("SaveCertificate", "CabService", FormMethod.Post, new { enctype ="multipart/form-data"}))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
    
     <div class="govuk-width-container">
         @if (Convert.ToBoolean(Model.HasSupplementarySchemes) == true)
@@ -78,16 +79,19 @@
                                     @Model.FileName
                                 </dd>
                                 <dd class="govuk-summary-list__actions">
-                                    <a class="govuk-link" href="/cab-service/submit-service/certificate-upload?fromSummaryPage=@ViewBag.fromSummaryPage&remove=true" aria-label="Remove service provider’s certificate of conformity ">Remove<span class="govuk-visually-hidden"> Remove file</span></a>
+                                    <a class="govuk-link" href="/cab-service/submit-service/certificate-upload?fromSummaryPage=@ViewBag.fromSummaryPage&remove=true&fromDetailsPage=@ViewBag.fromDetailsPage" aria-label="Remove service provider’s certificate of conformity ">Remove<span class="govuk-visually-hidden"> Remove file</span></a>
                                     
                                 </dd>
                             </div>
                         </dl>
                         @Html.HiddenFor(m => m.FileUploadedSuccessfully)
                     }
-                    <button type="submit" class="govuk-button" data-module="govuk-button">
-                        Continue
-                    </button>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button" name="action" value="continue">
+                            Continue
+                        </button>
+                        <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
+                    </div>
                 </div>
             </div>
         </main>
