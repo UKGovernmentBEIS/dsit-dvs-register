@@ -690,40 +690,39 @@ namespace DVSRegister.Controllers
             {
                 if (ModelState["File"].Errors.Count == 0)
                 {
-
-                        using (var memoryStream = new MemoryStream())
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await certificateFileViewModel.File.CopyToAsync(memoryStream);
+                        GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                        if (genericResponse.Success)
                         {
-                            await certificateFileViewModel.File.CopyToAsync(memoryStream);
-                            GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
-                            if (genericResponse.Success)
+
+                            summaryViewModel.FileName = certificateFileViewModel.File.FileName;
+                            summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
+                            summaryViewModel.FileLink = genericResponse.Data;
+                            certificateFileViewModel.FileUploadedSuccessfully = true;
+                            certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
+                            HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                            if (action == "continue")
                             {
-                               
-                                summaryViewModel.FileName = certificateFileViewModel.File.FileName;
-                                summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
-                                summaryViewModel.FileLink = genericResponse.Data;
-                                certificateFileViewModel.FileUploadedSuccessfully = true;
-                                certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
-                                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                                if (action == "continue")
-                                {   
-                                  return View("CertificateUploadPage", certificateFileViewModel);
-                                }
-                                else if (action == "draft")
-                                {
-                                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                                }
-                                else
-                                {
-                                    return RedirectToAction("HandleException", "Error");
-                                }
-                             }
-                            else
-                            {
-                                ModelState.AddModelError("File", "Unable to upload the file provided");
                                 return View("CertificateUploadPage", certificateFileViewModel);
                             }
-                       }                    
-                   
+                            else if (action == "draft")
+                            {
+                                return await SaveAsDraftAndRedirect(summaryViewModel);
+                            }
+                            else
+                            {
+                                return RedirectToAction("HandleException", "Error");
+                            }
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("File", "Unable to upload the file provided");
+                            return View("CertificateUploadPage", certificateFileViewModel);
+                        }
+                    }
+
                 }
                
                 else
@@ -733,7 +732,7 @@ namespace DVSRegister.Controllers
             }
             else if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == true && action == "draft")
             {
-                return RedirectToAction("ProviderServiceDetails", "Cab", new { serviceId = summaryViewModel.ServiceId });
+                return await SaveAsDraftAndRedirect(summaryViewModel);
             }
             else
             {
