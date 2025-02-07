@@ -43,6 +43,8 @@ namespace DVSRegister.CommonUtility.Email
         public Task<bool> CabServiceRemovalRequestedToDSIT(string companyName, string serviceName, string reasonForRemoval);
         public Task<bool> RecordRemovalRequestByCabToDSIT(string companyName, string serviceName, string reasonForRemoval);
         public Task<bool> RecordRemovalRequestConfirmationToCab(string recipientName, string emailAddress, string companyName, string serviceName, string reasonForRemoval);
+        public Task<bool> Service2iCheckDeclinedToDSIT(string serviceName);
+        public Task<bool> Service2iCheckApprovedToDSIT(string serviceName, string reasonForRemoval);
 
 
 
