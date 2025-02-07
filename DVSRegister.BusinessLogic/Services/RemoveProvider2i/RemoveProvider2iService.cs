@@ -55,7 +55,7 @@ namespace DVSRegister.BusinessLogic.Services
         {
             GenericResponse genericResponse = new();
             string serviceNames = string.Empty;
-            string removalReason = RemovalReasonsEnumExtensions.GetDescription(providerDto.RemovalReason.Value);
+          
 
             List<int> serviceIds = providerDto.Services.Select(s => s.Id).ToList();
             var filteredServiceNames = providerDto.Services.Select(s => s.ServiceName).ToList();
@@ -104,7 +104,7 @@ namespace DVSRegister.BusinessLogic.Services
                 {                 
                     //remove provider
                     genericResponse = await removeProvider2iRepository.UpdateRemovalStatus(providerDto.Id, team, EventTypeEnum.RemoveServices2i, null, loggedInUserEmail);
-
+                    string removalReason = RemovalReasonsEnumExtensions.GetDescription(providerDto.RemovalReason.Value);
 
                     if (genericResponse.Success)
                     {
