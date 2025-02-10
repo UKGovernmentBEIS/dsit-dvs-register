@@ -49,13 +49,14 @@ namespace DVSRegister.Data
         {           
             ProviderProfile providerProfile = new ();
             providerProfile = await context.ProviderProfile
-            .Include(p => p.Services)
+          .Include(p => p.Services.Where(ci => ci.ServiceStatus >= ServiceStatusEnum.Published &&
+            ci.ServiceStatus != ServiceStatusEnum.Removed &&
+            ci.ServiceStatus != ServiceStatusEnum.SavedAsDraft))
            .Include(p => p.Services).ThenInclude(x => x.ServiceRoleMapping).ThenInclude(p => p.Role)
            .Include(p => p.Services).ThenInclude(x => x.ServiceIdentityProfileMapping).ThenInclude(p=>p.IdentityProfile)
            .Include(p => p.Services).ThenInclude(x => x.ServiceSupSchemeMapping).ThenInclude(p => p.SupplementaryScheme)
             .Include(p => p.Services).ThenInclude(x => x.ServiceQualityLevelMapping).ThenInclude(p=>p.QualityLevel)    
-           .Where(p => p.Id == providerId && p.Services.Any(ci => ci.ServiceStatus >= ServiceStatusEnum.Published && ci.ServiceStatus != ServiceStatusEnum.Removed 
-            && ci.ServiceStatus != ServiceStatusEnum.SavedAsDraft))
+           .Where(p => p.Id == providerId &&  p.ProviderStatus >= ProviderStatusEnum.Published && p.ProviderStatus != ProviderStatusEnum.RemovedFromRegister)
            .OrderBy(c => c.ModifiedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
             return providerProfile;
         }

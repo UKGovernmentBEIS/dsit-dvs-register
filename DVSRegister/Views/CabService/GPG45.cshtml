@@ -9,15 +9,7 @@
 }
 
 <div class="govuk-width-container">
-    @if(Convert.ToBoolean(Model.HasGPG44))
-    {
-        @Html.ActionLink("Back", "GPG44", "CabService", null, new { @class = "govuk-back-link" })
-    }
-    else
-    {
-        @Html.ActionLink("Back", "GPG44Input", "CabService", null, new { @class = "govuk-back-link" })
-    }
-
+    @Html.ActionLink("Back", "GPG45Input", "CabService", null, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
