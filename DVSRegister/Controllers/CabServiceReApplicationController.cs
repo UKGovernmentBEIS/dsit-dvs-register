@@ -24,9 +24,9 @@ namespace DVSRegister.Controllers
         }
         
         [HttpGet("before-new-certificate")]
-        public IActionResult BeforeNewCertificate(int providerProfileId)
+        public IActionResult BeforeNewCertificate(int serviceId)
         {
-            ViewBag.ProviderProfileId = providerProfileId;
+            ViewBag.serviceId = serviceId;
             
             return View("BeforeYouSubmitNewCertificate");
         }
