@@ -24,7 +24,8 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<GenericResponse> UpdatePrimaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
         public Task<GenericResponse> UpdateSecondaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
         public Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
-       
+        public Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail);
+
         #endregion
     }
 }

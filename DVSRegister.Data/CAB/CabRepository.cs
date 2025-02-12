@@ -185,7 +185,7 @@ namespace DVSRegister.Data.CAB
 
                 var existingService = await context.Service.Include(x=>x.ServiceRoleMapping).Include(x=>x.ServiceIdentityProfileMapping)
                 .Include(x=>x.ServiceQualityLevelMapping).Include(x=>x.ServiceSupSchemeMapping)              
-                 .Where(x=>x.Id == service.Id).FirstOrDefaultAsync();                
+                 .Where(x=>x.ServiceKey == service.ServiceKey && service.IsCurrent == true).FirstOrDefaultAsync();                
                 if(existingService != null && existingService.Id>0) 
                 {
                     
@@ -229,11 +229,11 @@ namespace DVSRegister.Data.CAB
                 else
                 {
                     // Get the current highest ServiceNumber for the given ProviderProfileId
-                    var serviceNumbers = await context.Service.Where(s => s.ProviderProfileId == service.ProviderProfileId)
+                    var serviceNumbers = await context.Service.Where(s => s.ProviderProfileId == service.ProviderProfileId && s.IsCurrent == true)
                     .Select(s => s.ServiceNumber).ToListAsync();
                     int nextServiceNumber = serviceNumbers.Any() ? serviceNumbers.Max() + 1 : 1;
                     service.ServiceNumber = nextServiceNumber;
-                    service.CreatedTime = DateTime.UtcNow;
+                    service.CreatedTime = DateTime.UtcNow;                    
                     if(service.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
                     {
                         service.ModifiedTime = DateTime.UtcNow;                       
@@ -261,7 +261,42 @@ namespace DVSRegister.Data.CAB
             return genericResponse;
         }
 
-     
+
+        public async Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = context.Database.BeginTransaction();
+            try
+            {
+                var existingService = await context.Service
+                  .Where(x => x.ServiceKey == service.ServiceKey && service.IsCurrent == true).FirstOrDefaultAsync();
+
+                if (existingService != null && existingService.Id > 0)
+                {
+                    existingService.IsCurrent = false;
+
+                    // Retrieve the maximum ServiceVersion from existing services
+                    var maxServiceVersion = await context.Service .Where(x => x.ServiceKey == service.ServiceKey).MaxAsync(s => s.ServiceVersion);
+                    // Increment the version for the new service
+                    service.ServiceVersion = maxServiceVersion + 1;
+                    var entity = await context.Service.AddAsync(service);
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+                    genericResponse.InstanceId = entity.Entity.Id;
+                    transaction.Commit();
+                    genericResponse.Success = true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                transaction.Rollback();
+                logger.LogError(ex, "Error in SaveServiceReApplication");
+            }
+            return genericResponse;
+        }
+
+
 
         public async Task<GenericResponse> UpdateCompanyInfo(ProviderProfile providerProfile, string loggedInUserEmail)
         {

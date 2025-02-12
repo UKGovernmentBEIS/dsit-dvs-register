@@ -25,6 +25,9 @@ namespace DVSRegister.Data.CAB
         public Task<GenericResponse> UpdatePrimaryContact(ProviderProfile providerProfile, string loggedInUserEmail);
         public Task<GenericResponse> UpdateSecondaryContact(ProviderProfile providerProfile, string loggedInUserEmail);
         public Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfile providerProfile, string loggedInUserEmail);
+
+        public Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail);
         #endregion
+
     }
 }
