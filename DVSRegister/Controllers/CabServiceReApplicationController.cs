@@ -22,6 +22,14 @@ namespace DVSRegister.Controllers
                 return RedirectToAction("HandleException", "Error");
             }
         }
+        
+        [HttpGet("before-new-certificate")]
+        public IActionResult BeforeNewCertificate(int providerProfileId)
+        {
+            ViewBag.ProviderProfileId = providerProfileId;
+            
+            return View("BeforeYouSubmitNewCertificate");
+        }
 
 
         #region Private method
