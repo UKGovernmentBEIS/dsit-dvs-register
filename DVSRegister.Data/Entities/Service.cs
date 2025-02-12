@@ -18,6 +18,9 @@ namespace DVSRegister.Data.Entities
         public int ProviderProfileId { get; set; }
         public ProviderProfile Provider { get; set; }
         public string? ServiceName { get; set; }
+        public int ServiceKey { get; set; }
+        public int ServiceVersion { get; set; } = 1;
+        public bool IsCurrent { get; set; } = true;
         public string? WebSiteAddress { get; set; }
         public string? CompanyAddress { get; set; }
         public ICollection<ServiceRoleMapping>? ServiceRoleMapping { get; set; }
