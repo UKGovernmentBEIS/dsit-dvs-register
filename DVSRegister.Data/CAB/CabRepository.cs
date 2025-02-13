@@ -217,7 +217,7 @@ namespace DVSRegister.Data.CAB
                     existingService.ConformityIssueDate = service.ConformityIssueDate;
                     existingService.ConformityExpiryDate = service.ConformityExpiryDate;                  
                     existingService.ServiceStatus = service.ServiceStatus;
-                    existingService.ModifiedTime = DateTime.UtcNow;                   
+                    existingService.CreatedTime = DateTime.UtcNow;                   
                     genericResponse.InstanceId = existingService.Id;
                     if(service.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
