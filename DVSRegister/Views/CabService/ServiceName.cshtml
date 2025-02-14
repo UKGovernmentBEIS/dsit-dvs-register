@@ -10,11 +10,19 @@
 @using (Html.BeginForm("SaveServiceName", "CabService", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
-
     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+    
 
 <div class="govuk-width-container">
-        @Html.ActionLink("Back", "BeforeYouStart", "CabService", new { providerProfileId  = Model.ProviderProfileId}, new { @class = "govuk-back-link" })
+        @if (Model.IsResubmission)
+        {
+            @Html.ActionLink("Back", "BeforeYouSubmitNewCertificate", " CabServiceReApplication", new { providerProfileId = Model.ProviderProfileId}, new { @class = "govuk-back-link" })
+        }
+        else
+        {
+            @Html.ActionLink("Back", "BeforeYouStart", "CabService", new { providerProfileId= Model.ProviderProfileId}, new { @class = "govuk-back-link" })
+        }
+      
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">

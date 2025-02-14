@@ -199,7 +199,7 @@ namespace DVSRegister.Controllers
             }
 
 
-            ServiceSummaryViewModel serviceSummary = new ServiceSummaryViewModel
+            ServiceSummaryViewModel serviceSummary = new()
             {
                 ServiceName = serviceDto.ServiceName,
                 ServiceURL = serviceDto.WebSiteAddress,
@@ -219,7 +219,10 @@ namespace DVSRegister.Controllers
                 ServiceId = serviceDto.Id,
                 ProviderProfileId = serviceDto.ProviderProfileId,
                 CabId = cabId,
-                CabUserId = serviceDto.CabUserId
+                CabUserId = serviceDto.CabUserId,
+                ServiceKey = serviceDto.ServiceKey,
+                IsDraft = serviceDto.ServiceStatus == ServiceStatusEnum.SavedAsDraft?true:false
+                
             };
             HttpContext?.Session.Set("ServiceSummary", serviceSummary);
         }

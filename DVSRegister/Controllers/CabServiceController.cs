@@ -69,7 +69,7 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> ServiceName(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
-            ViewBag.fromDetailsPage = fromDetailsPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;          
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
             string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
             CabUserDto cabUserDto = await userService.GetUser(email);
@@ -77,7 +77,7 @@ namespace DVSRegister.Controllers
             bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
             if (providerProfileId > 0 && isValid) 
             {
-                serviceSummaryViewModel.ProviderProfileId = providerProfileId;
+                serviceSummaryViewModel.ProviderProfileId = providerProfileId;                
                 HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
                 return View(serviceSummaryViewModel);
             }
@@ -909,7 +909,16 @@ namespace DVSRegister.Controllers
             ServiceDto serviceDto = MapViewModelToDto(summaryViewModel, ServiceStatusEnum.Submitted);
             if(serviceDto!=null)
             {
-                GenericResponse genericResponse = await cabService.SaveService(serviceDto, UserEmail);
+                GenericResponse genericResponse = new();
+                if(summaryViewModel.IsResubmission) 
+                {
+                    genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
+                }
+                else
+                {
+                    genericResponse = await cabService.SaveService(serviceDto, UserEmail);
+                }
+               
                 if (genericResponse.Success)
                 {
                     return RedirectToAction("InformationSubmitted");
@@ -950,8 +959,17 @@ namespace DVSRegister.Controllers
 
         private async Task<IActionResult> SaveAsDraftAndRedirect(ServiceSummaryViewModel serviceSummary)
         {
+            GenericResponse genericResponse = new();
             ServiceDto serviceDto = MapViewModelToDto(serviceSummary, ServiceStatusEnum.SavedAsDraft);
-            GenericResponse genericResponse = await cabService.SaveService(serviceDto, UserEmail);
+            if(serviceSummary.IsResubmission)
+            {
+                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
+            }
+            else
+            {
+                genericResponse = await cabService.SaveService(serviceDto, UserEmail);
+            }
+         
             if (genericResponse.Success)
             {
                 HttpContext?.Session.Remove("ServiceSummary");
@@ -1145,6 +1163,7 @@ namespace DVSRegister.Controllers
                 serviceDto.CabUserId = model.CabUserId;
                 serviceDto.ServiceStatus =serviceStatus;
                 serviceDto.Id = model.ServiceId;
+                serviceDto.ServiceKey = model.ServiceKey;
             }
             return serviceDto;
 
