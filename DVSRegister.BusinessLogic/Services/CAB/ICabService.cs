@@ -1,6 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models;
-
 namespace DVSRegister.BusinessLogic.Services.CAB
 {
     public interface ICabService
@@ -12,6 +11,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<List<ProviderProfileDto>> GetProviders(int cabId, string searchText = "");
         public Task<ProviderProfileDto> GetProvider(int providerId, int cabId);
         public Task<ServiceDto> GetServiceDetails(int serviceId, int cabId);
+        public Task<List<ServiceDto>> GetServiceList(int serviceId, int cabId);
         public Task<List<QualityLevelDto>> GetQualitylevels();
         public Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId);
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto);

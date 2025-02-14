@@ -1,6 +1,5 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.Data.Entities;
 using System.Text.Json.Serialization;
 
 namespace DVSRegister.BusinessLogic.Models.CAB
@@ -25,7 +24,6 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public ICollection<ServiceIdentityProfileMappingDto>? ServiceIdentityProfileMapping { get; set; }
         public bool? HasSupplementarySchemes { get; set; }
         public ICollection<ServiceSupSchemeMappingDto>? ServiceSupSchemeMapping { get; set; }
-
         public string FileName { get; set; }
         public string FileLink { get; set; }        
         public decimal FileSizeInKb { get; set; }

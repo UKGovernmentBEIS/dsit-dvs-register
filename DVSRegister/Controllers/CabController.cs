@@ -3,10 +3,13 @@ using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data.Entities;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Provider;
+using DVSRegister.Models.CAB.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -118,15 +121,27 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("service-details")]
-        public async Task<IActionResult> ProviderServiceDetails(int serviceId)
+        public async Task<IActionResult> ProviderServiceDetails(int serviceKey)
         {
             HttpContext?.Session.Remove("ServiceSummary");
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
             if (cabId > 0)
             {
-                ServiceDto serviceDto = await cabService.GetServiceDetails(serviceId, cabId);
-                SetServiceDataToSession(cabId, serviceDto);
-                return View(serviceDto);
+                ServiceVersionViewModel serviceVersions = new();
+                var serviceList = await cabService.GetServiceList(serviceKey, cabId);
+
+                var currentServiceVersion = serviceList.FirstOrDefault(x => x.IsCurrent == true);
+
+                serviceVersions.CurrentServiceVersion = (ServiceDto)currentServiceVersion;
+                serviceVersions.ServiceHistoryVersions = serviceList
+                    .Where(x => x.IsCurrent != true)
+                    .OrderByDescending(x=> x.PublishedTime)
+                    .ToList();
+
+                SetServiceDataToSession(cabId, serviceVersions.CurrentServiceVersion);
+
+                return View(serviceVersions);
+
             }
             else
             {

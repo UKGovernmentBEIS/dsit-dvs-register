@@ -103,16 +103,16 @@ namespace DVSRegister.Data.CAB
 
             }
 
-            public async Task<Service> GetServiceDetails(int serviceId, int cabId)
-            {
+        public async Task<Service> GetServiceDetails(int serviceId, int cabId)
+        {
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
              .Include(p => p.CertificateReview)
-            .Include(p => p.ServiceRoleMapping)           
+            .Include(p => p.ServiceRoleMapping)
             .ThenInclude(s => s.Role);
 
-           
+
             IQueryable<Service> queryWithOptionalIncludes = baseQuery;
             if (await baseQuery.AnyAsync(p => p.ServiceQualityLevelMapping != null && p.ServiceQualityLevelMapping.Any()))
             {
@@ -135,6 +135,22 @@ namespace DVSRegister.Data.CAB
 
 
             return service;
+        }
+        public async Task<List<Service>> GetServiceList(int serviceKey, int cabId)
+            {
+            return await context.Service
+            .Include(s => s.CertificateReview)
+            .Include(s => s.ServiceSupSchemeMapping)
+            .ThenInclude(s=> s.SupplementaryScheme)
+            .Include(s => s.ServiceRoleMapping)            
+            .ThenInclude(s => s.Role)
+            .Include(s=> s.ServiceQualityLevelMapping)
+            .ThenInclude(s => s.QualityLevel)
+            .Include(s => s.ServiceIdentityProfileMapping)
+            .ThenInclude(s => s.IdentityProfile)
+            .Include(s => s.CabUser).ThenInclude(s => s.Cab)
+            .Where(s => s.ServiceKey == serviceKey)
+            .ToListAsync();
         }
 
         public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
@@ -201,10 +217,8 @@ namespace DVSRegister.Data.CAB
                 {
                     service.ServiceNumber =   await GetServiceNumber(service);
                     service.CreatedTime = DateTime.UtcNow;
-                    if (service.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
-                    {
-                        service.ModifiedTime = DateTime.UtcNow;
-                    }
+                    service.ModifiedTime = DateTime.UtcNow;
+                    
                     service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue ? null : service.ConformityExpiryDate;
                     service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;
 
