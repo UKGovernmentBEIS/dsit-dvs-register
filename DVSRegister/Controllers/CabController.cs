@@ -129,17 +129,11 @@ namespace DVSRegister.Controllers
             {
                 ServiceVersionViewModel serviceVersions = new();
                 var serviceList = await cabService.GetServiceList(serviceKey, cabId);
+                ServiceDto currentServiceVersion = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
+                serviceVersions.CurrentServiceVersion = currentServiceVersion;
+                serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
 
-                var currentServiceVersion = serviceList.FirstOrDefault(x => x.IsCurrent == true);
-
-                serviceVersions.CurrentServiceVersion = (ServiceDto)currentServiceVersion;
-                serviceVersions.ServiceHistoryVersions = serviceList
-                    .Where(x => x.IsCurrent != true)
-                    .OrderByDescending(x=> x.PublishedTime)
-                    .ToList();
-
-                SetServiceDataToSession(cabId, serviceVersions.CurrentServiceVersion);
-
+                SetServiceDataToSession(cabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
                 return View(serviceVersions);
 
             }
@@ -154,26 +148,26 @@ namespace DVSRegister.Controllers
         #endregion
 
         #region Private method
-        private void SetServiceDataToSession(int cabId, ServiceDto serviceDto)
+        private void SetServiceDataToSession(int cabId, ServiceDto serviceDto, int historyCount)
         {
             RoleViewModel roleViewModel = new()
             {
-                SelectedRoles = new List<RoleDto>()
+                SelectedRoles = []
             };
             QualityLevelViewModel qualityLevelViewModel = new()
             {
-                SelectedLevelOfProtections = new List<QualityLevelDto>(),
-                SelectedQualityofAuthenticators = new List<QualityLevelDto>()
+                SelectedLevelOfProtections = [],
+                SelectedQualityofAuthenticators = []
             };
 
             IdentityProfileViewModel identityProfileViewModel = new()
             {
-                SelectedIdentityProfiles = new List<IdentityProfileDto>()
+                SelectedIdentityProfiles = []
             };
 
             SupplementarySchemeViewModel supplementarySchemeViewModel = new()
             {
-                SelectedSupplementarySchemes = new List<SupplementarySchemeDto>()
+                SelectedSupplementarySchemes = []
             };
 
 
@@ -236,8 +230,8 @@ namespace DVSRegister.Controllers
                 CabId = cabId,
                 CabUserId = serviceDto.CabUserId,
                 ServiceKey = serviceDto.ServiceKey,
-                IsDraft = serviceDto.ServiceStatus == ServiceStatusEnum.SavedAsDraft?true:false
-                
+                IsDraft = serviceDto.ServiceStatus == ServiceStatusEnum.SavedAsDraft,
+                IsResubmission = historyCount >0 // if there are previous versions , it means a resubmission
             };
             HttpContext?.Session.Set("ServiceSummary", serviceSummary);
         }
