@@ -217,8 +217,7 @@ namespace DVSRegister.Data.CAB
                 {
                     //insert as new service
                     service.ServiceNumber =   await GetServiceNumber(service);
-                    service.CreatedTime = DateTime.UtcNow;
-                    service.ModifiedTime = DateTime.UtcNow;                    
+                    service.CreatedTime = DateTime.UtcNow;                 
                     service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue ? null : service.ConformityExpiryDate;
                     service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;
                     AttachListToDbContext(service);

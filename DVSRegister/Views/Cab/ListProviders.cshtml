@@ -81,7 +81,7 @@
                                     @if (item.Services != null && item.Services.Count > 0)
                                     {
                                         <td class="govuk-table__cell">
-                                            @foreach (var service in item.Services)
+                                            @foreach (var service in item.Services.Where(s => s.IsCurrent))
                                             {
                                                 @service.ServiceName<br />
                                             }
