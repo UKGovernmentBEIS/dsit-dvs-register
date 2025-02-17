@@ -1,4 +1,4 @@
-﻿namespace DVSRegister.BusinessLogic.Models.Cookies;
+﻿namespace DVSRegister.Services.Cookies;
 
 public class CookieServiceConfiguration
 {

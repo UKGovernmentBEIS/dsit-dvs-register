@@ -1,9 +1,9 @@
-﻿using DVSRegister.BusinessLogic.Models.Cookies;
-using Microsoft.AspNetCore.Http.Extensions;
+﻿using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using DVSRegister.Models.Cookies;
 
-namespace DVSRegister.Cookies
+namespace DVSRegister.Services.Cookies
 {
     public class CookieService 
     {
@@ -94,6 +94,22 @@ namespace DVSRegister.Cookies
                     MaxAge = TimeSpan.FromDays(Configuration.DefaultDaysUntilExpiry),
                     HttpOnly = true
                 });
+        }
+        public void RemoveCookie(HttpResponse response, string cookieName)
+        {
+            var options = new CookieOptions 
+            {
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                HttpOnly = true,
+                Path = "/",
+                Domain = "localhost",
+                Expires = DateTime.UnixEpoch
+            };
+
+            // Both delete and overwrite with expired cookie
+            response.Cookies.Delete(cookieName, options);
+            response.Cookies.Append(cookieName, "", options);
         }
     }
 }
