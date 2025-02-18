@@ -225,7 +225,8 @@ namespace DVSRegister.Data.Repositories
                         ServiceId = serviceId,
                         CompanyId = companyId,
                         ServiceNumber = serviceNumber + 1, // service id start with 1 
-                        TimeStamp = DateTime.UtcNow
+                        TimeStamp = DateTime.UtcNow,
+                        ServiceKey = serviceKey
 
                     };
 
