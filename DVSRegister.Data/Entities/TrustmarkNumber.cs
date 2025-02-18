@@ -22,6 +22,7 @@ namespace DVSRegister.Data.Entities
         //Generated using company id and service id
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string TrustMarkNumber { get; set; }
+        public int ServiceKey { get; set; }
         public DateTime TimeStamp { get; set; } 
     }
 }
