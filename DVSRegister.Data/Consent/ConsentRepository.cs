@@ -168,16 +168,20 @@ namespace DVSRegister.Data.Repositories
                     providerEntity.ModifiedTime = DateTime.UtcNow;
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.ClosingTheLoop, loggedInUserEmail);
 
-                    if (await AddTrustMarkNumber(serviceEntity.Id, providerEntity.Id, loggedInUserEmail))
-                    {
-                        transaction.Commit();
-                        genericResponse.Success = true;
-                    }
-                    else
-                    {
-                        transaction.Rollback();
-                        genericResponse.Success = false;
-                    }
+                    //To DO : update trustmark number logic
+                    //if (await AddTrustMarkNumber(serviceEntity.Id, providerEntity.Id, loggedInUserEmail))
+                    //{
+                    //    transaction.Commit();
+                    //    genericResponse.Success = true;
+                    //}
+                    //else
+                    //{
+                    //    transaction.Rollback();
+                    //    genericResponse.Success = false;
+                    //}
+
+                    transaction.Rollback();
+                    genericResponse.Success = false;
                 }
             }
             catch (Exception ex)

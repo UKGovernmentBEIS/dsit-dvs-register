@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250212161411_FixCabCreatedTimeColumn")]
+    partial class FixCabCreatedTimeColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1011,9 +1014,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool?>("HasSupplementarySchemes")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsCurrent")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime?>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -1032,9 +1032,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("RemovedTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("ServiceKey")
-                        .HasColumnType("integer");
-
                     b.Property<string>("ServiceName")
                         .HasColumnType("text");
 
@@ -1045,9 +1042,6 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("ServiceStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ServiceVersion")
                         .HasColumnType("integer");
 
                     b.Property<string>("WebSiteAddress")

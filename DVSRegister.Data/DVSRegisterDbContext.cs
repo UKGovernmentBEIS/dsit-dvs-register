@@ -139,22 +139,22 @@ namespace DVSRegister.Data
             if(environment != "Production")
             {
                modelBuilder.Entity<Cab>().HasData(
-               new Cab { Id =1, CabName = "EY", CreatedTime = DateTime.UtcNow },
-               new Cab { Id =2, CabName = "DSIT", CreatedTime = DateTime.UtcNow },
-               new Cab { Id =3, CabName = "ACCS", CreatedTime = DateTime.UtcNow },
-               new Cab { Id =4, CabName = "Kantara", CreatedTime = DateTime.UtcNow },           
-               new Cab { Id =6, CabName = "NQA", CreatedTime = DateTime.UtcNow },
-               new Cab { Id =7, CabName = "BSI", CreatedTime = DateTime.UtcNow });
+               new Cab { Id =1, CabName = "EY", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+               new Cab { Id =2, CabName = "DSIT", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+               new Cab { Id =3, CabName = "ACCS", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+               new Cab { Id =4, CabName = "Kantara", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },           
+               new Cab { Id =6, CabName = "NQA", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+               new Cab { Id = 7, CabName = "BSI", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) });
 
             }
             else
             {
               modelBuilder.Entity<Cab>().HasData(
-               new Cab { Id =1, CabName = "ACCS", CreatedTime = DateTime.UtcNow },
-               new Cab { Id =2, CabName = "Kantara", CreatedTime = DateTime.UtcNow },
-               new Cab { Id =3, CabName = "NQA", CreatedTime = DateTime.UtcNow },
-               new Cab { Id =4, CabName = "BSI", CreatedTime = DateTime.UtcNow },
-               new Cab { Id =5, CabName = "DSIT", CreatedTime = DateTime.UtcNow });
+               new Cab { Id =1, CabName = "ACCS", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+               new Cab { Id =2, CabName = "Kantara", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+               new Cab { Id =3, CabName = "NQA", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+               new Cab { Id =4, CabName = "BSI", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+               new Cab { Id =5, CabName = "DSIT", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) });
             }
 
            

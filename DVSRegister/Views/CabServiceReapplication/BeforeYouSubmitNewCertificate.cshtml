@@ -5,7 +5,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ProviderServiceDetails", "Cab", new { serviceId = ViewBag.serviceId }, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "ProviderServiceDetails", "Cab", new { serviceKey = ViewBag.serviceKey }, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -23,9 +23,9 @@
 
                 <p class="govuk-body">If the certificate is for a different service, or if the service details have changed significantly, you should create a new service submission for this certificate.</p>
 
-                
 
-                <!-- <p class="govuk-body">@Html.ActionLink("Continue", "ServiceName", "CabService", new { providerProfileId = ViewBag.ProviderProfileId }, new { @class = "govuk-button" })</p> -->
+
+                <p class="govuk-body">@Html.ActionLink("Continue", "ServiceName", "CabService", new { providerProfileId = ViewBag.ProviderProfileId }, new { @class = "govuk-button" })</p>
 
             </div>
         </div>
