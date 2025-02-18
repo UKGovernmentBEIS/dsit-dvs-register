@@ -167,21 +167,19 @@ namespace DVSRegister.Data.Repositories
                     providerEntity.ProviderStatus = providerStatus;
                     providerEntity.ModifiedTime = DateTime.UtcNow;
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.ClosingTheLoop, loggedInUserEmail);
+                  
+                    if (await AddTrustMarkNumber(serviceEntity.Id,serviceEntity.ServiceKey, providerEntity.Id, loggedInUserEmail))
+                    {
+                        transaction.Commit();
+                        genericResponse.Success = true;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        genericResponse.Success = false;
+                    }
 
-                    //To DO : update trustmark number logic
-                    //if (await AddTrustMarkNumber(serviceEntity.Id, providerEntity.Id, loggedInUserEmail))
-                    //{
-                    //    transaction.Commit();
-                    //    genericResponse.Success = true;
-                    //}
-                    //else
-                    //{
-                    //    transaction.Rollback();
-                    //    genericResponse.Success = false;
-                    //}
-
-                    transaction.Rollback();
-                    genericResponse.Success = false;
+                   
                 }
             }
             catch (Exception ex)
@@ -194,49 +192,59 @@ namespace DVSRegister.Data.Repositories
             return genericResponse;
         }
 
-        private async Task<bool> AddTrustMarkNumber(int serviceId, int providerId, string loggedInUserEmail)
+        private async Task<bool> AddTrustMarkNumber(int serviceId, int serviceKey, int providerId, string loggedInUserEmail)
         {
             bool success = false;
             try
             {
                 int serviceNumber;
                 int companyId;
-                var existingTrustmark = await context.TrustmarkNumber.FirstOrDefaultAsync(t => t.ProviderProfileId == providerId);
-                if (existingTrustmark != null)
+                var existingTrustmarkWithServiceKey = await context.TrustmarkNumber.FirstOrDefaultAsync(t => t.ServiceKey == serviceKey);
+                if(existingTrustmarkWithServiceKey == null)
                 {
-                    // If it exists, select the existing CompanyId
-                    // select max of service number, if doesnt exist set as 0                    
-                    serviceNumber = await context.TrustmarkNumber.Where(p => p.ProviderProfileId == providerId).MaxAsync(p => (int?)p.ServiceNumber) ?? 0;
-                    companyId = existingTrustmark.CompanyId;
+                    var existingTrustmark = await context.TrustmarkNumber.FirstOrDefaultAsync(t => t.ProviderProfileId == providerId);
+                    if (existingTrustmark != null)
+                    {
+                        // If it exists, select the existing CompanyId
+                        // select max of service number, if doesnt exist set as 0                    
+                        serviceNumber = await context.TrustmarkNumber.Where(p => p.ProviderProfileId == providerId).MaxAsync(p => (int?)p.ServiceNumber) ?? 0;
+                        companyId = existingTrustmark.CompanyId;
 
+                    }
+                    else
+                    {
+                        //If doesn't exist, get max company id or return initial value as 199 and then increment by 1
+                        int maxCompanyId = await context.TrustmarkNumber.MaxAsync(t => (int?)t.CompanyId) ?? 199;
+                        companyId = maxCompanyId + 1;
+                        serviceNumber = 0; // service number initialize to 0 if doesnt exist
+                    }
+
+                    TrustmarkNumber trustmarkNumber = new()
+                    {
+                        ProviderProfileId = providerId,
+                        ServiceId = serviceId,
+                        CompanyId = companyId,
+                        ServiceNumber = serviceNumber + 1, // service id start with 1 
+                        TimeStamp = DateTime.UtcNow
+
+                    };
+
+                    await context.TrustmarkNumber.AddAsync(trustmarkNumber);
+                    await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.TrustmarkNumberGeneration, loggedInUserEmail);
+                    success = true;
                 }
                 else
                 {
-                    //If doesn't exist, get max company id or return initial value as 199 and then increment by 1
-                    int maxCompanyId = await context.TrustmarkNumber.MaxAsync(t => (int?)t.CompanyId) ?? 199;
-                    companyId = maxCompanyId + 1;
-                    serviceNumber = 0; // service number initialize to 0 if doesnt exist
+                    success = true; // if already TM number with same service key exists , donot generate new TM number
+                    Console.WriteLine("TM number already generated for first version:ProviderId{0} ServiceId: {1} ServiceKey: {2}", providerId, serviceId, serviceKey);
                 }
-
-                TrustmarkNumber trustmarkNumber = new()
-                {
-                    ProviderProfileId = providerId,
-                    ServiceId = serviceId,
-                    CompanyId = companyId,
-                    ServiceNumber = serviceNumber + 1, // service id start with 1 
-                    TimeStamp = DateTime.UtcNow
-
-                };
-
-                await context.TrustmarkNumber.AddAsync(trustmarkNumber);
-                await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.TrustmarkNumberGeneration, loggedInUserEmail);
-                success = true;
+                
             }
             catch (Exception ex)
             {
                 success = false;
                 logger.LogError($"Failed to generate trustmark number: {ex}");
-                logger.LogInformation("ProviderId:{0} serviceId: {1}", providerId, serviceId);
+               Console.WriteLine("ProviderId:{0} serviceId: {1}", providerId, serviceId);
             }
             return success;
 
