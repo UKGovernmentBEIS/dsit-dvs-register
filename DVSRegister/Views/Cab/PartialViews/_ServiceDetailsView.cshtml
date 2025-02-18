@@ -39,7 +39,7 @@
             {
                 <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
-                    <a class="govuk-link" href="@Url.Action("BeforeYouSubmitNewCertificate", "CabServiceReApplication", new { serviceId = @Model.Id, providerProfileId = @Model.ProviderProfileId })">Submit a new certificate</a>
+                    <a class="govuk-link" href="@Url.Action("BeforeYouSubmitNewCertificate", "CabServiceReApplication", new { serviceKey = @Model.ServiceKey, providerProfileId = @Model.ProviderProfileId })">Submit a new certificate</a>
                     </li>
                 </ul>
             }

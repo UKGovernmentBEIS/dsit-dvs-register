@@ -36,9 +36,10 @@ namespace DVSRegister.Controllers
         }
         
         [HttpGet("before-new-certificate")]
-        public async Task<IActionResult> BeforeYouSubmitNewCertificate(int providerProfileId)
+        public async Task<IActionResult> BeforeYouSubmitNewCertificate(int serviceKey, int providerProfileId)
         {
 
+            ViewBag.ServiceKey = serviceKey;
             ViewBag.ProviderProfileId = providerProfileId;
             string email = HttpContext?.Session.Get<string>("Email") ?? string.Empty;
             CabUserDto cabUserDto = await userService.GetUser(email);
