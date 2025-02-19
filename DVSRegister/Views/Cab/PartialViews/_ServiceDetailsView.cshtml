@@ -69,7 +69,15 @@
                         Last updated date (GMT)
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @DateTimeExtensions.FormatDateTime(@Model.ModifiedTime)
+                        @if(Model.ModifiedTime != null)
+                        {
+                            @DateTimeExtensions.FormatDateTime(@Model.ModifiedTime)
+                        }
+                        else
+                        {
+                            @DateTimeExtensions.FormatDateTime(@Model.CreatedTime)
+                        }
+
                     </dd>
                 </div>
             }
