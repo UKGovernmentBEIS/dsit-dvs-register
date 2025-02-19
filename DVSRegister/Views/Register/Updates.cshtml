@@ -25,7 +25,7 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl">Updates : Register of digital identity and attribute services</h1>
-                @Html.Partial(
+                @await Html.PartialAsync(
                 "~/Views/PartialViews/_NotificationBanner.cshtml",notificationBanner)
                 @foreach (var item in Model.RegisterPublishLog)
                 {

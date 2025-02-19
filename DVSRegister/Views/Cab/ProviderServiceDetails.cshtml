@@ -15,7 +15,7 @@
             <div class="govuk-grid-column-full">
 
                 <h1 class="govuk-heading-xl">
-                    Service @Model.CurrentServiceVersion.ServiceNumber details
+                    Service details: @Model.CurrentServiceVersion.ServiceName
                 </h1>
             </div>
         </div>
@@ -34,7 +34,7 @@
                     </li>
                 </ul>
                 <div class="govuk-tabs__panel" id="new-submission">
-                    @Html.Partial("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml",Model.CurrentServiceVersion)
+                 @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml",Model.CurrentServiceVersion)
                 </div>
                 <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="previously-submitted">
                     @if (Model.ServiceHistoryVersions.Count() < 1)
@@ -45,7 +45,7 @@
                     {
                         @foreach (var serviceDto in Model.ServiceHistoryVersions)
                         {
-                            @Html.Partial("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml",serviceDto)
+                            @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml", serviceDto)
                         }
                     }
                 </div>

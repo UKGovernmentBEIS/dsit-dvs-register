@@ -16,7 +16,7 @@
 
 @if (isDraft)
 {
-    @Html.Partial("~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)
+    @await Html.PartialAsync("~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)
         <h2 class="govuk-heading-m">
             Pending submission
         </h2>
@@ -24,7 +24,7 @@
     <div class="govuk-summary-card">
         <div class="govuk-summary-card__title-wrapper">
             <p class="govuk-summary-card__title">
-                Service @Model.ServiceNumber details
+            Submission date:  @Model.CreatedTime
             </p>
             @if (isDraft)
             {
@@ -46,6 +46,9 @@
         </div>
         <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
+
+            @if (isDraft)
+            {
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Name of service
@@ -60,33 +63,29 @@
                                      new { @class = "govuk-link", @aria_label = "Change service name" })
                         </dd>
                     }
+                </div>               
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Last updated date (GMT)
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @DateTimeExtensions.FormatDateTime(@Model.ModifiedTime)
+                    </dd>
                 </div>
+            }
+            else if (Model.ServiceStatus == ServiceStatusEnum.Published || Model.ServiceStatus == ServiceStatusEnum.Removed)
+            {
 
-                @if (isDraft)
-                {
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Last updated date (GMT)
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @DateTimeExtensions.FormatDateTime(@Model.ModifiedTime)
-                        </dd>
-                    </div>
-                }
-                else
-                {
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Publication date (UTC)
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @if (@Model.PublishedTime != null)
-                            {
-                                @DateTimeExtensions.FormatDateTime(@Model.PublishedTime)
-                            }
-                        </dd>
-                    </div>
-                }
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Publication date (UTC)
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+
+                    @DateTimeExtensions.FormatDateTime(@Model.PublishedTime)
+                    </dd>
+                </div>
+            }
 
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
