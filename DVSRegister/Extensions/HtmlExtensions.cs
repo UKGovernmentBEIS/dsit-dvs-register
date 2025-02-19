@@ -24,15 +24,17 @@ namespace DVSRegister.Extensions
             {
                 case ServiceStatusEnum.Submitted:
                 case ServiceStatusEnum.Received:
-                case ServiceStatusEnum.Published:
                     return "govuk-tag govuk-tag--blue";
 
+                case ServiceStatusEnum.Published:
                 case CertificateReviewEnum.Approved:
                     return "govuk-tag govuk-tag--green";
 
-                case ServiceStatusEnum.Removed:
                 case CertificateReviewEnum.Rejected:
                     return "govuk-tag govuk-tag--red";
+                
+                case ServiceStatusEnum.Removed:
+                    return "govuk-tag govuk-tag--grey";
 
                 case ServiceStatusEnum.SavedAsDraft:
                 case ServiceStatusEnum.AwaitingRemovalConfirmation:
