@@ -23,8 +23,8 @@
             <div class="govuk-tabs" data-module="govuk-tabs">
                 <ul class="govuk-tabs__list">
                     <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-                        <a class="govuk-tabs__tab" href="#new-submission">
-                            New submission
+                        <a class="govuk-tabs__tab" href="#latest-submission">
+                            Latest submission
                         </a>
                     </li>
                     <li class="govuk-tabs__list-item">
@@ -33,7 +33,7 @@
                         </a>
                     </li>
                 </ul>
-                <div class="govuk-tabs__panel" id="new-submission">
+                <div class="govuk-tabs__panel" id="latest-submission">
                     @Html.Partial("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml",Model.CurrentServiceVersion)
                 </div>
                 <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="previously-submitted">
