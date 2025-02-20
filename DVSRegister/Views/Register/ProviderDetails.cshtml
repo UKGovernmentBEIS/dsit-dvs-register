@@ -29,7 +29,7 @@
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
                     @Model.Provider.RegisteredName
-                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime) (UTC)</span>
+                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime) (GMT)</span>
                 </h1>
                 @await Html.PartialAsync(
                     "~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)                
