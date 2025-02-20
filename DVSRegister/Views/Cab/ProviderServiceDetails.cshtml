@@ -23,8 +23,8 @@
             <div class="govuk-tabs" data-module="govuk-tabs">
                 <ul class="govuk-tabs__list">
                     <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
-                        <a class="govuk-tabs__tab" href="#new-submission">
-                            New submission
+                        <a class="govuk-tabs__tab" href="#latest-submission">
+                            Latest submission
                         </a>
                     </li>
                     <li class="govuk-tabs__list-item">
@@ -33,13 +33,13 @@
                         </a>
                     </li>
                 </ul>
-                <div class="govuk-tabs__panel" id="new-submission">
+                <div class="govuk-tabs__panel govuk-!-padding-0" id="latest-submission">
                  @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml",Model.CurrentServiceVersion)
                 </div>
-                <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="previously-submitted">
+                <div class="govuk-tabs__panel govuk-tabs__panel--hidden govuk-!-padding-0" id="previously-submitted">
                     @if (Model.ServiceHistoryVersions.Count() < 1)
                     {
-                        <p class="govuk-body">You don't have any previous submissions for this service</p>
+                        <p class="govuk-body govuk-!-padding-7">You don't have any previous submissions for this service</p>
                     }
                     else
                     {
