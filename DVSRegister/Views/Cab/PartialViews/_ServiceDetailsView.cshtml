@@ -47,23 +47,24 @@
         <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
 
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Name of service
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    @Model.ServiceName
+                </dd>
+                @if (isDraft && hasValue)
+                {
+                    <dd class="govuk-summary-list__actions">
+                        @Html.ActionLink("Change", "ServiceName", "CabService", new { fromDetailsPage = true, providerProfileId = Model.ProviderProfileId },
+                                 new { @class = "govuk-link", @aria_label = "Change service name" })
+                    </dd>
+                }
+            </div>
             @if (isDraft)
             {
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Name of service
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        @Model.ServiceName
-                    </dd>
-                    @if (isDraft && hasValue)
-                    {
-                        <dd class="govuk-summary-list__actions">
-                            @Html.ActionLink("Change", "ServiceName", "CabService", new { fromDetailsPage = true, providerProfileId = Model.ProviderProfileId },
-                                     new { @class = "govuk-link", @aria_label = "Change service name" })
-                        </dd>
-                    }
-                </div>               
+                            
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Last updated date (GMT)
