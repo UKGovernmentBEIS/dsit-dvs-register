@@ -216,7 +216,6 @@ namespace DVSRegister.Data.CAB
                 else
                 {
                     //insert as new service
-                    service.ServiceNumber =   await GetServiceNumber(service);
                     service.CreatedTime = DateTime.UtcNow;                 
                     service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue ? null : service.ConformityExpiryDate;
                     service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;
@@ -274,7 +273,6 @@ namespace DVSRegister.Data.CAB
                         service.ModifiedTime = DateTime.UtcNow;
                         service.ConformityExpiryDate = null;
                         service.ConformityIssueDate = null;
-                        service.ServiceNumber = await GetServiceNumber(service);
                         var entity = await context.Service.AddAsync(service);
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                         genericResponse.InstanceId = existingService.ServiceKey;
@@ -468,15 +466,7 @@ namespace DVSRegister.Data.CAB
             existingService.ServiceStatus = service.ServiceStatus;
             existingService.ModifiedTime = DateTime.UtcNow;
         }
-
-        private async Task<int> GetServiceNumber(Service service)
-        {
-            // Get the current highest ServiceNumber for the given ProviderProfileId
-            var serviceNumbers = await context.Service.AsNoTracking().Where(s => s.ProviderProfileId == service.ProviderProfileId)
-            .Select(s => s.ServiceNumber).ToListAsync();
-            int nextServiceNumber = serviceNumbers.Any() ? serviceNumbers.Max() + 1 : 1;
-            return nextServiceNumber;
-        }
+        
         // For event logs, need to attach each item to context
         private void AttachListToDbContext(Service service)
         {
