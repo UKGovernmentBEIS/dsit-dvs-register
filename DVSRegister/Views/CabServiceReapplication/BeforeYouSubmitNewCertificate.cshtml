@@ -1,0 +1,34 @@
+﻿
+@{
+    ViewData["Title"] = "Before you submit a new certificate for this service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ProviderServiceDetails", "Cab", new { serviceKey = ViewBag.serviceKey }, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+
+                <h1 class="govuk-heading-xl">Before you submit a new certificate for this service</h1>
+
+                <p class="govuk-body">You should  continue with this certificate submission if you are submitting a new certificate for an existing service. This could be for one of the following reasons:</p>
+                
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>The previous certificate for this service has expired or is expiring soon</li>
+                    <li>The scope of the certification for this service has changed and a new certificate is required</li>
+                    <li>This service was previously certified under a version of the trust framework which is no longer valid</li>
+                </ul>
+
+                <p class="govuk-body">If the certificate is for a different service, or if the service details have changed significantly, you should create a new service submission for this certificate.</p>
+
+
+
+                <p class="govuk-body">@Html.ActionLink("Continue", "ServiceName", "CabService", new { providerProfileId = ViewBag.ProviderProfileId }, new { @class = "govuk-button" })</p>
+
+            </div>
+        </div>
+    </main>
+</div>
+

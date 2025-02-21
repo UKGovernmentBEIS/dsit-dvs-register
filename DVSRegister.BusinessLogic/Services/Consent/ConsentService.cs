@@ -82,11 +82,11 @@ namespace DVSRegister.BusinessLogic.Services
             ProceedPublishConsentToken consentToken = await consentRepository.GetConsentToken(token, tokenId);
             if (!string.IsNullOrEmpty(consentToken.Token) && !string.IsNullOrEmpty(consentToken.TokenId))   //proceed update status if token exists           
             {
-                ProviderStatusEnum providerStatus = ProviderStatusEnum.ActionRequired;
+                ProviderStatusEnum providerStatus = ProviderStatusEnum.ReadyToPublish;
                 List<Service> serviceList = await consentRepository.GetServiceList(serviceDto.ProviderProfileId);
                 if (serviceList.Any(item => item.ServiceStatus == ServiceStatusEnum.Published))
                 {
-                    providerStatus = ProviderStatusEnum.PublishedActionRequired;
+                    providerStatus = ProviderStatusEnum.ReadyToPublishNext;
                 }
                 genericResponse = await consentRepository.UpdateServiceAndProviderStatus(serviceDto.Id, providerStatus, loggedInUserEmail);
                 if (genericResponse.Success)

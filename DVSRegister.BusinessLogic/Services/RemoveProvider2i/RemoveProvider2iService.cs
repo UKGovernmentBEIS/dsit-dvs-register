@@ -39,7 +39,8 @@ namespace DVSRegister.BusinessLogic.Services
                 }
                 else
                 {
-                    ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(provider);                    
+                    ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(provider);
+                    providerProfileDto.Services = providerProfileDto.Services.Where(service => service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation).ToList();
                     return providerProfileDto;
                 }
              
@@ -54,7 +55,7 @@ namespace DVSRegister.BusinessLogic.Services
         {
             GenericResponse genericResponse = new();
             string serviceNames = string.Empty;
-            string removalReason = RemovalReasonsEnumExtensions.GetDescription(providerDto.RemovalReason.Value);
+          
 
             List<int> serviceIds = providerDto.Services.Select(s => s.Id).ToList();
             var filteredServiceNames = providerDto.Services.Select(s => s.ServiceName).ToList();
@@ -78,16 +79,18 @@ namespace DVSRegister.BusinessLogic.Services
                         var serviceRemovalReasonList= providerDto.Services.Where(s => s.ServiceRemovalReason.HasValue) 
                          .Select(s => ServiceRemovalReasonEnumExtensions.GetDescription(s.ServiceRemovalReason.Value)) .ToList();
                         string serviceRemovalReasons = string.Join("\r", serviceRemovalReasonList);
-                        if (team == TeamEnum.Provider) // if provider confirms service removal
+
+                        if(team == TeamEnum.Provider) 
                         {
                             await emailSender.RemoveServiceConfirmationToProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail, serviceNames, serviceRemovalReasons); //39/Provider/Confirmation of service removal request
                             await emailSender.RemoveServiceConfirmationToProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail, serviceNames, serviceRemovalReasons);
                             await emailSender.ServiceRemovalConfirmationToDSIT(providerDto.RegisteredName, serviceNames, serviceRemovalReasons);//40/DSIT/Service removal request received
-                        }
 
-                        else if (team == TeamEnum.DSIT) //if dsit confirms 2i check
+                        }
+                        else if(team == TeamEnum.DSIT)
                         {
-                            await emailSender._2iCheckApprovedNotificationToDSIT(providerDto.RegisteredName, serviceNames, serviceRemovalReasons);
+
+                         await emailSender.Service2iCheckApprovedToDSIT(serviceNames, serviceRemovalReasons); //53/DSIT/2i service removal check approved
 
                         }
                         await Task.Delay(500);
@@ -101,7 +104,7 @@ namespace DVSRegister.BusinessLogic.Services
                 {                 
                     //remove provider
                     genericResponse = await removeProvider2iRepository.UpdateRemovalStatus(providerDto.Id, team, EventTypeEnum.RemoveServices2i, null, loggedInUserEmail);
-
+                    string removalReason = RemovalReasonsEnumExtensions.GetDescription(providerDto.RemovalReason.Value);
 
                     if (genericResponse.Success)
                     {
@@ -154,6 +157,20 @@ namespace DVSRegister.BusinessLogic.Services
                     ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
                     genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerDto.Id, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);
 
+
+                    if (team == TeamEnum.Provider)
+                    {
+                        await emailSender.RemovalRequestDeclinedToProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);//33/Provider/Removal request declined
+                        await emailSender.RemovalRequestDeclinedToProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail);
+                        await emailSender.RemovalRequestDeclinedToDSIT(providerDto.RegisteredName, serviceNames); //34 / DSIT / Removal request declined by provider
+
+                    }
+                    else if (team == TeamEnum.DSIT)
+                    {
+                        await emailSender.Service2iCheckDeclinedToDSIT(serviceNames); //54/DSIT/2i check declined - service
+
+                    }
+
                 }
                 else
                 {
@@ -163,21 +180,27 @@ namespace DVSRegister.BusinessLogic.Services
                                                                                     
                     genericResponse = await removeProvider2iRepository.CancelServiceRemoval(providerDto.Id, team, EventTypeEnum.RemoveServices2i, serviceIds, loggedInUserEmail);
                     ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
-                    genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerDto.Id, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);                                    
+                    genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerDto.Id, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);
 
+                    if (genericResponse.Success)
+                    {
+                        if (team == TeamEnum.Provider)
+                        {
+                            await emailSender.RemovalRequestDeclinedToProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);//33/Provider/Removal request declined
+                            await emailSender.RemovalRequestDeclinedToProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail);
+                            await emailSender.RemovalRequestDeclinedToDSIT(providerDto.RegisteredName, serviceNames); //34 / DSIT / Removal request declined by provider
+
+                        }
+                        else if (team == TeamEnum.DSIT)
+                        {
+                            await emailSender._2iCheckDeclinedNotificationToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
+                        }
+
+                    }
                 }
 
-                if (team == TeamEnum.Provider)
-                {
-                    await emailSender.RemovalRequestDeclinedToProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);//33/Provider/Removal request declined
-                    await emailSender.RemovalRequestDeclinedToProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail);
-                    await emailSender.RemovalRequestDeclinedToDSIT(providerDto.RegisteredName, serviceNames);//51/DSIT/removal request declined
-                }
-                else if (team == TeamEnum.DSIT)
-                {
-                    await emailSender._2iCheckDeclinedNotificationToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
-                }
                 
+
             }
             return genericResponse;
         }

@@ -5,6 +5,19 @@
 @{
     ViewData["Title"] = "Provider details";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
+    
+    var notificationBanner = new NotificationBannerViewModel
+    {
+        Title = "Important",
+        Heading = "This is a new service and some records are still being updated.",
+        HtmlContent = @"
+        <p class=""govuk-body"">
+            You should check the expiry date for each certificate of conformity to confirm that the service is still 
+            registered. You can also <a class=""govuk-notification-banner__link"" 
+            href=""https://www.gov.uk/government/publications/list-of-certified-digital-identity-and-attribute-services""> 
+            access the previous list of certified digital identity and attribute services</a> to download an up to date list of registered services.
+        </p>".Trim()
+    };
 }
 
 <div class="govuk-width-container">
@@ -16,16 +29,16 @@
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
                     @Model.Provider.RegisteredName
-                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime) (UTC)</span>
+                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime) (GMT)</span>
                 </h1>
-                @Html.Partial("~/Views/Register/PartialViews/_NotificationBanner.cshtml")
-                
+                @await Html.PartialAsync(
+                    "~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)                
                 @if (!string.IsNullOrEmpty(Model.Provider.TradingName))
                 {
                     <p class="govuk-body-l govuk-!-margin-bottom-7">Trading name: @Model.Provider.TradingName</p>
                 }
                                                       
-                <h2 class="govuk-heading-m">Basic information</h2>
+                <h2 class="govuk-heading-m">Provider information</h2>
                 <hr class="govuk-section-break govuk-section-break--visible">
                 <dl class="govuk-summary-list govuk-!-margin-bottom-8">
                     <div class="govuk-summary-list__row">

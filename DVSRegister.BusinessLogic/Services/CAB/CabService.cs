@@ -76,6 +76,13 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return serviceDto;
         }
 
+        public async Task<List<ServiceDto>> GetServiceList(int serviceKey, int cabId)
+        {
+            var serviceList = await cabRepository.GetServiceList(serviceKey, cabId);
+            return automapper.Map<List<ServiceDto>>(serviceList);
+ 
+        }
+
         public async Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId)
         {
             var service = await cabRepository.GetServiceDetailsWithProvider(serviceId, cabId);
@@ -103,9 +110,17 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         }
         public async Task<GenericResponse> SaveService(ServiceDto serviceDto, string loggedInUserEmail)
         {
-            Service service = new Service();
+            Service service = new ();
             automapper.Map(serviceDto, service);
             GenericResponse genericResponse = await cabRepository.SaveService(service, loggedInUserEmail);
+            return genericResponse;
+        }
+
+        public async Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail)
+        {
+            Service service = new ();
+            automapper.Map(serviceDto, service);
+            GenericResponse genericResponse = await cabRepository.SaveServiceReApplication(service, loggedInUserEmail);
             return genericResponse;
         }
 

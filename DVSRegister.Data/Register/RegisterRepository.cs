@@ -19,8 +19,7 @@ namespace DVSRegister.Data
         {
 
             IQueryable<ProviderProfile> providerQuery = context.ProviderProfile;
-            providerQuery = providerQuery.Where(p => ((p.ProviderStatus >= ProviderStatusEnum.Published && p.ProviderStatus != ProviderStatusEnum.RemovedFromRegister)
-            || p.ProviderStatus == ProviderStatusEnum.PublishedActionRequired) &&
+            providerQuery = providerQuery.Where(p => p.ProviderStatus >= ProviderStatusEnum.Published && p.ProviderStatus != ProviderStatusEnum.RemovedFromRegister&&
             (string.IsNullOrEmpty(searchText)
             || EF.Functions.TrigramsSimilarity(p.RegisteredName.ToLower(), searchText.ToLower()) > .3
              || EF.Functions.TrigramsSimilarity(p.TradingName!.ToLower(), searchText.ToLower()) > .3
@@ -33,7 +32,7 @@ namespace DVSRegister.Data
             // Include roles and schemes filters
 
             providerQuery = providerQuery.Include(p => p.Services
-            .Where(ci => ci.ServiceStatus >= ServiceStatusEnum.Published && ci.ServiceStatus != ServiceStatusEnum.Removed &&
+            .Where(ci => ci.ServiceStatus >= ServiceStatusEnum.Published && ci.ServiceStatus != ServiceStatusEnum.Removed && ci.ServiceStatus != ServiceStatusEnum.SavedAsDraft &&
               (!roles.Any() || (ci.ServiceRoleMapping != null && ci.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))) &&
              (!schemes.Any() || (ci.ServiceSupSchemeMapping != null && ci.ServiceSupSchemeMapping.Any(s => schemes.Contains(s.SupplementarySchemeId))))
              ));
@@ -50,12 +49,14 @@ namespace DVSRegister.Data
         {           
             ProviderProfile providerProfile = new ();
             providerProfile = await context.ProviderProfile
-            .Include(p => p.Services)
+          .Include(p => p.Services.Where(ci => ci.ServiceStatus >= ServiceStatusEnum.Published &&
+            ci.ServiceStatus != ServiceStatusEnum.Removed &&
+            ci.ServiceStatus != ServiceStatusEnum.SavedAsDraft))
            .Include(p => p.Services).ThenInclude(x => x.ServiceRoleMapping).ThenInclude(p => p.Role)
            .Include(p => p.Services).ThenInclude(x => x.ServiceIdentityProfileMapping).ThenInclude(p=>p.IdentityProfile)
            .Include(p => p.Services).ThenInclude(x => x.ServiceSupSchemeMapping).ThenInclude(p => p.SupplementaryScheme)
             .Include(p => p.Services).ThenInclude(x => x.ServiceQualityLevelMapping).ThenInclude(p=>p.QualityLevel)    
-           .Where(p => p.Id == providerId && p.Services.Any(ci => ci.ServiceStatus >= ServiceStatusEnum.Published && ci.ServiceStatus != ServiceStatusEnum.Removed))
+           .Where(p => p.Id == providerId &&  p.ProviderStatus >= ProviderStatusEnum.Published && p.ProviderStatus != ProviderStatusEnum.RemovedFromRegister)
            .OrderBy(c => c.ModifiedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
             return providerProfile;
         }

@@ -47,37 +47,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8647)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8650)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8652)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8654)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8655)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2025, 1, 21, 10, 41, 8, 288, DateTimeKind.Utc).AddTicks(8657)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -982,36 +982,36 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("CompanyAddress")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("ConformityExpiryDate")
+                    b.Property<DateTime?>("ConformityExpiryDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("ConformityIssueDate")
+                    b.Property<DateTime?>("ConformityIssueDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("FileLink")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FileName")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("FileSizeInKb")
+                    b.Property<decimal?>("FileSizeInKb")
                         .HasColumnType("decimal(10, 1)");
 
-                    b.Property<bool>("HasGPG44")
+                    b.Property<bool?>("HasGPG44")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("HasGPG45")
+                    b.Property<bool?>("HasGPG45")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("HasSupplementarySchemes")
+                    b.Property<bool?>("HasSupplementarySchemes")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsCurrent")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("ModifiedTime")
@@ -1032,12 +1032,11 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("RemovedTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("ServiceName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ServiceNumber")
+                    b.Property<int>("ServiceKey")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ServiceName")
+                        .HasColumnType("text");
 
                     b.Property<int?>("ServiceRemovalReason")
                         .HasColumnType("integer");
@@ -1045,8 +1044,10 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("ServiceStatus")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ServiceVersion")
+                        .HasColumnType("integer");
+
                     b.Property<string>("WebSiteAddress")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -1202,6 +1203,9 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceKey")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("TimeStamp")

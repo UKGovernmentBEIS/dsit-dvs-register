@@ -6,6 +6,19 @@
     ViewData["Title"] = "Find certified digital identity and attribute services";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
     ViewData["ActiveRegister"] = "govuk-header__navigation-item--active";
+    
+    var notificationBanner = new NotificationBannerViewModel
+    {
+        Title = "Important",
+        Heading = "This is a new service and some records are still being updated.",
+        HtmlContent = @"
+        <p class=""govuk-body"">
+            You should check the expiry date for each certificate of conformity to confirm that the service is still 
+            registered. You can also <a class=""govuk-notification-banner__link"" 
+            href=""https://www.gov.uk/government/publications/list-of-certified-digital-identity-and-attribute-services""> 
+            access the previous list of certified digital identity and attribute services</a> to download an up to date list of registered services.
+        </p>".Trim()
+    };
 }
 
 <div class="govuk-width-container">
@@ -15,7 +28,8 @@
             <h1 class="govuk-heading-xl">
                 Register of digital identity and attribute services
             </h1>
-            @Html.Partial("~/Views/Register/PartialViews/_NotificationBanner.cshtml")
+            @await Html.PartialAsync(
+                "~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
             <p class="govuk-body govuk-!-margin-bottom-7">
                 Last updated @Model.LastUpdated

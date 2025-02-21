@@ -29,6 +29,8 @@
         RemoveProviderRemovalToken = 24,
         RemovedByCronJob = 25,
         RemoveServiceRequestedByCab = 25,
-        UpdateUser = 26
+        UpdateUser = 26,
+        SaveAsDraftService = 27,
+        ReapplyService = 28,
     }
 }

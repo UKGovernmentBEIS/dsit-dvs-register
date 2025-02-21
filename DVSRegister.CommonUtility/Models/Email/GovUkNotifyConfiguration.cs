@@ -47,5 +47,8 @@
         public RecordRemovalRequestByCabToDSIT RecordRemovalRequestByCabToDSIT { get; set; }
 
         public RecordRemovalRequestConfirmationToCab RecordRemovalRequestConfirmationToCab { get;set; }
+
+        public Service2iCheckDeclinedToDSIT Service2iCheckDeclinedToDSIT { get; set; }
+        public Service2iCheckApprovedToDSIT Service2iCheckApprovedToDSIT { get; set; }
     }
 }
