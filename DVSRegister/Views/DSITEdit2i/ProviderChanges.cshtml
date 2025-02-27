@@ -1,8 +1,104 @@
 ﻿
 @{
-    ViewData["Title"] = "ProviderChanges";
-    Layout = "~/Views/Shared/_LayoutConsent.cshtml";
+ViewData["Title"] = "You are reviewing a request to update information about a provider";
+Layout = "~/Views/Shared/_LayoutConsent.cshtml";
 }
 
-<h1>ProviderChanges</h1>
+<div class="govuk-width-container">
 
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <h1 class="govuk-heading-xl">
+            You are reviewing a request to update information about a provider
+        </h1>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <div class="govuk-summary-card govuk-!-margin-bottom-6">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Provider information
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">Registered name</dt>
+                                <dd class="govuk-summary-list__value">Northrow UK Services LTD</dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">Trading name</dt>
+                                <dd class="govuk-summary-list__value">Northrow Limited</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+                <div class="govuk-grid-column-two-thirds">
+                    <h2 class="govuk-heading-m">What information is changing</h2>
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+                    <dl class="govuk-summary-list govuk-!-margin-bottom-8">
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Previous information
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                <p class="govuk-body">
+                                    <strong>Public contact email</strong><br />
+                                    <span style="white-space: nowrap;">northrowpubliccontactemail@northrowlimited.com</span>
+                                    </p>
+                                <p class="govuk-body"><strong>Full name of primary contact</strong><br />
+                                    Jane Martin</p>
+                                <p class="govuk-body"><strong>Telephone number of secondary contact</strong><br />
+                                    07645946164</p>
+                            </dd>
+                        </div>
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                New information
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                <p class="govuk-body">
+                                    <strong>Public contact email</strong><br />
+                                    <span style="white-space: nowrap;">contactemail@northrowlimited.com</span>
+                                </p>
+                                <p class="govuk-body">
+                                    <strong>Full name of primary contact</strong><br/>
+                                    Jay Martin
+                                </p>
+                                <p class="govuk-body">
+                                    <strong>Telephone number of secondary contact</strong><br/>
+                                    07645946165
+                                </p>
+                            </dd>
+                        </div>
+                    </dl>
+
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-visually-hidden">Warning</span>
+                        Once you accept the update, the action can't be undone
+                    </strong>
+                </div>
+
+                    <div class="govuk-button-group govuk-!-margin-top-6">
+                        @using (Html.BeginForm("AcceptUpdate", "Review", FormMethod.Post))
+                        {
+                            <button type="submit" class="govuk-button" data-module="govuk-button" name="action" value="update">
+                                Accept update request
+                            </button>
+                        }
+                        @using (Html.BeginForm("DeclineUpdate", "Review", FormMethod.Post))
+                        {
+                            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="action" value="cancel">
+                                Cancel update request
+                            </button>
+                        }
+                    </div>
+                </div>
+        </div>
+    </main>
+</div>
