@@ -1,4 +1,4 @@
-﻿
+﻿@model ProviderReviewViewModel
 @{
 ViewData["Title"] = "You are reviewing a request to update information about a provider";
 Layout = "~/Views/Shared/_LayoutConsent.cshtml";
@@ -24,11 +24,11 @@ Layout = "~/Views/Shared/_LayoutConsent.cshtml";
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Registered name</dt>
-                                <dd class="govuk-summary-list__value">Northrow UK Services LTD</dd>
+                                <dd class="govuk-summary-list__value">@Model?.PreviousProviderData?.RegisteredName</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Trading name</dt>
-                                <dd class="govuk-summary-list__value">Northrow Limited</dd>
+                                <dd class="govuk-summary-list__value">@Model?.PreviousProviderData?.TradingName</dd>
                             </div>
                         </dl>
                     </div>
@@ -44,14 +44,134 @@ Layout = "~/Views/Shared/_LayoutConsent.cshtml";
                                 Previous information
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                <p class="govuk-body">
-                                    <strong>Public contact email</strong><br />
-                                    <span style="white-space: nowrap;">northrowpubliccontactemail@northrowlimited.com</span>
-                                    </p>
-                                <p class="govuk-body"><strong>Full name of primary contact</strong><br />
-                                    Jane Martin</p>
-                                <p class="govuk-body"><strong>Telephone number of secondary contact</strong><br />
-                                    07645946164</p>
+                            @if (Model?.CurrentProviderData?.RegisteredName != null)
+                            {
+                                <strong>Registered name</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.RegisteredName
+                                <br>
+
+                                <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.TradingName != null)
+                            {
+                                <strong>Trading name</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.TradingName
+                                <br> <br>
+                            }
+
+
+                            @if (Model?.CurrentProviderData?.PrimaryContactFullName != null)
+                            {
+                                <strong>Full name of primary contact</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.PrimaryContactFullName
+                                <br> <br>
+                            }
+
+                            @if (Model?.CurrentProviderData?.PrimaryContactJobTitle != null)
+                            {
+                                <strong>Job title of primary contact</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.PrimaryContactJobTitle
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.PrimaryContactEmail != null)
+                            {
+                                <strong>Email of primary contact</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.PrimaryContactEmail
+                                <br> <br>
+                            }
+
+                            @if (Model?.CurrentProviderData?.PrimaryContactTelephoneNumber != null)
+                            {
+                                <strong>Telephone number of primary contact</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.PrimaryContactTelephoneNumber
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.SecondaryContactFullName != null)
+                            {
+                                <strong>Full name of secondary contact</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.SecondaryContactFullName
+                                <br> <br>
+                            }
+
+                            @if (Model?.CurrentProviderData?.SecondaryContactJobTitle != null)
+                            {
+                                <strong>Job title of secondary contact</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.SecondaryContactJobTitle
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.SecondaryContactEmail != null)
+                            {
+                                <strong>Email of secondary contact</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.SecondaryContactEmail
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.SecondaryContactTelephoneNumber != null)
+                            {
+                                <strong>Telephone number of secondary contact</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.SecondaryContactTelephoneNumber
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.PublicContactEmail != null)
+                            {
+                                <strong>Public contact email</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.PublicContactEmail
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.ProviderTelephoneNumber != null)
+                            {
+                                <strong>Public telephone number</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.ProviderTelephoneNumber
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.ProviderWebsiteAddress != null)
+                            {
+                                <strong>Public website address</strong>
+
+                                <br>
+                                @Model?.PreviousProviderData?.ProviderWebsiteAddress
+                                <br> <br>
+
+                            }
                             </dd>
                         </div>
 
@@ -60,18 +180,134 @@ Layout = "~/Views/Shared/_LayoutConsent.cshtml";
                                 New information
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                <p class="govuk-body">
-                                    <strong>Public contact email</strong><br />
-                                    <span style="white-space: nowrap;">contactemail@northrowlimited.com</span>
-                                </p>
-                                <p class="govuk-body">
-                                    <strong>Full name of primary contact</strong><br/>
-                                    Jay Martin
-                                </p>
-                                <p class="govuk-body">
-                                    <strong>Telephone number of secondary contact</strong><br/>
-                                    07645946165
-                                </p>
+                            @if (Model?.CurrentProviderData?.RegisteredName != null)
+                            {
+                                <strong>Registered name</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.RegisteredName
+                                <br>
+
+                                <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.TradingName != null)
+                            {
+                                <strong>Trading name</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.TradingName
+                                <br> <br>
+                            }
+
+
+                            @if (Model?.CurrentProviderData?.PrimaryContactFullName != null)
+                            {
+                                <strong>Full name of primary contact</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.PrimaryContactFullName
+                                <br> <br>
+                            }
+
+                            @if (Model?.CurrentProviderData?.PrimaryContactJobTitle != null)
+                            {
+                                <strong>Job title of primary contact</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.PrimaryContactJobTitle
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.PrimaryContactEmail != null)
+                            {
+                                <strong>Email of primary contact</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.PrimaryContactEmail
+                                <br> <br>
+                            }
+
+                            @if (Model?.CurrentProviderData?.PrimaryContactTelephoneNumber != null)
+                            {
+                                <strong>Telephone number of primary contact</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.PrimaryContactTelephoneNumber
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.SecondaryContactFullName != null)
+                            {
+                                <strong>Full name of secondary contact</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.SecondaryContactFullName
+                                <br> <br>
+                            }
+
+                            @if (Model?.CurrentProviderData?.SecondaryContactJobTitle != null)
+                            {
+                                <strong>Job title of secondary contact</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.SecondaryContactJobTitle
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.SecondaryContactEmail != null)
+                            {
+                                <strong>Email of secondary contact</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.SecondaryContactEmail
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.SecondaryContactTelephoneNumber != null)
+                            {
+                                <strong>Telephone number of secondary contact</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.SecondaryContactTelephoneNumber
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.PublicContactEmail != null)
+                            {
+                                <strong>Public contact email</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.PublicContactEmail
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.ProviderTelephoneNumber != null)
+                            {
+                                <strong>Public telephone number</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.ProviderTelephoneNumber
+                                <br> <br>
+
+                            }
+
+                            @if (Model?.CurrentProviderData?.ProviderWebsiteAddress != null)
+                            {
+                                <strong>Public website address</strong>
+
+                                <br>
+                                @Model?.CurrentProviderData?.ProviderWebsiteAddress
+                                <br> <br>
+
+                            }
                             </dd>
                         </div>
                     </dl>
@@ -85,18 +321,19 @@ Layout = "~/Views/Shared/_LayoutConsent.cshtml";
                 </div>
 
                     <div class="govuk-button-group govuk-!-margin-top-6">
-                        @using (Html.BeginForm("AcceptUpdate", "Review", FormMethod.Post))
+                    @using (Html.BeginForm("ApproveProviderChanges", "DSITEdit2i", FormMethod.Post))
                         {
-                            <button type="submit" class="govuk-button" data-module="govuk-button" name="action" value="update">
+                        @Html.HiddenFor(m => m.token)
+                            <button type="submit" class="govuk-button" data-module="govuk-button" name="action" value="approve">
                                 Accept update request
                             </button>
+
+
+                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="action" value="cancel">
+                            Cancel update request
+                        </button>
                         }
-                        @using (Html.BeginForm("DeclineUpdate", "Review", FormMethod.Post))
-                        {
-                            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="action" value="cancel">
-                                Cancel update request
-                            </button>
-                        }
+                        
                     </div>
                 </div>
         </div>

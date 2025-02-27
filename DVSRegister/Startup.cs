@@ -114,6 +114,8 @@ namespace DVSRegister
             services.AddScoped<IRemoveProvider2iRepository, RemoveProvider2iRepository>();
             services.AddScoped<ICabRemovalRequestService, CabRemovalRequestService>();
             services.AddScoped<ICabRemovalRequestRepository, CabRemovalRequestRepository>();
+            services.AddScoped<IDSITEdit2iService, DSITEdit2iService>();
+            services.AddScoped<IDSITEdit2iRepository, DSITEdit2iRepository>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));

@@ -32,5 +32,7 @@
         UpdateUser = 26,
         SaveAsDraftService = 27,
         ReapplyService = 28,
+        ProviderEdit2i = 29,
+        ServiceEdit2i = 30
     }
 }
