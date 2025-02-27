@@ -1,8 +1,113 @@
 ﻿
 @{
-    ViewData["Title"] = "ServiceChanges";
-    Layout = "~/Views/Shared/_LayoutConsent.cshtml";
+ViewData["Title"] = "You are reviewing a request to update information for this service";
+Layout = "~/Views/Shared/_LayoutConsent.cshtml";
 }
 
-<h1>ServiceChanges</h1>
+<div class="govuk-width-container">
+
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <h1 class="govuk-heading-xl">
+            You are reviewing a request to update information for this service
+        </h1>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <div class="govuk-summary-card govuk-!-margin-bottom-6">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            Service details: Remote Verify
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">Service name</dt>
+                                <dd class="govuk-summary-list__value">Remote Verify</dd>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">Provider registered name</dt>
+                                <dd class="govuk-summary-list__value">Northrow Limited</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+                <div class="govuk-grid-column-two-thirds">
+                    <h2 class="govuk-heading-m">What information is changing</h2>
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+                    <dl class="govuk-summary-list govuk-!-margin-bottom-8">
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Previous information
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                <p class="govuk-body">
+                                    <strong>Registered address</strong><br />
+                                    85 Great Portland Street<br />
+                                    W1W 7LT<br />
+                                    London<br />
+                                    United Kingdom<br />
+                                </p>
+                            </dd>
+                        </div>
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                New information
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                <p class="govuk-body">
+                                    <strong>Registered address</strong><br />
+                                    60 Great Portland Street<br />
+                                    W1W 7LT<br />
+                                    London<br />
+                                    United Kingdom<br />
+                                </p>
+                            </dd>
+                        </div>
+                    </dl>
+                
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full">
+                            <h2 class="govuk-heading-l">Certificate of conformity</h2>
+                            <span class="govuk-body-l">Certificate-150324-Northrow-Remote Verify</span>
+                            <div id="download-certificate-hint" class="govuk-hint">
+                                PDF, 19.5 KB, 1 page<br />
+                                This file may not be suitable for users of assistive technology.
+                            </div>
+                            <a href="" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" target="_blank">
+                                Download certificate of conformity
+                            </a>
+                    
+                            <div class="govuk-warning-text">
+                                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                                <strong class="govuk-warning-text__text">
+                                    <span class="govuk-visually-hidden">Warning</span>
+                                    Once you accept the update request, the action can't be undone
+                                </strong>
+                            </div>
+
+                            <div class="govuk-button-group govuk-!-margin-top-6">
+                                @using (Html.BeginForm("AcceptUpdate", "Review", FormMethod.Post))
+                                {
+                                    <button type="submit" class="govuk-button" data-module="govuk-button" name="action" value="update">
+                                        Accept update request
+                                    </button>
+                                }
+                                @using (Html.BeginForm("DeclineUpdate", "Review", FormMethod.Post))
+                                {
+                                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="action" value="cancel">
+                                        Cancel update request
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </main>
+</div>
 
