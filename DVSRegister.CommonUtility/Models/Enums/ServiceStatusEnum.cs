@@ -20,7 +20,9 @@ namespace DVSRegister.CommonUtility.Models
         [Description("Awaiting removal confirmation")]
         CabAwaitingRemovalConfirmation = 7,
         [Description("Saved as draft")]
-        SavedAsDraft = 8
+        SavedAsDraft = 8,
+        [Description("Updates requested")]
+        UpdatesRequested = 9
 
     }
 }

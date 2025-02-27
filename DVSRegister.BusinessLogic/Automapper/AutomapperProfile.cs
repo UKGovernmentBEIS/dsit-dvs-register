@@ -79,6 +79,19 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
             CreateMap<ProceedPublishConsentTokenDto, ProceedPublishConsentToken>()
             .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
+
+            CreateMap<ProviderProfileDraft, ProviderProfileDraftDto>();
+            CreateMap<ProviderProfileDraftDto, ProviderProfileDraft>();
+
+
+            CreateMap<ProviderDraftToken, ProviderDraftTokenDto>();
+            CreateMap<ProviderDraftTokenDto, ProviderDraftToken>();
+
+            CreateMap<ServiceDraft, ServiceDraftDto>();
+            CreateMap<ServiceDraftDto, ServiceDraft>();
+
+            CreateMap<ServiceDraftToken, ServiceDraftTokenDto>();
+            CreateMap<ServiceDraftTokenDto, ServiceDraftToken>();
         }
     }
 }
