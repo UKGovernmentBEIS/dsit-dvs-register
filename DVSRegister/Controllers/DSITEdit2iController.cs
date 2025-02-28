@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.JWT;
@@ -160,8 +161,9 @@ namespace DVSRegister.Controllers
                     serviceReviewViewModel.token = tokenDetails.Token;
                     serviceReviewViewModel.CurrentServiceData = serviceDraftTokenDto.ServiceDraft;
                     serviceReviewViewModel.PreviousServiceData = serviceDraftTokenDto.ServiceDraft.Service;
-                    serviceReviewViewModel.PreviousDataKeyValuePair = dSITEdit2IService.GetPreviousDataKeyPair(serviceDraftTokenDto.ServiceDraft, serviceDraftTokenDto.ServiceDraft.Service);
-                    serviceReviewViewModel.CurrentDataKeyValuePair = dSITEdit2IService.GetCurrentDataKeyPair(serviceDraftTokenDto.ServiceDraft);
+                    var (previous, current) = dSITEdit2IService.GetServiceKeyValue(serviceDraftTokenDto.ServiceDraft, serviceDraftTokenDto.ServiceDraft.Service);
+                    serviceReviewViewModel.PreviousDataKeyValuePair = previous;
+                    serviceReviewViewModel.CurrentDataKeyValuePair = current;
                 }
                 else
                 {

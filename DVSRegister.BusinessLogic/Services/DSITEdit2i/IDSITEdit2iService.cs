@@ -16,7 +16,6 @@ namespace DVSRegister.BusinessLogic.Services
         public Task<bool> RemoveServiceDraftToken(string token, string tokenId);
         public Task<GenericResponse> CancelServiceUpdates(int serviceId, int serviceDraftId);
 
-        public Dictionary<string, List<string>> GetPreviousDataKeyPair(ServiceDraftDto currentData, ServiceDto previousData);
-        public Dictionary<string, List<string>> GetCurrentDataKeyPair(ServiceDraftDto currentData);
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetServiceKeyValue(ServiceDraftDto currentData, ServiceDto previousData);
     }
 }
