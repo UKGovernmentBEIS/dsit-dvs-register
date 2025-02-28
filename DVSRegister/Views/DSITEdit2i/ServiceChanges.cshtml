@@ -1,4 +1,5 @@
-﻿
+﻿@using DVSRegister.CommonUtility.Models
+@model ServiceReviewViewModel
 @{
 ViewData["Title"] = "You are reviewing a request to update information for this service";
 Layout = "~/Views/Shared/_LayoutConsent.cshtml";
@@ -17,24 +18,24 @@ Layout = "~/Views/Shared/_LayoutConsent.cshtml";
                 <div class="govuk-summary-card govuk-!-margin-bottom-6">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">
-                            Service details: Remote Verify
+                            Service details: @Model?.PreviousServiceData?.ServiceName
                         </h2>
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Service name</dt>
-                                <dd class="govuk-summary-list__value">Remote Verify</dd>
+                                <dd class="govuk-summary-list__value"> @Model?.PreviousServiceData?.ServiceName</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Provider registered name</dt>
-                                <dd class="govuk-summary-list__value">Northrow Limited</dd>
+                                <dd class="govuk-summary-list__value"> @Model?.CurrentServiceData?.Provider.RegisteredName</dd>
                             </div>
                         </dl>
                     </div>
                 </div>
             </div>
-                <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-grid-column-full">
                     <h2 class="govuk-heading-m">What information is changing</h2>
                     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
@@ -43,30 +44,43 @@ Layout = "~/Views/Shared/_LayoutConsent.cshtml";
                             <dt class="govuk-summary-list__key">
                                 Previous information
                             </dt>
-                            <dd class="govuk-summary-list__value">
-                                <p class="govuk-body">
-                                    <strong>Registered address</strong><br />
-                                    85 Great Portland Street<br />
-                                    W1W 7LT<br />
-                                    London<br />
-                                    United Kingdom<br />
-                                </p>
-                            </dd>
-                        </div>
 
+                        <dd class="govuk-summary-list__value">
+                        @foreach (var item in Model.PreviousDataKeyValuePair)
+                        {
+                                <strong>@item.Key</strong><br>
+
+                                @foreach (var value in item.Value)
+                                {
+                                    @value;
+                                    <br>
+
+                                  
+                                }
+                                <br>
+                        }
+                        </dd>
+                        </div>
+                        @* NEW INFORMATION *@
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 New information
                             </dt>
-                            <dd class="govuk-summary-list__value">
-                                <p class="govuk-body">
-                                    <strong>Registered address</strong><br />
-                                    60 Great Portland Street<br />
-                                    W1W 7LT<br />
-                                    London<br />
-                                    United Kingdom<br />
-                                </p>
-                            </dd>
+
+                        @foreach (var item in Model.CurrentDataKeyValuePair)
+                        {
+                            <strong>@item.Key</strong>
+
+                            <br>
+
+                            @foreach (var value in item.Value)
+                            {
+                                @value;
+                                <br>
+                            }
+
+                            <br>
+                        }
                         </div>
                     </dl>
                 
@@ -78,8 +92,8 @@ Layout = "~/Views/Shared/_LayoutConsent.cshtml";
                                 PDF, 19.5 KB, 1 page<br />
                                 This file may not be suitable for users of assistive technology.
                             </div>
-                            <a href="" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" target="_blank">
-                                Download certificate of conformity
+                        <a href="/update-request/download-certificate?key=@Model.PreviousServiceData.FileLink&filename=@Model.PreviousServiceData.FileName" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" target="_blank">
+                            Download certificate of conformity (Opens in a new tab)
                             </a>
                     
                             <div class="govuk-warning-text">
@@ -91,18 +105,18 @@ Layout = "~/Views/Shared/_LayoutConsent.cshtml";
                             </div>
 
                             <div class="govuk-button-group govuk-!-margin-top-6">
-                                @using (Html.BeginForm("AcceptUpdate", "Review", FormMethod.Post))
-                                {
-                                    <button type="submit" class="govuk-button" data-module="govuk-button" name="action" value="update">
-                                        Accept update request
-                                    </button>
-                                }
-                                @using (Html.BeginForm("DeclineUpdate", "Review", FormMethod.Post))
-                                {
-                                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="action" value="cancel">
-                                        Cancel update request
-                                    </button>
-                                }
+                            @using (Html.BeginForm("ApproveServiceChanges", "DSITEdit2i", FormMethod.Post))
+                            {
+                                @Html.HiddenFor(m => m.token)
+                                <button type="submit" class="govuk-button" data-module="govuk-button" name="action" value="approve">
+                                    Accept update request
+                                </button>
+
+
+                                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="action" value="cancel">
+                                    Cancel update request
+                                </button>
+                            }
                             </div>
                         </div>
                     </div>

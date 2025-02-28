@@ -164,25 +164,144 @@ namespace DVSRegister.Data.Repositories
 
         public async Task<ServiceDraftToken> GetServiceDraftToken(string token, string tokenId)
         {
-            return await context.ServiceDraftToken.Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(p => p.Provider)
-           .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ServiceDraftToken();
+            return await context.ServiceDraftToken.Include(p => p.ServiceDraft).ThenInclude(p => p.Provider)
+             .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceRoleMapping).ThenInclude(s=>s.Role)
+             .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceQualityLevelMapping).ThenInclude(s => s.QualityLevel)
+             .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceIdentityProfileMapping).ThenInclude(s => s.IdentityProfile)
+             .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SupplementaryScheme)
+
+
+              .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceRoleMappingDraft).ThenInclude(s => s.Role)
+             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceQualityLevelMappingDraft).ThenInclude(s => s.QualityLevel)
+             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceIdentityProfileMappingDraft).ThenInclude(s => s.IdentityProfile)
+             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceSupSchemeMappingDraft).ThenInclude(s => s.SupplementaryScheme)   
+
+           .AsNoTracking().FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ServiceDraftToken();
         }
 
 
-        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, int serviceDraftId)
+        public async Task<GenericResponse> UpdateServiceStatusAndData(int serviceId, int serviceDraftId)
         {
             GenericResponse genericResponse = new();
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var existingService = await context.Service.FirstOrDefaultAsync(p => p.Id == serviceId);
-                var existingDraftService= await context.ServiceDraft.FirstOrDefaultAsync(p => p.Id == serviceDraftId);
+                var existingService = await context.Service.Include(p=>p.Provider)
+                 .Include(s => s.ServiceRoleMapping)
+                 .Include(s => s.ServiceQualityLevelMapping)
+                 .Include(s => s.ServiceIdentityProfileMapping)
+                 .Include(s => s.ServiceSupSchemeMapping).FirstOrDefaultAsync(p => p.Id == serviceId);
+
+
+
+                var existingDraftService= await context.ServiceDraft.Include(p => p.Provider)
+                 .Include(s => s.ServiceRoleMappingDraft)
+                 .Include(s => s.ServiceQualityLevelMappingDraft)
+                 .Include(s => s.ServiceIdentityProfileMappingDraft)
+                 .Include(s => s.ServiceSupSchemeMappingDraft)
+                 .FirstOrDefaultAsync(p => p.Id == serviceDraftId);
+
 
                 if (existingService != null && existingService.ServiceStatus == ServiceStatusEnum.UpdatesRequested && existingDraftService != null
                     && existingDraftService.ServiceId == existingService.Id)
                 {
+
+                    ICollection<ServiceRoleMapping> newServiceRoleMapping = [];
+                    ICollection<ServiceQualityLevelMapping> newServiceQualityLevelMapping = [];
+                    ICollection<ServiceIdentityProfileMapping> newServiceIdentityProfileMapping = [];
+                    ICollection<ServiceSupSchemeMapping> newServiceSupSchemeMapping = [];
+
+
                     existingService.ModifiedTime = DateTime.UtcNow;
                     existingService.ServiceStatus = ServiceStatusEnum.ReadyToPublish;
+                    if (existingService.Provider.ProviderStatus == ProviderStatusEnum.Published)
+                        existingService.Provider.ProviderStatus = ProviderStatusEnum.ReadyToPublish;
+                    existingService.Provider.ModifiedTime = DateTime.UtcNow;
+
+                    existingService.ServiceName = existingDraftService.ServiceName ?? existingService.ServiceName;
+                    existingService.CompanyAddress = existingDraftService.CompanyAddress ?? existingService.CompanyAddress;
+                    existingService.HasGPG44 = existingDraftService.HasGPG44 ?? existingService.HasGPG44;
+                    existingService.HasGPG45 = existingDraftService.HasGPG45 ?? existingService.HasGPG45;
+                    existingService.HasSupplementarySchemes = existingDraftService.HasSupplementarySchemes ?? existingService.HasSupplementarySchemes;
+                    existingService.ConformityIssueDate = existingDraftService.ConformityIssueDate ?? existingService.ConformityIssueDate;
+                    existingService.ConformityExpiryDate = existingDraftService.ConformityExpiryDate ?? existingService.ConformityExpiryDate;
+
+
+                    //--------------Role------------------------------//
+                    if (existingDraftService.ServiceRoleMappingDraft?.Count > 0)
+                    {
+                        foreach(var item in existingDraftService.ServiceRoleMappingDraft)
+                        {
+                            newServiceRoleMapping.Add(new ServiceRoleMapping { RoleId = item.RoleId , ServiceId = existingService.Id});
+                        }
+
+                        context.ServiceRoleMapping.RemoveRange(existingService.ServiceRoleMapping);
+                        existingService.ServiceRoleMapping = newServiceRoleMapping;
+
+                    }
+                    //------------------------Quality------------------------------------------//
+                    if (existingDraftService.ServiceQualityLevelMappingDraft?.Count > 0)
+                    {
+                        foreach (var item in existingDraftService.ServiceQualityLevelMappingDraft)
+                        {
+                            newServiceQualityLevelMapping.Add(new ServiceQualityLevelMapping { QualityLevelId = item.QualityLevelId, ServiceId = existingService.Id });
+                        }
+                        context.ServiceQualityLevelMapping.RemoveRange(existingService.ServiceQualityLevelMapping);
+                        existingService.ServiceQualityLevelMapping = newServiceQualityLevelMapping;
+                        existingService.HasGPG44 = true;
+                    }
+                    else if(existingDraftService.HasGPG44 != null && existingDraftService.HasGPG44 == false) 
+                    {                     
+                        context.ServiceQualityLevelMapping.RemoveRange(existingService.ServiceQualityLevelMapping);
+                        existingService.HasGPG44 = false;
+
+
+
+
+                        //--------------Identity profiles---------------------------------
+
+
+                        if (existingDraftService.ServiceIdentityProfileMappingDraft?.Count > 0)
+                        {
+                            foreach (var item in existingDraftService.ServiceIdentityProfileMappingDraft)
+                            {
+                                newServiceIdentityProfileMapping.Add(new ServiceIdentityProfileMapping { IdentityProfileId = item.IdentityProfileId, ServiceId = existingService.Id });
+                            }
+
+                            context.ServiceIdentityProfileMapping.RemoveRange(existingService.ServiceIdentityProfileMapping);
+                            existingService.ServiceIdentityProfileMapping = newServiceIdentityProfileMapping;
+                            existingService.HasGPG45 = true;
+
+                        }
+                        else if (existingDraftService.HasGPG45 != null && existingDraftService.HasGPG45 == false)
+                        {
+                            context.ServiceIdentityProfileMapping.RemoveRange(existingService.ServiceIdentityProfileMapping);
+                            existingService.HasGPG45 = false;
+                        }
+
+
+                    }
+                    //--------------------------Scheme-------------------------------------------//
+                    if (existingDraftService.ServiceSupSchemeMappingDraft?.Count > 0)
+                    {
+                        foreach (var item in existingDraftService.ServiceSupSchemeMappingDraft)
+                        {
+                            newServiceSupSchemeMapping.Add(new ServiceSupSchemeMapping { SupplementarySchemeId = item.SupplementarySchemeId, ServiceId = existingService.Id });
+                        }
+
+                        context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
+                        existingService.ServiceSupSchemeMapping = newServiceSupSchemeMapping;
+                        existingService.HasSupplementarySchemes = true;
+
+                    }
+                    else if (existingDraftService.HasSupplementarySchemes != null && existingDraftService.HasSupplementarySchemes == false)
+                    {
+                        context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
+                        existingService.HasSupplementarySchemes = false;
+                    }
+                    //-----------------------------------------------------------------------------//
+                    context.Remove(existingDraftService);
+
                     await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.ServiceEdit2i, "DSIT");
                     await transaction.CommitAsync();
                     genericResponse.Success = true;
