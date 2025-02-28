@@ -182,7 +182,7 @@ namespace DVSRegister.Controllers
                         else
                         {
                             removeProviderViewModel.Provider = provider;
-                            return View("RemoveProviderDetails", removeProviderViewModel);
+                            return View("RemoveProviderDetailsDSIT", removeProviderViewModel);
                         }
                     }
                     else if (action == "cancel")
