@@ -1,5 +1,6 @@
 ﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Services;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.JWT;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
@@ -13,11 +14,13 @@ namespace DVSRegister.Controllers
     {
         private readonly IJwtService jwtService;
         private readonly IDSITEdit2iService dSITEdit2IService;
+        private readonly IBucketService bucketService;
 
-        public DSITEdit2iController(IJwtService jwtService, IDSITEdit2iService dSITEdit2IService)
+        public DSITEdit2iController(IJwtService jwtService, IDSITEdit2iService dSITEdit2IService, IBucketService bucketService)
         {
             this.jwtService = jwtService;
             this.dSITEdit2IService = dSITEdit2IService;
+            this.bucketService = bucketService;
         }
 
         [HttpGet("provider-changes")]
@@ -72,7 +75,7 @@ namespace DVSRegister.Controllers
                         GenericResponse genericResponse = await dSITEdit2IService.UpdateProviderAndServiceStatusAndData(providerDraftTokenDto.ProviderProfileDraft.ProviderProfileId, providerDraftTokenDto.ProviderProfileDraftId);
                         if (genericResponse.Success)
                         {
-                            await dSITEdit2IService.RemoveProviderDraftToken(tokenDetails.Token, tokenDetails.TokenId);
+                            //Token  removed whhen draft is deleted after update
                             return RedirectToAction("ProviderChangesApproved");
                         }
                         else
@@ -85,7 +88,7 @@ namespace DVSRegister.Controllers
                         GenericResponse genericResponse = await dSITEdit2IService.CancelProviderUpdates(providerDraftTokenDto.ProviderProfileDraft.ProviderProfileId, providerDraftTokenDto.ProviderProfileDraftId);
                         if (genericResponse.Success)
                         {
-                            await dSITEdit2IService.RemoveProviderDraftToken(tokenDetails.Token, tokenDetails.TokenId);
+                            //Token removed when draft is deleted after cancel
                             return RedirectToAction("ProviderChangesCancelled");
                         }
                         else
@@ -140,7 +143,7 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> ServiceChanges(string token)
         {
             ServiceDraftTokenDto serviceDraftTokenDto = new();
-            ServiceReviewViewModel serviceReviewViewModel = new();
+            ServiceReviewViewModel serviceReviewViewModel = new();   
             if (!string.IsNullOrEmpty(token))
             {
                 TokenDetails tokenDetails = await jwtService.ValidateToken(token, "DSIT");
@@ -157,6 +160,8 @@ namespace DVSRegister.Controllers
                     serviceReviewViewModel.token = tokenDetails.Token;
                     serviceReviewViewModel.CurrentServiceData = serviceDraftTokenDto.ServiceDraft;
                     serviceReviewViewModel.PreviousServiceData = serviceDraftTokenDto.ServiceDraft.Service;
+                    serviceReviewViewModel.PreviousDataKeyValuePair = dSITEdit2IService.GetPreviousDataKeyPair(serviceDraftTokenDto.ServiceDraft, serviceDraftTokenDto.ServiceDraft.Service);
+                    serviceReviewViewModel.CurrentDataKeyValuePair = dSITEdit2IService.GetCurrentDataKeyPair(serviceDraftTokenDto.ServiceDraft);
                 }
                 else
                 {
@@ -184,10 +189,10 @@ namespace DVSRegister.Controllers
                 {
                     if (action == "approve")
                     {
-                        GenericResponse genericResponse = await dSITEdit2IService.UpdateServiceStatus(serviceDraftTokenDto.ServiceDraft.ServiceId, serviceDraftTokenDto.ServiceDraftId);
+                        GenericResponse genericResponse = await dSITEdit2IService.UpdateServiceStatusAndData(serviceDraftTokenDto.ServiceDraft.ServiceId, serviceDraftTokenDto.ServiceDraftId);
                         if (genericResponse.Success)
                         {
-                            await dSITEdit2IService.RemoveServiceDraftToken(tokenDetails.Token, tokenDetails.TokenId);
+                           //Token will be removed whhen draft is deleted after update
                             return RedirectToAction("ServiceChangesApproved");
                         }
                         else
@@ -200,7 +205,7 @@ namespace DVSRegister.Controllers
                         GenericResponse genericResponse = await dSITEdit2IService.CancelServiceUpdates(serviceDraftTokenDto.ServiceDraft.ServiceId, serviceDraftTokenDto.ServiceDraftId);
                         if (genericResponse.Success)
                         {
-                            await dSITEdit2IService.RemoveServiceDraftToken(tokenDetails.Token, tokenDetails.TokenId);
+                            //Token will be removed when service draft is deleted                          
                             return RedirectToAction("ServiceChangesCancelled");
                         }
                         else
@@ -250,6 +255,32 @@ namespace DVSRegister.Controllers
         public IActionResult ServiceChangesError()
         {
             return View();
+        }
+
+        /// <summary>
+        /// Download from s3
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+
+        [HttpGet("download-certificate")]
+        public async Task<IActionResult> DownloadCertificate(string key, string filename)
+        {
+            try
+            {
+                byte[]? fileContent = await bucketService.DownloadFileAsync(key);
+
+                if (fileContent == null || fileContent.Length == 0)
+                {
+                    return RedirectToAction("ServiceChangesError");
+                }
+                string contentType = "application/octet-stream";
+                return File(fileContent, contentType, filename);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("ServiceChangesError");
+            }
         }
     }
 }

@@ -87,8 +87,31 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ProviderDraftToken, ProviderDraftTokenDto>();
             CreateMap<ProviderDraftTokenDto, ProviderDraftToken>();
 
-            CreateMap<ServiceDraft, ServiceDraftDto>();
-            CreateMap<ServiceDraftDto, ServiceDraft>();
+
+            CreateMap<ServiceIdentityProfileMappingDraft, ServiceIdentityProfileMappingDraftDto>();
+            CreateMap<ServiceIdentityProfileMappingDraftDto, ServiceIdentityProfileMappingDraft>().ForMember(x => x.IdentityProfile, opt => opt.Ignore());
+            CreateMap<ServiceRoleMappingDraft, ServiceRoleMappingDraftDto>();
+            CreateMap<ServiceRoleMappingDraftDto, ServiceRoleMappingDraft>().ForMember(x => x.Role, opt => opt.Ignore());
+
+
+            CreateMap<ServiceSupSchemeMappingDraft, ServiceSupSchemeMappingDraftDto>();
+            CreateMap<ServiceSupSchemeMappingDraftDto, ServiceSupSchemeMappingDraft>().ForMember(x => x.SupplementaryScheme, opt => opt.Ignore());
+            CreateMap<ServiceQualityLevelMappingDraft, ServiceQualityLevelMappingDraftDto>();
+            CreateMap<ServiceQualityLevelMappingDraftDto, ServiceQualityLevelMappingDraft>().ForMember(x => x.QualityLevel, opt => opt.Ignore());
+
+            CreateMap<ServiceDraft, ServiceDraftDto>()
+            .ForMember(dest => dest.ServiceQualityLevelMappingDraft, opt => opt.MapFrom(src => src.ServiceQualityLevelMappingDraft))
+            .ForMember(dest => dest.ServiceRoleMappingDraft, opt => opt.MapFrom(src => src.ServiceRoleMappingDraft))
+            .ForMember(dest => dest.ServiceIdentityProfileMappingDraft, opt => opt.MapFrom(src => src.ServiceIdentityProfileMappingDraft))
+            .ForMember(dest => dest.ServiceSupSchemeMappingDraft, opt => opt.MapFrom(src => src.ServiceSupSchemeMappingDraft))
+            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
+
+            CreateMap<ServiceDraftDto, ServiceDraft>()
+            .ForMember(dest => dest.ServiceQualityLevelMappingDraft, opt => opt.MapFrom(src => src.ServiceQualityLevelMappingDraft))
+            .ForMember(dest => dest.ServiceRoleMappingDraft, opt => opt.MapFrom(src => src.ServiceRoleMappingDraft))
+            .ForMember(dest => dest.ServiceIdentityProfileMappingDraft, opt => opt.MapFrom(src => src.ServiceIdentityProfileMappingDraft))
+            .ForMember(dest => dest.ServiceSupSchemeMappingDraft, opt => opt.MapFrom(src => src.ServiceSupSchemeMappingDraft))
+            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
 
             CreateMap<ServiceDraftToken, ServiceDraftTokenDto>();
             CreateMap<ServiceDraftTokenDto, ServiceDraftToken>();
