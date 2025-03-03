@@ -254,32 +254,27 @@ namespace DVSRegister.Data.Repositories
                     {                     
                         context.ServiceQualityLevelMapping.RemoveRange(existingService.ServiceQualityLevelMapping);
                         existingService.HasGPG44 = false;
+                    }
+
+                    //--------------Identity profiles---------------------------------
 
 
-
-
-                        //--------------Identity profiles---------------------------------
-
-
-                        if (existingDraftService.ServiceIdentityProfileMappingDraft?.Count > 0)
+                    if (existingDraftService.ServiceIdentityProfileMappingDraft?.Count > 0)
+                    {
+                        foreach (var item in existingDraftService.ServiceIdentityProfileMappingDraft)
                         {
-                            foreach (var item in existingDraftService.ServiceIdentityProfileMappingDraft)
-                            {
-                                newServiceIdentityProfileMapping.Add(new ServiceIdentityProfileMapping { IdentityProfileId = item.IdentityProfileId, ServiceId = existingService.Id });
-                            }
-
-                            context.ServiceIdentityProfileMapping.RemoveRange(existingService.ServiceIdentityProfileMapping);
-                            existingService.ServiceIdentityProfileMapping = newServiceIdentityProfileMapping;
-                            existingService.HasGPG45 = true;
-
-                        }
-                        else if (existingDraftService.HasGPG45 != null && existingDraftService.HasGPG45 == false)
-                        {
-                            context.ServiceIdentityProfileMapping.RemoveRange(existingService.ServiceIdentityProfileMapping);
-                            existingService.HasGPG45 = false;
+                            newServiceIdentityProfileMapping.Add(new ServiceIdentityProfileMapping { IdentityProfileId = item.IdentityProfileId, ServiceId = existingService.Id });
                         }
 
+                        context.ServiceIdentityProfileMapping.RemoveRange(existingService.ServiceIdentityProfileMapping);
+                        existingService.ServiceIdentityProfileMapping = newServiceIdentityProfileMapping;
+                        existingService.HasGPG45 = true;
 
+                    }
+                    else if (existingDraftService.HasGPG45 != null && existingDraftService.HasGPG45 == false)
+                    {
+                        context.ServiceIdentityProfileMapping.RemoveRange(existingService.ServiceIdentityProfileMapping);
+                        existingService.HasGPG45 = false;
                     }
                     //--------------------------Scheme-------------------------------------------//
                     if (existingDraftService.ServiceSupSchemeMappingDraft?.Count > 0)
