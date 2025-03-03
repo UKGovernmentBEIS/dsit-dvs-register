@@ -313,8 +313,8 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "Supplementarycodes", "CabService", new { fromDetailsPage = true },
-                                         new { @class = "govuk-link", @aria_label = "Change relevant supplementary codes" })
+                                @Html.ActionLink("Change", "SupplementarySchemes", "CabService", new { fromDetailsPage = true },
+                                         new { @class = "govuk-link", @aria_label = "Change relevant supplementary schemes" })
                             </dd>
                         }
                     </div>
@@ -330,7 +330,7 @@
                             {
                                 @foreach (var item in Model.ServiceSupSchemeMapping)
                                 {
-                                    @item.Supplementarycode.codeName <br />
+                                    @item.SupplementaryScheme.SchemeName <br />
                                 }
                             }
                             else
@@ -343,8 +343,8 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "HasSupplementaryCodeInput", "CabService", new { fromDetailsPage = true },
-                                         new { @class = "govuk-link", @aria_label = "Change whether certified against supplementary codes" })
+                                @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
+                                         new { @class = "govuk-link", @aria_label = "Change whether certified against supplementary schemes" })
                             </dd>
                         }
                     </div>

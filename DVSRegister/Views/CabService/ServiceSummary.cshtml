@@ -204,22 +204,22 @@
                                         Supplementary codes
                                     </dt>
 
-                                    @if (Model.SupplementaryCodeViewModel != null && Convert.ToBoolean(Model.HasSupplementaryCodes))
+                                    @if (Model.SupplementarySchemeViewModel != null && Convert.ToBoolean(Model.HasSupplementarySchemes))
                                     {
                                         <dd class="govuk-summary-list__value">
-                                            @if (Model.SupplementaryCodeViewModel.SelectedSupplementaryCodes != null && Model.SupplementaryCodeViewModel.SelectedSupplementaryCodes.Count > 0)
+                                            @if (Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count > 0)
                                             {
 
-                                                @foreach (var item in Model.SupplementaryCodeViewModel.SelectedSupplementaryCodes)
+                                                @foreach (var item in Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
                                                 {
-                                                    @item.CodeName
+                                                    @item.SchemeName
                                                     <br>
                                                 }
                                             }
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "SupplementaryCode", "CabService", new { fromSummaryPage = true },
-                                                     new { @class = "govuk-link", @aria_label = "Change relevant supplementary code" })
+                                            @Html.ActionLink("Change", "SupplementarySchemes", "CabService", new { fromSummaryPage = true },
+                                                     new { @class = "govuk-link", @aria_label = "Change relevant supplementary schemes" })
                                         </dd>
                                     }
                                     else
@@ -228,7 +228,7 @@
                                             <div>None</div>
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "HasSupplementaryCodeInput", "CabService", new { fromSummaryPage = true },
+                                            @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromSummaryPage = true },
                                                      new { @class = "govuk-link", @aria_label = "Change supplementary code" })
                                         </dd>
                                     }
