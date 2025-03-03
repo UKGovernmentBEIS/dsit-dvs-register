@@ -54,5 +54,8 @@
         public EditProviderAccepted EditProviderAccepted { get; set; }
 
         public EditProviderDeclined EditProviderDeclined { get; set; }  
+
+        public EditServiceAccepted EditServiceAccepted { get; set; }
+        public EditServiceDeclined EditServiceDeclined { get; set; }
     }
 }

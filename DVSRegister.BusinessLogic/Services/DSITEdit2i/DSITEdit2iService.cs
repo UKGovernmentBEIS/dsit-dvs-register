@@ -328,18 +328,29 @@ namespace DVSRegister.BusinessLogic.Services
         }
 
 
-        public async Task<GenericResponse> UpdateServiceStatusAndData(int serviceId, int serviceDraftId)
+        public async Task<GenericResponse> UpdateServiceStatusAndData(ServiceDraftDto serviceDraft)
         {
             // update provider status
             
-            GenericResponse genericResponse = await dSITEdit2IRepository.UpdateServiceStatusAndData(serviceId, serviceDraftId);
+            GenericResponse genericResponse = await dSITEdit2IRepository.UpdateServiceStatusAndData(serviceDraft.ServiceId, serviceDraft.Id);
 
 
             if (genericResponse.Success)
             {
-                ProviderProfile providerProfile = await removeProvider2IRepository.GetProviderWithAllServices(serviceId);
+                ProviderProfile providerProfile = await removeProvider2IRepository.GetProviderWithAllServices(serviceDraft.ServiceId);
                 ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
                 genericResponse = await removeProvider2IRepository.UpdateProviderStatus(providerProfile.Id, providerStatus, "DSIT", EventTypeEnum.ServiceEdit2i);
+
+                if(genericResponse.Success) 
+                {
+
+                    var (previous, current) = GetServiceKeyValue(serviceDraft, serviceDraft.Service);
+                    string currentData = Helper.ConcatenateKeyValuePairs(current);
+                    string previousData = Helper.ConcatenateKeyValuePairs(previous);
+
+                    string userEmail = serviceDraft.User.Email;
+                    await emailSender.EditProviderAccepted(userEmail, userEmail, serviceDraft.Provider.RegisteredName, currentData, previousData);
+                }
 
 
             }
@@ -351,9 +362,14 @@ namespace DVSRegister.BusinessLogic.Services
             return await dSITEdit2IRepository.RemoveServiceDraftToken(token, tokenId);
         }
 
-        public async Task<GenericResponse> CancelServiceUpdates(int serviceId, int serviceDraftId)
+        public async Task<GenericResponse> CancelServiceUpdates(ServiceDraftDto serviceDraft)
         {
-            GenericResponse genericResponse = await dSITEdit2IRepository.CancelServiceUpdates(serviceId, serviceDraftId);
+            GenericResponse genericResponse = await dSITEdit2IRepository.CancelServiceUpdates(serviceDraft.ServiceId, serviceDraft.Id);
+            if(genericResponse.Success) 
+            {
+                string userEmail = serviceDraft.User.Email;
+                await emailSender.EditServiceDeclined(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName);
+            }
             return genericResponse;
         }
     }

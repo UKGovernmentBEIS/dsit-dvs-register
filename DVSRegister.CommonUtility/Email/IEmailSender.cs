@@ -48,8 +48,9 @@ namespace DVSRegister.CommonUtility.Email
 
         public Task<bool> EditProviderAccepted(string emailAddress, string recipientName, string companyName, string currentData, string previousData);
         public Task<bool> EditProviderDeclined(string emailAddress, string recipientName, string companyName);
+        public Task<bool> EditServiceAccepted(string emailAddress, string recipientName, string companyName, string serviceName, string currentData, string previousData);
 
-
+        public Task<bool> EditServiceDeclined(string emailAddress, string recipientName, string companyName, string serviceName);
 
 
 

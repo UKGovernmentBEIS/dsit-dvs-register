@@ -608,6 +608,49 @@ namespace DVSRegister.CommonUtility.Email
             };
             return await SendEmail(emailModel);
         }
+
+        public async Task<bool> EditServiceAccepted(string emailAddress, string recipientName, string companyName, string serviceName, string currentData, string previousData)
+        {
+            var template = govUkNotifyConfig.EditServiceAccepted;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+
+                { template.CompanyName,  companyName},
+                 { template.ServiceName,  serviceName},
+                { template.RecipientName,  recipientName},
+                { template.PreviousData,  previousData},
+                { template.CurrentData,  currentData},
+
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
+
+        public async Task<bool> EditServiceDeclined(string emailAddress, string recipientName, string companyName, string serviceName)
+        {
+            var template = govUkNotifyConfig.EditServiceDeclined;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+
+                { template.CompanyName,  companyName},
+                 { template.ServiceName,  serviceName},
+                { template.RecipientName,  recipientName}
+              
+
+             };
+            var emailModel = new GovUkNotifyEmailModel
+            {
+                EmailAddress = emailAddress,
+                TemplateId = template.Id,
+                Personalisation = personalisation
+            };
+            return await SendEmail(emailModel);
+        }
         #endregion
     }
 }

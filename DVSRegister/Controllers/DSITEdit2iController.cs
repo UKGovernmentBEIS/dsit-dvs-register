@@ -192,7 +192,7 @@ namespace DVSRegister.Controllers
                 {
                     if (action == "approve")
                     {
-                        GenericResponse genericResponse = await dSITEdit2IService.UpdateServiceStatusAndData(serviceDraftTokenDto.ServiceDraft.ServiceId, serviceDraftTokenDto.ServiceDraftId);
+                        GenericResponse genericResponse = await dSITEdit2IService.UpdateServiceStatusAndData(serviceDraftTokenDto.ServiceDraft);
                         if (genericResponse.Success)
                         {
                            //Token will be removed whhen draft is deleted after update
@@ -205,7 +205,7 @@ namespace DVSRegister.Controllers
                     }
                     else if (action == "cancel")
                     {
-                        GenericResponse genericResponse = await dSITEdit2IService.CancelServiceUpdates(serviceDraftTokenDto.ServiceDraft.ServiceId, serviceDraftTokenDto.ServiceDraftId);
+                        GenericResponse genericResponse = await dSITEdit2IService.CancelServiceUpdates(serviceDraftTokenDto.ServiceDraft);
                         if (genericResponse.Success)
                         {
                             //Token will be removed when service draft is deleted                          
