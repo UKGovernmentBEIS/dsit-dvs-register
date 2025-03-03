@@ -271,8 +271,8 @@ namespace DVSRegister.Data.CAB
                         service.ServiceVersion = maxServiceVersion + 1;
                         service.CreatedTime = DateTime.UtcNow;
                         service.ModifiedTime = DateTime.UtcNow;
-                        service.ConformityExpiryDate = null;
-                        service.ConformityIssueDate = null;
+                        service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue?null: service.ConformityExpiryDate;
+                        service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue?null :service.ConformityIssueDate;
                         var entity = await context.Service.AddAsync(service);
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                         genericResponse.InstanceId = existingService.ServiceKey;
