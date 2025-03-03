@@ -2,14 +2,13 @@
 using Amazon.S3;
 using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.BusinessLogic;
-using DVSRegister.BusinessLogic.Models.Cookies;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.GoogleAnalytics;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.JWT;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.Cookies;
 using DVSRegister.Data;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.CabRemovalRequest;
@@ -18,6 +17,7 @@ using DVSRegister.Middleware;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
+using DVSRegister.Services.Cookies;
 
 namespace DVSRegister
 {
@@ -68,9 +68,16 @@ namespace DVSRegister
             ConfigureS3Client(services);
             ConfigureS3FileWriter(services);
             ConfigureJwtServices(services);
+            ConfigureGoogleAnalyticsService(services);
         }
 
-       
+        
+        private void ConfigureGoogleAnalyticsService(IServiceCollection services)
+        {
+            services.Configure<GoogleAnalyticsConfiguration>(
+                configuration.GetSection(GoogleAnalyticsConfiguration.ConfigSection));
+            services.AddScoped<GoogleAnalyticsService, GoogleAnalyticsService>();
+        } 
 
         private void ConfigureGovUkNotify(IServiceCollection services)
         {
@@ -107,6 +114,8 @@ namespace DVSRegister
             services.AddScoped<IRemoveProvider2iRepository, RemoveProvider2iRepository>();
             services.AddScoped<ICabRemovalRequestService, CabRemovalRequestService>();
             services.AddScoped<ICabRemovalRequestRepository, CabRemovalRequestRepository>();
+            services.AddScoped<IDSITEdit2iService, DSITEdit2iService>();
+            services.AddScoped<IDSITEdit2iRepository, DSITEdit2iRepository>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));

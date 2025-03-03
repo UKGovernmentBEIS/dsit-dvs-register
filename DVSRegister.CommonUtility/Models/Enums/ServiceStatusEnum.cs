@@ -13,14 +13,16 @@ namespace DVSRegister.CommonUtility.Models
         ReadyToPublish = 3,
         [Description("Published")]
         Published = 4,
-        [Description("Removed")]
+        [Description("Removed from register")]
         Removed = 5,
         [Description("Awaiting removal confirmation")]
         AwaitingRemovalConfirmation = 6,
         [Description("Awaiting removal confirmation")]
         CabAwaitingRemovalConfirmation = 7,
         [Description("Saved as draft")]
-        SavedAsDraft = 8
+        SavedAsDraft = 8,
+        [Description("Updates requested")]
+        UpdatesRequested = 9
 
     }
 }

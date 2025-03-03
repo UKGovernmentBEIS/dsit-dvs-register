@@ -65,7 +65,7 @@
                             <th scope="col" class="govuk-table__header" aria-sort="none">Registered name</th>
                             <th scope="col" class="govuk-table__header" aria-sort="none">Trading name</th>
                             <th scope="col" class="govuk-table__header" aria-sort="none">Services</th>
-                            <th scope="col" class="govuk-table__header" aria-sort="descending">Last updated (UTC)</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="descending">Last updated (GMT)</th>
                         </tr>
                     </thead>
 
@@ -81,7 +81,7 @@
                                     @if (item.Services != null && item.Services.Count > 0)
                                     {
                                         <td class="govuk-table__cell">
-                                            @foreach (var service in item.Services)
+                                            @foreach (var service in item.Services.Where(s => s.IsCurrent))
                                             {
                                                 @service.ServiceName<br />
                                             }

@@ -84,12 +84,12 @@ namespace DVSRegister.CommonUtility
             }
             catch (AmazonS3Exception e)
             {
-                logger.LogError("AWS S3 error when reading  file from bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                logger.LogError("AWS S3 error when reading  file from bucket: '{0}', Message:'{1}'", config.BucketName,  e.Message);
                 return null;
             }
             catch (Exception e)
             {
-                logger.LogError("Error when reading file from bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                logger.LogError("Error when reading file from bucket: '{0}',  Message:'{1}'", config.BucketName,  e.Message);
                 return null;
             }
         }

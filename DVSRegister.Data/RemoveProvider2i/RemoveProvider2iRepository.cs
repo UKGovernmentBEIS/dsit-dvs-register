@@ -27,7 +27,7 @@ namespace DVSRegister.Data
         public async Task<ProviderProfile> GetProviderWithAllServices(int providerId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.Services)
+            provider = await context.ProviderProfile.Include(p => p.Services.Where(x=>x.IsCurrent==true))
             .Where(p => p.Id == providerId).FirstOrDefaultAsync() ?? new ProviderProfile();
             return provider;
         }

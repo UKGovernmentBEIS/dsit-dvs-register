@@ -15,6 +15,7 @@ namespace DVSRegister.BusinessLogic
                     {
                         ServiceStatusEnum.CabAwaitingRemovalConfirmation,
                         ServiceStatusEnum.ReadyToPublish,
+                        ServiceStatusEnum.UpdatesRequested,
                         ServiceStatusEnum.AwaitingRemovalConfirmation,
                         ServiceStatusEnum.Published,
                         ServiceStatusEnum.Removed
@@ -36,6 +37,8 @@ namespace DVSRegister.BusinessLogic
                     case ServiceStatusEnum.ReadyToPublish:
                         bool hasPublishedServices = services.Any(service => service.ServiceStatus == ServiceStatusEnum.Published);
                         return hasPublishedServices ? ProviderStatusEnum.ReadyToPublishNext : ProviderStatusEnum.ReadyToPublish;
+                    case ServiceStatusEnum.UpdatesRequested:
+                        return ProviderStatusEnum.UpdatesRequested;
                     case ServiceStatusEnum.AwaitingRemovalConfirmation:
                         return ProviderStatusEnum.AwaitingRemovalConfirmation;
                     case ServiceStatusEnum.Published:

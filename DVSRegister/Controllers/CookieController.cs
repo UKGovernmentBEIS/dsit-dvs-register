@@ -1,6 +1,5 @@
-﻿using DVSRegister.BusinessLogic.Models.Cookies;
-using DVSRegister.Cookies;
-using DVSRegister.Models.Cookies;
+﻿using DVSRegister.Models.Cookies;
+using DVSRegister.Services.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -33,6 +32,11 @@ public class CookieController : Controller
     [HttpPost("cookies")]
     public IActionResult CookieSettings_Post(CookieSettingsViewModel viewModel)
     {
+        if (viewModel.GoogleAnalytics == false)
+        {
+            // Remove analytics cookies if user chose "No"
+            _cookieService.RemoveCookie(Response, "_ga");
+        }
         var cookieSettings = new CookieSettings
         {
             Version = _configuration.CurrentCookieMessageVersion,

@@ -29,16 +29,16 @@
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
                     @Model.Provider.RegisteredName
-                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime) (UTC)</span>
+                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime) (GMT)</span>
                 </h1>
-                @Html.Partial(
+                @await Html.PartialAsync(
                     "~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)                
                 @if (!string.IsNullOrEmpty(Model.Provider.TradingName))
                 {
                     <p class="govuk-body-l govuk-!-margin-bottom-7">Trading name: @Model.Provider.TradingName</p>
                 }
                                                       
-                <h2 class="govuk-heading-m">Basic information</h2>
+                <h2 class="govuk-heading-m">Provider information</h2>
                 <hr class="govuk-section-break govuk-section-break--visible">
                 <dl class="govuk-summary-list govuk-!-margin-bottom-8">
                     <div class="govuk-summary-list__row">
