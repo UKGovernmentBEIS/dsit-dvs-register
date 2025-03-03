@@ -11,5 +11,6 @@ namespace DVSRegister.Models.CAB
         public List<int>? SelectedRoleIds { get; set; }
         public List<RoleDto>? SelectedRoles{ get; set; }
         public bool FromSummaryPage { get; set; }
+        public bool FromDetailsPage { get; set; }
     }
 }

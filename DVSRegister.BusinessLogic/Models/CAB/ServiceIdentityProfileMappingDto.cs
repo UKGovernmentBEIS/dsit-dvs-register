@@ -9,6 +9,6 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public int ServiceId { get; set; }
         public Service Service { get; set; }      
         public int IdentityProfileId { get; set; }
-        public IdentityProfile IdentityProfile { get; set; }
+        public IdentityProfileDto IdentityProfile { get; set; }
     }
 }

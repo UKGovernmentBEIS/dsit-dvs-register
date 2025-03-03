@@ -1,4 +1,5 @@
 ﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using System.Text.Json.Serialization;
 
@@ -13,11 +14,11 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public string WebSiteAddress { get; set; }
         public string CompanyAddress { get; set; }
         public ICollection<ServiceRoleMappingDto> ServiceRoleMapping { get; set; }
-        public bool HasGPG44 { get; set; }
+        public bool? HasGPG44 { get; set; }
         public ICollection<ServiceQualityLevelMappingDto>? ServiceQualityLevelMapping { get; set; }
-        public bool HasGPG45 { get; set; }
+        public bool? HasGPG45 { get; set; }
         public ICollection<ServiceIdentityProfileMappingDto>? ServiceIdentityProfileMapping { get; set; }
-        public bool HasSupplementarySchemes { get; set; }
+        public bool? HasSupplementarySchemes { get; set; }
         public ICollection<ServiceSupSchemeMappingDto>? ServiceSupSchemeMapping { get; set; }
 
         public string FileName { get; set; }
@@ -39,5 +40,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
 
         [JsonIgnore]
         public ProceedPublishConsentTokenDto ProceedPublishConsentToken { get; set; }
+        public string? RemovalReasonByCab { get; set; }
+
+        public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
     }
 }

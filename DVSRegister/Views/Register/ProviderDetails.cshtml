@@ -5,6 +5,19 @@
 @{
     ViewData["Title"] = "Provider details";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
+    
+    var notificationBanner = new NotificationBannerViewModel
+    {
+        Title = "Important",
+        Heading = "This is a new service and some records are still being updated.",
+        HtmlContent = @"
+        <p class=""govuk-body"">
+            You should check the expiry date for each certificate of conformity to confirm that the service is still 
+            registered. You can also <a class=""govuk-notification-banner__link"" 
+            href=""https://www.gov.uk/government/publications/list-of-certified-digital-identity-and-attribute-services""> 
+            access the previous list of certified digital identity and attribute services</a> to download an up to date list of registered services.
+        </p>".Trim()
+    };
 }
 
 <div class="govuk-width-container">
@@ -18,8 +31,8 @@
                     @Model.Provider.RegisteredName
                     <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime) (UTC)</span>
                 </h1>
-                @Html.Partial("~/Views/Register/PartialViews/_NotificationBanner.cshtml")
-                
+                @Html.Partial(
+                    "~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)                
                 @if (!string.IsNullOrEmpty(Model.Provider.TradingName))
                 {
                     <p class="govuk-body-l govuk-!-margin-bottom-7">Trading name: @Model.Provider.TradingName</p>
@@ -64,7 +77,7 @@
 
                 @foreach (var service in Model.Provider.Services)
                 {
-                    <h2 class="govuk-heading-m">Service Details: @service.ServiceName</h2>
+                    <h2 class="govuk-heading-m">Service details: @service.ServiceName</h2>
                     <hr class="govuk-section-break govuk-section-break--visible">
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
                         <div class="govuk-summary-list__row">
@@ -155,7 +168,7 @@
 
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
-                                Supplementary Schemes
+                                Supplementary codes
                             </dt>
                             <dd class="govuk-summary-list__value">
                                 @if (service.ServiceSupSchemeMapping.Any())
@@ -167,7 +180,7 @@
                                 }
                                 else
                                 {
-                                    <div>Not certified against any supplementary schemes</div>
+                                    <div>Not certified against any supplementary codes</div>
                                 }
                             </dd>
                         </div>
@@ -205,7 +218,7 @@
                         <a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a>
                     </li>
                     <li>
-                        <a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary schemes</a>
+                        <a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary codes</a>
                     </li>
                 </ul>
 

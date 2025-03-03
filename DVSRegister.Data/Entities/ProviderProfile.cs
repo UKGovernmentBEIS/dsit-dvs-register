@@ -1,7 +1,7 @@
 ﻿using DVSRegister.CommonUtility.Models.Enums;
-using NpgsqlTypes;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using DVSAdmin.CommonUtility.Models.Enums;
 
 namespace DVSRegister.Data.Entities
 {
@@ -28,7 +28,8 @@ namespace DVSRegister.Data.Entities
         public string SecondaryContactTelephoneNumber { get; set; }
         public string PublicContactEmail { get; set; }
         public string? ProviderTelephoneNumber { get; set; }
-        public string ProviderWebsiteAddress { get; set; }        
+        public string ProviderWebsiteAddress { get; set; }
+        public RemovalReasonsEnum? RemovalReason { get; set; }
 
         [ForeignKey("CabUser")]
         public int CabUserId { get; set; }
@@ -39,5 +40,7 @@ namespace DVSRegister.Data.Entities
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
         public DateTime? CabEditedTime { get; set; }
+        public DateTime? RemovalRequestTime { get; set; }
+        public DateTime? RemovedTime { get; set; }
     }
 }

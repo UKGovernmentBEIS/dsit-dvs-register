@@ -40,6 +40,8 @@ namespace DVSRegister.Data
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         public DbSet<TrustmarkNumber> TrustmarkNumber { get; set; }
         public DbSet<Event> EventLogs { get; set; }
+        public DbSet<RemoveProviderToken> RemoveProviderToken { get; set; }
+        public DbSet<RemoveTokenServiceMapping> RemoveTokenServiceMapping { get; set; }
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
             if (actorId !=null)
@@ -207,9 +209,6 @@ namespace DVSRegister.Data
                 new SupplementaryScheme { Id =1, SchemeName = "Right to Work", Order = 2 },
                 new SupplementaryScheme { Id =2, SchemeName = "Right to Rent", Order =1 },
                 new SupplementaryScheme { Id =3, SchemeName = "Disclosure and Barring Service", Order =3 });
-
-                
-
 
         }
     }

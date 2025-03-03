@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using NpgsqlTypes;
+using DVSRegister.CommonUtility.Models.Enums;
 
 namespace DVSRegister.Data.Entities
 {
@@ -16,24 +17,24 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("ProviderProfile")]
         public int ProviderProfileId { get; set; }
         public ProviderProfile Provider { get; set; }
-        public string ServiceName { get; set; }
-        public string WebSiteAddress { get; set; }
-        public string CompanyAddress { get; set; }
-        public ICollection<ServiceRoleMapping> ServiceRoleMapping { get; set; }
-        public bool HasGPG44 { get; set; }       
+        public string? ServiceName { get; set; }
+        public string? WebSiteAddress { get; set; }
+        public string? CompanyAddress { get; set; }
+        public ICollection<ServiceRoleMapping>? ServiceRoleMapping { get; set; }
+        public bool? HasGPG44 { get; set; }       
         public ICollection<ServiceQualityLevelMapping>? ServiceQualityLevelMapping { get; set; }
-        public bool HasGPG45 { get; set; }
+        public bool? HasGPG45 { get; set; }
         public ICollection<ServiceIdentityProfileMapping>? ServiceIdentityProfileMapping { get; set; }
-        public bool HasSupplementarySchemes { get; set; }
+        public bool? HasSupplementarySchemes { get; set; }
         public ICollection<ServiceSupSchemeMapping>? ServiceSupSchemeMapping { get; set; }
 
-        public string FileName { get; set; }
-        public string FileLink { get; set; }
+        public string? FileName { get; set; }
+        public string? FileLink { get; set; }
 
         [Column(TypeName = "decimal(10, 1)")]
-        public decimal FileSizeInKb { get; set; }
-        public DateTime ConformityIssueDate { get; set; }
-        public DateTime ConformityExpiryDate { get; set; }
+        public decimal? FileSizeInKb { get; set; }
+        public DateTime? ConformityIssueDate { get; set; }
+        public DateTime? ConformityExpiryDate { get; set; }
         
         [ForeignKey("CabUser")]
         public int CabUserId { get; set; }
@@ -46,5 +47,9 @@ namespace DVSRegister.Data.Entities
         public DateTime? PublishedTime { get; set; }
         public CertificateReview CertificateReview { get; set; }
         public ProceedApplicationConsentToken ProceedApplicationConsentToken { get; set; }
+        public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
+        public string? RemovalReasonByCab { get; set; }
+        public DateTime? RemovalRequestTime { get; set; }
+        public DateTime? RemovedTime { get; set; }
     }
 }
