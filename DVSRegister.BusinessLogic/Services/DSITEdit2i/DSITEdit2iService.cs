@@ -240,7 +240,7 @@ namespace DVSRegister.BusinessLogic.Services
             if (currentData.ConformityExpiryDate != null)
             {
                 previousDataDictionary.Add("Expiry date", [Helper.GetLocalDateTime(previousData.ConformityExpiryDate, "dd MMMM yyyy")]);
-                currentDataDictionary.Add("Expiry date", [Helper.GetLocalDateTime(previousData.ConformityExpiryDate, "dd MMMM yyyy")]);
+                currentDataDictionary.Add("Expiry date", [Helper.GetLocalDateTime(currentData.ConformityExpiryDate, "dd MMMM yyyy")]);
             }
 
             return (previousDataDictionary, currentDataDictionary);
