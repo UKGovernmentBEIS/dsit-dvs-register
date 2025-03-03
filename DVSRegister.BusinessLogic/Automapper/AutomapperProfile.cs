@@ -115,6 +115,8 @@ namespace DVSRegister.BusinessLogic
 
             CreateMap<ServiceDraftToken, ServiceDraftTokenDto>();
             CreateMap<ServiceDraftTokenDto, ServiceDraftToken>();
+            CreateMap<UserDto, User>();
+            CreateMap<User, UserDto>();
         }
     }
 }

@@ -22,6 +22,7 @@ namespace DVSRegister.Data.Repositories
         public async Task<ProviderDraftToken> GetProviderDraftToken(string token, string tokenId)
         {
             return await context.ProviderDraftToken.Include(p => p.ProviderProfileDraft).ThenInclude(p => p.Provider)
+            .Include(p => p.ProviderProfileDraft).ThenInclude(p => p.User)
            .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ProviderDraftToken();
         }
 

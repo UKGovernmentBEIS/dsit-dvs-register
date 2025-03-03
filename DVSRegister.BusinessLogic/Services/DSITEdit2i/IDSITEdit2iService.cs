@@ -7,9 +7,9 @@ namespace DVSRegister.BusinessLogic.Services
     public interface IDSITEdit2iService
     {
         public Task<ProviderDraftTokenDto> GetProviderChangesByToken(string token, string tokenId);
-        public Task<GenericResponse> UpdateProviderAndServiceStatusAndData(int providerProfileId, int providerDraftId);
+        public Task<GenericResponse> UpdateProviderAndServiceStatusAndData(ProviderProfileDraftDto providerProfileDraft);
         public Task<bool> RemoveProviderDraftToken(string token, string tokenId);
-        public Task<GenericResponse> CancelProviderUpdates(int providerProfileId, int providerDraftId);
+        public Task<GenericResponse> CancelProviderUpdates(ProviderProfileDraftDto providerProfileDraft);
 
         public Task<ServiceDraftTokenDto> GetServiceChangesByToken(string token, string tokenId);
         public Task<GenericResponse> UpdateServiceStatusAndData(int serviceId, int serviceDraftId);
@@ -17,5 +17,6 @@ namespace DVSRegister.BusinessLogic.Services
         public Task<GenericResponse> CancelServiceUpdates(int serviceId, int serviceDraftId);
 
         public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetServiceKeyValue(ServiceDraftDto currentData, ServiceDto previousData);
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetProviderKeyValue(ProviderProfileDraftDto currentData, ProviderProfileDto previousData);
     }
 }

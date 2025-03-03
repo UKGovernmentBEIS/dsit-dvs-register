@@ -1,4 +1,5 @@
 ﻿using QRCoder;
+using System.Text;
 namespace DVSRegister.CommonUtility
 {
     public static class Helper
@@ -21,6 +22,28 @@ namespace DVSRegister.CommonUtility
             string qrCodeImageAsBase64 = qrCode.GetGraphic(20);
 
             return qrCodeImageAsBase64;
+        }
+        public static string ConcatenateKeyValuePairs(Dictionary<string, List<string>> data)
+        {
+            var result = new StringBuilder();
+
+            foreach (var kvp in data)
+            {
+                result.Append(kvp.Key + ": ");
+                if (kvp.Value.Count > 1)
+                {
+                    string values = string.Join(",", kvp.Value);
+                    result.Append(values);
+                }
+                else
+                {
+                    result.Append(kvp.Value[0]);
+                }
+
+                result.AppendLine();
+            }
+
+            return result.ToString();
         }
     }
 }

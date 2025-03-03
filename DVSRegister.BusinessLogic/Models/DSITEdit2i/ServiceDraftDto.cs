@@ -25,6 +25,9 @@ namespace DVSRegister.BusinessLogic.Models
         public int ProviderProfileId { get; set; }
         public ProviderProfileDto Provider { get; set; }
 
+        public int RequestedUserId { get; set; }
+        public UserDto User { get; set; }
+
         public ICollection<ServiceRoleMappingDraftDto> ServiceRoleMappingDraft { get; set; } = new List<ServiceRoleMappingDraftDto>();
         public ICollection<ServiceQualityLevelMappingDraftDto> ServiceQualityLevelMappingDraft { get; set; } = new List<ServiceQualityLevelMappingDraftDto>();
         public ICollection<ServiceIdentityProfileMappingDraftDto> ServiceIdentityProfileMappingDraft { get; set; } = new List<ServiceIdentityProfileMappingDraftDto>();

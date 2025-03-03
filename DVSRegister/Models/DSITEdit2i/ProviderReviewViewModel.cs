@@ -7,6 +7,9 @@ namespace DVSRegister.Models
     {
         public string? token { get; set; }
         public ProviderProfileDto? PreviousProviderData { get; set; }
-        public ProviderProfileDraftDto? CurrentProviderData { get; set; }
+       
+
+        public Dictionary<string, List<string>>? PreviousDataKeyValuePair { get; set; }
+        public Dictionary<string, List<string>>? CurrentDataKeyValuePair { get; set; }
     }
 }

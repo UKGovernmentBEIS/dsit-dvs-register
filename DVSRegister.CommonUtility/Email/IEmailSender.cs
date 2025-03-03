@@ -46,6 +46,9 @@ namespace DVSRegister.CommonUtility.Email
         public Task<bool> Service2iCheckDeclinedToDSIT(string serviceName);
         public Task<bool> Service2iCheckApprovedToDSIT(string serviceName, string reasonForRemoval);
 
+        public Task<bool> EditProviderAccepted(string emailAddress, string recipientName, string companyName, string currentData, string previousData);
+        public Task<bool> EditProviderDeclined(string emailAddress, string recipientName, string companyName);
+
 
 
 

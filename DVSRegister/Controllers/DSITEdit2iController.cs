@@ -43,8 +43,9 @@ namespace DVSRegister.Controllers
                     }
 
                     providerReviewViewModel.token = tokenDetails.Token;
-                    providerReviewViewModel.CurrentProviderData = providerDraftTokenDto.ProviderProfileDraft;
-                    providerReviewViewModel.PreviousProviderData = providerDraftTokenDto.ProviderProfileDraft.Provider;
+                    var (previous, current) = dSITEdit2IService.GetProviderKeyValue(providerDraftTokenDto.ProviderProfileDraft, providerDraftTokenDto.ProviderProfileDraft.Provider);
+                    providerReviewViewModel.PreviousDataKeyValuePair = previous;
+                    providerReviewViewModel.CurrentDataKeyValuePair = current;
                 }
                 else
                 {
@@ -73,7 +74,7 @@ namespace DVSRegister.Controllers
                 {
                     if (action == "approve")
                     {
-                        GenericResponse genericResponse = await dSITEdit2IService.UpdateProviderAndServiceStatusAndData(providerDraftTokenDto.ProviderProfileDraft.ProviderProfileId, providerDraftTokenDto.ProviderProfileDraftId);
+                        GenericResponse genericResponse = await dSITEdit2IService.UpdateProviderAndServiceStatusAndData(providerDraftTokenDto.ProviderProfileDraft);
                         if (genericResponse.Success)
                         {
                             //Token  removed whhen draft is deleted after update
@@ -86,7 +87,7 @@ namespace DVSRegister.Controllers
                     }
                     else if (action == "cancel")
                     {
-                        GenericResponse genericResponse = await dSITEdit2IService.CancelProviderUpdates(providerDraftTokenDto.ProviderProfileDraft.ProviderProfileId, providerDraftTokenDto.ProviderProfileDraftId);
+                        GenericResponse genericResponse = await dSITEdit2IService.CancelProviderUpdates(providerDraftTokenDto.ProviderProfileDraft);
                         if (genericResponse.Success)
                         {
                             //Token removed when draft is deleted after cancel
