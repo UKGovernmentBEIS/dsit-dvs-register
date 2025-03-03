@@ -17,6 +17,7 @@ namespace DVSRegister.BusinessLogic.Services
         private readonly IMapper mapper;
         private readonly IEmailSender emailSender;
         private readonly IRemoveProvider2iRepository removeProvider2IRepository;
+        private readonly IUserService userService;
 
 
         public DSITEdit2iService(IDSITEdit2iRepository dSITEdit2IRepository, IMapper mapper, IEmailSender emailSender, IRemoveProvider2iRepository removeProvider2IRepository)
@@ -34,9 +35,20 @@ namespace DVSRegister.BusinessLogic.Services
 
         }
 
-        public async Task<GenericResponse> UpdateProviderAndServiceStatusAndData(int providerProfileId, int providerDraftId)
+        public async Task<GenericResponse> UpdateProviderAndServiceStatusAndData(ProviderProfileDraftDto providerProfileDraft)
         {
-            GenericResponse genericResponse = await dSITEdit2IRepository.UpdateProviderAndServiceStatusAndData(providerProfileId, providerDraftId);       
+            
+            GenericResponse genericResponse = await dSITEdit2IRepository.UpdateProviderAndServiceStatusAndData(providerProfileDraft.ProviderProfileId, providerProfileDraft.Id);    
+            if(genericResponse.Success) 
+            {
+
+                var (previous, current) = GetProviderKeyValue(providerProfileDraft, providerProfileDraft.Provider);
+                string currentData = Helper.ConcatenateKeyValuePairs(current);
+                string previousData = Helper.ConcatenateKeyValuePairs(previous);
+
+               string userEmail = providerProfileDraft.User.Email;
+               await emailSender.EditProviderAccepted(userEmail, userEmail, providerProfileDraft.Provider.RegisteredName, currentData, previousData);
+            }
             return genericResponse;
         }
 
@@ -45,9 +57,15 @@ namespace DVSRegister.BusinessLogic.Services
             return await dSITEdit2IRepository.RemoveProviderDraftToken(token, tokenId);
         }
 
-        public async Task<GenericResponse> CancelProviderUpdates(int providerProfileId, int providerDraftId)
+        public async Task<GenericResponse> CancelProviderUpdates(ProviderProfileDraftDto providerProfileDraft)
         {
-            GenericResponse genericResponse = await dSITEdit2IRepository.CancelProviderUpdates(providerProfileId, providerDraftId);
+            GenericResponse genericResponse = await dSITEdit2IRepository.CancelProviderUpdates(providerProfileDraft.ProviderProfileId, providerProfileDraft.Id);
+
+            if(genericResponse.Success)
+            {
+                string userEmail = providerProfileDraft.User.Email;
+                await emailSender.EditProviderDeclined(userEmail, userEmail, providerProfileDraft.Provider.RegisteredName);
+            }
             return genericResponse;
         }
 
@@ -156,6 +174,7 @@ namespace DVSRegister.BusinessLogic.Services
 
 
 
+
             #region GPG45 Identity profile
             if (currentData.ServiceIdentityProfileMappingDraft.Count > 0 || currentData.HasGPG45 == false)
             {
@@ -227,19 +246,111 @@ namespace DVSRegister.BusinessLogic.Services
             return (previousDataDictionary, currentDataDictionary);
         }
 
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetProviderKeyValue(ProviderProfileDraftDto currentData, ProviderProfileDto previousData)
+        {
+            var previousDataDictionary = new Dictionary<string, List<string>>();
 
-        public async Task<GenericResponse> UpdateServiceStatusAndData(int serviceId, int serviceDraftId)
+            var currentDataDictionary = new Dictionary<string, List<string>>();
+
+            if (currentData.RegisteredName != null)
+            {
+                previousDataDictionary.Add("Registered name", [previousData.RegisteredName]);
+                currentDataDictionary.Add("Registered name", [currentData.RegisteredName]);
+            }
+
+            if (currentData.TradingName != null)
+            {
+                previousDataDictionary.Add("Trading name", [previousData.TradingName]);
+                currentDataDictionary.Add("Trading name", [currentData.TradingName]);
+            }
+
+            if (currentData.PrimaryContactFullName != null)
+            {
+                previousDataDictionary.Add("Primary contact full name", [previousData.PrimaryContactFullName]);
+                currentDataDictionary.Add("Primary contact full name", [currentData.PrimaryContactFullName]);
+            }
+            if (currentData.PrimaryContactEmail != null)
+            {
+                previousDataDictionary.Add("Primary contact email", [previousData.PrimaryContactEmail]);
+                currentDataDictionary.Add("Primary contact email", [currentData.PrimaryContactEmail]);
+            }
+            if (currentData.PrimaryContactJobTitle != null)
+            {
+                previousDataDictionary.Add("Primary contact job title", [previousData.PrimaryContactJobTitle]);
+                currentDataDictionary.Add("primary contact job title", [currentData.PrimaryContactJobTitle]);
+            }
+            if (currentData.PrimaryContactTelephoneNumber != null)
+            {
+                previousDataDictionary.Add("Primary contact telephone number", [previousData.PrimaryContactTelephoneNumber]);
+                currentDataDictionary.Add("Primary contact telephone number", [currentData.PrimaryContactTelephoneNumber]);
+            }
+
+            if (currentData.SecondaryContactFullName != null)
+            {
+                previousDataDictionary.Add("Secondary contact full name", [previousData.SecondaryContactFullName]);
+                currentDataDictionary.Add("Secondary contact full name", [currentData.SecondaryContactFullName]);
+            }
+            if (currentData.SecondaryContactEmail != null)
+            {
+                previousDataDictionary.Add("Secondary contact email", [previousData.SecondaryContactEmail]);
+                currentDataDictionary.Add("Secondary contact email", [currentData.SecondaryContactEmail]);
+            }
+            if (currentData.SecondaryContactJobTitle != null)
+            {
+                previousDataDictionary.Add("Secondary contact job title", [previousData.SecondaryContactJobTitle]);
+                currentDataDictionary.Add("Secondary contact job title", [currentData.SecondaryContactJobTitle]);
+            }
+            if (currentData.SecondaryContactTelephoneNumber != null)
+            {
+                previousDataDictionary.Add("Secondary contact telephone number", [previousData.SecondaryContactTelephoneNumber]);
+                currentDataDictionary.Add("Secondary contact telephone number", [currentData.SecondaryContactTelephoneNumber]);
+            }
+
+            if (currentData.ProviderWebsiteAddress != null)
+            {
+                previousDataDictionary.Add("Provider website address", [previousData.ProviderWebsiteAddress]);
+                currentDataDictionary.Add("Provider website address", [currentData.ProviderWebsiteAddress]);
+            }
+
+            if (currentData.PublicContactEmail != null)
+            {
+                previousDataDictionary.Add("Public contact email", [previousData.PublicContactEmail]);
+                currentDataDictionary.Add("Public contact email", [currentData.PublicContactEmail]);
+            }
+
+            if (currentData.ProviderTelephoneNumber != null)
+            {
+                previousDataDictionary.Add("Provider telephone number", [previousData.ProviderTelephoneNumber]);
+                currentDataDictionary.Add("Provider telephone number", [currentData.ProviderTelephoneNumber]);
+            }
+
+            return (previousDataDictionary, currentDataDictionary);
+        }
+
+
+        public async Task<GenericResponse> UpdateServiceStatusAndData(ServiceDraftDto serviceDraft)
         {
             // update provider status
             
-            GenericResponse genericResponse = await dSITEdit2IRepository.UpdateServiceStatusAndData(serviceId, serviceDraftId);
+            GenericResponse genericResponse = await dSITEdit2IRepository.UpdateServiceStatusAndData(serviceDraft.ServiceId, serviceDraft.Id);
 
 
             if (genericResponse.Success)
             {
-                ProviderProfile providerProfile = await removeProvider2IRepository.GetProviderWithAllServices(serviceId);
+                ProviderProfile providerProfile = await removeProvider2IRepository.GetProviderWithAllServices(serviceDraft.ServiceId);
                 ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
                 genericResponse = await removeProvider2IRepository.UpdateProviderStatus(providerProfile.Id, providerStatus, "DSIT", EventTypeEnum.ServiceEdit2i);
+
+                if(genericResponse.Success) 
+                {
+
+                    var (previous, current) = GetServiceKeyValue(serviceDraft, serviceDraft.Service);
+                    string currentData = Helper.ConcatenateKeyValuePairs(current);
+                    string previousData = Helper.ConcatenateKeyValuePairs(previous);
+
+                    string userEmail = serviceDraft.User.Email;
+                    await emailSender.EditProviderAccepted(userEmail, userEmail, serviceDraft.Provider.RegisteredName, currentData, previousData);
+                }
 
 
             }
@@ -251,9 +362,14 @@ namespace DVSRegister.BusinessLogic.Services
             return await dSITEdit2IRepository.RemoveServiceDraftToken(token, tokenId);
         }
 
-        public async Task<GenericResponse> CancelServiceUpdates(int serviceId, int serviceDraftId)
+        public async Task<GenericResponse> CancelServiceUpdates(ServiceDraftDto serviceDraft)
         {
-            GenericResponse genericResponse = await dSITEdit2IRepository.CancelServiceUpdates(serviceId, serviceDraftId);
+            GenericResponse genericResponse = await dSITEdit2IRepository.CancelServiceUpdates(serviceDraft.ServiceId, serviceDraft.Id);
+            if(genericResponse.Success) 
+            {
+                string userEmail = serviceDraft.User.Email;
+                await emailSender.EditServiceDeclined(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName);
+            }
             return genericResponse;
         }
     }

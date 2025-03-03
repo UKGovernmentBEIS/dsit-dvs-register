@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic.Models
 {
@@ -29,5 +30,7 @@ namespace DVSRegister.BusinessLogic.Models
         public string? ProviderTelephoneNumber { get; set; }
         public string? ProviderWebsiteAddress { get; set; }
         public string? CurrentProviderStatus { get; set; }
+        public int RequestedUserId { get; set; }
+        public UserDto User { get; set; }
     }
 }

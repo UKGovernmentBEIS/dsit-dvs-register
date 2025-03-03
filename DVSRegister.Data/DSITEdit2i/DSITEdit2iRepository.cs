@@ -22,6 +22,7 @@ namespace DVSRegister.Data.Repositories
         public async Task<ProviderDraftToken> GetProviderDraftToken(string token, string tokenId)
         {
             return await context.ProviderDraftToken.Include(p => p.ProviderProfileDraft).ThenInclude(p => p.Provider)
+            .Include(p => p.ProviderProfileDraft).ThenInclude(p => p.User)
            .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ProviderDraftToken();
         }
 
@@ -165,6 +166,8 @@ namespace DVSRegister.Data.Repositories
         public async Task<ServiceDraftToken> GetServiceDraftToken(string token, string tokenId)
         {
             return await context.ServiceDraftToken.Include(p => p.ServiceDraft).ThenInclude(p => p.Provider)
+               .Include(p => p.ServiceDraft).ThenInclude(p => p.Service)
+              .Include(p => p.ServiceDraft).ThenInclude(p => p.User)
              .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceRoleMapping).ThenInclude(s=>s.Role)
              .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceQualityLevelMapping).ThenInclude(s => s.QualityLevel)
              .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceIdentityProfileMapping).ThenInclude(s => s.IdentityProfile)

@@ -39,277 +39,52 @@ Layout = "~/Views/Shared/_LayoutConsent.cshtml";
                     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
 
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Previous information
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                            @if (Model?.CurrentProviderData?.RegisteredName != null)
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Previous information
+                        </dt>
+
+                        <dd class="govuk-summary-list__value">
+                            @foreach (var item in Model.PreviousDataKeyValuePair)
                             {
-                                <strong>Registered name</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.RegisteredName
-                                <br>
+                                <strong>@item.Key</strong>
 
                                 <br>
 
+                                @foreach (var value in item.Value)
+                                {
+                                    @value
+                                    ;
+                                    <br>
+
+
+                                }
+                                <br>
+                            }
+                        </dd>
+                    </div>
+                    @* NEW INFORMATION *@
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            New information
+                        </dt>
+
+                        @foreach (var item in Model.CurrentDataKeyValuePair)
+                        {
+                            <strong>@item.Key</strong>
+
+                            <br>
+
+                            @foreach (var value in item.Value)
+                            {
+                                @value
+                                ;
+                                <br>
                             }
 
-                            @if (Model?.CurrentProviderData?.TradingName != null)
-                            {
-                                <strong>Trading name</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.TradingName
-                                <br> <br>
-                            }
-
-
-                            @if (Model?.CurrentProviderData?.PrimaryContactFullName != null)
-                            {
-                                <strong>Full name of primary contact</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.PrimaryContactFullName
-                                <br> <br>
-                            }
-
-                            @if (Model?.CurrentProviderData?.PrimaryContactJobTitle != null)
-                            {
-                                <strong>Job title of primary contact</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.PrimaryContactJobTitle
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.PrimaryContactEmail != null)
-                            {
-                                <strong>Email of primary contact</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.PrimaryContactEmail
-                                <br> <br>
-                            }
-
-                            @if (Model?.CurrentProviderData?.PrimaryContactTelephoneNumber != null)
-                            {
-                                <strong>Telephone number of primary contact</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.PrimaryContactTelephoneNumber
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.SecondaryContactFullName != null)
-                            {
-                                <strong>Full name of secondary contact</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.SecondaryContactFullName
-                                <br> <br>
-                            }
-
-                            @if (Model?.CurrentProviderData?.SecondaryContactJobTitle != null)
-                            {
-                                <strong>Job title of secondary contact</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.SecondaryContactJobTitle
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.SecondaryContactEmail != null)
-                            {
-                                <strong>Email of secondary contact</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.SecondaryContactEmail
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.SecondaryContactTelephoneNumber != null)
-                            {
-                                <strong>Telephone number of secondary contact</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.SecondaryContactTelephoneNumber
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.PublicContactEmail != null)
-                            {
-                                <strong>Public contact email</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.PublicContactEmail
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.ProviderTelephoneNumber != null)
-                            {
-                                <strong>Public telephone number</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.ProviderTelephoneNumber
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.ProviderWebsiteAddress != null)
-                            {
-                                <strong>Public website address</strong>
-
-                                <br>
-                                @Model?.PreviousProviderData?.ProviderWebsiteAddress
-                                <br> <br>
-
-                            }
-                            </dd>
-                        </div>
-
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                New information
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                            @if (Model?.CurrentProviderData?.RegisteredName != null)
-                            {
-                                <strong>Registered name</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.RegisteredName
-                                <br>
-
-                                <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.TradingName != null)
-                            {
-                                <strong>Trading name</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.TradingName
-                                <br> <br>
-                            }
-
-
-                            @if (Model?.CurrentProviderData?.PrimaryContactFullName != null)
-                            {
-                                <strong>Full name of primary contact</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.PrimaryContactFullName
-                                <br> <br>
-                            }
-
-                            @if (Model?.CurrentProviderData?.PrimaryContactJobTitle != null)
-                            {
-                                <strong>Job title of primary contact</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.PrimaryContactJobTitle
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.PrimaryContactEmail != null)
-                            {
-                                <strong>Email of primary contact</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.PrimaryContactEmail
-                                <br> <br>
-                            }
-
-                            @if (Model?.CurrentProviderData?.PrimaryContactTelephoneNumber != null)
-                            {
-                                <strong>Telephone number of primary contact</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.PrimaryContactTelephoneNumber
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.SecondaryContactFullName != null)
-                            {
-                                <strong>Full name of secondary contact</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.SecondaryContactFullName
-                                <br> <br>
-                            }
-
-                            @if (Model?.CurrentProviderData?.SecondaryContactJobTitle != null)
-                            {
-                                <strong>Job title of secondary contact</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.SecondaryContactJobTitle
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.SecondaryContactEmail != null)
-                            {
-                                <strong>Email of secondary contact</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.SecondaryContactEmail
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.SecondaryContactTelephoneNumber != null)
-                            {
-                                <strong>Telephone number of secondary contact</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.SecondaryContactTelephoneNumber
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.PublicContactEmail != null)
-                            {
-                                <strong>Public contact email</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.PublicContactEmail
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.ProviderTelephoneNumber != null)
-                            {
-                                <strong>Public telephone number</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.ProviderTelephoneNumber
-                                <br> <br>
-
-                            }
-
-                            @if (Model?.CurrentProviderData?.ProviderWebsiteAddress != null)
-                            {
-                                <strong>Public website address</strong>
-
-                                <br>
-                                @Model?.CurrentProviderData?.ProviderWebsiteAddress
-                                <br> <br>
-
-                            }
-                            </dd>
-                        </div>
+                            <br>
+                        }
+                    </div>
                     </dl>
 
                 <div class="govuk-warning-text">
