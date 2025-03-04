@@ -24,7 +24,7 @@
 <div class="govuk-summary-card @(Model.IsCurrent || Model.ServiceVersion == 1 ? "govuk-!-margin-0" : "govuk-!-margin-bottom-8")">
         <div class="govuk-summary-card__title-wrapper">
         <p class="govuk-summary-card__title">
-            Submission date (GMT): @DateTimeExtensions.FormatDateTime(Model.CreatedTime != null ? Model.CreatedTime : Model.ModifiedTime)
+            Submission date (GMT): @DateTimeExtensions.FormatDateTime((Model.CreatedTime != null && Model.CreatedTime!= DateTime.MinValue)  ? Model.CreatedTime : Model.ModifiedTime)
         </p>
             @if (isDraft)
             {
@@ -70,7 +70,7 @@
                         Last updated date (GMT)
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @DateTimeExtensions.FormatDateTime(@Model.ModifiedTime)
+                        @DateTimeExtensions.FormatDateTime((Model.CreatedTime != null && Model.CreatedTime != DateTime.MinValue) ? Model.CreatedTime : Model.ModifiedTime)
                     </dd>
                 </div>
             }
