@@ -43,6 +43,7 @@ namespace DVSRegister.Controllers
                     }
 
                     providerReviewViewModel.token = tokenDetails.Token;
+                    providerReviewViewModel.PreviousProviderData = providerDraftTokenDto.ProviderProfileDraft.Provider;
                     var (previous, current) = dSITEdit2IService.GetProviderKeyValue(providerDraftTokenDto.ProviderProfileDraft, providerDraftTokenDto.ProviderProfileDraft.Provider);
                     providerReviewViewModel.PreviousDataKeyValuePair = previous;
                     providerReviewViewModel.CurrentDataKeyValuePair = current;
