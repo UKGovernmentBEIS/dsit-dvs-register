@@ -337,7 +337,7 @@ namespace DVSRegister.BusinessLogic.Services
 
             if (genericResponse.Success)
             {
-                ProviderProfile providerProfile = await removeProvider2IRepository.GetProviderWithAllServices(serviceDraft.ServiceId);
+                ProviderProfile providerProfile = await removeProvider2IRepository.GetProviderWithAllServices(serviceDraft.ProviderProfileId);
                 ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
                 genericResponse = await removeProvider2IRepository.UpdateProviderStatus(providerProfile.Id, providerStatus, "DSIT", EventTypeEnum.ServiceEdit2i);
 
@@ -367,8 +367,17 @@ namespace DVSRegister.BusinessLogic.Services
             GenericResponse genericResponse = await dSITEdit2IRepository.CancelServiceUpdates(serviceDraft.ServiceId, serviceDraft.Id);
             if(genericResponse.Success) 
             {
-                string userEmail = serviceDraft.User.Email;
-                await emailSender.EditServiceDeclined(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName);
+
+                ProviderProfile providerProfile = await removeProvider2IRepository.GetProviderWithAllServices(serviceDraft.ProviderProfileId);
+                ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
+                genericResponse = await removeProvider2IRepository.UpdateProviderStatus(providerProfile.Id, providerStatus, "DSIT", EventTypeEnum.ServiceEdit2i);
+
+                if(genericResponse.Success)
+                {
+                    string userEmail = serviceDraft.User.Email;
+                    await emailSender.EditServiceDeclined(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName);
+                }
+           
             }
             return genericResponse;
         }
