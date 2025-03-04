@@ -47,37 +47,37 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2025, 1, 31, 11, 6, 53, 707, DateTimeKind.Utc).AddTicks(4959)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2025, 1, 31, 11, 6, 53, 707, DateTimeKind.Utc).AddTicks(4962)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2025, 1, 31, 11, 6, 53, 707, DateTimeKind.Utc).AddTicks(4963)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2025, 1, 31, 11, 6, 53, 707, DateTimeKind.Utc).AddTicks(4964)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2025, 1, 31, 11, 6, 53, 707, DateTimeKind.Utc).AddTicks(4965)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2025, 1, 31, 11, 6, 53, 707, DateTimeKind.Utc).AddTicks(4966)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -588,6 +588,37 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("ProceedPublishConsentToken");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderDraftToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("ProviderProfileDraftId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderProfileDraftId");
+
+                    b.HasIndex("Token");
+
+                    b.HasIndex("TokenId");
+
+                    b.ToTable("ProviderDraftToken");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
                 {
                     b.Property<int>("Id")
@@ -697,6 +728,92 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("CabUserId");
 
                     b.ToTable("ProviderProfile");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfileDraft", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompanyRegistrationNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("DUNSNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("HasParentCompany")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("HasRegistrationNumber")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ParentCompanyLocation")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ParentCompanyRegisteredName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PreviousProviderStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PrimaryContactEmail")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrimaryContactFullName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrimaryContactJobTitle")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PrimaryContactTelephoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ProviderProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProviderTelephoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProviderWebsiteAddress")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PublicContactEmail")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RegisteredName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RequestedUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SecondaryContactEmail")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecondaryContactFullName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecondaryContactJobTitle")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecondaryContactTelephoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TradingName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderProfileId");
+
+                    b.HasIndex("RequestedUserId");
+
+                    b.ToTable("ProviderProfileDraft");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.PublicInterestCheck", b =>
@@ -1011,6 +1128,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool?>("HasSupplementarySchemes")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -1029,16 +1149,19 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("RemovedTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("ServiceKey")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ServiceName")
                         .HasColumnType("text");
-
-                    b.Property<int>("ServiceNumber")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("ServiceRemovalReason")
                         .HasColumnType("integer");
 
                     b.Property<int>("ServiceStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceVersion")
                         .HasColumnType("integer");
 
                     b.Property<string>("WebSiteAddress")
@@ -1051,6 +1174,95 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("ProviderProfileId");
 
                     b.ToTable("Service");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceDraft", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompanyAddress")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ConformityExpiryDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("ConformityIssueDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool?>("HasGPG44")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("HasGPG45")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("HasSupplementarySchemes")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("PreviousServiceStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProviderProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RequestedUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ServiceName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("WebSiteAddress")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderProfileId");
+
+                    b.HasIndex("RequestedUserId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ServiceDraft");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceDraftToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("ServiceDraftId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceDraftId");
+
+                    b.HasIndex("Token");
+
+                    b.HasIndex("TokenId");
+
+                    b.ToTable("ServiceDraftToken");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceIdentityProfileMapping", b =>
@@ -1076,6 +1288,29 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("ServiceIdentityProfileMapping");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceIdentityProfileMappingDraft", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdentityProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceDraftId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdentityProfileId");
+
+                    b.HasIndex("ServiceDraftId");
+
+                    b.ToTable("ServiceIdentityProfileMappingDraft");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceQualityLevelMapping", b =>
                 {
                     b.Property<int>("Id")
@@ -1097,6 +1332,29 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("ServiceId");
 
                     b.ToTable("ServiceQualityLevelMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceQualityLevelMappingDraft", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("QualityLevelId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceDraftId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QualityLevelId");
+
+                    b.HasIndex("ServiceDraftId");
+
+                    b.ToTable("ServiceQualityLevelMappingDraft");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceRoleMapping", b =>
@@ -1122,6 +1380,29 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("ServiceRoleMapping");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceRoleMappingDraft", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceDraftId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("ServiceDraftId");
+
+                    b.ToTable("ServiceRoleMappingDraft");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceSupSchemeMapping", b =>
                 {
                     b.Property<int>("Id")
@@ -1143,6 +1424,29 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("SupplementarySchemeId");
 
                     b.ToTable("ServiceSupSchemeMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceSupSchemeMappingDraft", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ServiceDraftId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SupplementarySchemeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceDraftId");
+
+                    b.HasIndex("SupplementarySchemeId");
+
+                    b.ToTable("ServiceSupSchemeMappingDraft");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.SupplementaryScheme", b =>
@@ -1197,6 +1501,9 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceKey")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("TimeStamp")
@@ -1371,6 +1678,17 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Service");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderDraftToken", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.ProviderProfileDraft", "ProviderProfileDraft")
+                        .WithMany()
+                        .HasForeignKey("ProviderProfileDraftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProviderProfileDraft");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.CabUser", "CabUser")
@@ -1380,6 +1698,25 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("CabUser");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfileDraft", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
+                        .WithMany()
+                        .HasForeignKey("ProviderProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("RequestedUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.PublicInterestCheck", b =>
@@ -1475,6 +1812,44 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Provider");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceDraft", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
+                        .WithMany()
+                        .HasForeignKey("ProviderProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("RequestedUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceDraftToken", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.ServiceDraft", "ServiceDraft")
+                        .WithMany()
+                        .HasForeignKey("ServiceDraftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServiceDraft");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceIdentityProfileMapping", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.IdentityProfile", "IdentityProfile")
@@ -1492,6 +1867,25 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("IdentityProfile");
 
                     b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceIdentityProfileMappingDraft", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.IdentityProfile", "IdentityProfile")
+                        .WithMany()
+                        .HasForeignKey("IdentityProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.ServiceDraft", "ServiceDraft")
+                        .WithMany("ServiceIdentityProfileMappingDraft")
+                        .HasForeignKey("ServiceDraftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("IdentityProfile");
+
+                    b.Navigation("ServiceDraft");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceQualityLevelMapping", b =>
@@ -1513,6 +1907,25 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Service");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceQualityLevelMappingDraft", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.QualityLevel", "QualityLevel")
+                        .WithMany()
+                        .HasForeignKey("QualityLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.ServiceDraft", "ServiceDraft")
+                        .WithMany("ServiceQualityLevelMappingDraft")
+                        .HasForeignKey("ServiceDraftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("QualityLevel");
+
+                    b.Navigation("ServiceDraft");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceRoleMapping", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.Role", "Role")
@@ -1532,6 +1945,25 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Service");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceRoleMappingDraft", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.ServiceDraft", "ServiceDraft")
+                        .WithMany("ServiceRoleMappingDraft")
+                        .HasForeignKey("ServiceDraftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("ServiceDraft");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceSupSchemeMapping", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.Service", "Service")
@@ -1547,6 +1979,25 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Service");
+
+                    b.Navigation("SupplementaryScheme");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceSupSchemeMappingDraft", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.ServiceDraft", "ServiceDraft")
+                        .WithMany("ServiceSupSchemeMappingDraft")
+                        .HasForeignKey("ServiceDraftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.SupplementaryScheme", "SupplementaryScheme")
+                        .WithMany()
+                        .HasForeignKey("SupplementarySchemeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ServiceDraft");
 
                     b.Navigation("SupplementaryScheme");
                 });
@@ -1600,6 +2051,17 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("ServiceRoleMapping");
 
                     b.Navigation("ServiceSupSchemeMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceDraft", b =>
+                {
+                    b.Navigation("ServiceIdentityProfileMappingDraft");
+
+                    b.Navigation("ServiceQualityLevelMappingDraft");
+
+                    b.Navigation("ServiceRoleMappingDraft");
+
+                    b.Navigation("ServiceSupSchemeMappingDraft");
                 });
 #pragma warning restore 612, 618
         }

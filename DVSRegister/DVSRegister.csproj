@@ -26,6 +26,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
     <PackageReference Include="Sentry.AspNetCore" Version="4.12.0" />
     <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
+    <PackageReference Include="System.Text.Json" Version="9.0.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DVSRegister.BusinessLogic\DVSRegister.BusinessLogic.csproj" />
@@ -47,6 +48,16 @@
     <Content Remove="wwwroot\css\utilities\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Views\DSITEdit2i\ProviderChanges.cshtml" />
+    <None Include="Views\DSITEdit2i\ProviderChangesAlreadyApproved.cshtml" />
+    <None Include="Views\DSITEdit2i\ProviderChangesApproved.cshtml" />
+    <None Include="Views\DSITEdit2i\ProviderChangesCancelled.cshtml" />
+    <None Include="Views\DSITEdit2i\ProviderChangesError.cshtml" />
+    <None Include="Views\DSITEdit2i\ServiceChanges.cshtml" />
+    <None Include="Views\DSITEdit2i\ServiceChangesAlreadyApproved.cshtml" />
+    <None Include="Views\DSITEdit2i\ServiceChangesApproved.cshtml" />
+    <None Include="Views\DSITEdit2i\ServiceChangesCancelled.cshtml" />
+    <None Include="Views\DSITEdit2i\ServiceChangesError.cshtml" />
     <None Include="Views\PartialViews\_ErrorSummaryView.cshtml" />
   </ItemGroup>
   <ItemGroup>

@@ -50,5 +50,12 @@
 
         public Service2iCheckDeclinedToDSIT Service2iCheckDeclinedToDSIT { get; set; }
         public Service2iCheckApprovedToDSIT Service2iCheckApprovedToDSIT { get; set; }
+
+        public EditProviderAccepted EditProviderAccepted { get; set; }
+
+        public EditProviderDeclined EditProviderDeclined { get; set; }  
+
+        public EditServiceAccepted EditServiceAccepted { get; set; }
+        public EditServiceDeclined EditServiceDeclined { get; set; }
     }
 }
