@@ -910,8 +910,7 @@ namespace DVSRegister.Controllers
                 !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactJobTitle)
                 && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactEmail) &&
                 !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactTelephoneNumber)
-                && !string.IsNullOrEmpty(model.PublicContactEmail) &&
-                !string.IsNullOrEmpty(model.ProviderWebsiteAddress) && cabUserId > 0)
+                && !string.IsNullOrEmpty(model.ProviderWebsiteAddress) && cabUserId > 0)
             {
                 providerDto = new();
                 providerDto.RegisteredName = model.RegisteredName;

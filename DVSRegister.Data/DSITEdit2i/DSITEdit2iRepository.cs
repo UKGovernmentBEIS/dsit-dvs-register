@@ -64,7 +64,12 @@ namespace DVSRegister.Data.Repositories
                     existingProvider.SecondaryContactTelephoneNumber = existingDraftProvider.SecondaryContactTelephoneNumber ?? existingProvider.SecondaryContactTelephoneNumber;
 
                     existingProvider.ProviderWebsiteAddress = existingDraftProvider.ProviderWebsiteAddress ?? existingProvider.ProviderWebsiteAddress;
-                    existingProvider.PublicContactEmail = existingDraftProvider.PublicContactEmail ?? existingProvider.PublicContactEmail;
+                    
+
+                    existingProvider.PublicContactEmail = existingDraftProvider.PublicContactEmail != null
+                  ? (existingDraftProvider.PublicContactEmail == "-" ? string.Empty : existingDraftProvider.PublicContactEmail)
+                  : existingProvider.PublicContactEmail;
+
                     existingProvider.ProviderTelephoneNumber = existingDraftProvider.ProviderTelephoneNumber != null
                     ? (existingDraftProvider.ProviderTelephoneNumber == "-" ? string.Empty : existingDraftProvider.ProviderTelephoneNumber)
                     : existingProvider.ProviderTelephoneNumber;

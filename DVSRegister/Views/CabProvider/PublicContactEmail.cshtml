@@ -33,14 +33,14 @@
                     <p class="govuk-body">
                         You should ask the service provider to provide this information. The email
                         address you enter will be publicly displayed on the register of digital identity
-                        and attribute services.
+                        and attribute services. If the provider doesn't have a public email address, you should leave this field blank and select Continue.
                     </p>
 
 
                     @{
                     var emailViewModel = new TextBoxViewModel{
                     PropertyName = "PublicContactEmail",
-                    Label = "Public email address",
+                    Label = "Public email address (optional)",
                     Value = Model?.PublicContactEmail??string.Empty,
                     TextBoxType = "email",
                     Class = "govuk-input",

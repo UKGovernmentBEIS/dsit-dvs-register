@@ -6,8 +6,7 @@ namespace DVSRegister.Models.CAB
     public class PublicContactViewModel
     {
 
-        [EmailAddress(ErrorMessage = "Enter an email address in the correct format")]
-        [Required(ErrorMessage = "Enter an email address in the correct format")]
+        [EmailAddress(ErrorMessage = "Enter an email address in the correct format")]       
         [MaximumLength(255, ErrorMessage = "Enter an email address that is less than 255 characters")]
         public string? PublicContactEmail { get; set; }
 

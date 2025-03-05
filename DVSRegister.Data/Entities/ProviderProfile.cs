@@ -26,7 +26,7 @@ namespace DVSRegister.Data.Entities
         public string SecondaryContactJobTitle { get; set; }
         public string SecondaryContactEmail { get; set; }
         public string SecondaryContactTelephoneNumber { get; set; }
-        public string PublicContactEmail { get; set; }
+        public string? PublicContactEmail { get; set; }
         public string? ProviderTelephoneNumber { get; set; }
         public string ProviderWebsiteAddress { get; set; }
         public RemovalReasonsEnum? RemovalReason { get; set; }
