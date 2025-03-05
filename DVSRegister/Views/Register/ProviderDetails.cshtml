@@ -46,7 +46,14 @@
                             Public email address
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @Model.Provider.PublicContactEmail
+                            @if (!string.IsNullOrEmpty(Model.Provider.PublicContactEmail))
+                            {
+                                <div> @Model.Provider.PublicContactEmail </div>
+                            }
+                            else
+                            {
+                                <div>No public email address</div>
+                            }
                         </dd>
                     </div>
                     <div class="govuk-summary-list__row">
