@@ -42,5 +42,7 @@ namespace DVSRegister.Data.Entities
         public DateTime? CabEditedTime { get; set; }
         public DateTime? RemovalRequestTime { get; set; }
         public DateTime? RemovedTime { get; set; }
+
+        public ProviderProfileDraft ProviderProfileDraft { get; set; }
     }
 }
