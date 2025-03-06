@@ -31,8 +31,6 @@
                     @Model.Provider.RegisteredName
                     <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime) (GMT)</span>
                 </h1>
-                @await Html.PartialAsync(
-                    "~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)                
                 @if (!string.IsNullOrEmpty(Model.Provider.TradingName))
                 {
                     <p class="govuk-body-l govuk-!-margin-bottom-7">Trading name: @Model.Provider.TradingName</p>
