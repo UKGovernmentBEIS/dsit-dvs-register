@@ -10,11 +10,9 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public int ProviderProfileId { get; set; }
         public ProviderProfileDto Provider { get; set; }
         public string ServiceName { get; set; }
-
         public int ServiceKey { get; set; }
         public int ServiceVersion { get; set; } = 1;
         public bool IsCurrent { get; set; } = true;
-
         public string WebSiteAddress { get; set; }
         public string CompanyAddress { get; set; }
         public ICollection<ServiceRoleMappingDto> ServiceRoleMapping { get; set; }
@@ -43,7 +41,6 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         [JsonIgnore]
         public ProceedPublishConsentTokenDto ProceedPublishConsentToken { get; set; }
         public string? RemovalReasonByCab { get; set; }
-
         public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
     }
 }

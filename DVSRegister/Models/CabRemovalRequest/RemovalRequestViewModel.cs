@@ -7,6 +7,7 @@ namespace DVSRegister.Models.CAB
         public int ProviderId { get; set; } 
         public int ServiceId { get; set; }
         [Required(ErrorMessage = "Enter details on the reason for removal")]
-        public string RemovalReasonByCab { get; set; }   
+        public string RemovalReasonByCab { get; set; }
+        public string? WhatToRemove { get; set; }
     }
 }

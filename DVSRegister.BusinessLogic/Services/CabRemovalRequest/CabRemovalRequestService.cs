@@ -24,7 +24,7 @@ namespace DVSRegister.BusinessLogic.Services
             this.emailSender = emailSender;           
         }
 
-        public async Task<GenericResponse> UpdateRemovalStatus(int cabId, int providerProfileId, int serviceId, string loggedInUserEmail, string removalReasonByCab)
+        public async Task<GenericResponse> UpdateRemovalStatus(int cabId, int providerProfileId, int serviceId, string loggedInUserEmail, string removalReasonByCab, string whatToRemove)
         {
             GenericResponse genericResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(cabId, providerProfileId,serviceId,loggedInUserEmail, removalReasonByCab);
 
@@ -35,25 +35,29 @@ namespace DVSRegister.BusinessLogic.Services
                 // update provider status
                 ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
                 genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerProfileId, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);
-               
-                if (providerProfile.Services.Count == 1 && providerStatus == ProviderStatusEnum.CabAwaitingRemovalConfirmation)// remove provider request
+
+                if (whatToRemove == "provider")
                 {
-                    Service service = providerProfile.Services.ToList()[0];
-                    await emailSender.RecordRemovalRequestByCabToDSIT(providerProfile.RegisteredName, service.ServiceName, service.RemovalReasonByCab);
-                    await emailSender.RecordRemovalRequestConfirmationToCab(loggedInUserEmail, loggedInUserEmail, providerProfile.RegisteredName, service.ServiceName, removalReasonByCab);
+                    Service service = providerProfile.Services.FirstOrDefault();
+                    if (service != null)
+                    {
+                        await emailSender.RecordRemovalRequestByCabToDSIT(providerProfile.RegisteredName, service.ServiceName, service.RemovalReasonByCab);
+                        await emailSender.RecordRemovalRequestConfirmationToCab(loggedInUserEmail, loggedInUserEmail, providerProfile.RegisteredName, service.ServiceName, removalReasonByCab);
+                    }
                 }
-                else // remove service request
+                else if (whatToRemove == "service")
                 {
-                    Service service = providerProfile.Services.Where(s => s.Id == serviceId).FirstOrDefault()??new Service();
-                    //45 / CAB / Service removal requested
+  
+                    Service service = providerProfile.Services.FirstOrDefault(s => s.Id == serviceId) ?? new Service();
+
                     await emailSender.CabServiceRemovalRequested(loggedInUserEmail, loggedInUserEmail, providerProfile.RegisteredName, service.ServiceName, removalReasonByCab);
-                    //46/DSIT/CAB service removal request
                     await emailSender.CabServiceRemovalRequestedToDSIT(providerProfile.RegisteredName, service.ServiceName, removalReasonByCab);
                 }
 
-               
+
+
             }
-         
+
             return genericResponse;
         }
     }
