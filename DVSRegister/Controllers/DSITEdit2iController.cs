@@ -32,30 +32,38 @@ namespace DVSRegister.Controllers
             if (!string.IsNullOrEmpty(token))
             {
                 TokenDetails tokenDetails = await jwtService.ValidateToken(token, "DSIT");
-                if (tokenDetails != null && tokenDetails.IsAuthorised)
+                if (tokenDetails != null)
                 {
-                    providerDraftTokenDto = await dSITEdit2IService.GetProviderChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
-
-                    if (providerDraftTokenDto == null || providerDraftTokenDto.ProviderProfileDraft == null || providerDraftTokenDto.ProviderProfileDraft.Provider == null ||
-                    (providerDraftTokenDto.ProviderProfileDraft.Provider != null && providerDraftTokenDto.ProviderProfileDraft.Provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested))
+                    if (tokenDetails.IsAuthorised)
                     {
-                        return RedirectToAction("ProviderChangesError");
-                    }
+                        providerDraftTokenDto = await dSITEdit2IService.GetProviderChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
 
-                    providerReviewViewModel.token = tokenDetails.Token;
-                    providerReviewViewModel.PreviousProviderData = providerDraftTokenDto.ProviderProfileDraft.Provider;
-                    var (previous, current) = dSITEdit2IService.GetProviderKeyValue(providerDraftTokenDto.ProviderProfileDraft, providerDraftTokenDto.ProviderProfileDraft.Provider);
-                    providerReviewViewModel.PreviousDataKeyValuePair = previous;
-                    providerReviewViewModel.CurrentDataKeyValuePair = current;
+                        if (providerDraftTokenDto == null || providerDraftTokenDto.ProviderProfileDraft == null || providerDraftTokenDto.ProviderProfileDraft.Provider == null ||
+                        (providerDraftTokenDto.ProviderProfileDraft.Provider != null && providerDraftTokenDto.ProviderProfileDraft.Provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested))
+                        {
+                            return RedirectToAction("UpdatesAlreadyApproved");
+                        }
+
+                        providerReviewViewModel.token = tokenDetails.Token;
+                        providerReviewViewModel.PreviousProviderData = providerDraftTokenDto.ProviderProfileDraft.Provider;
+                        var (previous, current) = dSITEdit2IService.GetProviderKeyValue(providerDraftTokenDto.ProviderProfileDraft, providerDraftTokenDto.ProviderProfileDraft.Provider);
+                        providerReviewViewModel.PreviousDataKeyValuePair = previous;
+                        providerReviewViewModel.CurrentDataKeyValuePair = current;
+                    }
+                    else
+                    {
+                        return RedirectToAction("URLExpiredError");
+                    }
+                   
                 }
                 else
                 {
-                    return RedirectToAction("ProviderChangesAlreadyApproved");
+                    return RedirectToAction("UpdatesError");
                 }
             }
             else
             {
-                return RedirectToAction("ProviderChangesError");
+                return RedirectToAction("UpdatesError");
             }
 
             return View(providerReviewViewModel);
@@ -83,7 +91,7 @@ namespace DVSRegister.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("ProviderChangesError");
+                            return RedirectToAction("UpdatesError");
                         }
                     }
                     else if (action == "cancel")
@@ -96,23 +104,23 @@ namespace DVSRegister.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("ProviderChangesError");
+                            return RedirectToAction("UpdatesError");
                         }
                     }
                     else
                     {
-                        return RedirectToAction("ProviderChangesError");
+                        return RedirectToAction("UpdatesError");
                     }
                 }
                 else
                 {
                     await dSITEdit2IService.RemoveProviderDraftToken(tokenDetails.Token, tokenDetails.TokenId);
-                    return RedirectToAction("ProviderChangesError");
+                    return RedirectToAction("UpdatesError");
                 }
             }
             else
             {
-                return RedirectToAction("ProviderChangesError");
+                return RedirectToAction("UpdatesError");
             }
 
         }
@@ -130,17 +138,7 @@ namespace DVSRegister.Controllers
             return View();
         }
 
-        [HttpGet("provider-changes/already-approved")]
-        public IActionResult ProviderChangesAlreadyApproved()
-        {
-            return View();
-        }
-
-        [HttpGet("provider-changes/error")]
-        public IActionResult ProviderChangesError()
-        {
-            return View();
-        }
+      
 
         [HttpGet("service-changes")]
         public async Task<IActionResult> ServiceChanges(string token)
@@ -150,31 +148,39 @@ namespace DVSRegister.Controllers
             if (!string.IsNullOrEmpty(token))
             {
                 TokenDetails tokenDetails = await jwtService.ValidateToken(token, "DSIT");
-                if (tokenDetails != null && tokenDetails.IsAuthorised)
+                if (tokenDetails != null )
                 {
-                    serviceDraftTokenDto = await dSITEdit2IService.GetServiceChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
-
-                    if (serviceDraftTokenDto == null || serviceDraftTokenDto.ServiceDraft == null || serviceDraftTokenDto.ServiceDraft.Service == null ||
-                    (serviceDraftTokenDto.ServiceDraft.Service != null && serviceDraftTokenDto.ServiceDraft.Service.ServiceStatus != ServiceStatusEnum.UpdatesRequested))
+                    if(tokenDetails.IsAuthorised)
                     {
-                        return RedirectToAction("ServiceChangesError");
-                    }
+                        serviceDraftTokenDto = await dSITEdit2IService.GetServiceChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
 
-                    serviceReviewViewModel.token = tokenDetails.Token;
-                    serviceReviewViewModel.CurrentServiceData = serviceDraftTokenDto.ServiceDraft;
-                    serviceReviewViewModel.PreviousServiceData = serviceDraftTokenDto.ServiceDraft.Service;
-                    var (previous, current) = dSITEdit2IService.GetServiceKeyValue(serviceDraftTokenDto.ServiceDraft, serviceDraftTokenDto.ServiceDraft.Service);
-                    serviceReviewViewModel.PreviousDataKeyValuePair = previous;
-                    serviceReviewViewModel.CurrentDataKeyValuePair = current;
+                        if (serviceDraftTokenDto == null || serviceDraftTokenDto.ServiceDraft == null || serviceDraftTokenDto.ServiceDraft.Service == null ||
+                        (serviceDraftTokenDto.ServiceDraft.Service != null && serviceDraftTokenDto.ServiceDraft.Service.ServiceStatus != ServiceStatusEnum.UpdatesRequested))
+                        {
+                            return RedirectToAction("UpdatesAlreadyApproved");
+                        }
+
+                        serviceReviewViewModel.token = tokenDetails.Token;
+                        serviceReviewViewModel.CurrentServiceData = serviceDraftTokenDto.ServiceDraft;
+                        serviceReviewViewModel.PreviousServiceData = serviceDraftTokenDto.ServiceDraft.Service;
+                        var (previous, current) = dSITEdit2IService.GetServiceKeyValue(serviceDraftTokenDto.ServiceDraft, serviceDraftTokenDto.ServiceDraft.Service);
+                        serviceReviewViewModel.PreviousDataKeyValuePair = previous;
+                        serviceReviewViewModel.CurrentDataKeyValuePair = current;
+                    }
+                    else
+                    {
+                        return RedirectToAction("URLExpiredError");
+                    }
+                   
                 }
                 else
                 {
-                    return RedirectToAction("ServiceChangesAlreadyApproved");
+                    return RedirectToAction("UpdatesError");
                 }
             }
             else
             {
-                return RedirectToAction("ServiceChangesError");
+                return RedirectToAction("UpdatesError");
             }
 
             return View(serviceReviewViewModel);
@@ -201,7 +207,7 @@ namespace DVSRegister.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("ServiceChangesError");
+                            return RedirectToAction("UpdatesError");
                         }
                     }
                     else if (action == "cancel")
@@ -214,23 +220,23 @@ namespace DVSRegister.Controllers
                         }
                         else
                         {
-                            return RedirectToAction("ServiceChangesError");
+                            return RedirectToAction("UpdatesError");
                         }
                     }
                     else
                     {
-                        return RedirectToAction("ServiceChangesError");
+                        return RedirectToAction("UpdatesError");
                     }
                 }
                 else
                 {
                     await dSITEdit2IService.RemoveServiceDraftToken(tokenDetails.Token, tokenDetails.TokenId);
-                    return RedirectToAction("ServiceChangesError");
+                    return RedirectToAction("UpdatesError");
                 }
             }
             else
             {
-                return RedirectToAction("ServiceChangesError");
+                return RedirectToAction("UpdatesError");
             }
 
         }
@@ -249,14 +255,21 @@ namespace DVSRegister.Controllers
             return View();
         }
 
-        [HttpGet("service-changes/already-approved")]
-        public IActionResult ServiceChangesAlreadyApproved()
+
+
+        [HttpGet("changes/already-approved")]
+        public IActionResult UpdatesAlreadyApproved()
         {
             return View();
         }
 
-        [HttpGet("service-changes/error")]
-        public IActionResult ServiceChangesError()
+        [HttpGet("changes/error")]
+        public IActionResult UpdatesError()
+        {
+            return View();
+        }
+        [HttpGet("changes/url-expired")]
+        public IActionResult URLExpiredError()
         {
             return View();
         }
@@ -276,14 +289,14 @@ namespace DVSRegister.Controllers
 
                 if (fileContent == null || fileContent.Length == 0)
                 {
-                    return RedirectToAction("ServiceChangesError");
+                    return RedirectToAction("UpdatesError");
                 }
                 string contentType = "application/octet-stream";
                 return File(fileContent, contentType, filename);
             }
             catch (Exception)
             {
-                return RedirectToAction("ServiceChangesError");
+                return RedirectToAction("UpdatesError");
             }
         }
     }
