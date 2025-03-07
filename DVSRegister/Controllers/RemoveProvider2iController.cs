@@ -172,7 +172,7 @@ namespace DVSRegister.Controllers
                             if (genericResponse.Success)
                             {
                                 await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
-                                return RedirectToAction("RemoveProviderSuccess");
+                                return RedirectToAction("RemoveProviderSuccessDSIT");
                             }
                             else
                             {
@@ -191,7 +191,7 @@ namespace DVSRegister.Controllers
                         if(genericResponse.Success)
                         {
                             await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
-                            return RedirectToAction("RemoveProviderCancel");
+                            return RedirectToAction("RemoveProviderCancelDSIT");
                         }
                         else
                         {
@@ -247,6 +247,18 @@ namespace DVSRegister.Controllers
 
         [HttpGet("remove-provider-error")]
         public ActionResult RemoveProviderError()
+        {
+            return View();
+        }
+
+        [HttpGet("remove-provider-success-dsit")]
+        public ActionResult RemoveProviderSuccessDSIT()
+        {
+            return View();
+        }
+
+        [HttpGet("remove-provider-cancel-dsit")]
+        public ActionResult RemoveProviderCancelDSIT()
         {
             return View();
         }
