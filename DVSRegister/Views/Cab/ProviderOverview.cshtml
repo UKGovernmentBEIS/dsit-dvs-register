@@ -93,7 +93,14 @@
                                             Submission date (GMT)
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @DateTimeExtensions.FormatDateTime(@item.CreatedTime)
+                                            @if(item.ServiceStatus == ServiceStatusEnum.Submitted)
+                                            {
+                                                @DateTimeExtensions.FormatDateTime(@item.CreatedTime)
+                                            }
+                                            else
+                                            {
+                                                @DateTimeExtensions.FormatDateTime(@item.ModifiedTime)
+                                            }                                            
                                         </dd>
                                     </div>
                                     <div class="govuk-summary-list__row">
