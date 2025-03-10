@@ -109,6 +109,7 @@ namespace DVSRegister.Data
                     {
                         existingProvider.ModifiedTime = DateTime.UtcNow;
                         existingProvider.ProviderStatus = ProviderStatusEnum.RemovedFromRegister;
+                        existingProvider.ModifiedTime = DateTime.UtcNow;
                         existingProvider.RemovedTime = DateTime.UtcNow;
                         // Update the status of each service
                         if (existingProvider.Services != null)
