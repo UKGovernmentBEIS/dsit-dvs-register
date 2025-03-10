@@ -17,13 +17,13 @@
                         @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                     }
 
-                    <h1 class="govuk-heading-xl govuk-!-margin-top-8">Configure your authenticator app and sign in to your account  </h1>
+                    <h1 class="govuk-heading-xl govuk-!-margin-top-8">Configure your authenticator app and sign in to your account</h1>
 
-                    <h2 class="govuk-heading-m">1.Open Okta Verify</h2>
+                    <h2 class="govuk-heading-m">1. Open Okta Verify</h2>
 
                     <p class="govuk-body">Ensure that the Okta Verify app is installed and open it on your device.</p>
 
-                    <h2 class="govuk-heading-m">2. Set up Okta Verify for this service</h2>
+                    <h2 class="govuk-heading-m">2. Set up Okta Verify for this service.</h2>
 
                     <p class="govuk-body">Follow the instructions in the Okta Verify app to add a new account. When prompted, point your camera at the QR code below to add the Digital Identity Register Portal.</p>
 
@@ -37,12 +37,12 @@
 
                     <p class="govuk-body"> Alternatively, you can manually enter the following Secret Key to add the new account:  @Model.SecretToken</p>
 
-                    <h2 class="govuk-heading-m">3. Enter the authentication code to sign in to create your account</h2>
+                    <h2 class="govuk-heading-m">3.Enter the authentication code to sign in to create your account</h2>
 
                     <p class="govuk-body">Once you have successfully added the Digital Identity Register portal, a six-digit code will appear in the authenticator app for this service which you should enter in the box below.</p>
 
                     <p class="govuk-body">
-                        <b>Enter the one time multi-factor code shown in your authenticator app:</b>
+                        <b>Enter the one-time multi-factor code shown in your authenticator app:</b>
                         <br />
                         <span id="mfa-hint" class="govuk-hint">
                             This is a six-digit passcode. For example, 123456
@@ -63,3 +63,4 @@
         </main>
     </div>
 }
+
