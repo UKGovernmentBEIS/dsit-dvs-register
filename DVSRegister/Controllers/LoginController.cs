@@ -117,7 +117,7 @@ namespace DVSRegister.Controllers
                     else
                     {
                         ModelState.AddModelError("ErrorMessage", "Error in resetting password");
-                        return View("ConfirmPassword", confirmPasswordViewModel);
+                        return View("CreatePassword", confirmPasswordViewModel);
                     }
                 }
                 else

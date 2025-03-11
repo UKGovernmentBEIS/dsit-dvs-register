@@ -19,12 +19,15 @@ namespace DVSRegister.Controllers
     {
         private readonly ICabService cabService;
         private readonly IUserService userService;
+        private readonly ILogger<CabProviderController> _logger;
+
         private string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
 
-        public CabProviderController(ICabService cabService, IUserService userService)
+        public CabProviderController(ICabService cabService, IUserService userService, ILogger<CabProviderController> logger)
         {
             this.cabService = cabService;
             this.userService = userService;
+            _logger = logger;
         }
 
         [HttpGet("before-you-start")]
@@ -538,11 +541,13 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to save provider profile."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("An error occurred while saving the profile summary."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
@@ -593,11 +598,13 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Company information is not editable."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("An error occurred while retrieving company information."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
@@ -637,6 +644,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Company information update failed."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
@@ -670,6 +678,7 @@ namespace DVSRegister.Controllers
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to edit primary contact. Invalid CabId or ProviderId."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
@@ -680,6 +689,8 @@ namespace DVSRegister.Controllers
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId")); 
             if (cabId <= 0 || primaryContactViewModel.ProviderId <= 0)
             { 
+                
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPrimaryContact failed: Invalid CabId or ProviderId."));
                 return RedirectToAction("CabHandleException", "Error"); 
             }
 
@@ -687,6 +698,8 @@ namespace DVSRegister.Controllers
             ProviderProfileDto providerProfileDto = await cabService.GetProvider(primaryContactViewModel.ProviderId, cabId); 
             if (providerProfileDto == null) 
             { 
+                
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPrimaryContact failed: ProviderProfile not found for ProviderId and CabId."));
                 return RedirectToAction("CabHandleException", "Error"); 
             } 
             
@@ -726,6 +739,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPrimaryContact failed: Unable to update primary contact for ProviderId and CabId."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
@@ -759,6 +773,7 @@ namespace DVSRegister.Controllers
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to edit secondary contact. Invalid CabId."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
@@ -768,7 +783,8 @@ namespace DVSRegister.Controllers
         { 
             int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId")); 
             if (cabId <= 0 || secondaryContactViewModel.ProviderId <= 0) 
-            { 
+            {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditSecondaryContact failed: Invalid CabId or ProviderId."));
                 return RedirectToAction("CabHandleException", "Error"); 
             } 
             
@@ -776,6 +792,7 @@ namespace DVSRegister.Controllers
             ProviderProfileDto providerProfileDto = await cabService.GetProvider(secondaryContactViewModel.ProviderId, cabId); 
             if (providerProfileDto == null) 
             { 
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditSecondaryContact failed: ProviderProfile not found for ProviderId and CabId."));
                 return RedirectToAction("CabHandleException", "Error"); 
             } 
             
@@ -815,6 +832,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditSecondaryContact failed: Unable to update secondary contact for ProviderId and CabId."));
+
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
@@ -846,6 +865,7 @@ namespace DVSRegister.Controllers
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPublicProviderInformation failed: ProviderProfile not found."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
@@ -872,6 +892,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPublicProviderInformation failed: Update operation unsuccessful."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }

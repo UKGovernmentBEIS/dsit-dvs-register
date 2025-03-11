@@ -1,6 +1,7 @@
 ﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,13 @@ namespace DVSRegister.Controllers
     {
         private readonly ICabService cabService;
         private readonly IUserService userService;
+        private readonly ILogger<CabServiceReApplicationController> _logger;
         private string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
-        public CabServiceReApplicationController(ICabService cabService, IUserService userService)
+        public CabServiceReApplicationController(ICabService cabService, IUserService userService, ILogger<CabServiceReApplicationController> logger)
         {
             this.cabService = cabService;
             this.userService = userService;
+            _logger = logger;
         }
 
         [HttpGet("resume-submission")]
@@ -31,7 +34,8 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ResumeSubmission failed: Invalid CabId."));
+                return RedirectToAction("CabHandleException", "Error");
             }
         }
         
@@ -60,13 +64,15 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("BeforeYouSubmitNewCertificate failed: Invalid providerProfileId for CabId."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
 
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("BeforeYouSubmitNewCertificate failed: Invalid CabUserId."));
+                return RedirectToAction("CabHandleException", "Error");
             }
           
         }

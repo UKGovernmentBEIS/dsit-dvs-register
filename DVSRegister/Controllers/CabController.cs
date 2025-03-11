@@ -3,8 +3,6 @@ using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.Data.Entities;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
@@ -12,6 +10,7 @@ using DVSRegister.Models.CAB.Provider;
 using DVSRegister.Models.CAB.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using DVSRegister.CommonUtility;
 
 
 namespace DVSRegister.Controllers
@@ -23,27 +22,47 @@ namespace DVSRegister.Controllers
     
         private readonly ICabService cabService;      
         private readonly IUserService userService;
+        private readonly ILogger<CabController> _logger;
         private string UserEmail => HttpContext.Session.Get<string>("Email")??string.Empty;
-        public CabController(ICabService cabService, IUserService userService)
+        public CabController(ICabService cabService, IUserService userService, ILogger<CabController> logger)
         {           
             this.cabService = cabService;          
             this.userService = userService;
+            _logger = logger;
         }
 
         [HttpGet("")]
         [HttpGet("home")]
         public async Task<IActionResult> LandingPage()
         {
-           
-            string cab = string.Empty;
-            var identity = HttpContext?.User.Identity as ClaimsIdentity;
-            var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
-            if (profileClaim != null)
-                cab = profileClaim.Value;
-            CabUserDto cabUser = await userService.SaveUser(UserEmail,cab);
-            HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
-            return cabUser.CabId>0 ? View() : RedirectToAction("HandleException", "Error");
-           
+            try
+            {
+                string cab = string.Empty;
+                var identity = HttpContext?.User.Identity as ClaimsIdentity;
+                var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
+                if (profileClaim != null)
+                    cab = profileClaim.Value;
+                CabUserDto cabUser = await userService.SaveUser(UserEmail, cab);
+                HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
+
+                if (cabUser.CabId > 0)
+                {
+                    return View();
+
+                }
+                else
+                {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid CabId retrieved."));
+                    return RedirectToAction("CabHandleException", "Error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,"{Message}", Helper.LoggingHelper.FormatErrorMessage("An error occurred."));
+                return RedirectToAction("CabHandleException", "Error");
+            }
+            
+            
         }
 
 
@@ -69,7 +88,8 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
+                return RedirectToAction("CabHandleException", "Error");
             }
           
         }
@@ -89,7 +109,8 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
+                return RedirectToAction("CabHandleException", "Error");
             }
            
         }
@@ -114,7 +135,9 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
+                return RedirectToAction("CabHandleException", "Error");
             }
 
 
@@ -139,7 +162,8 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
+                return RedirectToAction("CabHandleException", "Error");
             }
            
         }

@@ -1,5 +1,7 @@
 ﻿using QRCoder;
 using System.Text;
+using System.Runtime.CompilerServices;
+
 namespace DVSRegister.CommonUtility
 {
     public static class Helper
@@ -45,5 +47,17 @@ namespace DVSRegister.CommonUtility
 
             return result.ToString();
         }
+
+        public static class LoggingHelper
+        {
+            public static string FormatErrorMessage(
+                string message, 
+                [CallerLineNumber] int lineNumber = 0, 
+                [CallerMemberName] string caller = "Unknown")
+            {
+                return $"{message} (Method: {caller}, Line: {lineNumber})";
+            }
+        }
+
     }
 }
