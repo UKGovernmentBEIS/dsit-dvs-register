@@ -19,27 +19,26 @@
 
                     <h1 class="govuk-heading-xl govuk-!-margin-top-8">Configure your authenticator app and sign in to your account</h1>
 
-                    <h2 class="govuk-heading-m">1. Open Okta Verify</h2>
+                    <h2 class="govuk-heading-m">1. Configure your authenticator app for the service</h2>
 
-                    <p class="govuk-body">Ensure that the Okta Verify app is installed and open it on your device.</p>
-
-                    <h2 class="govuk-heading-m">2. Set up Okta Verify for this service.</h2>
-
-                    <p class="govuk-body">Follow the instructions in the Okta Verify app to add a new account. When prompted, point your camera at the QR code below to add the Digital Identity Register Portal.</p>
+                    <p class="govuk-body">Once your authenticator app is installed on your device, open it and scan the QR code or manually enter the Secret Key. You will now
+                        be able to use your authenticator app to sign in to your account.
+                    </p>
 
                     <div>
                         <img src="data:image/png;base64, @qrCodeImageBase64" alt="QR Code for MFA Code" style="max-width: 200px; width: 30vw; height: auto; min-width: 100px;" />
                     </div>
 
                     <div class="govuk-inset-text">
-                        Do not try to scan the QR code with a phone camera application. You will need to scan the QR code once you open your authenticator app.
+                        Do not try to scan the QR code with a phone camera. You will need to scan the QR code once you open your authenticator app.
                     </div>
 
-                    <p class="govuk-body"> Alternatively, you can manually enter the following Secret Key to add the new account:  @Model.SecretToken</p>
+                    <p class="govuk-body"> Alternatively, you may use the following Secret Key for manual entry:  @Model.SecretToken</p>
 
-                    <h2 class="govuk-heading-m">3.Enter the authentication code to sign in to create your account</h2>
+                    <h2 class="govuk-heading-m">2. Use your authenticator app to sign in to your account</h2>
 
-                    <p class="govuk-body">Once you have successfully added the Digital Identity Register portal, a six-digit code will appear in the authenticator app for this service which you should enter in the box below.</p>
+                    <p class="govuk-body">Once you have configured your authenticator app, a six-digit passcode will appear in the authenticator app which you should enter in the box below. This will enable you to
+                        sign in to the service.</p>
 
                     <p class="govuk-body">
                         <b>Enter the one-time multi-factor code shown in your authenticator app:</b>
