@@ -1,7 +1,7 @@
 ﻿@model ConsentViewModel
 @{
     ViewData["Title"] = "You are about to agree to publish your service on the register";
-    Layout = "~/Views/Shared/_LayoutConsent.cshtml";
+    Layout = "~/Views/Shared/_consentlayout1.cshtml";
 }
 
 @{
@@ -14,7 +14,6 @@
     @Html.HiddenFor(m => m.token)
    
     <div class="govuk-width-container">
-        @Html.ActionLink("Back", "ProviderReview", "ProviderReview", null, new { @class = "govuk-back-link" })
         <main id="main-content" class="govuk-main-wrapper" role="main">
             <div class="govuk-grid-row">
 
