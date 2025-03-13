@@ -22,19 +22,18 @@ namespace DVSRegister.Middleware
             }
             catch (Exception ex)
             {
-                logger.LogError($"An unexpected error occurred: {ex}");               
-                logger.LogError($"Stacktrace: {ex.StackTrace}");
+                logger.LogError(ex, "An unexpected error occurred in ExceptionHandlerMiddleware.");
+
                 if (ex.InnerException != null)
                 {
-                    Console.Write("Inner Exception");
-                    Console.Write(String.Concat(ex.InnerException.StackTrace, ex.InnerException.Message));
+                    logger.LogError(ex.InnerException, "Inner exception in ExceptionHandlerMiddleware.");
                 }
                 // Redirect to error page 
-              
-                if (requestPath.Contains("cab-service"))
-                    context.Response.Redirect(Constants.CabRegistrationErrorPath);
-                else
-                    context.Response.Redirect(Constants.CommonErrorPath);
+                string redirectPath = requestPath.Contains("cab-service")
+                    ? Constants.CabRegistrationErrorPath
+                    : Constants.CommonErrorPath;
+                
+                context.Response.Redirect(redirectPath);
             }
         }
     }
