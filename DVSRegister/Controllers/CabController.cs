@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
@@ -9,21 +10,18 @@ using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Provider;
 using DVSRegister.Models.CAB.Service;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using DVSRegister.CommonUtility;
 
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab-service")]
-    [ValidCognitoToken]
-    public class CabController : Controller
+    [Route("cab-service")]   
+    public class CabController : BaseController
     {
     
         private readonly ICabService cabService;      
         private readonly IUserService userService;
         private readonly ILogger<CabController> _logger;
-        private string UserEmail => HttpContext.Session.Get<string>("Email")??string.Empty;
+      
         public CabController(ICabService cabService, IUserService userService, ILogger<CabController> logger)
         {           
             this.cabService = cabService;          
@@ -37,12 +35,7 @@ namespace DVSRegister.Controllers
         {
             try
             {
-                string cab = string.Empty;
-                var identity = HttpContext?.User.Identity as ClaimsIdentity;
-                var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
-                if (profileClaim != null)
-                    cab = profileClaim.Value;
-                CabUserDto cabUser = await userService.SaveUser(UserEmail, cab);
+                  CabUserDto cabUser = await userService.SaveUser(UserEmail, Cab);
                 HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
 
                 if (cabUser.CabId > 0)
@@ -70,10 +63,9 @@ namespace DVSRegister.Controllers
         #region Cab provider list screens
         [HttpGet("view-profiles")]
         public async Task<IActionResult> ListProviders(string SearchAction = "", string SearchText = "")
-        {
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
+        {          
 
-            if (cabId > 0)
+            if (CabId > 0)
             {
                 ProviderListViewModel providerListViewModel = new();
                 if (SearchAction == "clearSearch")
@@ -82,7 +74,7 @@ namespace DVSRegister.Controllers
                     providerListViewModel.SearchText = null;
                     SearchText = string.Empty;
                 }
-                providerListViewModel.Providers = await cabService.GetProviders(cabId, SearchText);
+                providerListViewModel.Providers = await cabService.GetProviders(CabId, SearchText);
                 return View(providerListViewModel);
 
             }
@@ -98,11 +90,10 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> ProviderOverview(int providerId)
         {
             HttpContext?.Session.Remove("ServiceSummary");
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-
-            if (cabId > 0) 
+           
+            if (CabId > 0) 
             {
-                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
                 HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
                 HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
                 return View(providerProfileDto);
@@ -117,12 +108,11 @@ namespace DVSRegister.Controllers
         [HttpGet("profile-information")]
         public async Task<IActionResult> ProviderProfileDetails(int providerId)
         {
-          
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
+                    
 
-            if (cabId > 0)
+            if (CabId > 0)
             {
-                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
                 HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
                 HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
                 ProviderDetailsViewModel providerDetailsViewModel = new()
@@ -146,17 +136,16 @@ namespace DVSRegister.Controllers
         [HttpGet("service-details")]
         public async Task<IActionResult> ProviderServiceDetails(int serviceKey)
         {
-            HttpContext?.Session.Remove("ServiceSummary");
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0)
+            HttpContext?.Session.Remove("ServiceSummary");           
+            if (CabId > 0)
             {
                 ServiceVersionViewModel serviceVersions = new();
-                var serviceList = await cabService.GetServiceList(serviceKey, cabId);
+                var serviceList = await cabService.GetServiceList(serviceKey, CabId);
                 ServiceDto currentServiceVersion = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
                 serviceVersions.CurrentServiceVersion = currentServiceVersion;
                 serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
 
-                SetServiceDataToSession(cabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
+                SetServiceDataToSession(CabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
                 return View(serviceVersions);
 
             }
