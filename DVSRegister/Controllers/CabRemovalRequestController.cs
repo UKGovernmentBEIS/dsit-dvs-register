@@ -3,21 +3,19 @@ using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/remove")]
-    [ValidCognitoToken]
-    public class CabRemovalRequestController : Controller
+    public class CabRemovalRequestController : BaseController
     {
         private readonly ICabService cabService;
         private readonly ICabRemovalRequestService cabRemovalRequestService;  
         private readonly ILogger<CabRemovalRequestController> _logger;
 
-        private string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
+   
         public CabRemovalRequestController(ICabService cabService,  ICabRemovalRequestService cabRemovalRequestService, ILogger<CabRemovalRequestController> logger)
         {
             this.cabService = cabService;
@@ -60,8 +58,7 @@ namespace DVSRegister.Controllers
         [HttpGet("about-to-remove")]
         public async Task<IActionResult> AboutToRemove(int serviceId)
         {
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, cabId);
+            ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);
 
             serviceDto.RemovalReasonByCab = HttpContext.Session.GetString("ReasonForRemoval");
             ViewBag.WhatToRemove = HttpContext.Session.GetString("WhatToRemove");
@@ -71,9 +68,8 @@ namespace DVSRegister.Controllers
 
         [HttpPost("about-to-remove")]
         public async Task<IActionResult> RequestRemoval(int providerId, int serviceId)
-        {
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0 && providerId > 0 && serviceId > 0)
+        {           
+            if (CabId > 0 && providerId > 0 && serviceId > 0)
             {
                 string removalReasonByCab = HttpContext.Session.GetString("ReasonForRemoval");
                 string whatToRemove = HttpContext.Session.GetString("WhatToRemove");
@@ -81,10 +77,10 @@ namespace DVSRegister.Controllers
                 HttpContext.Session.Remove("ReasonForRemoval");
                 HttpContext.Session.Remove("WhatToRemove");
 
-                GenericResponse genericResponse = await cabRemovalRequestService.UpdateRemovalStatus(cabId, providerId, serviceId, UserEmail, removalReasonByCab, whatToRemove);
+                GenericResponse genericResponse = await cabRemovalRequestService.UpdateRemovalStatus(CabId, providerId, serviceId, UserEmail, removalReasonByCab, whatToRemove);
                 if (genericResponse.Success)
                 {
-                    ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, cabId);
+                    ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);
                     ViewBag.WhatToRemove = whatToRemove;
                     return View("RemovalRequested", serviceDto);
                 }

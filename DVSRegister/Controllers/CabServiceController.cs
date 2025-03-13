@@ -14,8 +14,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/submit-service")]
-    [ValidCognitoToken]
-    public class CabServiceController : Controller
+  
+    public class CabServiceController : BaseController
     {
 
         private readonly ICabService cabService;
@@ -24,7 +24,7 @@ namespace DVSRegister.Controllers
         private readonly IEmailSender emailSender;
         private readonly ILogger<CabServiceController> _logger;
         
-        private string UserEmail => HttpContext.Session.Get<string>("Email")??string.Empty;
+       
         public CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IEmailSender emailSender, ILogger<CabServiceController> logger)
         {
             this.cabService = cabService;
@@ -38,9 +38,8 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> BeforeYouStart(int providerProfileId)
         {
             HttpContext?.Session.Remove("ServiceSummary");
-            ViewBag.ProviderProfileId = providerProfileId;
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
-            CabUserDto cabUserDto = await userService.GetUser(email);
+            ViewBag.ProviderProfileId = providerProfileId;          
+            CabUserDto cabUserDto = await userService.GetUser(UserEmail);
             if(cabUserDto.Id>0 )
             {
                 // to prevent another cab changing the providerProfileId from url
@@ -75,9 +74,8 @@ namespace DVSRegister.Controllers
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;          
-            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
-            CabUserDto cabUserDto = await userService.GetUser(email);
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();         
+            CabUserDto cabUserDto = await userService.GetUser(UserEmail);
             // to prevent another cab changing the providerProfileId from url
             bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
             if (providerProfileId > 0 && isValid) 
@@ -963,10 +961,10 @@ namespace DVSRegister.Controllers
         [HttpGet("service-submitted")]
         public async Task <IActionResult> InformationSubmitted()
         {
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+         
             HttpContext?.Session.Remove("ServiceSummary");
-            ViewBag.Email = email;
-            await emailSender.SendEmailCabInformationSubmitted(email, email);
+            ViewBag.Email = UserEmail;
+            await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail);
             await emailSender.SendCertificateInfoSubmittedToDSIT();
             return View();
 
