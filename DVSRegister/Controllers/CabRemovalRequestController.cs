@@ -1,6 +1,7 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
@@ -14,12 +15,14 @@ namespace DVSRegister.Controllers
     {
         private readonly ICabService cabService;
         private readonly ICabRemovalRequestService cabRemovalRequestService;  
+        private readonly ILogger<CabRemovalRequestController> _logger;
 
         private string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
-        public CabRemovalRequestController(ICabService cabService,  ICabRemovalRequestService cabRemovalRequestService)
+        public CabRemovalRequestController(ICabService cabService,  ICabRemovalRequestService cabRemovalRequestService, ILogger<CabRemovalRequestController> logger)
         {
             this.cabService = cabService;
             this.cabRemovalRequestService = cabRemovalRequestService;
+            _logger = logger;
             
         }
 
@@ -87,11 +90,13 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("RequestRemoval failed: Unable to update removal status."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("RequestRemoval failed: Invalid CabId, ProviderId, or ServiceId."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
