@@ -14,12 +14,13 @@ namespace DVSRegister.Controllers
     {
         private readonly IJwtService jwtService;
         
-        private readonly IConsentService consentService;       
-
-        public ConsentController(IJwtService jwtService, IConsentService consentService)
+        private readonly IConsentService consentService;
+        private readonly ILogger<ConsentController> _logger;
+        public ConsentController(IJwtService jwtService, IConsentService consentService, ILogger<ConsentController> logger)
         {
             this.jwtService = jwtService;            
-            this.consentService = consentService;          
+            this.consentService = consentService;
+            _logger = logger;
         }
 
 
@@ -38,17 +39,20 @@ namespace DVSRegister.Controllers
                     ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByToken(tokenDetails.Token, tokenDetails.TokenId);
                     if (serviceDto == null || serviceDto?.ServiceStatus == ServiceStatusEnum.Received || serviceDto?.CertificateReview?.CertificateReviewStatus != CertificateReviewEnum.Approved)
                     {                       
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationConsent failed: Service is not approved."));
                         return RedirectToAction("ProceedApplicationConsentError");
                     }
                     consentViewModel.Service = serviceDto;
                 }
                 else
                 {                    
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationConsent failed: Token is invalid or unauthorised."));
                     return RedirectToAction("ProceedApplicationConsentError");
                 }
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationConsent failed: Token is missing."));
                 return RedirectToAction("ProceedApplicationConsentError");
             }
             return View(consentViewModel);
@@ -78,6 +82,7 @@ namespace DVSRegister.Controllers
                         }
                         else
                         {
+                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationGiveConsent failed: Unable to update service status."));
                             return RedirectToAction("ProceedApplicationConsentError");
                         }
                     }
@@ -90,12 +95,14 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationGiveConsent failed: Token is invalid or unauthorised."));
                     await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
                     return RedirectToAction("ProceedApplicationConsentError");
                 }
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationGiveConsent failed: Token is missing."));
                 return RedirectToAction("ProceedApplicationConsentError");
             }
 
@@ -130,17 +137,20 @@ namespace DVSRegister.Controllers
                     ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByConsentToken(tokenDetails.Token, tokenDetails.TokenId);
                     if(serviceDto== null || serviceDto?.ServiceStatus == ServiceStatusEnum.ReadyToPublish)
                     {
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Consent failed: Service is already ready to publish."));
                         return RedirectToAction("ConsentErrorAlreadyAgreed");
                     }
                     consentViewModel.Service = serviceDto;
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Consent failed: Token is invalid or expired."));
                     return RedirectToAction("ConsentErrorURLExpired");
                 }
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Consent failed: Token is missing."));
                 return RedirectToAction("ConsentError");
             }
                
@@ -171,6 +181,7 @@ namespace DVSRegister.Controllers
                         }
                         else
                         {
+                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("GiveConsent failed: Unable to update service/provider status."));
                             return RedirectToAction("ConsentError");
                         } 
                     }
@@ -183,12 +194,14 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("GiveConsent failed: Token is invalid or unauthorised."));
                     await consentService.RemoveConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
                     return RedirectToAction("ConsentErrorURLExpired");
                 }
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("GiveConsent failed: Token is missing."));
                 return RedirectToAction("ConsentError");
             }         
             
@@ -207,7 +220,7 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("consent-error")]
-        public ActionResult ConsentErrorError()
+        public ActionResult ConsentError()
         {
             return View();
         }

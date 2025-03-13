@@ -17,7 +17,7 @@ namespace DVSRegister.CommonUtility.Models
         Removed = 5,
         [Description("Awaiting removal confirmation")]
         AwaitingRemovalConfirmation = 6,
-        [Description("Awaiting removal confirmation")]
+        [Description("Removal request sent to DSIT")]
         CabAwaitingRemovalConfirmation = 7,
         [Description("Saved as draft")]
         SavedAsDraft = 8,

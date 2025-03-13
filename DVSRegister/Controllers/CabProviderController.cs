@@ -13,18 +13,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab-service/create-profile")]
-    [ValidCognitoToken]
-    public class CabProviderController : Controller
+    [Route("cab-service/create-profile")] 
+    public class CabProviderController : BaseController
     {
         private readonly ICabService cabService;
         private readonly IUserService userService;
-        private string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
+        private readonly ILogger<CabProviderController> _logger;
+  
 
-        public CabProviderController(ICabService cabService, IUserService userService)
+        public CabProviderController(ICabService cabService, IUserService userService, ILogger<CabProviderController> logger)
         {
             this.cabService = cabService;
             this.userService = userService;
+            _logger = logger;
         }
 
         [HttpGet("before-you-start")]
@@ -538,11 +539,13 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to save provider profile."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("An error occurred while saving the profile summary."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
@@ -568,10 +571,10 @@ namespace DVSRegister.Controllers
         [HttpGet("edit-company-information")]
         public async Task<IActionResult> EditCompanyInformation(int providerId)
         {
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0 && providerId > 0)
+          
+            if (CabId > 0 && providerId > 0)
             {
-                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
 
                 bool isCompanyInfoEditable = cabService.CheckCompanyInfoEditable(providerProfileDto);
                 if (isCompanyInfoEditable)
@@ -593,11 +596,13 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Company information is not editable."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("An error occurred while retrieving company information."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
@@ -637,6 +642,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Company information update failed."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
@@ -653,10 +659,10 @@ namespace DVSRegister.Controllers
         [HttpGet("edit-primary-contact")]
         public async Task<IActionResult> EditPrimaryContact(int providerId)
         {
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0 && providerId > 0)
+           
+            if (CabId > 0 && providerId > 0)
             {
-                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
                 PrimaryContactViewModel primaryContactViewModel = new()
                 {
                     PrimaryContactFullName = providerProfileDto.PrimaryContactFullName,
@@ -670,6 +676,7 @@ namespace DVSRegister.Controllers
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to edit primary contact. Invalid CabId or ProviderId."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
@@ -677,16 +684,20 @@ namespace DVSRegister.Controllers
         [HttpPost("edit-primary-contact")]
         public async Task<IActionResult> UpdatePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
         { 
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId")); 
-            if (cabId <= 0 || primaryContactViewModel.ProviderId <= 0)
+          
+            if (CabId <= 0 || primaryContactViewModel.ProviderId <= 0)
             { 
+                
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPrimaryContact failed: Invalid CabId or ProviderId."));
                 return RedirectToAction("CabHandleException", "Error"); 
             }
 
             // Fetch the latest provider data from the database
-            ProviderProfileDto providerProfileDto = await cabService.GetProvider(primaryContactViewModel.ProviderId, cabId); 
+            ProviderProfileDto providerProfileDto = await cabService.GetProvider(primaryContactViewModel.ProviderId, CabId); 
             if (providerProfileDto == null) 
             { 
+                
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPrimaryContact failed: ProviderProfile not found for ProviderId and CabId."));
                 return RedirectToAction("CabHandleException", "Error"); 
             } 
             
@@ -726,6 +737,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPrimaryContact failed: Unable to update primary contact for ProviderId and CabId."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
@@ -742,10 +754,10 @@ namespace DVSRegister.Controllers
         [HttpGet("edit-secondary-contact")]
         public async Task<IActionResult> EditSecondaryContact(int providerId)
         {
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0 && providerId > 0)
+      
+            if (CabId > 0 && providerId > 0)
             {
-                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
                 SecondaryContactViewModel secondaryContactViewModel = new()
                 {
                     SecondaryContactFullName = providerProfileDto.SecondaryContactFullName,
@@ -759,23 +771,25 @@ namespace DVSRegister.Controllers
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to edit secondary contact. Invalid CabId."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
 
         [HttpPost("edit-secondary-contact")]
         public async Task<IActionResult> UpdateSecondaryContact(SecondaryContactViewModel secondaryContactViewModel) 
-        { 
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId")); 
-            if (cabId <= 0 || secondaryContactViewModel.ProviderId <= 0) 
-            { 
+        {         
+            if (CabId <= 0 || secondaryContactViewModel.ProviderId <= 0) 
+            {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditSecondaryContact failed: Invalid CabId or ProviderId."));
                 return RedirectToAction("CabHandleException", "Error"); 
             } 
             
             // Fetch the latest provider data from the database
-            ProviderProfileDto providerProfileDto = await cabService.GetProvider(secondaryContactViewModel.ProviderId, cabId); 
+            ProviderProfileDto providerProfileDto = await cabService.GetProvider(secondaryContactViewModel.ProviderId, CabId); 
             if (providerProfileDto == null) 
             { 
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditSecondaryContact failed: ProviderProfile not found for ProviderId and CabId."));
                 return RedirectToAction("CabHandleException", "Error"); 
             } 
             
@@ -815,6 +829,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditSecondaryContact failed: Unable to update secondary contact for ProviderId and CabId."));
+
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
@@ -831,10 +847,10 @@ namespace DVSRegister.Controllers
         [HttpGet("edit-public-provider-information")]
         public async Task<IActionResult> EditPublicProviderInformation(int providerId)
         {
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0 && providerId > 0)
+           
+            if (CabId > 0 && providerId > 0)
             {
-                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
                 PublicContactViewModel publicContactViewModel = new()
                 {
                     PublicContactEmail = providerProfileDto.PublicContactEmail,
@@ -846,6 +862,7 @@ namespace DVSRegister.Controllers
             }
             else
             {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPublicProviderInformation failed: ProviderProfile not found."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
@@ -872,6 +889,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPublicProviderInformation failed: Update operation unsuccessful."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }

@@ -14,30 +14,32 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/submit-service")]
-    [ValidCognitoToken]
-    public class CabServiceController : Controller
+  
+    public class CabServiceController : BaseController
     {
 
         private readonly ICabService cabService;
         private readonly IBucketService bucketService;
         private readonly IUserService userService;
         private readonly IEmailSender emailSender;
-        private string UserEmail => HttpContext.Session.Get<string>("Email")??string.Empty;
-        public CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IEmailSender emailSender)
+        private readonly ILogger<CabServiceController> _logger;
+        
+       
+        public CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IEmailSender emailSender, ILogger<CabServiceController> logger)
         {
             this.cabService = cabService;
             this.bucketService = bucketService;
             this.userService=userService;
             this.emailSender=emailSender;
+            _logger = logger;
         }
 
         [HttpGet("before-you-start")]
         public async Task<IActionResult> BeforeYouStart(int providerProfileId)
         {
             HttpContext?.Session.Remove("ServiceSummary");
-            ViewBag.ProviderProfileId = providerProfileId;
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
-            CabUserDto cabUserDto = await userService.GetUser(email);
+            ViewBag.ProviderProfileId = providerProfileId;          
+            CabUserDto cabUserDto = await userService.GetUser(UserEmail);
             if(cabUserDto.Id>0 )
             {
                 // to prevent another cab changing the providerProfileId from url
@@ -52,13 +54,15 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid provider profile ID for Cab ID."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
 
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("CabUserDto ID is 0 or invalid for user."));
+                return RedirectToAction("CabHandleException", "Error");
             }
            
         }
@@ -70,9 +74,8 @@ namespace DVSRegister.Controllers
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;          
-            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
-            CabUserDto cabUserDto = await userService.GetUser(email);
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();         
+            CabUserDto cabUserDto = await userService.GetUser(UserEmail);
             // to prevent another cab changing the providerProfileId from url
             bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
             if (providerProfileId > 0 && isValid) 
@@ -83,7 +86,8 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid provider profile ID for Cab ID."));
+                return RedirectToAction("CabHandleException", "Error");
             }
           
 
@@ -113,7 +117,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
 
             }
@@ -156,7 +161,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
             }
             {
@@ -201,7 +207,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
 
             }
@@ -261,7 +268,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
 
             }
@@ -328,7 +336,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
 
             }
@@ -397,7 +406,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
 
             }
@@ -460,7 +470,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
 
             }
@@ -517,7 +528,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
@@ -575,7 +587,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
 
             }
@@ -633,7 +646,8 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                return RedirectToAction("CabHandleException", "Error");
             }
         }
         #endregion
@@ -713,7 +727,8 @@ namespace DVSRegister.Controllers
                             }
                             else
                             {
-                                return RedirectToAction("HandleException", "Error");
+                                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                                return RedirectToAction("CabHandleException", "Error");
                             }
                         }
                         else
@@ -825,7 +840,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
@@ -883,7 +899,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
@@ -925,12 +942,14 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Service submission failed: SaveService returned unsuccessful response."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("An error occurred while submitting the service."));
+                return RedirectToAction("CabHandleException", "Error");
             }
            
         }
@@ -942,10 +961,10 @@ namespace DVSRegister.Controllers
         [HttpGet("service-submitted")]
         public async Task <IActionResult> InformationSubmitted()
         {
-            string email = HttpContext?.Session.Get<string>("Email")??string.Empty;
+         
             HttpContext?.Session.Remove("ServiceSummary");
-            ViewBag.Email = email;
-            await emailSender.SendEmailCabInformationSubmitted(email, email);
+            ViewBag.Email = UserEmail;
+            await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail);
             await emailSender.SendCertificateInfoSubmittedToDSIT();
             return View();
 
@@ -977,7 +996,8 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to save draft: SaveService returned unsuccessful response."));
+                return RedirectToAction("CabHandleException", "Error");
             }
 
         }

@@ -2,48 +2,60 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.Data.Entities;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Provider;
 using DVSRegister.Models.CAB.Service;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab-service")]
-    [ValidCognitoToken]
-    public class CabController : Controller
+    [Route("cab-service")]   
+    public class CabController : BaseController
     {
     
         private readonly ICabService cabService;      
         private readonly IUserService userService;
-        private string UserEmail => HttpContext.Session.Get<string>("Email")??string.Empty;
-        public CabController(ICabService cabService, IUserService userService)
+        private readonly ILogger<CabController> _logger;
+      
+        public CabController(ICabService cabService, IUserService userService, ILogger<CabController> logger)
         {           
             this.cabService = cabService;          
             this.userService = userService;
+            _logger = logger;
         }
 
         [HttpGet("")]
         [HttpGet("home")]
         public async Task<IActionResult> LandingPage()
         {
-           
-            string cab = string.Empty;
-            var identity = HttpContext?.User.Identity as ClaimsIdentity;
-            var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
-            if (profileClaim != null)
-                cab = profileClaim.Value;
-            CabUserDto cabUser = await userService.SaveUser(UserEmail,cab);
-            HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
-            return cabUser.CabId>0 ? View() : RedirectToAction("HandleException", "Error");
-           
+            try
+            {
+                  CabUserDto cabUser = await userService.SaveUser(UserEmail, Cab);
+                HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
+
+                if (cabUser.CabId > 0)
+                {
+                    return View();
+
+                }
+                else
+                {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid CabId retrieved."));
+                    return RedirectToAction("CabHandleException", "Error");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,"{Message}", Helper.LoggingHelper.FormatErrorMessage("An error occurred."));
+                return RedirectToAction("CabHandleException", "Error");
+            }
+            
+            
         }
 
 
@@ -51,10 +63,9 @@ namespace DVSRegister.Controllers
         #region Cab provider list screens
         [HttpGet("view-profiles")]
         public async Task<IActionResult> ListProviders(string SearchAction = "", string SearchText = "")
-        {
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
+        {          
 
-            if (cabId > 0)
+            if (CabId > 0)
             {
                 ProviderListViewModel providerListViewModel = new();
                 if (SearchAction == "clearSearch")
@@ -63,13 +74,14 @@ namespace DVSRegister.Controllers
                     providerListViewModel.SearchText = null;
                     SearchText = string.Empty;
                 }
-                providerListViewModel.Providers = await cabService.GetProviders(cabId, SearchText);
+                providerListViewModel.Providers = await cabService.GetProviders(CabId, SearchText);
                 return View(providerListViewModel);
 
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
+                return RedirectToAction("CabHandleException", "Error");
             }
           
         }
@@ -78,30 +90,29 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> ProviderOverview(int providerId)
         {
             HttpContext?.Session.Remove("ServiceSummary");
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-
-            if (cabId > 0) 
+           
+            if (CabId > 0) 
             {
-                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
                 HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
                 HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
                 return View(providerProfileDto);
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
+                return RedirectToAction("CabHandleException", "Error");
             }
            
         }
         [HttpGet("profile-information")]
         public async Task<IActionResult> ProviderProfileDetails(int providerId)
         {
-          
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
+                    
 
-            if (cabId > 0)
+            if (CabId > 0)
             {
-                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, cabId);
+                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
                 HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
                 HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
                 ProviderDetailsViewModel providerDetailsViewModel = new()
@@ -114,7 +125,9 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
+                return RedirectToAction("CabHandleException", "Error");
             }
 
 
@@ -123,23 +136,23 @@ namespace DVSRegister.Controllers
         [HttpGet("service-details")]
         public async Task<IActionResult> ProviderServiceDetails(int serviceKey)
         {
-            HttpContext?.Session.Remove("ServiceSummary");
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0)
+            HttpContext?.Session.Remove("ServiceSummary");           
+            if (CabId > 0)
             {
                 ServiceVersionViewModel serviceVersions = new();
-                var serviceList = await cabService.GetServiceList(serviceKey, cabId);
+                var serviceList = await cabService.GetServiceList(serviceKey, CabId);
                 ServiceDto currentServiceVersion = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
                 serviceVersions.CurrentServiceVersion = currentServiceVersion;
                 serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
 
-                SetServiceDataToSession(cabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
+                SetServiceDataToSession(CabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
                 return View(serviceVersions);
 
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
+                return RedirectToAction("CabHandleException", "Error");
             }
            
         }

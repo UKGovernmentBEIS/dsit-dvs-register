@@ -1,6 +1,7 @@
 ﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
@@ -8,30 +9,31 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/re-application")]
-    public class CabServiceReApplicationController : Controller
+    public class CabServiceReApplicationController : BaseController
     {
         private readonly ICabService cabService;
         private readonly IUserService userService;
-        private string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
-        public CabServiceReApplicationController(ICabService cabService, IUserService userService)
+        private readonly ILogger<CabServiceReApplicationController> _logger;
+     
+        public CabServiceReApplicationController(ICabService cabService, IUserService userService, ILogger<CabServiceReApplicationController> logger)
         {
             this.cabService = cabService;
             this.userService = userService;
+            _logger = logger;
         }
 
         [HttpGet("resume-submission")]
         public  IActionResult ResumeSubmission()
         {
-
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0)
+            if (CabId > 0)
             {
                 ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
                 return RedirectToNextEmptyField(serviceSummary);
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ResumeSubmission failed: Invalid CabId."));
+                return RedirectToAction("CabHandleException", "Error");
             }
         }
         
@@ -40,9 +42,8 @@ namespace DVSRegister.Controllers
         {
 
             ViewBag.ServiceKey = serviceKey;
-            ViewBag.ProviderProfileId = providerProfileId;
-            string email = HttpContext?.Session.Get<string>("Email") ?? string.Empty;
-            CabUserDto cabUserDto = await userService.GetUser(email);
+            ViewBag.ProviderProfileId = providerProfileId;        
+            CabUserDto cabUserDto = await userService.GetUser(UserEmail);
             if (cabUserDto.Id > 0)
             {
                 // to prevent another cab changing the providerProfileId from url
@@ -60,13 +61,15 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("HandleException", "Error");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("BeforeYouSubmitNewCertificate failed: Invalid providerProfileId for CabId."));
+                    return RedirectToAction("CabHandleException", "Error");
                 }
 
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("BeforeYouSubmitNewCertificate failed: Invalid CabUserId."));
+                return RedirectToAction("CabHandleException", "Error");
             }
           
         }

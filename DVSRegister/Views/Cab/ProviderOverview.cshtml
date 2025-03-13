@@ -55,7 +55,15 @@
 
                 @if (Model.Services?.Any() == true)
                 {
-                    @foreach (var item in Model.Services.Where(s => s.IsCurrent))
+                    var publishedServicesCount = Model.Services
+                    .Count(s => s.ServiceStatus == ServiceStatusEnum.Published && s.IsCurrent);
+
+                    bool removeProvider = publishedServicesCount == 1 &&
+                    Model.Services.All(s => s.ServiceStatus == ServiceStatusEnum.Removed ||
+                    s.ServiceStatus == ServiceStatusEnum.Published || s.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation);
+
+
+                    foreach (var item in Model.Services.Where(s => s.IsCurrent))
                     {
                         <div class="govuk-summary-card">
 
@@ -67,24 +75,32 @@
                                     <li class="govuk-summary-card__action">
                                         <a class="govuk-link" href="/cab-service/service-details?serviceKey=@item.ServiceKey">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
                                     </li>
-                                    @if(item.ServiceStatus == ServiceStatusEnum.Published)
+                                    @if (item.ServiceStatus == ServiceStatusEnum.Published)
                                     {
+                                        string whatToRemove = removeProvider ? "provider" : "service";
                                         <li class="govuk-summary-card__action">
-                                            <a class="govuk-link" href="/cab-service/remove/reason-for-removing?providerid=@item.ProviderProfileId&serviceId=@item.Id">Remove service <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
+                                            <a class="govuk-link" href="/cab-service/remove/reason-for-removing?whatToRemove=@whatToRemove&providerid=@item.ProviderProfileId&serviceId=@item.Id">
+                                                Request @whatToRemove removal <span class="govuk-visually-hidden"> of @whatToRemove @item.ServiceName</span>
+                                            </a>
                                         </li>
                                     }
-                                  
                                 </ul>
                             </div>
                             <div class="govuk-summary-card__content">
                                 <dl class="govuk-summary-list">
-                                
                                     <div class="govuk-summary-list__row">
                                         <dt class="govuk-summary-list__key">
                                             Submission date (GMT)
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @DateTimeExtensions.FormatDateTime(@item.CreatedTime)
+                                            @if(item.ServiceStatus == ServiceStatusEnum.Submitted)
+                                            {
+                                                @DateTimeExtensions.FormatDateTime(@item.CreatedTime)
+                                            }
+                                            else
+                                            {
+                                                @DateTimeExtensions.FormatDateTime(@item.ModifiedTime)
+                                            }                                            
                                         </dd>
                                     </div>
                                     <div class="govuk-summary-list__row">
@@ -92,15 +108,14 @@
                                             Status
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                           @HtmlExtensions.GetStyledStatusTag(item.CertificateReview, item.ServiceStatus)
-
+                                            @HtmlExtensions.GetStyledStatusTag(item.CertificateReview, item.ServiceStatus)
                                         </dd>
                                     </div>
                                 </dl>
                             </div>
                         </div>
-                     }
-                }              
+                    }
+                }
             </div>
 
             <div class="govuk-grid-column-two-thirds">
