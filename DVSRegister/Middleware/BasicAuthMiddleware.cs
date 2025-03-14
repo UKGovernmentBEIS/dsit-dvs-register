@@ -10,8 +10,8 @@ namespace DVSRegister.Middleware
     {
         private readonly RequestDelegate next;
         private readonly BasicAuthMiddlewareConfiguration configuration;
-        private readonly ILogger<ExceptionHandlerMiddleware> logger;
-        public BasicAuthMiddleware(RequestDelegate next, IOptions<BasicAuthMiddlewareConfiguration> options, ILogger<ExceptionHandlerMiddleware> logger)
+        private readonly ILogger<BasicAuthMiddleware> logger;
+        public BasicAuthMiddleware(RequestDelegate next, IOptions<BasicAuthMiddlewareConfiguration> options, ILogger<BasicAuthMiddleware> logger)
         {
             this.next = next;
             this.logger = logger;
@@ -34,48 +34,55 @@ namespace DVSRegister.Middleware
             }
             catch (Exception ex)
             {
-                logger.LogError($"An unexpected error occurred: {ex}");
-                logger.LogError($"Stacktrace: {ex.StackTrace}");
+                logger.LogError(ex, "An unexpected error occurred in BasicAuthMiddleware.");
+
                 if (ex.InnerException != null)
                 {
-                    Console.WriteLine("Inner Exception");
-                    Console.Write(String.Concat(ex.InnerException.StackTrace, ex.InnerException.Message));
+                    logger.LogError(ex.InnerException, "Inner exception in BasicAuthMiddleware.");
                 }
                 // Redirect to error page 
+                string redirectPath = requestPath.Contains("cab-service")
+                    ? Constants.CabRegistrationErrorPath
+                    : Constants.CommonErrorPath;
                 
-                if (requestPath.Contains("cab-service"))
-                    httpContext.Response.Redirect(Constants.CabRegistrationErrorPath);
-                else
-                    httpContext.Response.Redirect(Constants.CommonErrorPath);
+                httpContext.Response.Redirect(redirectPath);
             }
         }
         private bool IsAuthorised(HttpContext httpContext)
         {
             try
             {
-                bool returnValue = false;
-                bool hasAuthorizationHeader = httpContext.Request.Headers.ContainsKey("Authorization");
-                if (hasAuthorizationHeader)
+                if (!httpContext.Request.Headers.ContainsKey("Authorization"))
                 {
-                    var authHeader = AuthenticationHeaderValue.Parse(httpContext.Request.Headers["Authorization"]);
-                    var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
-                    var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
-                    var username = credentials[0];
-                    var password = credentials[1];
-
-                    returnValue = configuration.Username == username
-                           && configuration.Password == password;  
-                    if(!returnValue ) 
-                    {
-                        Console.WriteLine("Basic Auth Details Entered Wrong ");
-                    }
+                    logger.LogWarning("Basic authentication header missing in request.");
+                    return false;
                 }
-                return returnValue;
+                
+                var authHeader = AuthenticationHeaderValue.Parse(httpContext.Request.Headers["Authorization"]);
+                var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
+                var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
+                
+                if (credentials.Length != 2)
+                {
+                    logger.LogError("Invalid Basic Authentication format.");
+                    return false;
+                }
+                
+                var username = credentials[0];
+                var password = credentials[1];
+
+                bool isValidUser = configuration.Username == username && configuration.Password == password;
+                
+                if (!isValidUser ) 
+                {
+                    logger.LogWarning("Basic authentication failed due to incorrect credentials.");
+                }
+                return isValidUser;
             }
             catch(Exception ex)
             {
                 // Default to denying access if anything goes wrong
-                Console.WriteLine("Basic Auth Details Entered Wrong " + ex);
+                logger.LogError(ex, "Error during Basic authentication.");
                 return false;
             }
         }
@@ -98,10 +105,6 @@ namespace DVSRegister.Middleware
             }
         }
     }
-
-    
-
-    
 
     // Extension method used to add the middleware to the HTTP request pipeline.
     public static class BasicAuthMiddlewareExtensions
