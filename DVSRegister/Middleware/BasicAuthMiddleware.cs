@@ -34,11 +34,11 @@ namespace DVSRegister.Middleware
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An unexpected error occurred in BasicAuthMiddleware.");
+                logger.LogError(ex, ex.Message);
 
                 if (ex.InnerException != null)
                 {
-                    logger.LogError(ex.InnerException, "Inner exception in BasicAuthMiddleware.");
+                    logger.LogError(ex.InnerException, "Inner exception.");
                 }
                 // Redirect to error page 
                 string redirectPath = requestPath.Contains("cab-service")

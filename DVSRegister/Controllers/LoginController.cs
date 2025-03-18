@@ -8,14 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-application-registration")]
-    public class LoginController : Controller
+    public class LoginController(ISignUpService signUpService) : Controller
     {
-        private readonly ISignUpService _signUpService;
-
-        public LoginController(ISignUpService signUpService)
-        {
-            _signUpService = signUpService;
-        }
+        private readonly ISignUpService _signUpService = signUpService;
 
         [HttpGet("")]
         public IActionResult StartPage()
