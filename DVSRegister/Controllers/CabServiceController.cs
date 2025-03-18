@@ -15,24 +15,14 @@ namespace DVSRegister.Controllers
 {
     [Route("cab-service/submit-service")]
   
-    public class CabServiceController : BaseController
+    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IEmailSender emailSender, ILogger<CabServiceController> logger) : BaseController(logger)
     {
 
-        private readonly ICabService cabService;
-        private readonly IBucketService bucketService;
-        private readonly IUserService userService;
-        private readonly IEmailSender emailSender;
-        private readonly ILogger<CabServiceController> _logger;
-        
-       
-        public CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IEmailSender emailSender, ILogger<CabServiceController> logger)
-        {
-            this.cabService = cabService;
-            this.bucketService = bucketService;
-            this.userService=userService;
-            this.emailSender=emailSender;
-            _logger = logger;
-        }
+        private readonly ICabService cabService = cabService;
+        private readonly IBucketService bucketService = bucketService;
+        private readonly IUserService userService = userService;
+        private readonly IEmailSender emailSender = emailSender;
+        private readonly ILogger<CabServiceController> _logger = logger;
 
         [HttpGet("before-you-start")]
         public async Task<IActionResult> BeforeYouStart(int providerProfileId)

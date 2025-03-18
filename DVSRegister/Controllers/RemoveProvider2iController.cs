@@ -10,18 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("remove-provider")]
-    public class RemoveProvider2iController : Controller
+    public class RemoveProvider2iController(IJwtService jwtService, IRemoveProvider2iService removeProvider2iService, ILogger<RemoveProvider2iController> logger) : Controller
     {
-        private readonly IJwtService jwtService;
-        private readonly IRemoveProvider2iService removeProvider2iService;
-        private readonly ILogger<RemoveProvider2iController> _logger;
-
-        public RemoveProvider2iController(IJwtService jwtService, IRemoveProvider2iService removeProvider2iService, ILogger<RemoveProvider2iController> logger)
-        {
-            this.jwtService = jwtService;
-            this.removeProvider2iService = removeProvider2iService;
-            _logger = logger;
-        }
+        private readonly IJwtService jwtService = jwtService;
+        private readonly IRemoveProvider2iService removeProvider2iService = removeProvider2iService;
+        private readonly ILogger<RemoveProvider2iController> _logger = logger;
         #region Remove provider - Approve removal by Provider 2i check
 
         [HttpGet("provider/provider-details")]

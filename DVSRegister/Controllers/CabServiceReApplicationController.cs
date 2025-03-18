@@ -9,18 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/re-application")]
-    public class CabServiceReApplicationController : BaseController
+    public class CabServiceReApplicationController(ICabService cabService, IUserService userService, ILogger<CabServiceReApplicationController> logger) : BaseController(logger)
     {
-        private readonly ICabService cabService;
-        private readonly IUserService userService;
-        private readonly ILogger<CabServiceReApplicationController> _logger;
-     
-        public CabServiceReApplicationController(ICabService cabService, IUserService userService, ILogger<CabServiceReApplicationController> logger)
-        {
-            this.cabService = cabService;
-            this.userService = userService;
-            _logger = logger;
-        }
+        private readonly ICabService cabService = cabService;
+        private readonly IUserService userService = userService;
+        private readonly ILogger<CabServiceReApplicationController> _logger = logger;
 
         [HttpGet("resume-submission")]
         public  IActionResult ResumeSubmission()

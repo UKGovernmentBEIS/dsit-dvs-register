@@ -14,19 +14,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/create-profile")] 
-    public class CabProviderController : BaseController
+    public class CabProviderController(ICabService cabService, IUserService userService, ILogger<CabProviderController> logger) : BaseController(logger)
     {
-        private readonly ICabService cabService;
-        private readonly IUserService userService;
-        private readonly ILogger<CabProviderController> _logger;
-  
-
-        public CabProviderController(ICabService cabService, IUserService userService, ILogger<CabProviderController> logger)
-        {
-            this.cabService = cabService;
-            this.userService = userService;
-            _logger = logger;
-        }
+        private readonly ICabService cabService = cabService;
+        private readonly IUserService userService = userService;
+        private readonly ILogger<CabProviderController> _logger = logger;
 
         [HttpGet("before-you-start")]
         public IActionResult BeforeYouStart()

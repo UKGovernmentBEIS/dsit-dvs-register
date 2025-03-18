@@ -9,20 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/remove")]
-    public class CabRemovalRequestController : BaseController
+    public class CabRemovalRequestController(ICabService cabService, ICabRemovalRequestService cabRemovalRequestService, ILogger<CabRemovalRequestController> logger) : BaseController(logger)
     {
-        private readonly ICabService cabService;
-        private readonly ICabRemovalRequestService cabRemovalRequestService;  
-        private readonly ILogger<CabRemovalRequestController> _logger;
-
-   
-        public CabRemovalRequestController(ICabService cabService,  ICabRemovalRequestService cabRemovalRequestService, ILogger<CabRemovalRequestController> logger)
-        {
-            this.cabService = cabService;
-            this.cabRemovalRequestService = cabRemovalRequestService;
-            _logger = logger;
-            
-        }
+        private readonly ICabService cabService = cabService;
+        private readonly ICabRemovalRequestService cabRemovalRequestService = cabRemovalRequestService;  
+        private readonly ILogger<CabRemovalRequestController> _logger = logger;
 
         [HttpGet("reason-for-removing")]
         public IActionResult ReasonForRemoval(int providerid, int serviceId, string whatToRemove)
