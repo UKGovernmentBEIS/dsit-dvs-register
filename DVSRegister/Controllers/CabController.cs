@@ -45,13 +45,13 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid CabId retrieved."));
+                    // _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid CabId retrieved."));
                     return RedirectToAction("CabHandleException", "Error");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex,"{Message}", Helper.LoggingHelper.FormatErrorMessage("An error occurred."));
+                // _logger.LogError(ex,"{Message}", Helper.LoggingHelper.FormatErrorMessage("An error occurred."));
                 return RedirectToAction("CabHandleException", "Error");
             }
             
