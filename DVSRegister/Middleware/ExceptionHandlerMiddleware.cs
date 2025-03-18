@@ -22,7 +22,7 @@ namespace DVSRegister.Middleware
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "An unexpected error occurred in ExceptionHandlerMiddleware.");
+                logger.LogError(ex, "An unexpected occurred in request {RequestPath}", requestPath);
 
                 if (ex.InnerException != null)
                 {
