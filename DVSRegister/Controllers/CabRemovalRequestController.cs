@@ -60,7 +60,10 @@ namespace DVSRegister.Controllers
         [HttpPost("about-to-remove")]
         public async Task<IActionResult> RequestRemoval(int providerId, int serviceId)
         {           
-            if (CabId > 0 && providerId > 0 && serviceId > 0)
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            if (providerId > 0 && serviceId > 0)
             {
                 string removalReasonByCab = HttpContext.Session.GetString("ReasonForRemoval");
                 string whatToRemove = HttpContext.Session.GetString("WhatToRemove");
@@ -83,7 +86,7 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("RequestRemoval failed: Invalid CabId, ProviderId, or ServiceId."));
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("RequestRemoval failed: Invalid ProviderId, or ServiceId."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }

@@ -30,28 +30,23 @@ namespace DVSRegister.Controllers
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.ProviderProfileId = providerProfileId;          
             CabUserDto cabUserDto = await userService.GetUser(UserEmail);
-            if(cabUserDto.Id>0 )
+            
+            if(!IsValidCabId(cabUserDto.Id))
+                return HandleInvalidCabId(cabUserDto.Id);
+            
+            // to prevent another cab changing the providerProfileId from url
+            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
+            if(isValid)
             {
-                // to prevent another cab changing the providerProfileId from url
-                bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
-                if(isValid)
-                {
-                    ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-                    serviceSummaryViewModel.CabId = cabUserDto.CabId;
-                    serviceSummaryViewModel.CabUserId = cabUserDto.Id;
-                    HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
-                    return View();
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid provider profile ID for Cab ID."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+                serviceSummaryViewModel.CabId = cabUserDto.CabId;
+                serviceSummaryViewModel.CabUserId = cabUserDto.Id;
+                HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
+                return View();
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("CabUserDto ID is 0 or invalid for user."));
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid provider profile ID for Cab ID."));
                 return RedirectToAction("CabHandleException", "Error");
             }
            

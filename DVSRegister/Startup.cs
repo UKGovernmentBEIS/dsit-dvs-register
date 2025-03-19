@@ -92,8 +92,8 @@ namespace DVSRegister
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(360); 
                 options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;               
+                //options.Cookie.IsEssential = true;
+                //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;               
             });
         }
 
@@ -190,10 +190,10 @@ namespace DVSRegister
             // Change the default antiforgery cookie name so it doesn't include Asp.Net for security reasons
             services.AddAntiforgery(options =>
             {
-                options.Cookie.Name = "Antiforgery";
+                //options.Cookie.Name = "Antiforgery";
                 options.Cookie.HttpOnly = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.SameSite = SameSiteMode.Strict;
+                //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                //options.Cookie.SameSite = SameSiteMode.Strict;
             });
             services.AddSingleton<CookieService>();
             services.AddMvc();

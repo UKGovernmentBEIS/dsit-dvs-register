@@ -20,7 +20,7 @@ namespace DVSRegister.Controllers
     
         private readonly ICabService cabService = cabService;      
         private readonly IUserService userService = userService;
-        private readonly ILogger<CabController> _logger = logger;
+        private readonly ILogger<CabController> _logger = logger; // Remove?
 
         [HttpGet("")]
         [HttpGet("home")]
@@ -61,71 +61,51 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> ProviderOverview(int providerId)
         {
             HttpContext?.Session.Remove("ServiceSummary");
-           
-            if (CabId > 0) 
-            {
-                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
-                HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
-                HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
-                return View(providerProfileDto);
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
-                return RedirectToAction("CabHandleException", "Error");
-            }
-           
+            
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+
+            ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
+            HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
+            HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
+            return View(providerProfileDto);
         }
+        
         [HttpGet("profile-information")]
         public async Task<IActionResult> ProviderProfileDetails(int providerId)
         {
                     
 
-            if (CabId > 0)
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
+            HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
+            HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
+            ProviderDetailsViewModel providerDetailsViewModel = new()
             {
-                ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
-                HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
-                HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
-                ProviderDetailsViewModel providerDetailsViewModel = new()
-                {
-                    Provider = providerProfileDto,
-                    IsCompanyInfoEditable =  cabService.CheckCompanyInfoEditable(providerProfileDto)
-                };
+                Provider = providerProfileDto,
+                IsCompanyInfoEditable =  cabService.CheckCompanyInfoEditable(providerProfileDto)
+            };
 
-                return View(providerDetailsViewModel);
-            }
-            else
-            {
-                
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
-                return RedirectToAction("CabHandleException", "Error");
-            }
-
-
+            return View(providerDetailsViewModel);
         }
 
         [HttpGet("service-details")]
         public async Task<IActionResult> ProviderServiceDetails(int serviceKey)
         {
-            HttpContext?.Session.Remove("ServiceSummary");           
-            if (CabId > 0)
-            {
-                ServiceVersionViewModel serviceVersions = new();
-                var serviceList = await cabService.GetServiceList(serviceKey, CabId);
-                ServiceDto currentServiceVersion = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
-                serviceVersions.CurrentServiceVersion = currentServiceVersion;
-                serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
+            HttpContext?.Session.Remove("ServiceSummary");
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            ServiceVersionViewModel serviceVersions = new();
+            var serviceList = await cabService.GetServiceList(serviceKey, CabId);
+            ServiceDto currentServiceVersion = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
+            serviceVersions.CurrentServiceVersion = currentServiceVersion;
+            serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
 
-                SetServiceDataToSession(CabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
-                return View(serviceVersions);
-
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Cab ID not found in session."));
-                return RedirectToAction("CabHandleException", "Error");
-            }
-           
+            SetServiceDataToSession(CabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
+            return View(serviceVersions);
         }
 
 
