@@ -5,16 +5,10 @@ using Microsoft.Extensions.Options;
 
 namespace DVSRegister.Controllers;
 
-public class CookieController : Controller
+public class CookieController(CookieService cookieService, IOptions<CookieServiceConfiguration> config) : Controller
 {
-    private readonly CookieService _cookieService;
-    public readonly CookieServiceConfiguration _configuration;
-
-    public CookieController(CookieService cookieService, IOptions<CookieServiceConfiguration> config)
-    {
-        this._cookieService = cookieService;
-        this._configuration = config.Value;
-    }
+    private readonly CookieService _cookieService = cookieService;
+    public readonly CookieServiceConfiguration _configuration = config.Value;
 
     [HttpGet("cookies")]
     public IActionResult CookieSettings_Get(bool changesHaveBeenSaved = false)

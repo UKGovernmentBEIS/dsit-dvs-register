@@ -9,20 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/remove")]
-    public class CabRemovalRequestController : BaseController
+    public class CabRemovalRequestController(ICabService cabService, ICabRemovalRequestService cabRemovalRequestService, ILogger<CabRemovalRequestController> logger) : BaseController(logger)
     {
-        private readonly ICabService cabService;
-        private readonly ICabRemovalRequestService cabRemovalRequestService;  
-        private readonly ILogger<CabRemovalRequestController> _logger;
-
-   
-        public CabRemovalRequestController(ICabService cabService,  ICabRemovalRequestService cabRemovalRequestService, ILogger<CabRemovalRequestController> logger)
-        {
-            this.cabService = cabService;
-            this.cabRemovalRequestService = cabRemovalRequestService;
-            _logger = logger;
-            
-        }
+        private readonly ICabService cabService = cabService;
+        private readonly ICabRemovalRequestService cabRemovalRequestService = cabRemovalRequestService;  
+        private readonly ILogger<CabRemovalRequestController> _logger = logger;
 
         [HttpGet("reason-for-removing")]
         public IActionResult ReasonForRemoval(int providerid, int serviceId, string whatToRemove)
@@ -69,7 +60,10 @@ namespace DVSRegister.Controllers
         [HttpPost("about-to-remove")]
         public async Task<IActionResult> RequestRemoval(int providerId, int serviceId)
         {           
-            if (CabId > 0 && providerId > 0 && serviceId > 0)
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            if (providerId > 0 && serviceId > 0)
             {
                 string removalReasonByCab = HttpContext.Session.GetString("ReasonForRemoval");
                 string whatToRemove = HttpContext.Session.GetString("WhatToRemove");
@@ -92,7 +86,7 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("RequestRemoval failed: Invalid CabId, ProviderId, or ServiceId."));
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("RequestRemoval failed: Invalid ProviderId, or ServiceId."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }

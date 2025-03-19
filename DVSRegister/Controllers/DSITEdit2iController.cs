@@ -1,5 +1,4 @@
 ﻿using DVSRegister.BusinessLogic.Models;
-using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.JWT;
@@ -11,21 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("update-request")]
-    public class DSITEdit2iController : Controller
+    public class DSITEdit2iController(IJwtService jwtService, IDSITEdit2iService dSITEdit2IService, IBucketService bucketService, ILogger<DSITEdit2iController> logger) : Controller
     {
-        private readonly IJwtService jwtService;
-        private readonly IDSITEdit2iService dSITEdit2IService;
-        private readonly IBucketService bucketService;
-        private readonly ILogger<DSITEdit2iController> _logger;
-
-
-        public DSITEdit2iController(IJwtService jwtService, IDSITEdit2iService dSITEdit2IService, IBucketService bucketService, ILogger<DSITEdit2iController> logger)
-        {
-            this.jwtService = jwtService;
-            this.dSITEdit2IService = dSITEdit2IService;
-            this.bucketService = bucketService;
-            _logger = logger;
-        }
+        private readonly IJwtService jwtService = jwtService;
+        private readonly IDSITEdit2iService dSITEdit2IService = dSITEdit2IService;
+        private readonly IBucketService bucketService = bucketService;
+        private readonly ILogger<DSITEdit2iController> _logger = logger;
 
         [HttpGet("provider-changes")]
         public async Task<IActionResult> ProviderChanges(string token)
