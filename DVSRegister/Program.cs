@@ -51,7 +51,7 @@ else
     app.UseMiddleware<ExceptionHandlerMiddleware>();
 }
 
-//app.UseMiddleware<SecurityHeadersMiddleware>();
+app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCookiePolicy();
