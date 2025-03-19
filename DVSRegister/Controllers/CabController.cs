@@ -18,9 +18,10 @@ namespace DVSRegister.Controllers
     public class CabController(ICabService cabService, IUserService userService, ILogger<CabController> logger) : BaseController(logger)
     {
     
+        
         private readonly ICabService cabService = cabService;      
         private readonly IUserService userService = userService;
-        private readonly ILogger<CabController> _logger = logger; // Remove?
+        private readonly ILogger<CabController> _logger = logger;
 
         [HttpGet("")]
         [HttpGet("home")]
