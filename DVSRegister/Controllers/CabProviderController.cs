@@ -14,19 +14,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/create-profile")] 
-    public class CabProviderController : BaseController
+    public class CabProviderController(ICabService cabService, IUserService userService, ILogger<CabProviderController> logger) : BaseController(logger)
     {
-        private readonly ICabService cabService;
-        private readonly IUserService userService;
-        private readonly ILogger<CabProviderController> _logger;
-  
-
-        public CabProviderController(ICabService cabService, IUserService userService, ILogger<CabProviderController> logger)
-        {
-            this.cabService = cabService;
-            this.userService = userService;
-            _logger = logger;
-        }
+        private readonly ICabService cabService = cabService;
+        private readonly IUserService userService = userService;
+        private readonly ILogger<CabProviderController> _logger = logger;
 
         [HttpGet("before-you-start")]
         public IActionResult BeforeYouStart()
@@ -572,7 +564,10 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> EditCompanyInformation(int providerId)
         {
           
-            if (CabId > 0 && providerId > 0)
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            if (providerId > 0)
             {
                 ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
 
@@ -659,8 +654,10 @@ namespace DVSRegister.Controllers
         [HttpGet("edit-primary-contact")]
         public async Task<IActionResult> EditPrimaryContact(int providerId)
         {
-           
-            if (CabId > 0 && providerId > 0)
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            if (providerId > 0)
             {
                 ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
                 PrimaryContactViewModel primaryContactViewModel = new()
@@ -676,19 +673,22 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to edit primary contact. Invalid CabId or ProviderId."));
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to edit primary contact. Invalid ProviderId."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
 
         [HttpPost("edit-primary-contact")]
         public async Task<IActionResult> UpdatePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
-        { 
-          
-            if (CabId <= 0 || primaryContactViewModel.ProviderId <= 0)
+        {
+
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+
+            if (primaryContactViewModel.ProviderId <= 0)
             { 
-                
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditPrimaryContact failed: Invalid CabId or ProviderId."));
+                _logger.LogError("{Message}", 
+                    Helper.LoggingHelper.FormatErrorMessage("EditPrimaryContact failed: Invalid ProviderId.")); 
                 return RedirectToAction("CabHandleException", "Error"); 
             }
 
@@ -754,8 +754,11 @@ namespace DVSRegister.Controllers
         [HttpGet("edit-secondary-contact")]
         public async Task<IActionResult> EditSecondaryContact(int providerId)
         {
+            
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
       
-            if (CabId > 0 && providerId > 0)
+            if (providerId > 0)
             {
                 ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
                 SecondaryContactViewModel secondaryContactViewModel = new()
@@ -771,7 +774,7 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to edit secondary contact. Invalid CabId."));
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to edit secondary contact. Invalid ProviderId."));
                 return RedirectToAction("CabHandleException", "Error");
             }
         }
@@ -779,11 +782,15 @@ namespace DVSRegister.Controllers
         [HttpPost("edit-secondary-contact")]
         public async Task<IActionResult> UpdateSecondaryContact(SecondaryContactViewModel secondaryContactViewModel) 
         {         
-            if (CabId <= 0 || secondaryContactViewModel.ProviderId <= 0) 
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("EditSecondaryContact failed: Invalid CabId or ProviderId."));
-                return RedirectToAction("CabHandleException", "Error"); 
-            } 
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+
+            if (secondaryContactViewModel.ProviderId <= 0)
+            { 
+                _logger.LogError("{Message}", 
+                    Helper.LoggingHelper.FormatErrorMessage("EditSecondaryContact failed: Invalid ProviderId."));
+                return RedirectToAction("CabHandleException", "Error");  
+            }
             
             // Fetch the latest provider data from the database
             ProviderProfileDto providerProfileDto = await cabService.GetProvider(secondaryContactViewModel.ProviderId, CabId); 
@@ -848,7 +855,10 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> EditPublicProviderInformation(int providerId)
         {
            
-            if (CabId > 0 && providerId > 0)
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            if (providerId > 0)
             {
                 ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
                 PublicContactViewModel publicContactViewModel = new()

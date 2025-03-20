@@ -10,18 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("consent")]
-    public class ConsentController : Controller
+    public class ConsentController(IJwtService jwtService, IConsentService consentService, ILogger<ConsentController> logger) : Controller
     {
-        private readonly IJwtService jwtService;
+        private readonly IJwtService jwtService = jwtService;
         
-        private readonly IConsentService consentService;
-        private readonly ILogger<ConsentController> _logger;
-        public ConsentController(IJwtService jwtService, IConsentService consentService, ILogger<ConsentController> logger)
-        {
-            this.jwtService = jwtService;            
-            this.consentService = consentService;
-            _logger = logger;
-        }
+        private readonly IConsentService consentService = consentService;
+        private readonly ILogger<ConsentController> _logger = logger;
 
 
         #region Opening Loop
