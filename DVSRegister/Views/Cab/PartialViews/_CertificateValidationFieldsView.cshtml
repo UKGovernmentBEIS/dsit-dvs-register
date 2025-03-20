@@ -1,0 +1,224 @@
+﻿@using DVSRegister.BusinessLogic.Models
+@model CertificateReviewDto
+
+<dl class="govuk-summary-list">
+    @if (!Convert.ToBoolean(Model.IsCabLogoCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Logos and certificate number
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsCabDetailsCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Conformity Assessment Body details
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsProviderDetailsCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Service provider details
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsServiceNameCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Name of service
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsRolesCertifiedCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Roles certified against
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsCertificationScopeCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Scope of certification
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsServiceSummaryCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Summary of service
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsURLLinkToServiceCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                URL link to service
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsGPG45Correct))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                GPG45 identity profiles
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsGPG44Correct))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                GPG44 quality assessment
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsServiceProvisionCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Methods of service provision
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsLocationCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Geographical location
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsDateOfIssueCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Date of issue
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsDateOfExpiryCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Date of expiry
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.IsAuthenticyVerifiedCorrect))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Authenticity verification
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+
+    @if (!Convert.ToBoolean(Model.InformationMatched))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Information match
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+           Review comments
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.Amendments
+        </dd>
+    </div>
+
+</dl>

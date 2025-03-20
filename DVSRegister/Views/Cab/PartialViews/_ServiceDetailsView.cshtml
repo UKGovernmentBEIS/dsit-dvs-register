@@ -202,7 +202,7 @@
                             GPG44 quality of authenticator
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                             {
                                 foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                                 {
@@ -229,7 +229,7 @@
                             GPG44 level of protection
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
                             {
                                 foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
                                 {
@@ -277,7 +277,7 @@
                             GPG45 identity profiles
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ServiceIdentityProfileMapping.Count > 0)
+                            @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
                             {
                                 @foreach (var item in Model.ServiceIdentityProfileMapping)
                                 {
@@ -300,7 +300,7 @@
                     </div>
                 }
 
-                @if (Model.HasSupplementarySchemes == false)
+                @if (Model?.HasSupplementarySchemes == false)
                 {
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
@@ -326,7 +326,7 @@
                             Supplementary codes
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ServiceSupSchemeMapping.Count > 0)
+                            @if (Model?.ServiceSupSchemeMapping?.Count > 0)
                             {
                                 @foreach (var item in Model.ServiceSupSchemeMapping)
                                 {
@@ -356,7 +356,7 @@
                         Service provider’s certificate of conformity
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (!string.IsNullOrEmpty(Model.FileName))
+                        @if (!string.IsNullOrEmpty(Model?.FileName))
                         {
                             @Model.FileName
                         }

@@ -57,6 +57,7 @@ namespace DVSRegister.Controllers
         [HttpGet("name-of-service")]
         public async Task<IActionResult> ServiceName(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
         {
+            SetRefererURL();
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;          
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();         
@@ -99,6 +100,10 @@ namespace DVSRegister.Controllers
                 else if(action == "draft")
                 {
                     return await SaveAsDraftAndRedirect(serviceSummary);
+                }
+                else if (action == "amend")
+                {
+                    return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                 }
                 else
                 {
@@ -689,38 +694,36 @@ namespace DVSRegister.Controllers
             {
                 if (ModelState["File"].Errors.Count == 0)
                 {
-                    using (var memoryStream = new MemoryStream())
+                    using var memoryStream = new MemoryStream();
+                    await certificateFileViewModel.File.CopyToAsync(memoryStream);
+                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                    if (genericResponse.Success)
                     {
-                        await certificateFileViewModel.File.CopyToAsync(memoryStream);
-                        GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
-                        if (genericResponse.Success)
-                        {
 
-                            summaryViewModel.FileName = certificateFileViewModel.File.FileName;
-                            summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
-                            summaryViewModel.FileLink = genericResponse.Data;
-                            certificateFileViewModel.FileUploadedSuccessfully = true;
-                            certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
-                            HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                            if (action == "continue")
-                            {
-                                return View("CertificateUploadPage", certificateFileViewModel);
-                            }
-                            else if (action == "draft")
-                            {
-                                return await SaveAsDraftAndRedirect(summaryViewModel);
-                            }
-                            else
-                            {
-                                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                                return RedirectToAction("CabHandleException", "Error");
-                            }
+                        summaryViewModel.FileName = certificateFileViewModel.File.FileName;
+                        summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
+                        summaryViewModel.FileLink = genericResponse.Data;
+                        certificateFileViewModel.FileUploadedSuccessfully = true;
+                        certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        if (action == "continue")
+                        {
+                            return View("CertificateUploadPage", certificateFileViewModel);
+                        }
+                        else if (action == "draft")
+                        {
+                            return await SaveAsDraftAndRedirect(summaryViewModel);
                         }
                         else
                         {
-                            ModelState.AddModelError("File", "Unable to upload the file provided");
-                            return View("CertificateUploadPage", certificateFileViewModel);
+                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
+                            return RedirectToAction("CabHandleException", "Error");
                         }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("File", "Unable to upload the file provided");
+                        return View("CertificateUploadPage", certificateFileViewModel);
                     }
 
                 }
@@ -782,7 +785,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            DateViewModel dateViewModel = new DateViewModel();
+            DateViewModel dateViewModel = new();
             dateViewModel.PropertyName = "ConfirmityIssueDate";
             if (summaryViewModel.ConformityIssueDate != null)
             {
@@ -900,6 +903,7 @@ namespace DVSRegister.Controllers
         [HttpGet("check-your-answers")]
         public IActionResult ServiceSummary()
         {
+            SetRefererURL();
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             return View(summaryViewModel);
         }
@@ -957,6 +961,8 @@ namespace DVSRegister.Controllers
 
         #endregion
 
+       
+
 
         #region Private Methods
 
@@ -985,21 +991,7 @@ namespace DVSRegister.Controllers
                 return RedirectToAction("CabHandleException", "Error");
             }
 
-        }
-
-        private ServiceSummaryViewModel GetServiceSummary()
-        {
-            
-
-            ServiceSummaryViewModel model = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel
-            {
-                QualityLevelViewModel = new QualityLevelViewModel { SelectedLevelOfProtections = new List<QualityLevelDto>(), SelectedQualityofAuthenticators = new List<QualityLevelDto>() },
-                RoleViewModel = new RoleViewModel { SelectedRoles = new List<RoleDto>() },
-                IdentityProfileViewModel = new IdentityProfileViewModel { SelectedIdentityProfiles = new List<IdentityProfileDto>() },
-                SupplementarySchemeViewModel = new SupplementarySchemeViewModel { SelectedSupplementarySchemes = new List<SupplementarySchemeDto> { } }
-            };
-            return model;
-        }
+        }      
 
         private DateViewModel GetDayMonthYear(DateTime? dateTime)
         {

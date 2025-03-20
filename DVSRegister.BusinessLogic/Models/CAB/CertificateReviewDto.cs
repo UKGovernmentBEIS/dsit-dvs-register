@@ -35,6 +35,7 @@ namespace DVSRegister.BusinessLogic.Models
         public int VerifiedUser { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime ModifiedDate { get; set; }
-        public CertificateReviewEnum CertificateReviewStatus { get; set; }       
+        public CertificateReviewEnum CertificateReviewStatus { get; set; }
+        public string? Amendments { get; set; }
     }
 }

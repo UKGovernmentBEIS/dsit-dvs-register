@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Validations;
 using System.ComponentModel.DataAnnotations;
 
@@ -45,7 +46,10 @@ namespace DVSRegister.Models.CAB
         public int ServiceId { get; set; }
         public int ServiceKey { get; set; }
         public bool IsDraft { get; set; }
-      
+        public bool IsAmendment{ get; set; }
+        public ServiceStatusEnum ServiceStatus { get;set; }
+        public DateTime? CreatedDate { get; set; }
+
 
         public void ResetInpuData()
         {
