@@ -9,6 +9,7 @@
     bool hasProtectionError = false;
     int authIndex = 0;
     int levelIndex = 0;
+    string refererUrl = Convert.ToString(ViewBag.RefererUrl);
 }
 
 @using (Html.BeginForm("SaveGPG44", "CabService", FormMethod.Post))
@@ -16,7 +17,9 @@
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
     <div class="govuk-width-container">
-        @Html.ActionLink("Back", "GPG44Input", "CabService", null, new { @class = "govuk-back-link" })
+        <a href="@refererUrl" class="govuk-back-link">
+            Back
+        </a>
         <main id="main-content" class="govuk-main-wrapper" role="main">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -160,13 +163,25 @@
                         </div>
                     }
 
-                    <div class="govuk-button-group">
-                        <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button" name="action" value="continue">
-                            Continue
-                        </button>
+                    @if (Model != null && Model.IsAmendment)
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Save changes</button>
+                            <a href="@refererUrl" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                                Cancel
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button" name="action" value="continue">
+                                Continue
+                            </button>
 
-                        <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
-                    </div>
+                            <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
+                        </div>                        
+                    }                   
                 </div>
             </div>
         </main>
