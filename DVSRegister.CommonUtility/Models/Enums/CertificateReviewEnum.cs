@@ -14,6 +14,8 @@ namespace DVSRegister.CommonUtility.Models.Enums
         [Description("Rejected")]
         Rejected = 3,
         [Description("Expired")]
-        Expired = 4
+        Expired = 4,
+        [Description("Amendments needed")]
+        AmendmentsRequired = 5
     }
 }

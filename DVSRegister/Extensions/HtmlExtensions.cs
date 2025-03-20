@@ -31,6 +31,8 @@ namespace DVSRegister.Extensions
                     return "govuk-tag govuk-tag--green";
 
                 case CertificateReviewEnum.Rejected:
+                case CertificateReviewEnum.AmendmentsRequired:
+                case ServiceStatusEnum.AmendmentsRequired:
                     return "govuk-tag govuk-tag--red";
                 
                 case ServiceStatusEnum.Removed:

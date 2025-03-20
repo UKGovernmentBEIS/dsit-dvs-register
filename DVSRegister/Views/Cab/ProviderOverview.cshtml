@@ -72,9 +72,19 @@
                                     Service details: @item.ServiceName
                                 </h2>
                                 <ul class="govuk-summary-card__actions">
-                                    <li class="govuk-summary-card__action">
-                                        <a class="govuk-link" href="/cab-service/service-details?serviceKey=@item.ServiceKey">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
-                                    </li>
+                                    @if (item.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)
+                                    {
+                                        <li class="govuk-summary-card__action">
+                                            <a class="govuk-link" href="/cab-service/amend/service-amendments?serviceId=@item.Id">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
+                                        </li>
+
+                                    }
+                                    else
+                                    {
+                                        <li class="govuk-summary-card__action">
+                                            <a class="govuk-link" href="/cab-service/service-details?serviceKey=@item.ServiceKey">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
+                                        </li>
+                                    }
                                     @if (item.ServiceStatus == ServiceStatusEnum.Published)
                                     {
                                         string whatToRemove = removeProvider ? "provider" : "service";

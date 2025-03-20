@@ -1,4 +1,7 @@
-﻿using DVSRegister.Extensions;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Models;
+using DVSRegister.Extensions;
+using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -44,6 +47,113 @@ namespace DVSRegister.Controllers
             _logger.LogError("Invalid CabId: {CabId}. Controller: {ControllerName}, Action: {ActionName}",
                 cabId, ControllerName, ActionName);
             return RedirectToAction("CabHandleException", "Error");
+        }
+
+
+
+        protected ServiceSummaryViewModel GetServiceSummary()
+        {
+
+            ServiceSummaryViewModel model = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel
+            {
+                QualityLevelViewModel = new QualityLevelViewModel { SelectedLevelOfProtections = new List<QualityLevelDto>(), SelectedQualityofAuthenticators = new List<QualityLevelDto>() },
+                RoleViewModel = new RoleViewModel { SelectedRoles = new List<RoleDto>() },
+                IdentityProfileViewModel = new IdentityProfileViewModel { SelectedIdentityProfiles = new List<IdentityProfileDto>() },
+                SupplementarySchemeViewModel = new SupplementarySchemeViewModel { SelectedSupplementarySchemes = new List<SupplementarySchemeDto> { } }
+            };
+            return model;
+        }
+
+
+        protected void SetServiceDataToSession(int cabId, ServiceDto serviceDto, int historyCount=0)
+        {
+            RoleViewModel roleViewModel = new()
+            {
+                SelectedRoles = []
+            };
+            QualityLevelViewModel qualityLevelViewModel = new()
+            {
+                SelectedLevelOfProtections = [],
+                SelectedQualityofAuthenticators = []
+            };
+
+            IdentityProfileViewModel identityProfileViewModel = new()
+            {
+                SelectedIdentityProfiles = []
+            };
+
+            SupplementarySchemeViewModel supplementarySchemeViewModel = new()
+            {
+                SelectedSupplementarySchemes = []
+            };
+
+
+            if (serviceDto.ServiceRoleMapping != null && serviceDto.ServiceRoleMapping.Count > 0)
+            {
+                roleViewModel.SelectedRoles = serviceDto.ServiceRoleMapping.Select(mapping => mapping.Role).ToList();
+            }
+
+            if (serviceDto.ServiceQualityLevelMapping != null && serviceDto.ServiceQualityLevelMapping.Count > 0)
+            {
+                var protectionLevels = serviceDto.ServiceQualityLevelMapping
+                .Where(item => item.QualityLevel.QualityType == QualityTypeEnum.Protection)
+                .Select(item => item.QualityLevel);
+
+                var authenticatorLevels = serviceDto.ServiceQualityLevelMapping
+                .Where(item => item.QualityLevel.QualityType == QualityTypeEnum.Authentication)
+                .Select(item => item.QualityLevel);
+
+                foreach (var item in protectionLevels)
+                {
+                    qualityLevelViewModel.SelectedLevelOfProtections.Add(item);
+                }
+
+                foreach (var item in authenticatorLevels)
+                {
+                    qualityLevelViewModel.SelectedQualityofAuthenticators.Add(item);
+                }
+
+
+            }
+            if (serviceDto.ServiceIdentityProfileMapping != null && serviceDto.ServiceIdentityProfileMapping.Count > 0)
+            {
+                identityProfileViewModel.SelectedIdentityProfiles = serviceDto.ServiceIdentityProfileMapping.Select(mapping => mapping.IdentityProfile).ToList();
+            }
+            if (serviceDto.ServiceSupSchemeMapping != null && serviceDto.ServiceSupSchemeMapping.Count > 0)
+            {
+                supplementarySchemeViewModel.SelectedSupplementarySchemes = serviceDto.ServiceSupSchemeMapping.Select(mapping => mapping.SupplementaryScheme).ToList();
+            }
+
+
+            ServiceSummaryViewModel serviceSummary = new()
+            {
+                ServiceName = serviceDto.ServiceName,
+                ServiceURL = serviceDto.WebSiteAddress,
+                CompanyAddress = serviceDto.CompanyAddress,
+                RoleViewModel = roleViewModel,
+                IdentityProfileViewModel = identityProfileViewModel,
+                QualityLevelViewModel = qualityLevelViewModel,
+                HasSupplementarySchemes = serviceDto.HasSupplementarySchemes,
+                HasGPG44 = serviceDto.HasGPG44,
+                HasGPG45 = serviceDto.HasGPG45,
+                SupplementarySchemeViewModel = supplementarySchemeViewModel,
+                FileLink = serviceDto.FileLink,
+                FileName = serviceDto.FileName,
+                FileSizeInKb = serviceDto.FileSizeInKb,
+                ConformityIssueDate = serviceDto.ConformityIssueDate == DateTime.MinValue ? null : serviceDto.ConformityIssueDate,
+                ConformityExpiryDate = serviceDto.ConformityExpiryDate == DateTime.MinValue ? null : serviceDto.ConformityExpiryDate,
+                ServiceId = serviceDto.Id,
+                ProviderProfileId = serviceDto.ProviderProfileId,
+                CabId = cabId,
+                CabUserId = serviceDto.CabUserId,
+                ServiceKey = serviceDto.ServiceKey,
+                IsDraft = serviceDto.ServiceStatus == ServiceStatusEnum.SavedAsDraft,
+                IsResubmission = historyCount > 0, // if there are previous versions , it means a resubmission
+                IsAmendment = serviceDto.ServiceStatus == ServiceStatusEnum.AmendmentsRequired,
+                ServiceStatus = serviceDto.ServiceStatus,
+                CreatedDate = serviceDto.CreatedTime
+            };
+            HttpContext?.Session.Set("ServiceSummary", serviceSummary);
         }
     }
 }

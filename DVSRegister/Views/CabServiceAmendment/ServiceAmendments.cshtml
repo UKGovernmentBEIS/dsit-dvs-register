@@ -1,0 +1,43 @@
+﻿@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.Extensions
+@using DVSRegister.CommonUtility.Models;
+@using DVSRegister.Models.CAB
+@using DVSRegister.Models.CAB.Service
+@model AmendmentViewModel
+@{
+    ViewData["Title"] = "Review feedback and amend your submission";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+@{
+    string refererUrl = Convert.ToString(ViewBag.RefererUrl);
+}
+
+<div class="govuk-width-container">
+
+    <a href="@refererUrl" class="govuk-back-link">
+        Back
+    </a>
+
+    <main id="main-content" class="govuk-main-wrapper--l" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <h1 class="govuk-heading-xl">
+                    Review feedback and amend your submission
+                </h1>
+
+                <p class="govuk-body">
+                    Your submission has been reviewed and amendments are needed
+                </p>
+
+                <h2 class="govuk-heading-m">What was sent back</h2>
+                <hr class="govuk-section-break govuk-section-break--visible">
+                @await Html.PartialAsync("~/Views/Cab/PartialViews/_CertificateValidationFieldsView.cshtml", Model.CertificateReview)
+
+                @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceSummaryView.cshtml", Model.ServiceSummary)
+            </div>
+        </div>
+
+    </main>
+</div>

@@ -2,11 +2,8 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility;
-using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
-using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Provider;
 using DVSRegister.Models.CAB.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -19,8 +16,7 @@ namespace DVSRegister.Controllers
     {
     
         private readonly ICabService cabService = cabService;      
-        private readonly IUserService userService = userService;
-        private readonly ILogger<CabController> _logger = logger; // Remove?
+        private readonly IUserService userService = userService;    
 
         [HttpGet("")]
         [HttpGet("home")]
@@ -110,100 +106,5 @@ namespace DVSRegister.Controllers
 
 
         #endregion
-
-        #region Private method
-        private void SetServiceDataToSession(int cabId, ServiceDto serviceDto, int historyCount)
-        {
-            RoleViewModel roleViewModel = new()
-            {
-                SelectedRoles = []
-            };
-            QualityLevelViewModel qualityLevelViewModel = new()
-            {
-                SelectedLevelOfProtections = [],
-                SelectedQualityofAuthenticators = []
-            };
-
-            IdentityProfileViewModel identityProfileViewModel = new()
-            {
-                SelectedIdentityProfiles = []
-            };
-
-            SupplementarySchemeViewModel supplementarySchemeViewModel = new()
-            {
-                SelectedSupplementarySchemes = []
-            };
-
-
-            if (serviceDto.ServiceRoleMapping != null && serviceDto.ServiceRoleMapping.Count > 0)
-            {
-                roleViewModel.SelectedRoles = serviceDto.ServiceRoleMapping.Select(mapping => mapping.Role).ToList();
-            }
-
-            if (serviceDto.ServiceQualityLevelMapping != null && serviceDto.ServiceQualityLevelMapping.Count > 0)
-            {
-                var protectionLevels = serviceDto.ServiceQualityLevelMapping
-                .Where(item => item.QualityLevel.QualityType == QualityTypeEnum.Protection)
-                .Select(item => item.QualityLevel);
-
-                var authenticatorLevels = serviceDto.ServiceQualityLevelMapping
-                .Where(item => item.QualityLevel.QualityType == QualityTypeEnum.Authentication)
-                .Select(item => item.QualityLevel);
-
-                foreach (var item in protectionLevels)
-                {
-                    qualityLevelViewModel.SelectedLevelOfProtections.Add(item);
-                }
-
-                foreach (var item in authenticatorLevels)
-                {
-                    qualityLevelViewModel.SelectedQualityofAuthenticators.Add(item);
-                }
-
-
-            }
-            if (serviceDto.ServiceIdentityProfileMapping != null && serviceDto.ServiceIdentityProfileMapping.Count > 0)
-            {
-                identityProfileViewModel.SelectedIdentityProfiles = serviceDto.ServiceIdentityProfileMapping.Select(mapping => mapping.IdentityProfile).ToList();
-            }
-            if (serviceDto.ServiceSupSchemeMapping != null && serviceDto.ServiceSupSchemeMapping.Count > 0)
-            {
-                supplementarySchemeViewModel.SelectedSupplementarySchemes = serviceDto.ServiceSupSchemeMapping.Select(mapping => mapping.SupplementaryScheme).ToList();
-            }
-
-
-            ServiceSummaryViewModel serviceSummary = new()
-            {
-                ServiceName = serviceDto.ServiceName,
-                ServiceURL = serviceDto.WebSiteAddress,
-                CompanyAddress = serviceDto.CompanyAddress,
-                RoleViewModel = roleViewModel,
-                IdentityProfileViewModel = identityProfileViewModel,
-                QualityLevelViewModel = qualityLevelViewModel,
-                HasSupplementarySchemes = serviceDto.HasSupplementarySchemes,
-                HasGPG44 = serviceDto.HasGPG44,
-                HasGPG45 = serviceDto.HasGPG45,
-                SupplementarySchemeViewModel = supplementarySchemeViewModel,
-                FileLink = serviceDto.FileLink,
-                FileName = serviceDto.FileName,
-                FileSizeInKb = serviceDto.FileSizeInKb,
-                ConformityIssueDate = serviceDto.ConformityIssueDate == DateTime.MinValue ? null : serviceDto.ConformityIssueDate,
-                ConformityExpiryDate = serviceDto.ConformityExpiryDate == DateTime.MinValue ? null : serviceDto.ConformityExpiryDate,
-                ServiceId = serviceDto.Id,
-                ProviderProfileId = serviceDto.ProviderProfileId,
-                CabId = cabId,
-                CabUserId = serviceDto.CabUserId,
-                ServiceKey = serviceDto.ServiceKey,
-                IsDraft = serviceDto.ServiceStatus == ServiceStatusEnum.SavedAsDraft,
-                IsResubmission = historyCount >0 // if there are previous versions , it means a resubmission
-            };
-            HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-        }
-        #endregion
-
-
-
-
-
     }
 }
