@@ -4,18 +4,18 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
-    bool hasError = false;
-    string refererUrl = Convert.ToString(ViewBag.RefererUrl);
+    bool hasError = false;   
 }
 
 @using (Html.BeginForm("SaveServiceName", "CabService", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+    @Html.HiddenFor(m => m.RefererURL)
     
 
 <div class="govuk-width-container">
-        <a href="@refererUrl" class="govuk-back-link">
+        <a href="@Model.RefererURL" class="govuk-back-link">
             Back
         </a>
 
@@ -64,7 +64,7 @@
                     {
                         <div class="govuk-button-group">
                             <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Save changes</button>
-                            <a href="@refererUrl" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                            <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
                                 Cancel
                             </a>
                         </div>

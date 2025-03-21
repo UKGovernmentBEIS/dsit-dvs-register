@@ -28,56 +28,38 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> BeforeYouStart(int providerProfileId)
         {
             HttpContext?.Session.Remove("ServiceSummary");
-            ViewBag.ProviderProfileId = providerProfileId;          
+            ViewBag.ProviderProfileId = providerProfileId;
             CabUserDto cabUserDto = await userService.GetUser(UserEmail);
-            
-            if(!IsValidCabId(cabUserDto.Id))
+
+            if (!IsValidCabId(cabUserDto.Id))
                 return HandleInvalidCabId(cabUserDto.Id);
-            
-            // to prevent another cab changing the providerProfileId from url
-            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
-            if(isValid)
-            {
-                ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-                serviceSummaryViewModel.CabId = cabUserDto.CabId;
-                serviceSummaryViewModel.CabUserId = cabUserDto.Id;
-                HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
-                return View();
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid provider profile ID for Cab ID."));
-                return RedirectToAction("CabHandleException", "Error");
-            }
-           
-        }
-        
+
+            await HandleInvalidProfileAndCab(providerProfileId, cabUserDto);
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            serviceSummaryViewModel.CabId = cabUserDto.CabId;
+            serviceSummaryViewModel.CabUserId = cabUserDto.Id;
+            HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
+            return View();            
+
+        }       
+
 
         #region Service Name
         [HttpGet("name-of-service")]
         public async Task<IActionResult> ServiceName(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
         {
-            SetRefererURL();
+            
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;          
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();         
             CabUserDto cabUserDto = await userService.GetUser(UserEmail);
-            // to prevent another cab changing the providerProfileId from url
-            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
-            if (providerProfileId > 0 && isValid) 
-            {
-                serviceSummaryViewModel.ProviderProfileId = providerProfileId;                
-                HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
-                return View(serviceSummaryViewModel);
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid provider profile ID for Cab ID."));
-                return RedirectToAction("CabHandleException", "Error");
-            }
-          
+            await HandleInvalidProfileAndCab(providerProfileId, cabUserDto);
 
-          
+            serviceSummaryViewModel.ProviderProfileId = providerProfileId;
+            serviceSummaryViewModel.RefererURL = GetRefererURL();
+            HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
+            return View(serviceSummaryViewModel);
+
         }
 
         [HttpPost("name-of-service")]
@@ -85,32 +67,15 @@ namespace DVSRegister.Controllers
         {
             bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
             bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
+            ServiceSummaryViewModel serviceSummary = GetServiceSummary();
             serviceSummaryViewModel.FromSummaryPage = false;
             serviceSummaryViewModel.FromDetailsPage = false;
+            serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
             if (ModelState["ServiceName"].Errors.Count == 0)
-            {
-                ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+            {               
                 serviceSummary.ServiceName = serviceSummaryViewModel.ServiceName;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                if(action == "continue")
-                {                  
-                  return fromSummaryPage ? RedirectToAction("ServiceSummary") 
-                  : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary) : RedirectToAction("ServiceURL");
-                }                
-                else if(action == "draft")
-                {
-                    return await SaveAsDraftAndRedirect(serviceSummary);
-                }
-                else if (action == "amend")
-                {
-                    return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "ServiceURL");  
             }
             else
             {
@@ -126,35 +91,25 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            serviceSummaryViewModel.RefererURL = GetRefererURL();
             return View("ServiceURL", serviceSummaryViewModel);
         }
         [HttpPost("service-url")]
         public async Task<IActionResult> SaveServiceURL(ServiceSummaryViewModel serviceSummaryViewModel, string action)
-        {
+        {           
             bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
             bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
             serviceSummaryViewModel.FromSummaryPage = false;
             serviceSummaryViewModel.FromDetailsPage = false;
+            ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+            serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
             if (ModelState["ServiceURL"].Errors.Count == 0)
             {
-                ServiceSummaryViewModel serviceSummary = GetServiceSummary();
                 serviceSummary.ServiceURL = serviceSummaryViewModel.ServiceURL;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                if (action == "continue")
-                {
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                  : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary) : RedirectToAction("CompanyAddress");                
-                }
-                else if (action == "draft")
-                {
-                    return await SaveAsDraftAndRedirect(serviceSummary);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
+                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "CompanyAddress");               
             }
+            else
             {
                 return View("ServiceURL", serviceSummaryViewModel);
             }
@@ -170,37 +125,24 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            serviceSummaryViewModel.RefererURL = GetRefererURL();
             return View("CompanyAddress", serviceSummaryViewModel);
         }
         [HttpPost("company-address")]
         public async Task <IActionResult> SaveCompanyAddress(ServiceSummaryViewModel serviceSummaryViewModel, string action)
         {
+            ServiceSummaryViewModel serviceSummary = GetServiceSummary();
             bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
             bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
             serviceSummaryViewModel.FromSummaryPage = false;
             serviceSummaryViewModel.FromDetailsPage = false;
+            serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
             if (ModelState["CompanyAddress"].Errors.Count == 0)
             {
-                ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+               
                 serviceSummary.CompanyAddress = serviceSummaryViewModel.CompanyAddress;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-
-                if(action == "continue")
-                {
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                    : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary) : RedirectToAction("ProviderRoles");
-                 
-                }
-                else if(action == "draft")
-                {
-                    return await SaveAsDraftAndRedirect(serviceSummary);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "ProviderRoles");      
             }
             else
             {
@@ -216,10 +158,14 @@ namespace DVSRegister.Controllers
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            RoleViewModel roleViewModel = new RoleViewModel();
-            roleViewModel.SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList();
-            roleViewModel.AvailableRoles = await cabService.GetRoles();
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();            
+            RoleViewModel roleViewModel = new()
+            {
+                SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList(),
+                AvailableRoles = await cabService.GetRoles(),
+                IsAmendment = summaryViewModel.IsAmendment,
+                RefererURL = GetRefererURL()
+            };
             return View(roleViewModel);
         }
 
@@ -237,31 +183,15 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             List<RoleDto> availableRoles = await cabService.GetRoles();          
             roleViewModel.AvailableRoles = availableRoles;
-            roleViewModel.SelectedRoleIds =  roleViewModel.SelectedRoleIds??new List<int>();
+            roleViewModel.SelectedRoleIds =  roleViewModel.SelectedRoleIds??[];
+            roleViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (roleViewModel.SelectedRoleIds.Count > 0)
                 summaryViewModel.RoleViewModel.SelectedRoles = availableRoles.Where(c => roleViewModel.SelectedRoleIds.Contains(c.Id)).ToList();
           
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-
-                if(action == "continue")
-                {
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                  : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("GPG44Input");
-             
-                }
-                else if(action == "draft")
-                {
-
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");
             }
             else
             {
@@ -278,74 +208,45 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = GetRefererURL();
             return View(summaryViewModel);
         }
 
         [HttpPost("gpg44-input")]
         public async Task<IActionResult> SaveGPG44Input(ServiceSummaryViewModel viewModel, string action)
-        {
+        {            
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             bool fromSummaryPage = viewModel.FromSummaryPage;
             bool fromDetailsPage = viewModel.FromDetailsPage;
+            viewModel.IsAmendment = summaryViewModel.IsAmendment;
             viewModel.FromDetailsPage = false;
-            viewModel.FromSummaryPage = false;
+            viewModel.FromSummaryPage = false;           
             if (ModelState["HasGPG44"].Errors.Count == 0)
             {
-                summaryViewModel.HasGPG44 = viewModel.HasGPG44;    
-                
-                if(action == "continue")
-                {
-                    if (Convert.ToBoolean(summaryViewModel.HasGPG44))
-                    {
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                       : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("GPG44");                        
-                    }
-                    else
-                    {
-                        // clear selections if the value is changed from yes to no
-                        summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = new List<QualityLevelDto>();
-                        summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = new List<QualityLevelDto>();
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                        : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("GPG45Input");
-            
-                    }
-                }
-                else if (action == "draft")
-                {
-
-                    if (!Convert.ToBoolean(summaryViewModel.HasGPG44))
-                    {
-                        // clear selections if the value is changed from yes to no
-                        summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = [];
-                        summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = [];                      
-                    }
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                summaryViewModel.HasGPG44 = viewModel.HasGPG44;
+                summaryViewModel.RefererURL = viewModel.RefererURL;
+                return await HandleGpg44Actions(action, summaryViewModel, fromSummaryPage, fromDetailsPage);
             }
             else
             {
                 return View("GPG44Input", viewModel);
             }
         }
-        #endregion
+
+      #endregion
 
         #region select GPG44
         [HttpGet("gpg44")]
         public async Task<IActionResult> GPG44(bool fromSummaryPage, bool fromDetailsPage)
-        {
+        {            
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            QualityLevelViewModel qualityLevelViewModel = new();
+            QualityLevelViewModel qualityLevelViewModel = new()
+            {
+                IsAmendment = summaryViewModel.IsAmendment,                
+                RefererURL = summaryViewModel.RefererURL
+            };
             var qualityLevels = await cabService.GetQualitylevels();
             qualityLevelViewModel.AvailableQualityOfAuthenticators = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
             qualityLevelViewModel.SelectedQualityofAuthenticatorIds = summaryViewModel?.QualityLevelViewModel?.SelectedQualityofAuthenticators?.Select(c => c.Id).ToList();
@@ -364,9 +265,11 @@ namespace DVSRegister.Controllers
         [HttpPost("gpg44")]
         public async Task<IActionResult> SaveGPG44(QualityLevelViewModel qualityLevelViewModel, string action)
         {
+          
             bool fromSummaryPage = qualityLevelViewModel.FromSummaryPage;
             bool fromDetailsPage = qualityLevelViewModel.FromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();       
+              qualityLevelViewModel.IsAmendment = summaryViewModel.IsAmendment;
             List<QualityLevelDto> availableQualityLevels = await cabService.GetQualitylevels();
             qualityLevelViewModel.AvailableQualityOfAuthenticators = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
             qualityLevelViewModel.SelectedQualityofAuthenticatorIds = qualityLevelViewModel.SelectedQualityofAuthenticatorIds ?? [];
@@ -383,23 +286,7 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                if(action == "continue")
-                {
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                    : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("GPG45Input");                   
-
-                }
-                else if (action == "draft")
-                {
-
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG45Input"); 
             }
             else
             {
@@ -416,6 +303,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = GetRefererURL();
             return View(summaryViewModel);
         }
 
@@ -423,6 +311,7 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveGPG45Input(ServiceSummaryViewModel viewModel, string action)
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            viewModel.IsAmendment = summaryViewModel.IsAmendment;
             bool fromSummaryPage = viewModel.FromSummaryPage;
             bool fromDetailsPage = viewModel.FromDetailsPage;
             viewModel.FromSummaryPage = false;
@@ -430,40 +319,8 @@ namespace DVSRegister.Controllers
             if (ModelState["HasGPG45"].Errors.Count == 0)
             {
                 summaryViewModel.HasGPG45 = viewModel.HasGPG45;
-
-                if (action == "continue")
-                {
-                    if (Convert.ToBoolean(summaryViewModel.HasGPG45))
-                    {
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                      : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) 
-                      : RedirectToAction("GPG45", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
-                       
-                    }
-                    else
-                    {
-                        summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = [];
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                        : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("HasSupplementarySchemesInput");                      
-                    } 
-                }
-                else if (action == "draft")
-                {
-                    if (!Convert.ToBoolean(summaryViewModel.HasGPG45))
-                    {
-                        summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = [];
-                    }
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                summaryViewModel.RefererURL = viewModel.RefererURL;
+                return await HandleGpg45Actions(action, summaryViewModel, fromSummaryPage, fromDetailsPage); 
             }
             else
             {
@@ -479,10 +336,14 @@ namespace DVSRegister.Controllers
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();            
-            IdentityProfileViewModel identityProfileViewModel = new();
-            identityProfileViewModel.SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList();
-            identityProfileViewModel.AvailableIdentityProfiles = await cabService.GetIdentityProfiles();
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            IdentityProfileViewModel identityProfileViewModel = new()
+            {
+                IsAmendment = summaryViewModel.IsAmendment,
+                SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList(),
+                AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
+                RefererURL = summaryViewModel.RefererURL
+            };
             return View(identityProfileViewModel);
         }
 
@@ -497,6 +358,7 @@ namespace DVSRegister.Controllers
             bool fromSummaryPage = identityProfileViewModel.FromSummaryPage;
             bool fromDetailsPage = identityProfileViewModel.FromDetailsPage;     
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            identityProfileViewModel.IsAmendment = summaryViewModel.IsAmendment;
             List<IdentityProfileDto> availableIdentityProfiles = await cabService.GetIdentityProfiles();
             identityProfileViewModel.AvailableIdentityProfiles = availableIdentityProfiles;
             identityProfileViewModel.SelectedIdentityProfileIds =  identityProfileViewModel.SelectedIdentityProfileIds??new List<int>();
@@ -506,21 +368,7 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-
-                if(action == "continue")
-                {
-                  return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("HasSupplementarySchemesInput");                  
-                }
-                else if (action == "draft")
-                {
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "HasSupplementarySchemesInput");               
             }
             else
             {
@@ -538,6 +386,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = GetRefererURL();
             return View(summaryViewModel);
         }
 
@@ -547,40 +396,12 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             bool fromSummaryPage = viewModel.FromSummaryPage;
             bool fromDetailsPage = viewModel.FromDetailsPage;
-
+            viewModel.IsAmendment = summaryViewModel.IsAmendment;           
             if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
             {
                 summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
-
-                if (action == "continue")
-                {
-                    if (Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
-                    {
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);                       
-                        return RedirectToAction("SupplementarySchemes", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
-                    }
-                    else
-                    {
-                        summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = [];
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromSummaryPage ? RedirectToAction("ServiceSummary") : RedirectToAction("CertificateUploadPage");
-                    } 
-                }
-                else if (action == "draft")
-                {
-                    if (!Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
-                    {
-                        summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = [];                       
-                    }
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                summaryViewModel.RefererURL = viewModel.RefererURL;
+                return await HandleSchemeActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage);     
             }
             else
             {
@@ -597,7 +418,9 @@ namespace DVSRegister.Controllers
             SupplementarySchemeViewModel supplementarySchemeViewModel = new()
             {
                 SelectedSupplementarySchemeIds = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(c => c.Id).ToList(),
-                AvailableSchemes = await cabService.GetSupplementarySchemes()
+                AvailableSchemes = await cabService.GetSupplementarySchemes(),
+                IsAmendment = summaryViewModel.IsAmendment, 
+                RefererURL = summaryViewModel.RefererURL
             };
             return View(supplementarySchemeViewModel);
         }
@@ -609,36 +432,23 @@ namespace DVSRegister.Controllers
             bool fromDetailsPage = supplementarySchemeViewModel.FromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             List<SupplementarySchemeDto> availableSupplementarySchemes = await cabService.GetSupplementarySchemes();
+            supplementarySchemeViewModel.IsAmendment = summaryViewModel.IsAmendment;
             supplementarySchemeViewModel.AvailableSchemes = availableSupplementarySchemes;
             supplementarySchemeViewModel.SelectedSupplementarySchemeIds =  supplementarySchemeViewModel.SelectedSupplementarySchemeIds??new List<int>();
             if (supplementarySchemeViewModel.SelectedSupplementarySchemeIds.Count > 0)
                 summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = availableSupplementarySchemes.Where(c => supplementarySchemeViewModel.SelectedSupplementarySchemeIds.Contains(c.Id)).ToList();
             summaryViewModel.SupplementarySchemeViewModel.FromSummaryPage = false;
 
-            if (action == "continue")
+            if (ModelState.IsValid)
             {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                if (ModelState.IsValid)
-                {
-                  return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("CertificateUploadPage");
-             
-                }
-                else
-                {
-                    return View("SupplementarySchemes", supplementarySchemeViewModel);
-                } 
-            }
-            else if (action == "draft")
-            {
-
-                return await SaveAsDraftAndRedirect(summaryViewModel);
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);                
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "CertificateUploadPage");
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                return RedirectToAction("CabHandleException", "Error");
+                return View("SupplementarySchemes", supplementarySchemeViewModel);
             }
+           
         }
         #endregion
 
@@ -651,12 +461,16 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            CertificateFileViewModel certificateFileViewModel = new();
-            certificateFileViewModel.HasSupplementarySchemes = summaryViewModel.HasSupplementarySchemes;
+            CertificateFileViewModel certificateFileViewModel = new()
+            {
+                RefererURL = GetRefererURL(),
+                IsAmendment = summaryViewModel.IsAmendment
+            };
+
             if (remove)
             {
                 summaryViewModel.FileLink = null;
-                summaryViewModel.FileName = null;
+                summaryViewModel.FileName = null;               
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 return View(certificateFileViewModel);
             }
@@ -674,6 +488,7 @@ namespace DVSRegister.Controllers
                 certificateFileViewModel.FileUploadedSuccessfully = true;
                 certificateFileViewModel.File = formFile;
             }
+            
             return View(certificateFileViewModel);
         }
 
@@ -699,14 +514,15 @@ namespace DVSRegister.Controllers
                     GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
                     if (genericResponse.Success)
                     {
-
                         summaryViewModel.FileName = certificateFileViewModel.File.FileName;
                         summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
                         summaryViewModel.FileLink = genericResponse.Data;
                         certificateFileViewModel.FileUploadedSuccessfully = true;
                         certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        if (action == "continue")
+
+                        //To do : delete old certificate from bucket
+                        if (action == "continue" || action == "amend")
                         {
                             return View("CertificateUploadPage", certificateFileViewModel);
                         }
@@ -716,8 +532,7 @@ namespace DVSRegister.Controllers
                         }
                         else
                         {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                            return RedirectToAction("CabHandleException", "Error");
+                            throw new ArgumentException("Invalid action parameter");
                         }
                     }
                     else
@@ -733,16 +548,12 @@ namespace DVSRegister.Controllers
                     return View("CertificateUploadPage", certificateFileViewModel);
                 }
             }
-            else if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == true && action == "draft")
+
+            else 
             {
-                return await SaveAsDraftAndRedirect(summaryViewModel);
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ConfirmityIssueDate");
             }
-            else
-            {
-                return fromSummaryPage ? RedirectToAction("ServiceSummary")
-              : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("ConfirmityIssueDate");
-                     
-            }
+            
         }
 
 
@@ -785,13 +596,17 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            DateViewModel dateViewModel = new();
-            dateViewModel.PropertyName = "ConfirmityIssueDate";
+            DateViewModel dateViewModel = new()
+            {
+                PropertyName = "ConfirmityIssueDate"
+               
+            };
             if (summaryViewModel.ConformityIssueDate != null)
             {
                 dateViewModel = GetDayMonthYear(summaryViewModel.ConformityIssueDate);
             }
-
+            dateViewModel.RefererURL = GetRefererURL();
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
         }
 
@@ -812,25 +627,12 @@ namespace DVSRegister.Controllers
             dateViewModel.PropertyName = "ConfirmityIssueDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             DateTime? conformityIssueDate = ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage);
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
                 summaryViewModel.ConformityIssueDate = conformityIssueDate;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-
-                if (action == "continue")
-                {
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                    : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("ConfirmityExpiryDate");                    
-                }
-                else if (action == "draft")
-                {
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ConfirmityExpiryDate");               
             }
             else
             {
@@ -845,14 +647,18 @@ namespace DVSRegister.Controllers
         {
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            
-            DateViewModel dateViewModel = new();
-            dateViewModel.PropertyName = "ConfirmityExpiryDate";
-            
+
+            DateViewModel dateViewModel = new()
+            {
+                PropertyName = "ConfirmityExpiryDate"
+            };
+
             if (summaryViewModel.ConformityExpiryDate != null)
             {
                 dateViewModel = GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
             }
+            dateViewModel.RefererURL = GetRefererURL();
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
         }
 
@@ -871,25 +677,12 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
 
             DateTime? conformityExpiryDate = ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate));
-
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
                 summaryViewModel.ConformityExpiryDate = conformityExpiryDate;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-
-                if (action == "continue")
-                {
-                    return  fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("ServiceSummary");
-                }
-                else if (action == "draft")
-                {
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
+                return await HandleActions(action, summaryViewModel, true, fromDetailsPage, "ServiceSummary");               
             }
             else
             {
@@ -959,14 +752,10 @@ namespace DVSRegister.Controllers
 
         }
 
-        #endregion
-
+        #endregion       
        
 
-
         #region Private Methods
-
-
         private async Task<IActionResult> SaveAsDraftAndRedirect(ServiceSummaryViewModel serviceSummary)
         {
             GenericResponse genericResponse = new();
@@ -987,15 +776,14 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to save draft: SaveService returned unsuccessful response."));
-                return RedirectToAction("CabHandleException", "Error");
+                throw new InvalidOperationException("SaveAsDraftAndRedirect: Failed to save draft");
             }
 
         }      
 
         private DateViewModel GetDayMonthYear(DateTime? dateTime)
         {
-            DateViewModel dateViewModel = new DateViewModel();
+            DateViewModel dateViewModel = new();
             DateTime conformityIssueDate = Convert.ToDateTime(dateTime);
             dateViewModel.Day = conformityIssueDate.Day;
             dateViewModel.Month = conformityIssueDate.Month;
@@ -1166,6 +954,199 @@ namespace DVSRegister.Controllers
 
 
         }
+
+
+        private async Task HandleInvalidProfileAndCab(int providerProfileId, CabUserDto cabUserDto)
+        {
+            // to prevent another cab changing the providerProfileId from url
+            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
+            if (!isValid)
+                throw new InvalidOperationException("Invalid provider profile ID for Cab ID");
+        }
+
+        #region Handle save/draft/amend actions
+
+        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage)
+        {
+            switch (action)
+            {
+                case "continue":
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
+                        : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
+                        : RedirectToAction(nextPage);
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(serviceSummary);
+
+                case "amend":
+                    return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+        
+
+       
+
+        private async Task<IActionResult> HandleGpg44Actions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage)
+        {
+            switch (action)
+            {
+                case "continue":
+                    if (Convert.ToBoolean(summaryViewModel.HasGPG44))
+                    {
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("GPG44", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                    }
+                    else
+                    {                       
+                        ClearGpg44(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
+                       : RedirectToAction("GPG45Input");
+                    }
+
+                case "draft":
+                    if (!Convert.ToBoolean(summaryViewModel.HasGPG44))
+                    {
+                        ClearGpg44(summaryViewModel);
+                    }
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return await SaveAsDraftAndRedirect(summaryViewModel);
+
+                case "amend":
+
+                    if (Convert.ToBoolean(summaryViewModel.HasGPG44))
+                    {
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("GPG44");
+                    }
+                    else
+                    {   
+                        ClearGpg44(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    }
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
+        private async Task<IActionResult> HandleGpg45Actions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage)
+        {
+            switch (action)
+            {
+                case "continue":
+                    if (Convert.ToBoolean(summaryViewModel.HasGPG45))
+                    {
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("GPG45", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                    }
+                    else
+                    {
+                        ClearGpg45(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
+                       : RedirectToAction("HasSupplementarySchemesInput");
+                    }
+
+                case "draft":
+                    if (!Convert.ToBoolean(summaryViewModel.HasGPG45))
+                    {
+                        ClearGpg45(summaryViewModel);
+                    }
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return await SaveAsDraftAndRedirect(summaryViewModel);
+
+                case "amend":
+                    if (Convert.ToBoolean(summaryViewModel.HasGPG45))
+                    {
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("GPG45");
+                    }
+                    else
+                    {
+                        ClearGpg45(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    }
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+        private async Task<IActionResult> HandleSchemeActions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage)
+        {
+            switch (action)
+            {
+                case "continue":
+                    if (Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
+                    {
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("SupplementarySchemes", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                    }
+                    else
+                    {
+                        ClearSchemes(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
+                       : RedirectToAction("CertificateUploadPage");
+                    }
+
+                case "draft":
+                    if (!Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
+                    {
+                        ClearSchemes(summaryViewModel);
+                    }
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return await SaveAsDraftAndRedirect(summaryViewModel);
+
+                case "amend":
+
+                    if (Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
+                    {
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("SupplementarySchemes");
+                    }
+                    else
+                    {
+                        ClearSchemes(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    }
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
+        #endregion
+
+        #region Clear selected data in session if selection changed from yes to no
+        private static void ClearGpg44(ServiceSummaryViewModel summaryViewModel)
+        {
+            if (summaryViewModel.QualityLevelViewModel != null)
+            {
+                summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = [];
+                summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = [];
+            }
+
+        }
+        private static void ClearGpg45(ServiceSummaryViewModel summaryViewModel)
+        {
+            if (summaryViewModel.IdentityProfileViewModel != null)
+                summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = [];
+        }
+
+        private static void ClearSchemes(ServiceSummaryViewModel summaryViewModel)
+        {
+            if (summaryViewModel.SupplementarySchemeViewModel != null)
+                summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = [];
+        }
+        #endregion
+
         #endregion
     }
 }

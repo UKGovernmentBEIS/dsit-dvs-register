@@ -9,15 +9,11 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
-@{
-    string refererUrl = Convert.ToString(ViewBag.RefererUrl);
-}
+
 
 <div class="govuk-width-container">
 
-    <a href="@refererUrl" class="govuk-back-link">
-        Back
-    </a>
+    @Html.ActionLink("Back", "ProviderOverview", "Cab", new { providerId = Model.ServiceSummary.ProviderProfileId }, new { @class = "govuk-back-link" })
 
     <main id="main-content" class="govuk-main-wrapper--l" role="main">
         <div class="govuk-grid-row">
