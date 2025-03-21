@@ -75,8 +75,7 @@ namespace DVSRegister.Controllers
             {               
                 serviceSummary.ServiceName = serviceSummaryViewModel.ServiceName;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "ServiceURL");              
-
+                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "ServiceURL");  
             }
             else
             {
@@ -108,8 +107,7 @@ namespace DVSRegister.Controllers
             {
                 serviceSummary.ServiceURL = serviceSummaryViewModel.ServiceURL;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "CompanyAddress");
-               
+                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "CompanyAddress");               
             }
             else
             {
@@ -441,7 +439,6 @@ namespace DVSRegister.Controllers
                 summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = availableSupplementarySchemes.Where(c => supplementarySchemeViewModel.SelectedSupplementarySchemeIds.Contains(c.Id)).ToList();
             summaryViewModel.SupplementarySchemeViewModel.FromSummaryPage = false;
 
-
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);                
@@ -599,13 +596,17 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            DateViewModel dateViewModel = new();
-            dateViewModel.PropertyName = "ConfirmityIssueDate";
+            DateViewModel dateViewModel = new()
+            {
+                PropertyName = "ConfirmityIssueDate"
+               
+            };
             if (summaryViewModel.ConformityIssueDate != null)
             {
                 dateViewModel = GetDayMonthYear(summaryViewModel.ConformityIssueDate);
             }
-
+            dateViewModel.RefererURL = GetRefererURL();
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
         }
 
@@ -626,25 +627,12 @@ namespace DVSRegister.Controllers
             dateViewModel.PropertyName = "ConfirmityIssueDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             DateTime? conformityIssueDate = ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage);
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
                 summaryViewModel.ConformityIssueDate = conformityIssueDate;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-
-                if (action == "continue")
-                {
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                    : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("ConfirmityExpiryDate");                    
-                }
-                else if (action == "draft")
-                {
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ConfirmityExpiryDate");               
             }
             else
             {
@@ -659,14 +647,18 @@ namespace DVSRegister.Controllers
         {
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            
-            DateViewModel dateViewModel = new();
-            dateViewModel.PropertyName = "ConfirmityExpiryDate";
-            
+
+            DateViewModel dateViewModel = new()
+            {
+                PropertyName = "ConfirmityExpiryDate"
+            };
+
             if (summaryViewModel.ConformityExpiryDate != null)
             {
                 dateViewModel = GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
             }
+            dateViewModel.RefererURL = GetRefererURL();
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
         }
 
@@ -685,25 +677,12 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
 
             DateTime? conformityExpiryDate = ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate));
-
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
                 summaryViewModel.ConformityExpiryDate = conformityExpiryDate;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-
-                if (action == "continue")
-                {
-                    return  fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("ServiceSummary");
-                }
-                else if (action == "draft")
-                {
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
+                return await HandleActions(action, summaryViewModel, true, fromDetailsPage, "ServiceSummary");               
             }
             else
             {
@@ -773,8 +752,7 @@ namespace DVSRegister.Controllers
 
         }
 
-        #endregion
-       
+        #endregion       
        
 
         #region Private Methods
@@ -798,15 +776,14 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to save draft: SaveService returned unsuccessful response."));
-                return RedirectToAction("CabHandleException", "Error");
+                throw new InvalidOperationException("SaveAsDraftAndRedirect: Failed to save draft");
             }
 
         }      
 
         private DateViewModel GetDayMonthYear(DateTime? dateTime)
         {
-            DateViewModel dateViewModel = new DateViewModel();
+            DateViewModel dateViewModel = new();
             DateTime conformityIssueDate = Convert.ToDateTime(dateTime);
             dateViewModel.Day = conformityIssueDate.Day;
             dateViewModel.Month = conformityIssueDate.Month;
