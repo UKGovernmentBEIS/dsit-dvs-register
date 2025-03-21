@@ -4,15 +4,18 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
-    bool hasError = false;
+    bool hasError = false;   
 }
 @using (Html.BeginForm("SaveServiceURL", "CabService", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+    @Html.HiddenFor(m => m.RefererURL)
 
 <div class="govuk-width-container">
-        @Html.ActionLink("Back", "ServiceName", "CabService", new { providerProfileId  = Model.ProviderProfileId}, new { @class = "govuk-back-link" })
+        <a href="@Model.RefererURL" class="govuk-back-link">
+            Back
+        </a>
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -51,10 +54,24 @@
 
                     @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", ServiceURLViewmodel)
 
-                <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="continue">Continue</button>
-                    <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
-                </div>
+                    @if (Model != null && Model.IsAmendment)
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Save changes</button>
+                            <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                                Cancel
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="continue">Continue</button>
+                            <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
+                        </div>
+                        
+                    }
+                   
             </div>
         </div>
     </main>

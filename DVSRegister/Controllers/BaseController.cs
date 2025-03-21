@@ -1,4 +1,5 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using Amazon.S3.Model.Internal.MarshallTransformations;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
@@ -42,6 +43,14 @@ namespace DVSRegister.Controllers
             ViewBag.RefererUrl = refererUrl;
         }
 
+        protected string GetRefererURL()
+        {
+            string refererUrl = HttpContext.Request.Headers["Referer"].ToString();
+            return refererUrl;
+        }
+
+
+
         protected IActionResult HandleInvalidCabId(int cabId)
         {  
             _logger.LogError("Invalid CabId: {CabId}. Controller: {ControllerName}, Action: {ActionName}",
@@ -49,11 +58,11 @@ namespace DVSRegister.Controllers
             return RedirectToAction("CabHandleException", "Error");
         }
 
-
+      
 
         protected ServiceSummaryViewModel GetServiceSummary()
         {
-
+            
             ServiceSummaryViewModel model = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel
             {
                 QualityLevelViewModel = new QualityLevelViewModel { SelectedLevelOfProtections = new List<QualityLevelDto>(), SelectedQualityofAuthenticators = new List<QualityLevelDto>() },
@@ -155,5 +164,7 @@ namespace DVSRegister.Controllers
             };
             HttpContext?.Session.Set("ServiceSummary", serviceSummary);
         }
+
+       
     }
 }

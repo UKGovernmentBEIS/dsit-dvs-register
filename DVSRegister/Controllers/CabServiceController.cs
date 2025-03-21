@@ -28,54 +28,38 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> BeforeYouStart(int providerProfileId)
         {
             HttpContext?.Session.Remove("ServiceSummary");
-            ViewBag.ProviderProfileId = providerProfileId;          
+            ViewBag.ProviderProfileId = providerProfileId;
             CabUserDto cabUserDto = await userService.GetUser(UserEmail);
-            
-            if(!IsValidCabId(cabUserDto.Id))
+
+            if (!IsValidCabId(cabUserDto.Id))
                 return HandleInvalidCabId(cabUserDto.Id);
-            
-            // to prevent another cab changing the providerProfileId from url
-            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
-            if(isValid)
-            {
-                ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-                serviceSummaryViewModel.CabId = cabUserDto.CabId;
-                serviceSummaryViewModel.CabUserId = cabUserDto.Id;
-                HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
-                return View();
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid provider profile ID for Cab ID."));
-                return RedirectToAction("CabHandleException", "Error");
-            }
-           
-        }
-        
+
+            await HandleInvalidProfileAndCab(providerProfileId, cabUserDto);
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            serviceSummaryViewModel.CabId = cabUserDto.CabId;
+            serviceSummaryViewModel.CabUserId = cabUserDto.Id;
+            HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
+            return View();            
+
+        }       
+
 
         #region Service Name
         [HttpGet("name-of-service")]
         public async Task<IActionResult> ServiceName(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
         {
-            SetRefererURL();
+            
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;          
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();         
             CabUserDto cabUserDto = await userService.GetUser(UserEmail);
-            // to prevent another cab changing the providerProfileId from url
-            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
-            if (providerProfileId > 0 && isValid) 
-            {
-                serviceSummaryViewModel.ProviderProfileId = providerProfileId;                
-                HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
-                return View(serviceSummaryViewModel);
-            }
-            else
-            {
-                throw new InvalidOperationException("Invalid provider profile ID for Cab ID");
-            }         
+            await HandleInvalidProfileAndCab(providerProfileId, cabUserDto);
 
-          
+            serviceSummaryViewModel.ProviderProfileId = providerProfileId;
+            serviceSummaryViewModel.RefererURL = GetRefererURL();
+            HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
+            return View(serviceSummaryViewModel);
+
         }
 
         [HttpPost("name-of-service")]
@@ -108,35 +92,26 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            serviceSummaryViewModel.RefererURL = GetRefererURL();
             return View("ServiceURL", serviceSummaryViewModel);
         }
         [HttpPost("service-url")]
         public async Task<IActionResult> SaveServiceURL(ServiceSummaryViewModel serviceSummaryViewModel, string action)
-        {
+        {           
             bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
             bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
             serviceSummaryViewModel.FromSummaryPage = false;
             serviceSummaryViewModel.FromDetailsPage = false;
+            ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+            serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
             if (ModelState["ServiceURL"].Errors.Count == 0)
             {
-                ServiceSummaryViewModel serviceSummary = GetServiceSummary();
                 serviceSummary.ServiceURL = serviceSummaryViewModel.ServiceURL;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                if (action == "continue")
-                {
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                  : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary) : RedirectToAction("CompanyAddress");                
-                }
-                else if (action == "draft")
-                {
-                    return await SaveAsDraftAndRedirect(serviceSummary);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
+                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "CompanyAddress");
+               
             }
+            else
             {
                 return View("ServiceURL", serviceSummaryViewModel);
             }
@@ -152,37 +127,24 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            serviceSummaryViewModel.RefererURL = GetRefererURL();
             return View("CompanyAddress", serviceSummaryViewModel);
         }
         [HttpPost("company-address")]
         public async Task <IActionResult> SaveCompanyAddress(ServiceSummaryViewModel serviceSummaryViewModel, string action)
         {
+            ServiceSummaryViewModel serviceSummary = GetServiceSummary();
             bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
             bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
             serviceSummaryViewModel.FromSummaryPage = false;
             serviceSummaryViewModel.FromDetailsPage = false;
+            serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
             if (ModelState["CompanyAddress"].Errors.Count == 0)
             {
-                ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+               
                 serviceSummary.CompanyAddress = serviceSummaryViewModel.CompanyAddress;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-
-                if(action == "continue")
-                {
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                    : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary) : RedirectToAction("ProviderRoles");
-                 
-                }
-                else if(action == "draft")
-                {
-                    return await SaveAsDraftAndRedirect(serviceSummary);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "ProviderRoles");      
             }
             else
             {
@@ -198,10 +160,14 @@ namespace DVSRegister.Controllers
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            RoleViewModel roleViewModel = new RoleViewModel();
-            roleViewModel.SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList();
-            roleViewModel.AvailableRoles = await cabService.GetRoles();
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();            
+            RoleViewModel roleViewModel = new()
+            {
+                SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList(),
+                AvailableRoles = await cabService.GetRoles(),
+                IsAmendment = summaryViewModel.IsAmendment,
+                RefererURL = GetRefererURL()
+            };
             return View(roleViewModel);
         }
 
@@ -219,31 +185,15 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             List<RoleDto> availableRoles = await cabService.GetRoles();          
             roleViewModel.AvailableRoles = availableRoles;
-            roleViewModel.SelectedRoleIds =  roleViewModel.SelectedRoleIds??new List<int>();
+            roleViewModel.SelectedRoleIds =  roleViewModel.SelectedRoleIds??[];
+            roleViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (roleViewModel.SelectedRoleIds.Count > 0)
                 summaryViewModel.RoleViewModel.SelectedRoles = availableRoles.Where(c => roleViewModel.SelectedRoleIds.Contains(c.Id)).ToList();
           
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-
-                if(action == "continue")
-                {
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                  : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("GPG44Input");
-             
-                }
-                else if(action == "draft")
-                {
-
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");
             }
             else
             {
@@ -257,17 +207,16 @@ namespace DVSRegister.Controllers
         [HttpGet("gpg44-input")]
         public IActionResult GPG44Input(bool fromSummaryPage, bool fromDetailsPage)
         {
-            SetRefererURL();
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = GetRefererURL();
             return View(summaryViewModel);
         }
 
         [HttpPost("gpg44-input")]
         public async Task<IActionResult> SaveGPG44Input(ServiceSummaryViewModel viewModel, string action)
-        {
-            SetRefererURL();
+        {            
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             bool fromSummaryPage = viewModel.FromSummaryPage;
             bool fromDetailsPage = viewModel.FromDetailsPage;
@@ -277,8 +226,8 @@ namespace DVSRegister.Controllers
             if (ModelState["HasGPG44"].Errors.Count == 0)
             {
                 summaryViewModel.HasGPG44 = viewModel.HasGPG44;
+                summaryViewModel.RefererURL = viewModel.RefererURL;
                 return await HandleGpg44Actions(action, summaryViewModel, fromSummaryPage, fromDetailsPage);
-
             }
             else
             {
@@ -286,19 +235,19 @@ namespace DVSRegister.Controllers
             }
         }
 
-               #endregion
+      #endregion
 
         #region select GPG44
         [HttpGet("gpg44")]
         public async Task<IActionResult> GPG44(bool fromSummaryPage, bool fromDetailsPage)
-        {
-            SetRefererURL();
+        {            
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             QualityLevelViewModel qualityLevelViewModel = new()
             {
-                IsAmendment = summaryViewModel.IsAmendment
+                IsAmendment = summaryViewModel.IsAmendment,                
+                RefererURL = summaryViewModel.RefererURL
             };
             var qualityLevels = await cabService.GetQualitylevels();
             qualityLevelViewModel.AvailableQualityOfAuthenticators = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
@@ -318,7 +267,7 @@ namespace DVSRegister.Controllers
         [HttpPost("gpg44")]
         public async Task<IActionResult> SaveGPG44(QualityLevelViewModel qualityLevelViewModel, string action)
         {
-            SetRefererURL();
+          
             bool fromSummaryPage = qualityLevelViewModel.FromSummaryPage;
             bool fromDetailsPage = qualityLevelViewModel.FromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();       
@@ -356,6 +305,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = GetRefererURL();
             return View(summaryViewModel);
         }
 
@@ -371,6 +321,7 @@ namespace DVSRegister.Controllers
             if (ModelState["HasGPG45"].Errors.Count == 0)
             {
                 summaryViewModel.HasGPG45 = viewModel.HasGPG45;
+                summaryViewModel.RefererURL = viewModel.RefererURL;
                 return await HandleGpg45Actions(action, summaryViewModel, fromSummaryPage, fromDetailsPage); 
             }
             else
@@ -392,7 +343,8 @@ namespace DVSRegister.Controllers
             {
                 IsAmendment = summaryViewModel.IsAmendment,
                 SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList(),
-                AvailableIdentityProfiles = await cabService.GetIdentityProfiles()
+                AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
+                RefererURL = summaryViewModel.RefererURL
             };
             return View(identityProfileViewModel);
         }
@@ -436,6 +388,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = GetRefererURL();
             return View(summaryViewModel);
         }
 
@@ -445,11 +398,11 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             bool fromSummaryPage = viewModel.FromSummaryPage;
             bool fromDetailsPage = viewModel.FromDetailsPage;
-            viewModel.IsAmendment = summaryViewModel.IsAmendment;
-
+            viewModel.IsAmendment = summaryViewModel.IsAmendment;           
             if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
             {
                 summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
+                summaryViewModel.RefererURL = viewModel.RefererURL;
                 return await HandleSchemeActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage);     
             }
             else
@@ -468,7 +421,8 @@ namespace DVSRegister.Controllers
             {
                 SelectedSupplementarySchemeIds = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(c => c.Id).ToList(),
                 AvailableSchemes = await cabService.GetSupplementarySchemes(),
-                IsAmendment = summaryViewModel.IsAmendment
+                IsAmendment = summaryViewModel.IsAmendment, 
+                RefererURL = summaryViewModel.RefererURL
             };
             return View(supplementarySchemeViewModel);
         }
@@ -490,7 +444,7 @@ namespace DVSRegister.Controllers
 
             if (ModelState.IsValid)
             {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);                
                 return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "CertificateUploadPage");
             }
             else
@@ -510,12 +464,16 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            CertificateFileViewModel certificateFileViewModel = new();
-            certificateFileViewModel.HasSupplementarySchemes = summaryViewModel.HasSupplementarySchemes;
+            CertificateFileViewModel certificateFileViewModel = new()
+            {
+                RefererURL = GetRefererURL(),
+                IsAmendment = summaryViewModel.IsAmendment
+            };
+
             if (remove)
             {
                 summaryViewModel.FileLink = null;
-                summaryViewModel.FileName = null;
+                summaryViewModel.FileName = null;               
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 return View(certificateFileViewModel);
             }
@@ -533,6 +491,7 @@ namespace DVSRegister.Controllers
                 certificateFileViewModel.FileUploadedSuccessfully = true;
                 certificateFileViewModel.File = formFile;
             }
+            
             return View(certificateFileViewModel);
         }
 
@@ -558,14 +517,15 @@ namespace DVSRegister.Controllers
                     GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
                     if (genericResponse.Success)
                     {
-
                         summaryViewModel.FileName = certificateFileViewModel.File.FileName;
                         summaryViewModel.FileSizeInKb = Math.Round((decimal)certificateFileViewModel.File.Length / 1024, 1);
                         summaryViewModel.FileLink = genericResponse.Data;
                         certificateFileViewModel.FileUploadedSuccessfully = true;
                         certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        if (action == "continue")
+
+                        //To do : delete old certificate from bucket
+                        if (action == "continue" || action == "amend")
                         {
                             return View("CertificateUploadPage", certificateFileViewModel);
                         }
@@ -575,8 +535,7 @@ namespace DVSRegister.Controllers
                         }
                         else
                         {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unexpected action received."));
-                            return RedirectToAction("CabHandleException", "Error");
+                            throw new ArgumentException("Invalid action parameter");
                         }
                     }
                     else
@@ -592,16 +551,12 @@ namespace DVSRegister.Controllers
                     return View("CertificateUploadPage", certificateFileViewModel);
                 }
             }
-            else if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == true && action == "draft")
+
+            else 
             {
-                return await SaveAsDraftAndRedirect(summaryViewModel);
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ConfirmityIssueDate");
             }
-            else
-            {
-                return fromSummaryPage ? RedirectToAction("ServiceSummary")
-              : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("ConfirmityIssueDate");
-                     
-            }
+            
         }
 
 
@@ -1023,6 +978,14 @@ namespace DVSRegister.Controllers
 
         }
 
+
+        private async Task HandleInvalidProfileAndCab(int providerProfileId, CabUserDto cabUserDto)
+        {
+            // to prevent another cab changing the providerProfileId from url
+            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
+            if (!isValid)
+                throw new InvalidOperationException("Invalid provider profile ID for Cab ID");
+        }
 
         #region Handle save/draft/amend actions
 

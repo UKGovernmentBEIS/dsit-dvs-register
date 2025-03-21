@@ -10,5 +10,6 @@ namespace DVSRegister.Models.CAB
         public bool FromSummaryPage { get; set; }
         public bool FromDetailsPage { get; set; }
         public bool IsResubmission { get; set; }
+        public string? RefererURL { get; set; }
     }
 }

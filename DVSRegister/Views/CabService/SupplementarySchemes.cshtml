@@ -5,12 +5,11 @@
 }
 @{
     bool hasError = false;
-    int index = 0;
-    string refererUrl = Convert.ToString(ViewBag.RefererUrl);
+    int index = 0;    
 }
 
 <div class="govuk-width-container">
-    <a href="@refererUrl" class="govuk-back-link">
+    <a href="@Model.RefererURL" class="govuk-back-link">
         Back
     </a>
  
@@ -31,6 +30,7 @@
                 {
                 @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                 @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+                    @Html.HiddenFor(m => m.RefererURL)
                 <p class="govuk-body">
                     Select all supplementary codes that the service  is certified against on the certificate of conformity.
                 </p>
@@ -103,7 +103,7 @@
                     {
                         <div class="govuk-button-group">
                             <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Save changes</button>
-                            <a href="@refererUrl" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                            <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
                                 Cancel
                             </a>
                         </div>
