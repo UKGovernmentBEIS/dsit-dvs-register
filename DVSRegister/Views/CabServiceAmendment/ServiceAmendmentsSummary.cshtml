@@ -46,12 +46,15 @@
             </div>
         </div>
 
-        <div class="govuk-button-group">
-            <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="save">Resubmit</button>
-            <a href="/cab-service/amend/service-amendments?serviceId=@Model.ServiceSummary.ServiceId" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
-                Discard changes
-            </a>
-        </div>
+        @using (Html.BeginForm("SaveServiceAmendmentsSummary", "CabServiceAmendment", FormMethod.Post))
+        {
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="save">Resubmit</button>
+                    <a href="/cab-service/amend/service-amendments?serviceId=@Model.ServiceSummary.ServiceId" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                        Discard changes
+                    </a>
+                </div>
+        }
 
     </main>
 </div>

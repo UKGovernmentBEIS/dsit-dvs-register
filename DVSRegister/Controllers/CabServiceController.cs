@@ -1,4 +1,5 @@
-﻿using DVSRegister.BusinessLogic.Models;
+﻿using AutoMapper;
+using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
@@ -8,6 +9,7 @@ using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
+using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -15,7 +17,7 @@ namespace DVSRegister.Controllers
 {
     [Route("cab-service/submit-service")]
   
-    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IEmailSender emailSender, ILogger<CabServiceController> logger) : BaseController(logger)
+    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IEmailSender emailSender, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;
@@ -23,6 +25,7 @@ namespace DVSRegister.Controllers
         private readonly IUserService userService = userService;
         private readonly IEmailSender emailSender = emailSender;
         private readonly ILogger<CabServiceController> _logger = logger;
+        private readonly IMapper _mapper = mapper;
 
         [HttpGet("before-you-start")]
         public async Task<IActionResult> BeforeYouStart(int providerProfileId)
@@ -505,6 +508,7 @@ namespace DVSRegister.Controllers
             bool fromDetailsPage = certificateFileViewModel.FromDetailsPage;
             certificateFileViewModel.FromSummaryPage = false;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            certificateFileViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (Convert.ToBoolean(certificateFileViewModel.FileUploadedSuccessfully) == false)
             {
                 if (ModelState["File"].Errors.Count == 0)
@@ -603,7 +607,7 @@ namespace DVSRegister.Controllers
             };
             if (summaryViewModel.ConformityIssueDate != null)
             {
-                dateViewModel = GetDayMonthYear(summaryViewModel.ConformityIssueDate);
+                dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.ConformityIssueDate);
             }
             dateViewModel.RefererURL = GetRefererURL();
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
@@ -626,7 +630,7 @@ namespace DVSRegister.Controllers
             dateViewModel.FromDetailsPage = false;
             dateViewModel.PropertyName = "ConfirmityIssueDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            DateTime? conformityIssueDate = ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage);
+            DateTime? conformityIssueDate = ValidationHelper.ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage,ModelState);
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
@@ -655,7 +659,7 @@ namespace DVSRegister.Controllers
 
             if (summaryViewModel.ConformityExpiryDate != null)
             {
-                dateViewModel = GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
+                dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
             }
             dateViewModel.RefererURL = GetRefererURL();
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
@@ -676,7 +680,7 @@ namespace DVSRegister.Controllers
             dateViewModel.PropertyName = "ConfirmityExpiryDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
 
-            DateTime? conformityExpiryDate = ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate));
+            DateTime? conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate),ModelState);
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
@@ -704,11 +708,16 @@ namespace DVSRegister.Controllers
         [HttpPost("check-your-answers")]
         public async Task<IActionResult> SaveServiceSummary()
         {
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();           
-            ServiceDto serviceDto = MapViewModelToDto(summaryViewModel, ServiceStatusEnum.Submitted);
-            if(serviceDto!=null)
-            {
-                GenericResponse genericResponse = new();
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
+            ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
+
+            if (!IsValidCabId(summaryViewModel.CabId))
+                return HandleInvalidCabId(summaryViewModel.CabId);
+
+            if (serviceDto.CabUserId <0) throw new InvalidDataException("Invalid CabUserId");
+
+               GenericResponse genericResponse = new();
                 if(summaryViewModel.IsResubmission) 
                 {
                     genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
@@ -724,16 +733,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Service submission failed: SaveService returned unsuccessful response."));
-                    return RedirectToAction("CabHandleException", "Error");
+                  throw new InvalidOperationException("Service submission failed");
                 }
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("An error occurred while submitting the service."));
-                return RedirectToAction("CabHandleException", "Error");
-            }
-           
         }
 
         /// <summary>
@@ -742,8 +743,7 @@ namespace DVSRegister.Controllers
         /// <returns></returns>
         [HttpGet("service-submitted")]
         public async Task <IActionResult> InformationSubmitted()
-        {
-         
+        {         
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.Email = UserEmail;
             await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail);
@@ -759,8 +759,14 @@ namespace DVSRegister.Controllers
         private async Task<IActionResult> SaveAsDraftAndRedirect(ServiceSummaryViewModel serviceSummary)
         {
             GenericResponse genericResponse = new();
-            ServiceDto serviceDto = MapViewModelToDto(serviceSummary, ServiceStatusEnum.SavedAsDraft);
-            if(serviceSummary.IsResubmission)
+            serviceSummary.ServiceStatus = ServiceStatusEnum.SavedAsDraft;
+            ServiceDto serviceDto = _mapper.Map<ServiceDto>(serviceSummary);
+            if (!IsValidCabId(serviceSummary.CabId))
+                return HandleInvalidCabId(serviceSummary.CabId);
+
+            if (serviceDto.CabUserId < 0) throw new InvalidDataException("Invalid CabUserId");
+
+            if (serviceSummary.IsResubmission)
             {
                 genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
             }
@@ -779,182 +785,7 @@ namespace DVSRegister.Controllers
                 throw new InvalidOperationException("SaveAsDraftAndRedirect: Failed to save draft");
             }
 
-        }      
-
-        private DateViewModel GetDayMonthYear(DateTime? dateTime)
-        {
-            DateViewModel dateViewModel = new();
-            DateTime conformityIssueDate = Convert.ToDateTime(dateTime);
-            dateViewModel.Day = conformityIssueDate.Day;
-            dateViewModel.Month = conformityIssueDate.Month;
-            dateViewModel.Year = conformityIssueDate.Year;
-            return dateViewModel;
-        }
-
-        private DateTime? ValidateIssueDate(DateViewModel dateViewModel, DateTime? expiryDate, bool fromSummaryPage)
-        {
-            DateTime? date = null;
-            DateTime minDate = new DateTime(1900, 1, 1);
-            DateTime minIssueDate;
-           
-        
-            try
-            {
-                if (dateViewModel.Day == null || dateViewModel.Month == null ||dateViewModel.Year == null)
-                {
-                    if (dateViewModel.Day == null)
-                    {
-                        ModelState.AddModelError("Day", Constants.ConformityIssueDayError);
-                    }
-                    if (dateViewModel.Month == null)
-                    {
-                        ModelState.AddModelError("Month", Constants.ConformityIssueMonthError);
-                    }
-                    if (dateViewModel.Year == null)
-                    {
-                        ModelState.AddModelError("Year", Constants.ConformityIssueYearError);
-                    }
-                }
-                else
-                {
-                    date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
-                    if (date>DateTime.Today)
-                    {
-                        ModelState.AddModelError("ValidDate", Constants.ConformityIssuePastDateError);
-                    }
-                    if (date<minDate)
-                    {
-                        ModelState.AddModelError("ValidDate", Constants.ConformityIssueDateInvalidError);
-                    }
-
-                    if (expiryDate.HasValue && fromSummaryPage)
-                    {
-                        minIssueDate  = expiryDate.Value.AddYears(-2).AddDays(-60);
-                        if (date < minIssueDate)
-                        {
-                            ModelState.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
-                        }
-                    }
-                  
-                }
-
-            }
-            catch (Exception)
-            {
-                ModelState.AddModelError("ValidDate", Constants.ConformityIssueDateInvalidError);
-
-            }
-            return date;
-        }
-
-        private DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate)
-        {
-            DateTime? date = null;     
-          
-            try
-            {
-                if (dateViewModel.Day == null || dateViewModel.Month == null ||dateViewModel.Year == null)
-                {
-                    if (dateViewModel.Day == null)
-                    {
-                        ModelState.AddModelError("Day", Constants.ConformityExpiryDayError);
-                    }
-                    if (dateViewModel.Month == null)
-                    {
-                        ModelState.AddModelError("Month", Constants.ConformityExpiryMonthError);
-                    }
-                    if (dateViewModel.Year == null)
-                    {
-                        ModelState.AddModelError("Year", Constants.ConformityExpiryYearError);
-                    }
-                }
-                else
-                {
-                    date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
-                    var maxExpiryDate = issueDate.AddYears(2).AddDays(60);
-                    if (date <= DateTime.Today)
-                    {
-                        ModelState.AddModelError("ValidDate", Constants.ConformityExpiryPastDateError);
-                    }
-                    else if (date <= issueDate)
-                    {
-                        ModelState.AddModelError("ValidDate", Constants.ConformityIssueDateExpiryDateError);
-                    }
-                    else if (date > maxExpiryDate)
-                    {
-                        ModelState.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
-                    }
-                }
-
-            }
-            catch (Exception)
-            {
-                ModelState.AddModelError("ValidDate", Constants.ConformityExpiryDateInvalidError);
-
-            }
-            return date;
-        }
-
-        private ServiceDto MapViewModelToDto(ServiceSummaryViewModel model, ServiceStatusEnum serviceStatus)
-        {
-
-
-            ServiceDto serviceDto = null;
-            if (model!= null   && model.CabUserId>0)
-            {
-                serviceDto = new ();
-                ICollection<ServiceQualityLevelMappingDto> serviceQualityLevelMappings = new List<ServiceQualityLevelMappingDto>();
-                ICollection<ServiceRoleMappingDto> serviceRoleMappings = new List<ServiceRoleMappingDto>();
-                ICollection<ServiceIdentityProfileMappingDto> serviceIdentityProfileMappings = new List<ServiceIdentityProfileMappingDto>();
-                ICollection<ServiceSupSchemeMappingDto> serviceSupSchemeMappings = new List<ServiceSupSchemeMappingDto>();
-
-                foreach (var item in model.QualityLevelViewModel.SelectedQualityofAuthenticators)
-                {                   
-                        serviceQualityLevelMappings.Add(new ServiceQualityLevelMappingDto { QualityLevelId = item.Id });
-                }
-                foreach (var item in model.QualityLevelViewModel.SelectedLevelOfProtections)
-                {                  
-                        serviceQualityLevelMappings.Add(new ServiceQualityLevelMappingDto { QualityLevelId = item.Id });
-                }
-                foreach (var item in model.RoleViewModel.SelectedRoles)
-                {                
-                        serviceRoleMappings.Add(new ServiceRoleMappingDto { RoleId = item.Id });
-                }
-                foreach (var item in model.IdentityProfileViewModel.SelectedIdentityProfiles)
-                {                   
-                        serviceIdentityProfileMappings.Add(new ServiceIdentityProfileMappingDto { IdentityProfileId = item.Id });
-                }
-                foreach (var item in model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
-                {               
-                        serviceSupSchemeMappings.Add(new ServiceSupSchemeMappingDto { SupplementarySchemeId = item.Id });
-                }
-
-                serviceDto.ProviderProfileId = model.ProviderProfileId;
-                serviceDto.ServiceName = model.ServiceName;
-                serviceDto.WebSiteAddress = model.ServiceURL;
-                serviceDto.CompanyAddress = model.CompanyAddress;
-                serviceDto.ServiceRoleMapping = serviceRoleMappings;
-                serviceDto.ServiceIdentityProfileMapping= serviceIdentityProfileMappings;
-                serviceDto.ServiceQualityLevelMapping = serviceQualityLevelMappings;
-                serviceDto.HasSupplementarySchemes =  model.HasSupplementarySchemes;
-                serviceDto.HasGPG44 = model.HasGPG44;
-                serviceDto.HasGPG45 = model.HasGPG45;
-                serviceDto.ServiceSupSchemeMapping = serviceSupSchemeMappings;
-                serviceDto.FileLink = model.FileLink;
-                serviceDto.FileName = model.FileName;
-                serviceDto.FileSizeInKb = model.FileSizeInKb??0;
-                serviceDto.ConformityIssueDate= Convert.ToDateTime(model.ConformityIssueDate);
-                serviceDto.ConformityExpiryDate = Convert.ToDateTime(model.ConformityExpiryDate);
-                serviceDto.CabUserId = model.CabUserId;
-                serviceDto.ServiceStatus =serviceStatus;
-                serviceDto.Id = model.ServiceId;
-                serviceDto.ServiceKey = model.ServiceKey;
-            }
-            return serviceDto;
-
-
-        }
-
+        } 
 
         private async Task HandleInvalidProfileAndCab(int providerProfileId, CabUserDto cabUserDto)
         {
@@ -997,11 +828,11 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(summaryViewModel.HasGPG44))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("GPG44", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                        return RedirectToAction("GPG44", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
                     }
                     else
-                    {                       
-                        ClearGpg44(summaryViewModel);
+                    {
+                        ViewModelHelper.ClearGpg44(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
                        : RedirectToAction("GPG45Input");
@@ -1010,7 +841,7 @@ namespace DVSRegister.Controllers
                 case "draft":
                     if (!Convert.ToBoolean(summaryViewModel.HasGPG44))
                     {
-                        ClearGpg44(summaryViewModel);
+                        ViewModelHelper.ClearGpg44(summaryViewModel);
                     }
                     HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return await SaveAsDraftAndRedirect(summaryViewModel);
@@ -1023,8 +854,8 @@ namespace DVSRegister.Controllers
                         return RedirectToAction("GPG44");
                     }
                     else
-                    {   
-                        ClearGpg44(summaryViewModel);
+                    {
+                        ViewModelHelper.ClearGpg44(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
@@ -1042,11 +873,11 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(summaryViewModel.HasGPG45))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("GPG45", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                        return RedirectToAction("GPG45", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
                     }
                     else
                     {
-                        ClearGpg45(summaryViewModel);
+                        ViewModelHelper.ClearGpg45(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
                        : RedirectToAction("HasSupplementarySchemesInput");
@@ -1055,7 +886,7 @@ namespace DVSRegister.Controllers
                 case "draft":
                     if (!Convert.ToBoolean(summaryViewModel.HasGPG45))
                     {
-                        ClearGpg45(summaryViewModel);
+                        ViewModelHelper.ClearGpg45(summaryViewModel);
                     }
                     HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return await SaveAsDraftAndRedirect(summaryViewModel);
@@ -1068,7 +899,7 @@ namespace DVSRegister.Controllers
                     }
                     else
                     {
-                        ClearGpg45(summaryViewModel);
+                        ViewModelHelper.ClearGpg45(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
@@ -1085,11 +916,11 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel) : RedirectToAction("SupplementarySchemes", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                        return RedirectToAction("SupplementarySchemes", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
                     }
                     else
                     {
-                        ClearSchemes(summaryViewModel);
+                        ViewModelHelper.ClearSchemes(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
                        : RedirectToAction("CertificateUploadPage");
@@ -1098,7 +929,7 @@ namespace DVSRegister.Controllers
                 case "draft":
                     if (!Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
                     {
-                        ClearSchemes(summaryViewModel);
+                        ViewModelHelper.ClearSchemes(summaryViewModel);
                     }
                     HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return await SaveAsDraftAndRedirect(summaryViewModel);
@@ -1112,7 +943,7 @@ namespace DVSRegister.Controllers
                     }
                     else
                     {
-                        ClearSchemes(summaryViewModel);
+                        ViewModelHelper.ClearSchemes(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
@@ -1124,28 +955,9 @@ namespace DVSRegister.Controllers
 
         #endregion
 
-        #region Clear selected data in session if selection changed from yes to no
-        private static void ClearGpg44(ServiceSummaryViewModel summaryViewModel)
-        {
-            if (summaryViewModel.QualityLevelViewModel != null)
-            {
-                summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = [];
-                summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = [];
-            }
+      
 
-        }
-        private static void ClearGpg45(ServiceSummaryViewModel summaryViewModel)
-        {
-            if (summaryViewModel.IdentityProfileViewModel != null)
-                summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = [];
-        }
-
-        private static void ClearSchemes(ServiceSummaryViewModel summaryViewModel)
-        {
-            if (summaryViewModel.SupplementarySchemeViewModel != null)
-                summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = [];
-        }
-        #endregion
+ 
 
         #endregion
     }

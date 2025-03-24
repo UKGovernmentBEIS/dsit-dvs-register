@@ -124,6 +124,14 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return genericResponse;
         }
 
+        public async Task<GenericResponse> SaveServiceAmendments(ServiceDto serviceDto, string loggedInUserEmail)
+        {
+            Service service = new();
+            automapper.Map(serviceDto, service);
+            GenericResponse genericResponse = await cabRepository.SaveServiceAmendments(service, loggedInUserEmail);
+            return genericResponse;
+        }
+
         public async Task<GenericResponse> UpdateCompanyInfo(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
         {
             ProviderProfile providerProfile = new();

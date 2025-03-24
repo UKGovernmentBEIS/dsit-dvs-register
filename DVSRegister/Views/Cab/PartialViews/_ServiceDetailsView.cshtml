@@ -218,7 +218,7 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "GPG44", "CabService", new { fromDetailsPage = true },
+                            @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
                                          new { @class = "govuk-link", @aria_label = "Change GPG44 quality of authenticator" })
                             </dd>
                         }
@@ -245,7 +245,7 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "GPG44", "CabService", new { fromDetailsPage = true },
+                            @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
                                          new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
                             </dd>
                         }
@@ -293,7 +293,7 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "GPG45", "CabService", new { fromDetailsPage = true },
+                            @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
                                          new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
                             </dd>
                         }
@@ -313,7 +313,8 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "SupplementarySchemes", "CabService", new { fromDetailsPage = true },
+                                  @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
+                              
                                          new { @class = "govuk-link", @aria_label = "Change relevant supplementary schemes" })
                             </dd>
                         }
@@ -343,7 +344,7 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
+                            @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
                                          new { @class = "govuk-link", @aria_label = "Change whether certified against supplementary schemes" })
                             </dd>
                         }
