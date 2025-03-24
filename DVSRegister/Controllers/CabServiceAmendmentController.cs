@@ -1,24 +1,24 @@
-﻿using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.BusinessLogic.Services;
-using DVSRegister.CommonUtility;
-using Microsoft.AspNetCore.Mvc;
-using DVSRegister.BusinessLogic.Models.CAB;
+﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
-using DVSRegister.Models.CAB.Service;
+using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
+using DVSRegister.Models.CAB;
+using DVSRegister.Models.CAB.Service;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-   
+
 
     [Route("cab-service/amend")]
 
-    public class CabServiceAmendmentController(ICabService cabService, IBucketService bucketService, IUserService userService, ILogger<CabServiceAmendmentController> logger) : BaseController(logger)
+    public class CabServiceAmendmentController(ICabService cabService, ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger)
     {
 
-        private readonly ICabService cabService = cabService;
-        private readonly IBucketService bucketService = bucketService;
-        private readonly IUserService userService = userService;
+        private readonly ICabService cabService = cabService;    
+        private readonly IMapper mapper = mapper;
 
 
         #region Amendments
@@ -26,13 +26,10 @@ namespace DVSRegister.Controllers
         [HttpGet("service-amendments")]
         public async Task<IActionResult> ServiceAmendments(int serviceId)
         {
-
-
             SetRefererURL();
-
             ServiceDto service = await cabService.GetServiceDetails(serviceId, CabId);
             SetServiceDataToSession(CabId, service);
-            AmendmentViewModel amendmentViewModel = new AmendmentViewModel
+            AmendmentViewModel amendmentViewModel = new()
             {
                 CertificateReview = service.CertificateReview,
                 ServiceSummary = GetServiceSummary()
@@ -53,6 +50,34 @@ namespace DVSRegister.Controllers
             amendmentViewModel.CertificateReview = HttpContext?.Session.Get<CertificateReviewDto>("CertificateReviewDetails") ?? new CertificateReviewDto();
             amendmentViewModel.ServiceSummary = GetServiceSummary();
             return View(amendmentViewModel);
+
+        }
+
+        [HttpPost("service-amendments-summary")]
+        public async Task<IActionResult> SaveServiceAmendmentsSummary()
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
+            ServiceDto serviceDto = mapper.Map<ServiceDto>(summaryViewModel);
+
+        
+
+            if (serviceDto.CabUserId < 0) throw new InvalidDataException("Invalid CabUserId");
+
+            GenericResponse genericResponse = new();
+                if (summaryViewModel.IsAmendment)
+                {
+                    genericResponse = await cabService.SaveServiceAmendments(serviceDto, UserEmail);
+                }                
+
+                if (genericResponse.Success)
+                {
+                    return RedirectToAction("InformationSubmitted","CabService");
+                }
+                else
+                {
+                 throw new InvalidOperationException("SaveServiceAmendmentsSummary: Failed to save service amendments");
+                }          
 
         }
         #endregion

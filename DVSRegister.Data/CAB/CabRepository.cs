@@ -293,7 +293,49 @@ namespace DVSRegister.Data.CAB
         }
 
 
-       
+        public async Task<GenericResponse> SaveServiceAmendments(Service service, string loggedInUserEmail)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = context.Database.BeginTransaction();
+            try
+            {
+                var existingService = await context.Service.Include(x => x.CertificateReview).Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)
+               .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)
+               .Where(x => x.Id == service.Id && x.IsCurrent == true).FirstOrDefaultAsync();
+                if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
+                {
+                    if (existingService.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)
+                    {
+                        //To do: confirm created time and certificatereview data
+                        existingService.CreatedTime = DateTime.UtcNow;
+                        UpdateExistingServiceRecord(service, existingService);
+                        context.CertificateReview.Remove(existingService.CertificateReview);
+                        genericResponse.InstanceId = existingService.ServiceKey;
+                        await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ServiceAmendments, loggedInUserEmail);
+                        genericResponse.InstanceId = existingService.Id;
+                        transaction.Commit();
+                        genericResponse.Success = true;
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                        genericResponse.Success = false;
+                        logger.LogError( "Service id {ServiceID} doesnt exist ", service.Id);
+                    }
+                }            
+
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                transaction.Rollback();
+                logger.LogError(ex, "Error in SaveServiceReApplication");
+            }
+            return genericResponse;
+        }
+
+
+
 
 
         public async Task<GenericResponse> UpdateCompanyInfo(ProviderProfile providerProfile, string loggedInUserEmail)
