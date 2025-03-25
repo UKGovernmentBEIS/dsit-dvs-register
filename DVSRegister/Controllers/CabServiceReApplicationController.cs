@@ -52,8 +52,7 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("BeforeYouSubmitNewCertificate failed: Invalid providerProfileId for CabId."));
-                return RedirectToAction("CabHandleException", "Error");
+                throw new ArgumentException("Invalid providerProfileId.");
             }
         }
 
