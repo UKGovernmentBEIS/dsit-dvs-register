@@ -305,9 +305,8 @@ namespace DVSRegister.Data.CAB
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
                     if (existingService.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)
-                    {
-                        //To do: confirm created time and certificatereview data
-                        existingService.CreatedTime = DateTime.UtcNow;
+                    {                       
+                        existingService.ResubmissionTime = DateTime.UtcNow;
                         UpdateExistingServiceRecord(service, existingService);
                         context.CertificateReview.Remove(existingService.CertificateReview);
                         genericResponse.InstanceId = existingService.ServiceKey;

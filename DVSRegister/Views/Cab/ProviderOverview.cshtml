@@ -103,7 +103,7 @@
                                             Submission date (GMT)
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @DateTimeExtensions.FormatDateTime((item.CreatedTime != null && item.CreatedTime!= DateTime.MinValue)  ? item.CreatedTime : item.ModifiedTime)                                            
+                                            @DateTimeExtensions.FormatDateTime(item.CreatedTime)                                            
                                         </dd>
                                     </div>
                                     <div class="govuk-summary-list__row">

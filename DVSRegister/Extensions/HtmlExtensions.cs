@@ -24,6 +24,7 @@ namespace DVSRegister.Extensions
             {
                 case ServiceStatusEnum.Submitted:
                 case ServiceStatusEnum.Received:
+                case ServiceStatusEnum.Resubmitted:
                     return "govuk-tag govuk-tag--blue";
 
                 case ServiceStatusEnum.Published:
