@@ -24,7 +24,9 @@ namespace DVSRegister.CommonUtility.Models
         [Description("Updates requested")]
         UpdatesRequested = 9,
         [Description("Amendments needed")]
-        AmendmentsRequired = 10
+        AmendmentsRequired = 10,
+        [Description("Submitted")]
+        Resubmitted = 11
 
     }
 }

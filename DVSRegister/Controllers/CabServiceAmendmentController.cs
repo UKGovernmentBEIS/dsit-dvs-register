@@ -57,7 +57,7 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveServiceAmendmentsSummary()
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
+            summaryViewModel.ServiceStatus = ServiceStatusEnum.Resubmitted;
             ServiceDto serviceDto = mapper.Map<ServiceDto>(summaryViewModel);
 
         

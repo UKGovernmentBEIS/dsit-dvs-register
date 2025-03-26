@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.CommonUtility;
 using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic
