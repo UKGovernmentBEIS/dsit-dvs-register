@@ -59,38 +59,34 @@ namespace DVSRegister.Controllers
 
         [HttpPost("about-to-remove")]
         public async Task<IActionResult> RequestRemoval(int providerId, int serviceId)
-        {           
+        {
             if (!IsValidCabId(CabId))
                 return HandleInvalidCabId(CabId);
-            
-            if (providerId > 0 && serviceId > 0)
+
+            if (providerId <= 0)
+                throw new ArgumentException("RequestRemoval failed: Invalid ProviderId.");
+
+            if (serviceId <= 0)
+                throw new ArgumentException("RequestRemoval failed: Invalid ServiceId.");
+
+            string removalReasonByCab = HttpContext.Session.GetString("ReasonForRemoval");
+            string whatToRemove = HttpContext.Session.GetString("WhatToRemove");
+
+            HttpContext.Session.Remove("ReasonForRemoval");
+            HttpContext.Session.Remove("WhatToRemove");
+
+            GenericResponse genericResponse = await cabRemovalRequestService.UpdateRemovalStatus(CabId, providerId,
+                serviceId, UserEmail, removalReasonByCab, whatToRemove);
+            if (genericResponse.Success)
             {
-                string removalReasonByCab = HttpContext.Session.GetString("ReasonForRemoval");
-                string whatToRemove = HttpContext.Session.GetString("WhatToRemove");
-
-                HttpContext.Session.Remove("ReasonForRemoval");
-                HttpContext.Session.Remove("WhatToRemove");
-
-                GenericResponse genericResponse = await cabRemovalRequestService.UpdateRemovalStatus(CabId, providerId, serviceId, UserEmail, removalReasonByCab, whatToRemove);
-                if (genericResponse.Success)
-                {
-                    ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);
-                    ViewBag.WhatToRemove = whatToRemove;
-                    return View("RemovalRequested", serviceDto);
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("RequestRemoval failed: Unable to update removal status."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
+                ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);
+                ViewBag.WhatToRemove = whatToRemove;
+                return View("RemovalRequested", serviceDto);
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("RequestRemoval failed: Invalid ProviderId, or ServiceId."));
-                return RedirectToAction("CabHandleException", "Error");
+                throw new InvalidOperationException("RequestRemoval failed: Unable to update removal status.");
             }
         }
-
-
     }
 }
