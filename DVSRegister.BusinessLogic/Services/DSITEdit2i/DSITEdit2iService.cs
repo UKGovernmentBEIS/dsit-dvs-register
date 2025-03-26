@@ -349,7 +349,7 @@ namespace DVSRegister.BusinessLogic.Services
                     string previousData = Helper.ConcatenateKeyValuePairs(previous);
 
                     string userEmail = serviceDraft.User.Email;
-                    await emailSender.EditProviderAccepted(userEmail, userEmail, serviceDraft.Provider.RegisteredName, currentData, previousData);
+                    await emailSender.EditServiceAccepted(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName, currentData, previousData);
                 }
 
 
