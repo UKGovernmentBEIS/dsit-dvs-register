@@ -46,13 +46,46 @@ namespace DVSRegister.CommonUtility
             }
             catch (AmazonS3Exception e)
             {
-                logger.LogError("AWS S3 error when writing  file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                logger.LogError("AWS S3 error when writing  file to bucket: '{BucketName}', key: '{keyName}'. Message:'{Message}'", config.BucketName, keyName, e.Message);
                 return new GenericResponse { Success = false };
             }
             catch (Exception e)
             {
-                logger.LogError("Error when writing file to bucket: '{0}', key: '{1}'. Message:'{2}'", config.BucketName, keyName, e.Message);
+                logger.LogError("Error when writing file to bucket: '{BucketName}', key: '{keyName}'. Message:'{Message}'", config.BucketName, keyName, e.Message);
                 return new GenericResponse { Success = false };               
+            }
+        }
+
+
+        /// <summary>
+        /// Delete file from S3
+        /// </summary>
+        /// <param name="keyName"></param>
+        /// <returns></returns>
+
+        public async Task<GenericResponse> DeleteFromS3Bucket(string keyName)
+        {           
+            try
+            {               
+                DeleteObjectRequest request = new DeleteObjectRequest
+                {
+                    BucketName = config.BucketName,
+                    Key = keyName
+                };
+
+                var response = await s3Client.DeleteObjectAsync(request);
+                return new GenericResponse { Success = true};
+                
+            }
+            catch (AmazonS3Exception e)
+            {
+                logger.LogError("AWS S3 error when deleting  file from bucket: '{BucketName}', key: '{keyName}'. Message:'{Message}'", config.BucketName, keyName, e.Message);
+                return new GenericResponse { Success = false };
+            }
+            catch (Exception e)
+            {
+                logger.LogError("Error when deleting file from bucket: '{BucketName}', key: '{keyName}'. Message:'{Message}'", config.BucketName, keyName, e.Message);
+                return new GenericResponse { Success = false };
             }
         }
 

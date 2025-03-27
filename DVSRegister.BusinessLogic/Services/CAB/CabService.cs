@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CAB;
@@ -11,12 +12,14 @@ namespace DVSRegister.BusinessLogic.Services.CAB
     {
         private readonly ICabRepository cabRepository;
         private readonly IMapper automapper;
-      
+        private readonly IBucketService bucketService;
 
-        public CabService(ICabRepository cabRepository, IMapper automapper)
+
+        public CabService(ICabRepository cabRepository, IMapper automapper, IBucketService bucketService)
         {
             this.cabRepository = cabRepository;
-            this.automapper = automapper;            
+            this.automapper = automapper;  
+            this.bucketService = bucketService;
         }
      
         public async Task<List<RoleDto>> GetRoles()
@@ -162,6 +165,14 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             automapper.Map(providerProfileDto, providerProfile);
             GenericResponse genericResponse = await cabRepository.UpdatePublicProviderInformation(providerProfile, loggedInUserEmail);
             return genericResponse;
+        }
+
+
+        public async Task  RemoveCertificate(int serviceId, int cabId)
+        {
+            var service = await cabRepository.GetServiceDetails(serviceId, cabId);
+            await bucketService.DeleteFromS3Bucket(service.FileLink);          
+            
         }
         #endregion
     }

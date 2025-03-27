@@ -26,6 +26,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
         public Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail);
         public Task<GenericResponse> SaveServiceAmendments(ServiceDto serviceDto, string loggedInUserEmail);
+        public Task RemoveCertificate(int serviceId, int cabId);
 
         #endregion
     }

@@ -475,6 +475,7 @@ namespace DVSRegister.Controllers
                 summaryViewModel.FileLink = null;
                 summaryViewModel.FileName = null;               
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                certificateFileViewModel.FileRemoved = true;
                 return View(certificateFileViewModel);
             }
             if (!string.IsNullOrEmpty(summaryViewModel.FileName) && !string.IsNullOrEmpty(summaryViewModel.FileLink))
@@ -490,8 +491,7 @@ namespace DVSRegister.Controllers
                 };
                 certificateFileViewModel.FileUploadedSuccessfully = true;
                 certificateFileViewModel.File = formFile;
-            }
-            
+            }            
             return View(certificateFileViewModel);
         }
 
@@ -525,9 +525,15 @@ namespace DVSRegister.Controllers
                         certificateFileViewModel.FileName = certificateFileViewModel.File.FileName;
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
 
-                        //To do : delete old certificate from bucket
-                        if (action == "continue" || action == "amend")
+                       
+                        if (action == "continue")
                         {
+                            return View("CertificateUploadPage", certificateFileViewModel);
+                        }
+                        else if(action == "amend")
+                        {
+                            //To DO: uncomment when S3 bucket policy is updated
+                            //await cabService.RemoveCertificate(summaryViewModel.ServiceId, CabId);
                             return View("CertificateUploadPage", certificateFileViewModel);
                         }
                         else if (action == "draft")
