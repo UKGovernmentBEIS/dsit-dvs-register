@@ -1,4 +1,5 @@
-﻿@using DVSRegister.BusinessLogic.Models.CAB;
+﻿@using DVSRegister.BusinessLogic
+@using DVSRegister.BusinessLogic.Models.CAB;
 @using DVSRegister.Extensions
 @using DVSRegister.CommonUtility.Models;
 @using DVSRegister.CommonUtility.Models.Enums;
@@ -62,8 +63,13 @@
                     Model.Services.All(s => s.ServiceStatus == ServiceStatusEnum.Removed ||
                     s.ServiceStatus == ServiceStatusEnum.Published || s.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation);
 
+                    var orderedServices = Model.Services
+                        .Where(s => s.IsCurrent)
+                        .OrderBy(s => ServiceHelper.GetServicePriority(s))
+                        .ThenByDescending(s => s.CreatedTime)
+                        .ToList();
 
-                    foreach (var item in Model.Services.Where(s => s.IsCurrent))
+                    foreach (var item in orderedServices)
                     {
                         <div class="govuk-summary-card">
 
