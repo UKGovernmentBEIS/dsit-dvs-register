@@ -476,6 +476,7 @@ namespace DVSRegister.Controllers
                 summaryViewModel.FileName = null;               
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 certificateFileViewModel.FileRemoved = true;
+                certificateFileViewModel.IsAmendment = summaryViewModel.IsAmendment;
                 return View(certificateFileViewModel);
             }
             if (!string.IsNullOrEmpty(summaryViewModel.FileName) && !string.IsNullOrEmpty(summaryViewModel.FileLink))
@@ -491,6 +492,7 @@ namespace DVSRegister.Controllers
                 };
                 certificateFileViewModel.FileUploadedSuccessfully = true;
                 certificateFileViewModel.File = formFile;
+                certificateFileViewModel.IsAmendment = summaryViewModel.IsAmendment;
             }            
             return View(certificateFileViewModel);
         }
@@ -526,16 +528,10 @@ namespace DVSRegister.Controllers
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
 
                        
-                        if (action == "continue")
+                        if (action == "continue" || action == "amend")
                         {
                             return View("CertificateUploadPage", certificateFileViewModel);
-                        }
-                        else if(action == "amend")
-                        {
-                            //To DO: uncomment when S3 bucket policy is updated
-                            //await cabService.RemoveCertificate(summaryViewModel.ServiceId, CabId);
-                            return View("CertificateUploadPage", certificateFileViewModel);
-                        }
+                        }                       
                         else if (action == "draft")
                         {
                             return await SaveAsDraftAndRedirect(summaryViewModel);
@@ -719,9 +715,7 @@ namespace DVSRegister.Controllers
             ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
 
             if (!IsValidCabId(summaryViewModel.CabId))
-                return HandleInvalidCabId(summaryViewModel.CabId);
-
-            if (serviceDto.CabUserId <0) throw new InvalidDataException("Invalid CabUserId");
+                return HandleInvalidCabId(summaryViewModel.CabId);           
 
                GenericResponse genericResponse = new();
                 if(summaryViewModel.IsResubmission) 
@@ -731,8 +725,7 @@ namespace DVSRegister.Controllers
                 else
                 {
                     genericResponse = await cabService.SaveService(serviceDto, UserEmail);
-                }
-               
+                }               
                 if (genericResponse.Success)
                 {
                     return RedirectToAction("InformationSubmitted");
