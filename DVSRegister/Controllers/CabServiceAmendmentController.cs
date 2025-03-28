@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
@@ -14,11 +15,12 @@ namespace DVSRegister.Controllers
 
     [Route("cab-service/amend")]
 
-    public class CabServiceAmendmentController(ICabService cabService, ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger)
+    public class CabServiceAmendmentController(ICabService cabService, ILogger<CabServiceAmendmentController> logger, IMapper mapper, IBucketService bucketService) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;    
         private readonly IMapper mapper = mapper;
+        private readonly IBucketService bucketService =bucketService;
 
 
         #region Amendments
@@ -54,30 +56,44 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("service-amendments-summary")]
-        public async Task<IActionResult> SaveServiceAmendmentsSummary()
+        public async Task<IActionResult> SaveServiceAmendmentsSummary(string action)
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             summaryViewModel.ServiceStatus = ServiceStatusEnum.Resubmitted;
             ServiceDto serviceDto = mapper.Map<ServiceDto>(summaryViewModel);
+            var existingService = await cabService.GetServiceDetails(summaryViewModel.ServiceId,CabId);
 
-        
-
-            if (serviceDto.CabUserId < 0) throw new InvalidDataException("Invalid CabUserId");
-
-            GenericResponse genericResponse = new();
+            if (action == "save")
+            {
+                GenericResponse genericResponse = new();
                 if (summaryViewModel.IsAmendment)
                 {
-                    genericResponse = await cabService.SaveServiceAmendments(serviceDto, UserEmail);
-                }                
+                    genericResponse = await cabService.SaveServiceAmendments(serviceDto, existingService.FileLink, existingService.CabUser.CabId, CabId, UserEmail);
+                }
 
                 if (genericResponse.Success)
                 {
-                    return RedirectToAction("InformationSubmitted","CabService");
+                    return RedirectToAction("InformationSubmitted", "CabService");
                 }
                 else
                 {
-                 throw new InvalidOperationException("SaveServiceAmendmentsSummary: Failed to save service amendments");
-                }          
+                    throw new InvalidOperationException("Failed: SaveServiceAmendmentsSummary");
+                }
+            }
+            else if (action == "discard")
+            {
+                if(cabService.CanDeleteCertificate(serviceDto.FileLink, existingService.FileLink, existingService.CabUser.CabId,CabId))
+                {
+                    //TODO: uncomment after S3 changes
+                   // await bucketService.DeleteFromS3Bucket(serviceDto.FileLink);
+                }                
+                return RedirectToAction("ServiceAmendments", new { serviceId = summaryViewModel.ServiceId });
+            
+            }
+            else
+            {
+                throw new ArgumentException("Invalid action parameter");
+            }
 
         }
         #endregion

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CAB;
@@ -11,12 +12,14 @@ namespace DVSRegister.BusinessLogic.Services.CAB
     {
         private readonly ICabRepository cabRepository;
         private readonly IMapper automapper;
-      
+        private readonly IBucketService bucketService;
 
-        public CabService(ICabRepository cabRepository, IMapper automapper)
+
+        public CabService(ICabRepository cabRepository, IMapper automapper, IBucketService bucketService)
         {
             this.cabRepository = cabRepository;
-            this.automapper = automapper;            
+            this.automapper = automapper;
+            this.bucketService = bucketService;
         }
      
         public async Task<List<RoleDto>> GetRoles()
@@ -124,12 +127,33 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return genericResponse;
         }
 
-        public async Task<GenericResponse> SaveServiceAmendments(ServiceDto serviceDto, string loggedInUserEmail)
-        {
+        public async Task<GenericResponse> SaveServiceAmendments(ServiceDto serviceDto, string existingFileLink, int existingServiceCabId, int cabId, string loggedInUserEmail)
+        {          
+            
+
             Service service = new();
             automapper.Map(serviceDto, service);
             GenericResponse genericResponse = await cabRepository.SaveServiceAmendments(service, loggedInUserEmail);
+            if(genericResponse.Success && CanDeleteCertificate(serviceDto.FileLink, existingFileLink, existingServiceCabId, cabId))
+            {      
+                //ToDo: un comment after s3 changes
+               // await bucketService.DeleteFromS3Bucket(existingFileLink);
+            }
             return genericResponse;
+        }
+
+        public bool CanDeleteCertificate(string currentFileLink,string existingFileLink, int existingServiceCabId, int cabId)
+        {
+            bool canDelete = false;
+          
+            if (existingServiceCabId != cabId)
+                throw new InvalidOperationException(string.Format("Invalid CabId, Cab Id in Service  {0}, Cab Id in Session {1}",
+                  existingServiceCabId, cabId));
+            if (!string.IsNullOrEmpty(existingFileLink) && !string.IsNullOrEmpty(existingFileLink) && existingFileLink != currentFileLink)
+            {
+               canDelete = true;
+            }
+            return canDelete;
         }
 
         public async Task<GenericResponse> UpdateCompanyInfo(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
@@ -163,6 +187,8 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             GenericResponse genericResponse = await cabRepository.UpdatePublicProviderInformation(providerProfile, loggedInUserEmail);
             return genericResponse;
         }
+
+       
         #endregion
     }
 }
