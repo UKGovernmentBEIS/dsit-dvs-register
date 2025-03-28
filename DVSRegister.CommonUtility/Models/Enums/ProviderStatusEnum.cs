@@ -15,9 +15,9 @@ namespace DVSRegister.CommonUtility.Models.Enums
         ReadyToPublishNext = 4,
         [Description("Removed from register")]
         RemovedFromRegister = 5,
-        [Description("Awaiting removal confirmation")]
+        [Description("Removal request sent")]
         AwaitingRemovalConfirmation = 6,
-        [Description("Awaiting removal confirmation")]
+        [Description("Removal request sent")]
         CabAwaitingRemovalConfirmation = 7,
         [Description("Updates requsted")]
         UpdatesRequested = 8
