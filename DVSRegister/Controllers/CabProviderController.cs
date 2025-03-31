@@ -515,8 +515,7 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveProfileSummary()
         {
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
-            string email = HttpContext?.Session.Get<string>("Email") ?? string.Empty;
-            CabUserDto cabUserDto = await userService.GetUser(email);
+            CabUserDto cabUserDto = await userService.GetUser(UserEmail);
             ProviderProfileDto providerDto = MapViewModelToDto(summaryViewModel, cabUserDto.Id);
             
             if (providerDto == null)
@@ -540,9 +539,8 @@ namespace DVSRegister.Controllers
         [HttpGet("profile-submitted")]
         public IActionResult InformationSubmitted()
         {
-            string email = HttpContext?.Session.Get<string>("Email") ?? string.Empty;
             HttpContext?.Session.Remove("ProfileSummary");
-            ViewBag.Email = email;
+            ViewBag.Email = UserEmail;
             return View();
         }
 

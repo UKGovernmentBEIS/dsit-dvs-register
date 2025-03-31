@@ -28,6 +28,7 @@
         public const string ConformityExpiryPastDateError = "The certificate of conformity expiry date must be in the future";
         public const string IncorrectPassword = "Incorrect Password";
         public const string IncorrectLoginDetails = "Enter a valid email address and password. After five incorrect attempts, your account will be temporarily locked";
+        public const string NullFieldsDisplay = "No data";
 
         public const string RegisteredNameExistsError = "The registered name you have entered already exists";
 
