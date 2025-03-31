@@ -1,12 +1,11 @@
 ﻿using Amazon;
 using Amazon.S3;
 using DVSAdmin.BusinessLogic.Services;
-using DVSRegister.BusinessLogic;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
-using DVSRegister.CommonUtility.GoogleAnalytics;
 using DVSRegister.CommonUtility.Email;
+using DVSRegister.CommonUtility.GoogleAnalytics;
 using DVSRegister.CommonUtility.JWT;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data;
@@ -14,10 +13,10 @@ using DVSRegister.Data.CAB;
 using DVSRegister.Data.CabRemovalRequest;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
+using DVSRegister.Services.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
-using DVSRegister.Services.Cookies;
 
 namespace DVSRegister
 {
@@ -116,6 +115,8 @@ namespace DVSRegister
             services.AddScoped<ICabRemovalRequestRepository, CabRemovalRequestRepository>();
             services.AddScoped<IDSITEdit2iService, DSITEdit2iService>();
             services.AddScoped<IDSITEdit2iRepository, DSITEdit2iRepository>();
+            services.AddSingleton<DVSRegister.Services.AutoMapperProfile>();
+            services.AddSingleton<DVSRegister.BusinessLogic.AutoMapperProfile>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));
@@ -127,7 +128,8 @@ namespace DVSRegister
         }
         public void ConfigureAutomapperServices(IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(AutoMapperProfile));
+            services.AddAutoMapper(typeof(DVSRegister.Services.AutoMapperProfile),
+                          typeof(DVSRegister.BusinessLogic.AutoMapperProfile));
         }
         public void ConfigureDatabaseHealthCheck(DVSRegisterDbContext? dbContext)
         {

@@ -3,7 +3,7 @@ using DVSRegister.Validations;
 
 namespace DVSRegister.Models.CAB
 {
-    public class QualityLevelViewModel
+    public class QualityLevelViewModel :ServiceSummaryBaseViewModel
     {
         public List<QualityLevelDto>? AvailableQualityOfAuthenticators { get; set; }
 
@@ -16,7 +16,6 @@ namespace DVSRegister.Models.CAB
         [EnsureMinimumCount(ErrorMessage = "Select the level of protection")]
         public List<int>? SelectedLevelOfProtectionIds { get; set; }
         public List<QualityLevelDto>? SelectedLevelOfProtections { get; set; }
-        public bool FromSummaryPage { get; set; }
-        public bool FromDetailsPage { get; set; }
+       
     }
 }

@@ -114,6 +114,9 @@ namespace DVSRegister.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Amendments")
+                        .HasColumnType("text");
+
                     b.Property<int>("CertificateReviewStatus")
                         .HasColumnType("integer");
 
@@ -808,7 +811,8 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProviderProfileId");
+                    b.HasIndex("ProviderProfileId")
+                        .IsUnique();
 
                     b.HasIndex("RequestedUserId");
 
@@ -1148,6 +1152,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("RemovedTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime?>("ResubmissionTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int>("ServiceKey")
                         .HasColumnType("integer");
 
@@ -1228,7 +1235,8 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasIndex("RequestedUserId");
 
-                    b.HasIndex("ServiceId");
+                    b.HasIndex("ServiceId")
+                        .IsUnique();
 
                     b.ToTable("ServiceDraft");
                 });
@@ -1702,8 +1710,8 @@ namespace DVSRegister.Data.Migrations
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfileDraft", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
-                        .WithMany()
-                        .HasForeignKey("ProviderProfileId")
+                        .WithOne("ProviderProfileDraft")
+                        .HasForeignKey("DVSRegister.Data.Entities.ProviderProfileDraft", "ProviderProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1826,8 +1834,8 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("DVSRegister.Data.Entities.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId")
+                        .WithOne("ServiceDraft")
+                        .HasForeignKey("DVSRegister.Data.Entities.ServiceDraft", "ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2027,6 +2035,9 @@ namespace DVSRegister.Data.Migrations
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
                 {
+                    b.Navigation("ProviderProfileDraft")
+                        .IsRequired();
+
                     b.Navigation("Services");
                 });
 
@@ -2041,6 +2052,9 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ProceedApplicationConsentToken")
+                        .IsRequired();
+
+                    b.Navigation("ServiceDraft")
                         .IsRequired();
 
                     b.Navigation("ServiceIdentityProfileMapping");

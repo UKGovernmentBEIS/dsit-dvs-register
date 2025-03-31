@@ -1,5 +1,7 @@
 namespace DVSRegister.Validations;
 
+using DVSRegister.CommonUtility;
+using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 
@@ -24,7 +26,110 @@ public class ValidationHelper
             modelState.AddModelError(config.SecondFieldName, config.ErrorMessage);
         }
     }
-    
-    
+
+
+    public static DateTime? ValidateIssueDate(DateViewModel dateViewModel, DateTime? expiryDate, bool fromSummaryPage, ModelStateDictionary modelstate)
+    {
+        DateTime? date = null;
+        DateTime minDate = new DateTime(1900, 1, 1);
+        DateTime minIssueDate;
+
+
+        try
+        {
+            if (dateViewModel.Day == null || dateViewModel.Month == null || dateViewModel.Year == null)
+            {
+                if (dateViewModel.Day == null)
+                {
+                    modelstate.AddModelError("Day", Constants.ConformityIssueDayError);
+                }
+                if (dateViewModel.Month == null)
+                {
+                    modelstate.AddModelError("Month", Constants.ConformityIssueMonthError);
+                }
+                if (dateViewModel.Year == null)
+                {
+                    modelstate.AddModelError("Year", Constants.ConformityIssueYearError);
+                }
+            }
+            else
+            {
+                date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
+                if (date > DateTime.Today)
+                {
+                    modelstate.AddModelError("ValidDate", Constants.ConformityIssuePastDateError);
+                }
+                if (date < minDate)
+                {
+                    modelstate.AddModelError("ValidDate", Constants.ConformityIssueDateInvalidError);
+                }
+
+                if (expiryDate.HasValue && fromSummaryPage)
+                {
+                    minIssueDate = expiryDate.Value.AddYears(-2).AddDays(-60);
+                    if (date < minIssueDate)
+                    {
+                        modelstate.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
+                    }
+                }
+
+            }
+        }
+        catch (Exception)
+        {
+            modelstate.AddModelError("ValidDate", Constants.ConformityIssueDateInvalidError);
+
+        }
+        return date;
+    }
+
+    public static DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate)
+    {
+        DateTime? date = null;
+
+        try
+        {
+            if (dateViewModel.Day == null || dateViewModel.Month == null || dateViewModel.Year == null)
+            {
+                if (dateViewModel.Day == null)
+                {
+                    modelstate.AddModelError("Day", Constants.ConformityExpiryDayError);
+                }
+                if (dateViewModel.Month == null)
+                {
+                    modelstate.AddModelError("Month", Constants.ConformityExpiryMonthError);
+                }
+                if (dateViewModel.Year == null)
+                {
+                    modelstate.AddModelError("Year", Constants.ConformityExpiryYearError);
+                }
+            }
+            else
+            {
+                date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
+                var maxExpiryDate = issueDate.AddYears(2).AddDays(60);
+                if (date <= DateTime.Today)
+                {
+                    modelstate.AddModelError("ValidDate", Constants.ConformityExpiryPastDateError);
+                }
+                else if (date <= issueDate)
+                {
+                    modelstate.AddModelError("ValidDate", Constants.ConformityIssueDateExpiryDateError);
+                }
+                else if (date > maxExpiryDate)
+                {
+                    modelstate.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
+                }
+            }
+
+        }
+        catch (Exception)
+        {
+            modelstate.AddModelError("ValidDate", Constants.ConformityExpiryDateInvalidError);
+
+        }
+        return date;
+    }
+
 
 }

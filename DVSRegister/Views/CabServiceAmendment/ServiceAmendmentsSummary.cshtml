@@ -1,0 +1,59 @@
+﻿@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.Extensions
+@using DVSRegister.CommonUtility.Models;
+@using DVSRegister.Models.CAB
+@using DVSRegister.Models.CAB.Service
+@model AmendmentViewModel
+@{
+    ViewData["Title"] = "Resubmit your amendments";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+@{
+    string refererUrl = Convert.ToString(ViewBag.RefererUrl);
+}
+
+<div class="govuk-width-container">
+
+    <a href="@refererUrl" class="govuk-back-link">
+        Back
+    </a>
+
+    <main id="main-content" class="govuk-main-wrapper--l" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+
+                <h1 class="govuk-heading-xl">
+                    Resubmit your amendments
+                </h1>
+                @{
+                    var notificationBanner = new NotificationBannerViewModel
+            {
+                Title = "Important",
+                Heading = "Your changes will not be reflected on the service submission until you select ‘Resubmit’ below."
+            };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)
+                <p class="govuk-body">
+                    Your submission has been reviewed and amendments are needed.
+                </p>
+                <h2 class="govuk-heading-m">What was sent back</h2>
+                <hr class="govuk-section-break govuk-section-break--visible">
+                @await Html.PartialAsync("~/Views/Cab/PartialViews/_CertificateValidationFieldsView.cshtml", Model.CertificateReview)
+
+                @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceSummaryView.cshtml", Model.ServiceSummary)
+            </div>
+        </div>
+
+        @using (Html.BeginForm("SaveServiceAmendmentsSummary", "CabServiceAmendment", FormMethod.Post))
+        {
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="save">Resubmit</button>
+                <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-top-2" name="action" value="discard"> Discard changes</button>
+              
+                </div>
+        }
+
+    </main>
+</div>

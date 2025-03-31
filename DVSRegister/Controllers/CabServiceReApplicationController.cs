@@ -9,32 +9,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/re-application")]
-    public class CabServiceReApplicationController : BaseController
+    public class CabServiceReApplicationController(ICabService cabService, IUserService userService, ILogger<CabServiceReApplicationController> logger) : BaseController(logger)
     {
-        private readonly ICabService cabService;
-        private readonly IUserService userService;
-        private readonly ILogger<CabServiceReApplicationController> _logger;
-     
-        public CabServiceReApplicationController(ICabService cabService, IUserService userService, ILogger<CabServiceReApplicationController> logger)
-        {
-            this.cabService = cabService;
-            this.userService = userService;
-            _logger = logger;
-        }
+        private readonly ICabService cabService = cabService;
+        private readonly IUserService userService = userService;
+        private readonly ILogger<CabServiceReApplicationController> _logger = logger;
 
         [HttpGet("resume-submission")]
         public  IActionResult ResumeSubmission()
         {
-            if (CabId > 0)
-            {
-                ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
-                return RedirectToNextEmptyField(serviceSummary);
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ResumeSubmission failed: Invalid CabId."));
-                return RedirectToAction("CabHandleException", "Error");
-            }
+            if(!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
+            return RedirectToNextEmptyField(serviceSummary);
+            
         }
         
         [HttpGet("before-new-certificate")]
@@ -44,34 +33,27 @@ namespace DVSRegister.Controllers
             ViewBag.ServiceKey = serviceKey;
             ViewBag.ProviderProfileId = providerProfileId;        
             CabUserDto cabUserDto = await userService.GetUser(UserEmail);
-            if (cabUserDto.Id > 0)
+            
+            if(!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+        
+            // to prevent another cab changing the providerProfileId from url
+            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
+            if (isValid)
             {
-                // to prevent another cab changing the providerProfileId from url
-                bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
-                if (isValid)
-                {
-                    ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
-                    serviceSummary.IsResubmission = true;                 
-                    serviceSummary.CabId = cabUserDto.CabId;
-                    serviceSummary.CabUserId = cabUserDto.Id;
-                    if(!serviceSummary.IsDraft)
-                        serviceSummary.ResetInpuData(); // clear current input data from session for resubmission if it is not a draft version
-                    HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                    return View();
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("BeforeYouSubmitNewCertificate failed: Invalid providerProfileId for CabId."));
-                    return RedirectToAction("CabHandleException", "Error");
-                }
-
+                ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
+                serviceSummary.IsResubmission = true;                 
+                serviceSummary.CabId = cabUserDto.CabId;
+                serviceSummary.CabUserId = cabUserDto.Id;
+                if(!serviceSummary.IsDraft)
+                    serviceSummary.ResetInpuData(); // clear current input data from session for resubmission if it is not a draft version
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+                return View();
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("BeforeYouSubmitNewCertificate failed: Invalid CabUserId."));
-                return RedirectToAction("CabHandleException", "Error");
+                throw new ArgumentException("Invalid providerProfileId.");
             }
-          
         }
 
 
