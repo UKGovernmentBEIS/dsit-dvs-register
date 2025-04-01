@@ -1,6 +1,9 @@
 ﻿using DVSAdmin.CommonUtility.Models.Enums;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
 
 namespace DVSRegister.BusinessLogic.Models.CAB
@@ -9,6 +12,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
     {
         public int Id { get; set; }
         public string RegisteredName { get; set; }
+
+        [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string TradingName { get; set; }
         public bool HasRegistrationNumber { get; set; }
         public string? CompanyRegistrationNumber { get; set; }
@@ -24,7 +29,11 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public string SecondaryContactJobTitle { get; set; }
         public string SecondaryContactEmail { get; set; }
         public string SecondaryContactTelephoneNumber { get; set; }
+
+        [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? PublicContactEmail { get; set; }
+        
+        [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? ProviderTelephoneNumber { get; set; }
         public string ProviderWebsiteAddress { get; set; }
         public int CompanyId { get; set; }

@@ -77,7 +77,7 @@
                             {
                                 <tr class="govuk-table__row">
                                     <td class="govuk-table__cell">@Html.ActionLink(item.RegisteredName, "ProviderOverview", "Cab", new { providerId = item.Id }, new { @class = "govuk-link" })</td>
-                                    <td class="govuk-table__cell">@item.TradingName</td>
+                                    <td class="govuk-table__cell">@Html.DisplayFor(model => item.TradingName)</td>
                                     @if (item.Services != null && item.Services.Count > 0)
                                     {
                                         <td class="govuk-table__cell">
