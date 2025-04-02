@@ -1,4 +1,5 @@
 ﻿@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.CommonUtility
 @using DVSRegister.Extensions
 @model ProviderDetailsViewModel
 @{
@@ -53,7 +54,7 @@
                                     Trading name
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @Model.Provider.TradingName
+                                    @Html.DisplayFor(model => model.Provider.TradingName)
                                 </dd>
                             </div>
                             @if (Model.Provider.HasParentCompany)
@@ -98,7 +99,7 @@
                                         registration number
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                       NA
+                                       @Constants.NullFieldsDisplay
                                     </dd>
                                 </div>
                                 <div class="govuk-summary-list__row">
@@ -253,7 +254,7 @@
                                     Contact email
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @Model.Provider.PublicContactEmail
+                                    @Html.DisplayFor(model => model.Provider.PublicContactEmail)
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
@@ -261,7 +262,7 @@
                                     Telephone number
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @Model.Provider.ProviderTelephoneNumber
+                                    @Html.DisplayFor(model => model.Provider.ProviderTelephoneNumber)
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">

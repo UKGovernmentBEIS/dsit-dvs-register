@@ -1,4 +1,5 @@
-﻿using DVSRegister.Validations;
+﻿using DVSRegister.CommonUtility;
+using DVSRegister.Validations;
 using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.Models.CAB
@@ -8,7 +9,9 @@ namespace DVSRegister.Models.CAB
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
         [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
-        public string? RegisteredName { get; set; }       
+        public string? RegisteredName { get; set; }
+
+        [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? TradingName { get; set; }
 
         [Required(ErrorMessage = "Select ‘Yes’ if the provider has either a Companies House or charity registration number")]
@@ -43,8 +46,10 @@ namespace DVSRegister.Models.CAB
 
         [EmailAddress(ErrorMessage = "Enter an email address in the correct format")]       
         [MaximumLength(255, ErrorMessage = "Enter an email address that is less than 255 characters")]
+        [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? PublicContactEmail { get; set; }
-      
+
+        [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? ProviderTelephoneNumber { get; set; }
 
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's website address")]

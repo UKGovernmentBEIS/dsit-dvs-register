@@ -65,7 +65,7 @@
                             <tr class="govuk-table__row">
                                 <td class="govuk-table__cell">@Model.Provider.RegisteredName</td>
                                 <td class="govuk-table__cell">
-                                    @(string.IsNullOrEmpty(Model.Provider?.TradingName) ? "N/A" : Model.Provider.TradingName)
+                                    @Html.DisplayFor(model => model.Provider.TradingName)
                                 </td>
                                 <td class="govuk-table__cell">
                                     @foreach (var item in Model.Provider.Services.Where(s => s.ServiceStatus != ServiceStatusEnum.Removed))
