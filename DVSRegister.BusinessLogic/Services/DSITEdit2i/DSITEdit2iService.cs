@@ -197,7 +197,7 @@ namespace DVSRegister.BusinessLogic.Services
                 else
                 {
                     currentDataDictionary.Add("GPG45 identity profiles", [@Constants.NullFieldsDisplay]);
-                }fdjjry
+                }
             }
 
             #endregion
