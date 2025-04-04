@@ -57,7 +57,7 @@ namespace DVSRegister.CommonUtility.JWT
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidateLifetime = false,
+                ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtSettings.Issuer,
                 ValidAudience = string.IsNullOrEmpty(audience)?  jwtSettings.Audience: "DSIT",
@@ -75,23 +75,45 @@ namespace DVSRegister.CommonUtility.JWT
                     tokenDetails.IsAuthorised = true;
                     tokenDetails.TokenId = jti;
                     tokenDetails.Token = token;
+
+                    if(claimsPrincipal.Claims.Any(claim => claim.Key == "ProviderProfileId"))
+                    {
+                        tokenDetails.ProviderProfileId = Convert.ToInt32(claimsPrincipal.Claims.First(claim => claim.Key == "ProviderProfileId").Value);
+                    }
+
+                    if (claimsPrincipal.Claims.Any(claim => claim.Key == "ServiceId"))
+                    {
+                     tokenDetails.ServiceIds = claimsPrincipal.Claims
+                    .Where(claim => claim.Key == "ServiceId")
+                    .Select(claim => Convert.ToInt32(claim.Value))
+                    .ToList();
+                    }                       
+
                 }
                 else
                 {
                     if(claimsPrincipal!=null && claimsPrincipal.Exception !=null)
                     {
                         logger.LogError($"Claims principal exception: {claimsPrincipal.Exception}");
+
+                        if(claimsPrincipal.Exception is SecurityTokenExpiredException)
+                            tokenDetails.IsExpired = true;
                     }
                     tokenDetails.IsAuthorised = false;
                 }               
                
             }
+           
+            catch (SecurityTokenException ex)
+            {
+                tokenDetails.IsAuthorised = false;
+                logger.LogError("SecurityTokenException: {ex}", ex);
+            }          
             catch (Exception ex)
             {
                 tokenDetails.IsAuthorised = false;
-
-                logger.LogError($"Validate token error: {ex}");
-                logger.LogError($"Stacktrace: {ex.StackTrace}");
+                logger.LogError("Validate token error: {ex}",ex);
+                logger.LogError("Stacktrace: {ex.StackTrace}", ex.StackTrace);
                 if (ex.InnerException != null)
                 {
                     Console.Write("Inner Exception");

@@ -20,13 +20,22 @@ namespace DVSRegister.Controllers
         [HttpGet("provider/provider-details")]
         public async Task<ActionResult> RemoveProviderDetails(string token)
         {
-            RemoveProviderViewModel removeProviderViewModel = new();
-            if (!string.IsNullOrEmpty(token))
-            {
-                removeProviderViewModel.token = token;
-                TokenDetails tokenDetails = await jwtService.ValidateToken(token);
-                if (tokenDetails != null && tokenDetails.IsAuthorised)
+            RemoveProviderViewModel removeProviderViewModel = new();            
+            removeProviderViewModel.token = token;
+            TokenDetails tokenDetails = await jwtService.ValidateToken(token);
+
+              if (await removeProvider2iService.HasRemovalRequestCancelled(tokenDetails))
+                return RedirectToAction("RemovalRequestCancelled");
+
+              else if (tokenDetails.IsExpired)
                 {
+                    await removeProvider2iService.UpdateRemovalTokenStatus(tokenDetails.ProviderProfileId, tokenDetails.ServiceIds, TokenStatusEnum.Expired);
+                    return RedirectToAction("RemoveProviderURLExpired");
+                }             
+
+               else if (tokenDetails.IsAuthorised)
+                {                  
+
                     ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
                     if (provider == null || provider?.ProviderStatus == ProviderStatusEnum.RemovedFromRegister)
                     {
@@ -37,15 +46,10 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid or expired provider removal token."));
-                    return RedirectToAction("RemoveProviderURLExpired");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid token"));
+                    return RedirectToAction("RemoveProviderError");
                 }
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("No token provided for provider removal details."));
-                return RedirectToAction("RemoveProviderError");
-            }
+            
             return View(removeProviderViewModel);
         }
 
@@ -56,13 +60,22 @@ namespace DVSRegister.Controllers
         {
             string user = "Provider";
 
-            if (!string.IsNullOrEmpty(removeProviderViewModel.token))
-            {
                 TokenDetails tokenDetails = await jwtService.ValidateToken(removeProviderViewModel.token);
                 ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
-                if (tokenDetails != null && tokenDetails.IsAuthorised)
+
+
+            if (await removeProvider2iService.HasRemovalRequestCancelled(tokenDetails))
+                return RedirectToAction("RemovalRequestCancelled");
+
+              else if (tokenDetails.IsExpired)
                 {
-                    if (action == "remove")
+                    await removeProvider2iService.UpdateRemovalTokenStatus(tokenDetails.ProviderProfileId, tokenDetails.ServiceIds, TokenStatusEnum.Expired);
+                    return RedirectToAction("RemoveProviderURLExpired");
+                }
+
+                else if (tokenDetails.IsAuthorised)
+                {                  
+                   if (action == "remove")
                     {
                         user = provider.PrimaryContactEmail + ";" + provider.SecondaryContactEmail;
                         if (ModelState.IsValid)
@@ -107,16 +120,10 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unauthorised provider removal attempt."));
-                    await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
-                    return RedirectToAction("RemoveProviderURLExpired");
-                }
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Provider removal failed due to missing token."));
+                logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid token"));
                 return RedirectToAction("RemoveProviderError");
             }
+           
 
         }
 
