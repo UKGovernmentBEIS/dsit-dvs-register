@@ -51,6 +51,24 @@ namespace DVSRegister.BusinessLogic.Services
             }
         }
 
+
+
+        public async Task<bool> HasRemovalRequestCancelled(TokenDetails tokenDetails)
+        {
+            bool cancelled = false;
+
+            var provider = await removeProvider2iRepository.GetProviderDetails(tokenDetails.ProviderProfileId);
+
+            if(tokenDetails.ServiceIds!=null)
+            {
+                var services = provider?.Services?.Where(service => tokenDetails.ServiceIds.Contains(service.Id)).ToList();
+
+                if (services != null && services.All(x => x.RemovalTokenStatus == TokenStatusEnum.AdminCancelled)) { cancelled = true; }
+            }
+           
+            return cancelled;
+        }
+
         public async Task<GenericResponse> UpdateRemovalStatus(TeamEnum team, string token, string tokenId, ProviderProfileDto providerDto, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();
@@ -210,8 +228,13 @@ namespace DVSRegister.BusinessLogic.Services
             return await removeProvider2iRepository.RemoveRemovalToken(token, tokenId, loggedInUserEmail);
         }
 
+        public async Task UpdateRemovalTokenStatus(int providerProfileId, List<int> serviceIds, TokenStatusEnum tokenStatus)
+        {
+            await removeProvider2iRepository.UpdateRemovalTokenStatus(providerProfileId, serviceIds, tokenStatus);
+        }
+
         #region private methods
-       
+
         #endregion
     }
 }
