@@ -59,7 +59,8 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.ServiceSupSchemeMapping, opt => opt.MapFrom(src => src.ServiceSupSchemeMapping))
             .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
             .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
-            .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview));
+            .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview))
+            .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom<CreatedTimeResolver>());
 
             CreateMap<ServiceDto, Service>()
            .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))

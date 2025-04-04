@@ -1,4 +1,5 @@
 ﻿@model ProviderDetailsViewModel
+@using DVSRegister.CommonUtility
 @using DVSRegister.Extensions;
 @using DVSRegister.CommonUtility.Models.Enums;
 @using DVSRegister.CommonUtility.Models;
@@ -44,14 +45,7 @@
                             Public email address
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (!string.IsNullOrEmpty(Model.Provider.PublicContactEmail))
-                            {
-                                <div> @Model.Provider.PublicContactEmail </div>
-                            }
-                            else
-                            {
-                                <div>No public email address</div>
-                            }
+                            @Html.DisplayFor(model => model.Provider.PublicContactEmail)
                         </dd>
                     </div>
                     <div class="govuk-summary-list__row">
@@ -59,14 +53,7 @@
                             Public telephone number
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (!string.IsNullOrEmpty(Model.Provider.ProviderTelephoneNumber))
-                            {
-                               <div> @Model.Provider.ProviderTelephoneNumber </div>
-                            }
-                            else
-                            {
-                                <div>No public telephone number</div>
-                            }
+                            @Html.DisplayFor(model => model.Provider.ProviderTelephoneNumber)
                         </dd>
                     </div>
                     <div class="govuk-summary-list__row">
@@ -126,7 +113,7 @@
                                 }
                                 else
                                 {
-                                    <div>Not certified against GPG44</div>
+                                    <div>@Constants.NullFieldsDisplay</div>
                                 }
                             </dd>
                         </div>
@@ -146,7 +133,7 @@
                                 }
                                 else
                                 {
-                                    <div>Not certified against GPG44</div>
+                                    <div>@Constants.NullFieldsDisplay</div>
                                 }
                             </dd>
                         </div>
@@ -165,7 +152,7 @@
                                 }
                                 else
                                 { 
-                                    <div>Not certified against GPG45</div>
+                                    <div>@Constants.NullFieldsDisplay</div>
                                 }
                             </dd>
                         </div>
@@ -185,7 +172,7 @@
                                 }
                                 else
                                 {
-                                    <div>Not certified against any supplementary codes</div>
+                                    <div>@Constants.NullFieldsDisplay</div>
                                 }
                             </dd>
                         </div>

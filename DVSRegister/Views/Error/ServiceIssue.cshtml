@@ -8,24 +8,10 @@
     <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-l">Sorry, the service is unavailable</h1>
+                <h1 class="govuk-heading-l">There is a problem with the service</h1>
                 <p class="govuk-body">
-                    Try again later.
-                </p>
-
-                @if (Model.ApplicationType == "cab")
-                {
-                    <p class="govuk-body">
-                        Your answers have not been saved. When the service is available, you will have to
-                        @Html.ActionLink("application creation ", "LandingPage", "Cab", null, new { @class = "govuk-link" })again.
-                    </p>
-
-                    <a href="@Url.Action("StartPage", "Login")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-                        Return to service
-
-                    </a>
-                }
-               
+                    Please try again. If the problem persists, contact digital.identity.register@dsit.gov.uk
+                </p>     
 
             </div>
         </div>

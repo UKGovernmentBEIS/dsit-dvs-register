@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.Models.CAB
 {
-    public class ServiceSummaryViewModel
+    public class ServiceSummaryViewModel :ServiceSummaryBaseViewModel
     {
         public int ProviderProfileId { get; set; }     
 
@@ -38,14 +38,11 @@ namespace DVSRegister.Models.CAB
         public DateTime? ConformityIssueDate { get; set; }
         public DateTime? ConformityExpiryDate { get; set; }      
         public int CabUserId { get; set; }
-        public int CabId { get; set; }
-        public bool FromSummaryPage { get;set; }
-        public bool FromDetailsPage { get; set; }
-        public bool IsResubmission { get; set; }
+        public int CabId { get; set; }   
         public int ServiceId { get; set; }
-        public int ServiceKey { get; set; }
-        public bool IsDraft { get; set; }
-      
+        public int ServiceKey { get; set; }      
+        public DateTime? CreatedDate { get; set; }
+
 
         public void ResetInpuData()
         {

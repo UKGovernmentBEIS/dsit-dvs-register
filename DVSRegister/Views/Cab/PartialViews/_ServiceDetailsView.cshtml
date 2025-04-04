@@ -1,4 +1,5 @@
-﻿@using DVSRegister.CommonUtility.Models
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models
 @using DVSRegister.Extensions
 @model DVSRegister.BusinessLogic.Models.CAB.ServiceDto
 
@@ -24,7 +25,7 @@
 <div class="govuk-summary-card @(Model.IsCurrent || Model.ServiceVersion == 1 ? "govuk-!-margin-0" : "govuk-!-margin-bottom-8")">
         <div class="govuk-summary-card__title-wrapper">
         <p class="govuk-summary-card__title">
-            Submission date (GMT): @DateTimeExtensions.FormatDateTime((Model.CreatedTime != null && Model.CreatedTime!= DateTime.MinValue)  ? Model.CreatedTime : Model.ModifiedTime)
+            Submission date (GMT): @DateTimeExtensions.FormatDateTime(Model.CreatedTime)
         </p>
             @if (isDraft)
             {
@@ -70,7 +71,7 @@
                         Last updated date (GMT)
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @DateTimeExtensions.FormatDateTime((Model.CreatedTime != null && Model.CreatedTime != DateTime.MinValue) ? Model.CreatedTime : Model.ModifiedTime)
+                        @DateTimeExtensions.FormatDateTime(Model.ModifiedTime??Model.CreatedTime)
                     </dd>
                 </div>
             }
@@ -183,7 +184,7 @@
                             GPG44 quality levels
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            None
+                            @Constants.NullFieldsDisplay
                         </dd>
                         @if (isDraft && hasValue)
                         {
@@ -202,7 +203,7 @@
                             GPG44 quality of authenticator
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                             {
                                 foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                                 {
@@ -218,7 +219,7 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "GPG44", "CabService", new { fromDetailsPage = true },
+                            @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
                                          new { @class = "govuk-link", @aria_label = "Change GPG44 quality of authenticator" })
                             </dd>
                         }
@@ -229,7 +230,7 @@
                             GPG44 level of protection
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
                             {
                                 foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
                                 {
@@ -245,7 +246,7 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "GPG44", "CabService", new { fromDetailsPage = true },
+                            @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
                                          new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
                             </dd>
                         }
@@ -259,7 +260,7 @@
                             GPG45 identity profiles
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            None
+                            @Constants.NullFieldsDisplay
                         </dd>
                         @if (isDraft && hasValue)
                         {
@@ -277,7 +278,7 @@
                             GPG45 identity profiles
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ServiceIdentityProfileMapping.Count > 0)
+                            @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
                             {
                                 @foreach (var item in Model.ServiceIdentityProfileMapping)
                                 {
@@ -293,27 +294,28 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "GPG45", "CabService", new { fromDetailsPage = true },
+                            @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
                                          new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
                             </dd>
                         }
                     </div>
                 }
 
-                @if (Model.HasSupplementarySchemes == false)
+                @if (Model?.HasSupplementarySchemes == false)
                 {
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             Supplementary codes
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            None
+                            @Constants.NullFieldsDisplay
                         </dd>
 
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "SupplementarySchemes", "CabService", new { fromDetailsPage = true },
+                                  @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
+                              
                                          new { @class = "govuk-link", @aria_label = "Change relevant supplementary schemes" })
                             </dd>
                         }
@@ -326,7 +328,7 @@
                             Supplementary codes
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ServiceSupSchemeMapping.Count > 0)
+                            @if (Model?.ServiceSupSchemeMapping?.Count > 0)
                             {
                                 @foreach (var item in Model.ServiceSupSchemeMapping)
                                 {
@@ -343,7 +345,7 @@
                         @if (isDraft && hasValue)
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
+                            @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
                                          new { @class = "govuk-link", @aria_label = "Change whether certified against supplementary schemes" })
                             </dd>
                         }
@@ -356,7 +358,7 @@
                         Service provider’s certificate of conformity
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (!string.IsNullOrEmpty(Model.FileName))
+                        @if (!string.IsNullOrEmpty(Model?.FileName))
                         {
                             @Model.FileName
                         }

@@ -1,4 +1,5 @@
-﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+﻿@using DVSRegister.CommonUtility
+@model DVSRegister.Models.CAB.ProfileSummaryViewModel
 @{
     ViewData["Title"] = "Check your answers before submitting your information";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
@@ -46,7 +47,7 @@
                                         Trading name
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @Model.TradingName
+                                        @Html.DisplayFor(model => model.TradingName)
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "TradingName", "CabProvider", new { fromSummaryPage = true },
@@ -85,7 +86,7 @@
                                             registration number
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            No
+                                            @Constants.NullFieldsDisplay
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { fromSummaryPage = true }, new
@@ -279,7 +280,7 @@
                                         Contact email
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @Model.PublicContactEmail
+                                        @(string.IsNullOrEmpty(Model.PublicContactEmail) ? Constants.NullFieldsDisplay : Model.PublicContactEmail)
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "PublicContactEmail", "CabProvider", new { fromSummaryPage = true },
@@ -291,7 +292,7 @@
                                         Telephone number
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @Model.ProviderTelephoneNumber
+                                        @Html.DisplayFor(model => model.ProviderTelephoneNumber)
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "TelephoneNumber", "CabProvider", new { fromSummaryPage = true },

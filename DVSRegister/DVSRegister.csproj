@@ -49,15 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Views\DSITEdit2i\ProviderChanges.cshtml" />
-    <None Include="Views\DSITEdit2i\ProviderChangesAlreadyApproved.cshtml" />
     <None Include="Views\DSITEdit2i\ProviderChangesApproved.cshtml" />
     <None Include="Views\DSITEdit2i\ProviderChangesCancelled.cshtml" />
-    <None Include="Views\DSITEdit2i\ProviderChangesError.cshtml" />
+    <None Include="Views\DSITEdit2i\URLExpiredError.cshtml" />
     <None Include="Views\DSITEdit2i\ServiceChanges.cshtml" />
-    <None Include="Views\DSITEdit2i\ServiceChangesAlreadyApproved.cshtml" />
+    <None Include="Views\DSITEdit2i\UpdatesAlreadyApproved.cshtml" />
     <None Include="Views\DSITEdit2i\ServiceChangesApproved.cshtml" />
     <None Include="Views\DSITEdit2i\ServiceChangesCancelled.cshtml" />
-    <None Include="Views\DSITEdit2i\ServiceChangesError.cshtml" />
+    <None Include="Views\DSITEdit2i\UpdatesError.cshtml" />
     <None Include="Views\PartialViews\_ErrorSummaryView.cshtml" />
   </ItemGroup>
   <ItemGroup>

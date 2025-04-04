@@ -1,7 +1,7 @@
 ﻿@model ConsentViewModel
 @{
     ViewData["Title"] = "You are about to agree to publish your service on the register";
-    Layout = "~/Views/Shared/_LayoutConsent.cshtml";
+    Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
 }
 
 @{
@@ -14,7 +14,7 @@
     @Html.HiddenFor(m => m.token)
    
     <div class="govuk-width-container">
-        @Html.ActionLink("Back", "ProviderReview", "ProviderReview", null, new { @class = "govuk-back-link" })
+      
         <main id="main-content" class="govuk-main-wrapper" role="main">
             <div class="govuk-grid-row">
 
@@ -37,7 +37,7 @@
                                 Public contact email
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @Model.Service.Provider.PublicContactEmail
+                                @Html.DisplayFor(model => model.Service.Provider.PublicContactEmail)
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -45,7 +45,7 @@
                                 Telephone number
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @Model.Service.Provider.ProviderTelephoneNumber
+                                @Html.DisplayFor(model => model.Service.Provider.PublicContactEmail)
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">

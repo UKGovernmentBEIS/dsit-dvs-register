@@ -15,14 +15,18 @@ namespace DVSRegister.CommonUtility.Models
         Published = 4,
         [Description("Removed from register")]
         Removed = 5,
-        [Description("Awaiting removal confirmation")]
+        [Description("Removal request sent")]
         AwaitingRemovalConfirmation = 6,
-        [Description("Awaiting removal confirmation")]
+        [Description("Removal request sent to DSIT")]
         CabAwaitingRemovalConfirmation = 7,
         [Description("Saved as draft")]
         SavedAsDraft = 8,
         [Description("Updates requested")]
-        UpdatesRequested = 9
+        UpdatesRequested = 9,
+        [Description("Amendments needed")]
+        AmendmentsRequired = 10,
+        [Description("Submitted")]
+        Resubmitted = 11
 
     }
 }

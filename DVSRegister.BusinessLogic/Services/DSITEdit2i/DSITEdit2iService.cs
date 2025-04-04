@@ -130,7 +130,7 @@ namespace DVSRegister.BusinessLogic.Services
                 }
                 else
                 {
-                    previousDataDictionary.Add("GPG44 level of protection", ["Not certified against GPG44"]);
+                    previousDataDictionary.Add("GPG44 level of protection", [@Constants.NullFieldsDisplay]);
                 }
 
                 if (currentProtectionLevels != null && currentProtectionLevels.Count > 0)
@@ -139,7 +139,7 @@ namespace DVSRegister.BusinessLogic.Services
                 }
                 else
                 {
-                    currentDataDictionary.Add("GPG44 level of protection", ["Not certified against GPG44"]);
+                    currentDataDictionary.Add("GPG44 level of protection", [@Constants.NullFieldsDisplay]);
                 }
 
                 var authenticationLevels = previousData.ServiceQualityLevelMapping?
@@ -159,7 +159,7 @@ namespace DVSRegister.BusinessLogic.Services
                 }
                 else
                 {
-                    previousDataDictionary.Add("GPG44 quality of authentication", ["Not certified against GPG44"]);
+                    previousDataDictionary.Add("GPG44 quality of authentication", [@Constants.NullFieldsDisplay]);
                 }
 
                 if (currentAuthenticationLevels != null && currentAuthenticationLevels.Count > 0)
@@ -168,7 +168,7 @@ namespace DVSRegister.BusinessLogic.Services
                 }
                 else
                 {
-                    currentDataDictionary.Add("GPG44 level of authentication", ["Not certified against GPG44"]);
+                    currentDataDictionary.Add("GPG44 level of authentication", [@Constants.NullFieldsDisplay]);
                 }
             }
 
@@ -187,7 +187,7 @@ namespace DVSRegister.BusinessLogic.Services
                 }
                 else
                 {
-                    previousDataDictionary.Add("GPG45 identity profiles", ["Not certified against any identity profiles"]);
+                    previousDataDictionary.Add("GPG45 identity profiles", [@Constants.NullFieldsDisplay]);
                 }
 
                 if (currentIdentityProfiles != null && currentIdentityProfiles.Count > 0)
@@ -196,7 +196,7 @@ namespace DVSRegister.BusinessLogic.Services
                 }
                 else
                 {
-                    currentDataDictionary.Add("GPG45 identity profiles", ["Not certified against any identity profiles"]);
+                    currentDataDictionary.Add("GPG45 identity profiles", [@Constants.NullFieldsDisplay]);
                 }
             }
 
@@ -215,7 +215,7 @@ namespace DVSRegister.BusinessLogic.Services
                 }
                 else
                 {
-                    previousDataDictionary.Add("Supplementary Codes", ["Not certified against any supplementary schemes"]);
+                    previousDataDictionary.Add("Supplementary Codes", [@Constants.NullFieldsDisplay]);
                 }
 
                 if (currentSupplementarySchemes != null && currentSupplementarySchemes.Count > 0)
@@ -224,7 +224,7 @@ namespace DVSRegister.BusinessLogic.Services
                 }
                 else
                 {
-                    currentDataDictionary.Add("Supplementary Codes", ["Not certified against any supplementary schemes"]);
+                    currentDataDictionary.Add("Supplementary Codes", [@Constants.NullFieldsDisplay]);
                 }
             }
 
@@ -349,7 +349,7 @@ namespace DVSRegister.BusinessLogic.Services
                     string previousData = Helper.ConcatenateKeyValuePairs(previous);
 
                     string userEmail = serviceDraft.User.Email;
-                    await emailSender.EditProviderAccepted(userEmail, userEmail, serviceDraft.Provider.RegisteredName, currentData, previousData);
+                    await emailSender.EditServiceAccepted(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName, currentData, previousData);
                 }
 
 

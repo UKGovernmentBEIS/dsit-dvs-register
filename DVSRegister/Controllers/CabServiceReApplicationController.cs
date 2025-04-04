@@ -1,6 +1,7 @@
 ﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
@@ -8,31 +9,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/re-application")]
-    public class CabServiceReApplicationController : Controller
+    public class CabServiceReApplicationController(ICabService cabService, IUserService userService, ILogger<CabServiceReApplicationController> logger) : BaseController(logger)
     {
-        private readonly ICabService cabService;
-        private readonly IUserService userService;
-        private string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
-        public CabServiceReApplicationController(ICabService cabService, IUserService userService)
-        {
-            this.cabService = cabService;
-            this.userService = userService;
-        }
+        private readonly ICabService cabService = cabService;
+        private readonly IUserService userService = userService;
+        private readonly ILogger<CabServiceReApplicationController> _logger = logger;
 
         [HttpGet("resume-submission")]
         public  IActionResult ResumeSubmission()
         {
-
-            int cabId = Convert.ToInt32(HttpContext?.Session.Get<int>("CabId"));
-            if (cabId > 0)
-            {
-                ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
-                return RedirectToNextEmptyField(serviceSummary);
-            }
-            else
-            {
-                return RedirectToAction("HandleException", "Error");
-            }
+            if(!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
+            return RedirectToNextEmptyField(serviceSummary);
+            
         }
         
         [HttpGet("before-new-certificate")]
@@ -40,35 +31,29 @@ namespace DVSRegister.Controllers
         {
 
             ViewBag.ServiceKey = serviceKey;
-            ViewBag.ProviderProfileId = providerProfileId;
-            string email = HttpContext?.Session.Get<string>("Email") ?? string.Empty;
-            CabUserDto cabUserDto = await userService.GetUser(email);
-            if (cabUserDto.Id > 0)
+            ViewBag.ProviderProfileId = providerProfileId;        
+            CabUserDto cabUserDto = await userService.GetUser(UserEmail);
+            
+            if(!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+        
+            // to prevent another cab changing the providerProfileId from url
+            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
+            if (isValid)
             {
-                // to prevent another cab changing the providerProfileId from url
-                bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
-                if (isValid)
-                {
-                    ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
-                    serviceSummary.IsResubmission = true;                 
-                    serviceSummary.CabId = cabUserDto.CabId;
-                    serviceSummary.CabUserId = cabUserDto.Id;
-                    if(!serviceSummary.IsDraft)
-                        serviceSummary.ResetInpuData(); // clear current input data from session for resubmission if it is not a draft version
-                    HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                    return View();
-                }
-                else
-                {
-                    return RedirectToAction("HandleException", "Error");
-                }
-
+                ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
+                serviceSummary.IsResubmission = true;                 
+                serviceSummary.CabId = cabUserDto.CabId;
+                serviceSummary.CabUserId = cabUserDto.Id;
+                if(!serviceSummary.IsDraft)
+                    serviceSummary.ResetInpuData(); // clear current input data from session for resubmission if it is not a draft version
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+                return View();
             }
             else
             {
-                return RedirectToAction("HandleException", "Error");
+                throw new ArgumentException("Invalid providerProfileId.");
             }
-          
         }
 
 

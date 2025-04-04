@@ -10,19 +10,11 @@ namespace DVSRegister.Controllers
 {
     [Route("")]
     [Route("register")]
-    public class RegisterController : Controller
+    public class RegisterController(IRegisterService registerService, ICabService cabService) : Controller
     {         
-        private readonly IRegisterService registerService;
-        private readonly ICabService cabService;
+        private readonly IRegisterService registerService = registerService;
+        private readonly ICabService cabService = cabService;
 
-
-        public RegisterController(IRegisterService registerService, ICabService cabService)
-        {                
-            this.registerService = registerService;
-            this.cabService = cabService;
-
-
-        }
         [Route("")]
         [HttpGet("register-search")]
         public async Task<IActionResult> Register(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, bool FromDetailsPage = false, int RemoveRole = 0, int RemoveScheme = 0, string SearchAction = "", string SearchProvider = "")

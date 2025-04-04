@@ -1,7 +1,7 @@
 ﻿@model RemoveProviderViewModel
 @{
     ViewData["Title"] = "You are about to remove your details from the register of digital identity and attribute services";
-    Layout = "~/Views/Shared/_LayoutConsent.cshtml";
+    Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
 }
 
 @{
@@ -35,7 +35,7 @@
                                 Public contact email
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @Model.Provider.PublicContactEmail
+                                @Html.DisplayFor(model => model.Provider.PublicContactEmail)
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -43,7 +43,7 @@
                                 Telephone number
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @Model.Provider.ProviderTelephoneNumber
+                                @Html.DisplayFor(model => model.Provider.ProviderTelephoneNumber)
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">

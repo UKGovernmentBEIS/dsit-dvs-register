@@ -28,6 +28,7 @@ namespace DVSRegister.Data.CAB
         public Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfile providerProfile, string loggedInUserEmail);
 
         public Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail);
+        public Task<GenericResponse> SaveServiceAmendments(Service service, string loggedInUserEmail);
         #endregion
 
     }
