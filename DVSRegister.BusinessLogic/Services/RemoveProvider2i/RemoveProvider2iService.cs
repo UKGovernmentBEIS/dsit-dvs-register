@@ -53,9 +53,9 @@ namespace DVSRegister.BusinessLogic.Services
 
 
 
-        public async Task<bool> HasRemovalRequestCancelled(TokenDetails tokenDetails)
+        public async Task<TokenStatusEnum> GetTokenStatus(TokenDetails tokenDetails)
         {
-            bool cancelled = false;
+            TokenStatusEnum tokenStatus = TokenStatusEnum.NA;
 
             var provider = await removeProvider2iRepository.GetProviderDetails(tokenDetails.ProviderProfileId);
 
@@ -63,10 +63,16 @@ namespace DVSRegister.BusinessLogic.Services
             {
                 var services = provider?.Services?.Where(service => tokenDetails.ServiceIds.Contains(service.Id)).ToList();
 
-                if (services != null && services.All(x => x.RemovalTokenStatus == TokenStatusEnum.AdminCancelled)) { cancelled = true; }
+                 if(services != null) 
+                 {
+                    if (services.All(x => x.RemovalTokenStatus == TokenStatusEnum.AdminCancelled)) { tokenStatus = TokenStatusEnum.AdminCancelled; }
+                    else if (services.All(x => x.RemovalTokenStatus == TokenStatusEnum.RequestCompleted)) { tokenStatus = TokenStatusEnum.RequestCompleted; }
+                }
+
+                   
             }
            
-            return cancelled;
+            return tokenStatus;
         }
 
         public async Task<GenericResponse> UpdateRemovalStatus(TeamEnum team, string token, string tokenId, ProviderProfileDto providerDto, string loggedInUserEmail)
