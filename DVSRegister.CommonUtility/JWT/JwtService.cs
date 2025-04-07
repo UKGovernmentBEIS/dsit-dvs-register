@@ -83,10 +83,8 @@ namespace DVSRegister.CommonUtility.JWT
 
                     if (claimsPrincipal.Claims.Any(claim => claim.Key == "ServiceId"))
                     {
-                     tokenDetails.ServiceIds = claimsPrincipal.Claims
-                    .Where(claim => claim.Key == "ServiceId")
-                    .Select(claim => Convert.ToInt32(claim.Value))
-                    .ToList();
+                        string serviceIdClaim= Convert.ToString(claimsPrincipal.Claims.First(claim => claim.Key == "ServiceId").Value)??string.Empty;
+                        tokenDetails.ServiceIds = serviceIdClaim.Split(',').Select(int.Parse).ToList();
                     }                       
 
                 }
