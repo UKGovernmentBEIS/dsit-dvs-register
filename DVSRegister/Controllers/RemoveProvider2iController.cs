@@ -25,7 +25,7 @@ namespace DVSRegister.Controllers
             TokenDetails tokenDetails = await jwtService.ValidateToken(token);
 
               if (await removeProvider2iService.HasRemovalRequestCancelled(tokenDetails))
-                return RedirectToAction("RemovalRequestCancelled");
+                return RedirectToAction("RemoveProviderCancel");
 
               else if (tokenDetails.IsExpired)
                 {
@@ -65,7 +65,7 @@ namespace DVSRegister.Controllers
 
 
             if (await removeProvider2iService.HasRemovalRequestCancelled(tokenDetails))
-                return RedirectToAction("RemovalRequestCancelled");
+                return RedirectToAction("RemoveProviderCancel");
 
               else if (tokenDetails.IsExpired)
                 {

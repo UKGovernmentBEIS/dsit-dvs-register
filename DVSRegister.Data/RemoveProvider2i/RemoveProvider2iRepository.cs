@@ -97,6 +97,7 @@ namespace DVSRegister.Data
                             service.ServiceStatus = ServiceStatusEnum.Removed;
                             service.ModifiedTime = DateTime.UtcNow;
                             service.RemovedTime = DateTime.UtcNow;
+                            service.RemovalTokenStatus = TokenStatusEnum.RequestCompleted;
                         }
                        
                     }
@@ -121,6 +122,7 @@ namespace DVSRegister.Data
                                     service.ServiceStatus = ServiceStatusEnum.Removed;
                                     service.ModifiedTime = DateTime.UtcNow;
                                     service.RemovedTime = DateTime.UtcNow;
+                                    service.RemovalTokenStatus = TokenStatusEnum.RequestCompleted;
                                 }                               
                             }
                         }
@@ -157,7 +159,8 @@ namespace DVSRegister.Data
                         {
                             service.ServiceStatus = ServiceStatusEnum.Published;
                             service.ModifiedTime = DateTime.UtcNow;
-                           
+                            service.RemovalTokenStatus = TokenStatusEnum.UserCancelled;
+
                         }
 
                     }
