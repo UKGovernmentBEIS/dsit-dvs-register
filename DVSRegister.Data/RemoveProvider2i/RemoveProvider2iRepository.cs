@@ -108,9 +108,7 @@ namespace DVSRegister.Data
                     var existingProvider = await context.ProviderProfile.Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == providerProfileId);
                     if (existingProvider != null)
                     {
-                        existingProvider.ModifiedTime = DateTime.UtcNow;
-                        existingProvider.ProviderStatus = ProviderStatusEnum.RemovedFromRegister;
-                        existingProvider.ModifiedTime = DateTime.UtcNow;
+                        existingProvider.ModifiedTime = DateTime.UtcNow;                      
                         existingProvider.RemovedTime = DateTime.UtcNow;
                         // Update the status of each service
                         if (existingProvider.Services != null)

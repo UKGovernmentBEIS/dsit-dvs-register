@@ -33,7 +33,7 @@ namespace DVSRegister.BusinessLogic.Services
                 {
                     var mappedServiceIds = removeProviderToken.RemoveTokenServiceMapping.Where(mapping => mapping.RemoveProviderTokenId == removeProviderToken.Id).Select(mapping => mapping.ServiceId).ToList();
                     ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(provider);
-                    providerProfileDto.Services = providerProfileDto.Services.Where(service => mappedServiceIds.Contains(service.Id)).ToList();
+                    providerProfileDto.Services = providerProfileDto.Services.Where(service => mappedServiceIds.Contains(service.Id) && service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation).ToList();
                     return providerProfileDto;
 
                 }
@@ -239,8 +239,6 @@ namespace DVSRegister.BusinessLogic.Services
             await removeProvider2iRepository.UpdateRemovalTokenStatus(providerProfileId, serviceIds, tokenStatus);
         }
 
-        #region private methods
-
-        #endregion
+        
     }
 }
