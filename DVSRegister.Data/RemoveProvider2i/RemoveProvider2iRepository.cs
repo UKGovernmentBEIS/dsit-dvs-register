@@ -24,13 +24,7 @@ namespace DVSRegister.Data
         }
 
 
-        public async Task<ProviderProfile> GetProviderWithAllServices(int providerId)
-        {
-            ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.Services.Where(x=>x.IsCurrent==true))
-            .Where(p => p.Id == providerId).FirstOrDefaultAsync() ?? new ProviderProfile();
-            return provider;
-        }
+     
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
         {
             ProviderProfile provider = new();
@@ -196,37 +190,6 @@ namespace DVSRegister.Data
         }
 
 
-        public async Task<GenericResponse> UpdateProviderStatus(int providerProfileId, ProviderStatusEnum providerStatus, string loggedInUserEmail, EventTypeEnum eventType)
-        {
-            GenericResponse genericResponse = new();
-            using var transaction = await context.Database.BeginTransactionAsync();
-            try
-            {
-                var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfileId);
-                if (existingProvider != null)
-                {
-
-                    existingProvider.ModifiedTime = DateTime.UtcNow;
-                    existingProvider.ProviderStatus = providerStatus;
-
-                    if (providerStatus == ProviderStatusEnum.RemovedFromRegister)
-                    {
-                        existingProvider.RemovedTime = DateTime.UtcNow;
-                    }
-                   
-                }
-                await context.SaveChangesAsync(TeamEnum.DSIT, eventType, loggedInUserEmail);
-                await transaction.CommitAsync();
-                genericResponse.Success = true;
-            }
-            catch (Exception ex)
-            {
-                genericResponse.Success = false;
-                await transaction.RollbackAsync();
-                logger.LogError(ex.Message);
-            }
-            return genericResponse;
-        }
 
 
         public async Task UpdateRemovalTokenStatus(int providerProfileId, List<int> serviceIds, TokenStatusEnum tokenStatus)

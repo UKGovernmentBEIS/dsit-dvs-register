@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.CommonUtility.Email;
+﻿using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data;
@@ -13,15 +11,17 @@ namespace DVSRegister.BusinessLogic.Services
     {
 
         private readonly ICabRemovalRequestRepository cabRemovalRequestRepository;
-        private readonly IRemoveProvider2iRepository removeProvider2iRepository;
+        private readonly IRemoveProviderService removeProviderService;
+        private readonly IRemoveProviderRepository removeProviderRepository;
         private readonly IEmailSender emailSender;      
     
-        public CabRemovalRequestService(ICabRemovalRequestRepository cabRemovalRequestRepository, IRemoveProvider2iRepository removeProvider2iRepository, 
-            IEmailSender emailSender)
+        public CabRemovalRequestService(ICabRemovalRequestRepository cabRemovalRequestRepository, 
+            IEmailSender emailSender, IRemoveProviderService removeProviderService, IRemoveProviderRepository removeProviderRepository)
         {
             this.cabRemovalRequestRepository = cabRemovalRequestRepository;  
-            this.removeProvider2iRepository = removeProvider2iRepository;
-            this.emailSender = emailSender;           
+            this.removeProviderService = removeProviderService;
+            this.emailSender = emailSender;   
+            this.removeProviderRepository = removeProviderRepository;
         }
 
         public async Task<GenericResponse> UpdateRemovalStatus(int cabId, int providerProfileId, int serviceId, string loggedInUserEmail, string removalReasonByCab, string whatToRemove)
@@ -30,11 +30,11 @@ namespace DVSRegister.BusinessLogic.Services
 
             if(genericResponse.Success) 
             {
+
                 // get updated service list and decide provider status
-                ProviderProfile providerProfile = await removeProvider2iRepository.GetProviderWithAllServices(providerProfileId);
-                // update provider status
-                ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
-                genericResponse = await removeProvider2iRepository.UpdateProviderStatus(providerProfileId, providerStatus, loggedInUserEmail, EventTypeEnum.RemoveProvider2i);
+                ProviderProfile providerProfile = await removeProviderRepository.GetProviderWithAllServices(providerProfileId);
+               
+                genericResponse = await removeProviderService.UpdateProviderStatus(providerProfile, providerProfileId, loggedInUserEmail, EventTypeEnum.RemoveServiceRequestedByCab, TeamEnum.CAB);
 
                 if (whatToRemove == "provider")
                 {
