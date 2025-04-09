@@ -142,72 +142,39 @@ namespace DVSRegister.BusinessLogic.Services
             return genericResponse;
         }
 
-
-
-
-        public async Task<GenericResponse> CancelRemovalRequest(TeamEnum team, string token, string tokenId, ProviderProfileDto providerDto, string loggedInUserEmail)
+    public async Task<GenericResponse> CancelRemovalRequest(TeamEnum team, string token, string tokenId, ProviderProfileDto providerDto, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();
-            string serviceNames = string.Empty;
-            string removalReason = string.Empty;
-
             List<int> serviceIds = providerDto.Services.Select(s => s.Id).ToList();
-            var filteredServiceNames = providerDto.Services.Select(s => s.ServiceName).ToList();
-            serviceNames = string.Join("\r", filteredServiceNames);            
+            string serviceNames = string.Join("\r", providerDto.Services.Select(s => s.ServiceName));
 
             RemoveProviderToken removeProviderToken = await removeProvider2iRepository.GetRemoveProviderToken(token, tokenId);
-            EventTypeEnum eventType = removeProviderToken.RemoveTokenServiceMapping != null && removeProviderToken.RemoveTokenServiceMapping.Count > 0 ? EventTypeEnum.RemoveServices2i : EventTypeEnum.RemoveProvider2i;
+            EventTypeEnum eventType = removeProviderToken.RemoveTokenServiceMapping != null && removeProviderToken.RemoveTokenServiceMapping.Count > 0 ? 
+                EventTypeEnum.RemoveServices2i : EventTypeEnum.RemoveProvider2i;
 
-
-            if (!string.IsNullOrEmpty(removeProviderToken.Token) && !string.IsNullOrEmpty(removeProviderToken.TokenId))   //proceed update status if token exists           
+            if (!string.IsNullOrEmpty(removeProviderToken.Token) && !string.IsNullOrEmpty(removeProviderToken.TokenId)) //proceed update status if token exists
             {
-                if (eventType == EventTypeEnum.RemoveServices2i) // remove selected services in this case
-                {
-                   
-                    genericResponse = await removeProvider2iRepository.CancelServiceRemoval(providerDto.Id, team, eventType, serviceIds, loggedInUserEmail);
-                    genericResponse = await removeProviderService.UpdateProviderStatus(providerDto.Id, loggedInUserEmail,eventType,team);
-                   
+                genericResponse = await removeProvider2iRepository.CancelServiceRemoval(providerDto.Id, team, eventType, serviceIds, loggedInUserEmail);
+                genericResponse = await removeProviderService.UpdateProviderStatus(providerDto.Id, loggedInUserEmail, eventType, team);
 
+                if (genericResponse.Success)
+                {
                     if (team == TeamEnum.Provider)
                     {
                         await emailSender.RemovalRequestDeclinedToProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);//33/Provider/Removal request declined
                         await emailSender.RemovalRequestDeclinedToProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail);
                         await emailSender.RemovalRequestDeclinedToDSIT(providerDto.RegisteredName, serviceNames); //34 / DSIT / Removal request declined by provider
-
                     }
-                    else if (team == TeamEnum.DSIT)
+                    else if (team == TeamEnum.DSIT && eventType == EventTypeEnum.RemoveServices2i)
                     {
-                        await emailSender.Service2iCheckDeclinedToDSIT(serviceNames); //54/DSIT/2i check declined - service
-
+                        await emailSender.Service2iCheckDeclinedToDSIT(serviceNames);//54/DSIT/2i check declined - service
                     }
-
-                }
-                else
-                {
-                    removalReason = RemovalReasonsEnumExtensions.GetDescription(providerDto.RemovalReason.Value);
-                                                                                      
-                    genericResponse = await removeProvider2iRepository.CancelServiceRemoval(providerDto.Id, team, eventType, serviceIds, loggedInUserEmail);
-                    genericResponse = await removeProviderService.UpdateProviderStatus(providerDto.Id, loggedInUserEmail, eventType, team);
-
-                    if (genericResponse.Success)
+                    else 
                     {
-                        if (team == TeamEnum.Provider)
-                        {
-                            await emailSender.RemovalRequestDeclinedToProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);//33/Provider/Removal request declined
-                            await emailSender.RemovalRequestDeclinedToProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail);
-                            await emailSender.RemovalRequestDeclinedToDSIT(providerDto.RegisteredName, serviceNames); //34 / DSIT / Removal request declined by provider
-
-                        }
-                        else if (team == TeamEnum.DSIT)
-                        {
-                            await emailSender._2iCheckDeclinedNotificationToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
-                        }
-
+                        string removalReason = RemovalReasonsEnumExtensions.GetDescription(providerDto.RemovalReason.Value);
+                        await emailSender._2iCheckDeclinedNotificationToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
                     }
                 }
-
-                
-
             }
             return genericResponse;
         }
