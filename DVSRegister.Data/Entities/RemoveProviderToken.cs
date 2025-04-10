@@ -18,5 +18,6 @@ namespace DVSRegister.Data.Entities
         public ProviderProfile Provider { get; set; }
         public ICollection<RemoveTokenServiceMapping>? RemoveTokenServiceMapping { get; set; }
         public DateTime CreatedTime { get; set; }
+        public DateTime? ModifiedTime { get; set; }
     }
 }

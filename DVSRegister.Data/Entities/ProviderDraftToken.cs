@@ -20,5 +20,6 @@ namespace DVSRegister.Data.Entities
         public int ProviderProfileDraftId { get; set; }
         public ProviderProfileDraft ProviderProfileDraft { get; set; }
         public DateTime CreatedTime { get; set; }
+        public DateTime? ModifiedTime { get; set; }
     }
 }
