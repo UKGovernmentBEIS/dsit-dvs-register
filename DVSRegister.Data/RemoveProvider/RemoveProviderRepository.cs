@@ -27,6 +27,7 @@ namespace DVSRegister.Data
                     if (providerStatus == ProviderStatusEnum.RemovedFromRegister)
                     {
                         existingProvider.RemovedTime = DateTime.UtcNow;
+                        existingProvider.IsInRegister = false;
                     }
 
                 }
