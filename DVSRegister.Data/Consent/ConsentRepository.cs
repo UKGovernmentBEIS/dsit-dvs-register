@@ -55,9 +55,13 @@ namespace DVSRegister.Data.Repositories
             .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId)??new ProceedApplicationConsentToken();
         }
 
-        public async Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, string loggedinUserEmail)
+        public async Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, bool isExpired, string loggedinUserEmail)
         {
             var consent = await context.ProceedApplicationConsentToken.FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId);
+            var service = await context.Service.FirstOrDefaultAsync(s => s.Id == consent.ServiceId);
+            service.OpeningLoopTokenStatus = isExpired ? 
+                TokenStatusEnum.Expired :
+                TokenStatusEnum.RequestCompleted;
 
             if (consent != null)
             {

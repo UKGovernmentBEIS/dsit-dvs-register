@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using DVSAdmin.CommonUtility.Models.Enums;
+using DVSRegister.CommonUtility.Models;
 
 namespace DVSRegister.Data.Entities
 {
@@ -44,5 +45,6 @@ namespace DVSRegister.Data.Entities
         public DateTime? RemovedTime { get; set; }
 
         public ProviderProfileDraft ProviderProfileDraft { get; set; }
+        public TokenStatusEnum EditProviderTokenStatus { get; set; }
     }
 }

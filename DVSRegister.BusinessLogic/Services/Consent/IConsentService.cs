@@ -12,7 +12,7 @@ namespace DVSRegister.BusinessLogic.Services
 
 
         //closing loop
-        public Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, string loggedInUserEmail);
+        public Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, bool isExpired, string loggedInUserEmail);
         public Task<ServiceDto?> GetProviderAndCertificateDetailsByConsentToken(string token, string tokenId);
         public Task<GenericResponse> UpdateServiceAndProviderStatus(string token, string tokenId, ServiceDto serviceDto, string loggedInUserEmail);
 
