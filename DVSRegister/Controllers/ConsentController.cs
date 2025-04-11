@@ -71,7 +71,7 @@ namespace DVSRegister.Controllers
                         GenericResponse genericResponse = await consentService.UpdateServiceStatus(serviceDto.Id, email, serviceDto?.Provider?.RegisteredName??string.Empty, serviceDto?.ServiceName??string.Empty);
                         if (genericResponse.Success)
                         {
-                            await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
+                            await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, tokenDetails.IsExpired, email);
                             return RedirectToAction("ProceedApplicationConsentSuccess");
                         }
                         else
@@ -90,7 +90,7 @@ namespace DVSRegister.Controllers
                 else
                 {
                     _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationGiveConsent failed: Token is invalid or unauthorised."));
-                    await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
+                    await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, tokenDetails.IsExpired, email);
                     return RedirectToAction("ProceedApplicationConsentError");
                 }
             }

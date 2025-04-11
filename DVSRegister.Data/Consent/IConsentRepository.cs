@@ -8,7 +8,7 @@ namespace DVSRegister.Data.Repositories
     {
         #region opening the loop
         public Task<ProceedApplicationConsentToken> GetProceedApplicationConsentToken(string token, string tokenId);
-        public Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, string loggedInUserEmail);
+        public Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, bool isExpired, string loggedInUserEmail);
         public Task<GenericResponse> SaveProceedApplicationConsentToken(ProceedApplicationConsentToken consentToken, string loggedInUserEmail);
         public Task<GenericResponse> UpdateServiceStatus(int serviceId, ServiceStatusEnum serviceStatus, string providerEmail);
         #endregion
