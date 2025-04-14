@@ -46,5 +46,6 @@ namespace DVSRegister.Data.Entities
 
         public ProviderProfileDraft ProviderProfileDraft { get; set; }
         public TokenStatusEnum EditProviderTokenStatus { get; set; }
+        public bool IsInRegister { get; set; }
     }
 }
