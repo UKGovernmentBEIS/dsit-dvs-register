@@ -80,10 +80,17 @@ namespace DVSRegister
 
         private void ConfigureGovUkNotify(IServiceCollection services)
         {
-            services.AddScoped<IEmailSender, GovUkNotifyApi>();
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
+
+            services.AddSingleton<GovUkNotifyApi>();
+
+            services.AddTransient<LoginEmailSender>();
+            services.AddTransient<EditEmailSender>();
+            services.AddTransient<DSITEdit2iEmailSender>();
+            services.AddTransient<RemoveProvider2iEmailSender>();
         }
+        
         private void ConfigureSession(IServiceCollection services)
         {
             services.AddHttpContextAccessor();

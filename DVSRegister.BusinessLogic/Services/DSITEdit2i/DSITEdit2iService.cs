@@ -15,17 +15,17 @@ namespace DVSRegister.BusinessLogic.Services
     {
         private readonly IDSITEdit2iRepository dSITEdit2IRepository;
         private readonly IMapper mapper;
-        private readonly IEmailSender emailSender;
+        private readonly EditEmailSender editEmailSender;
         private readonly IRemoveProviderRepository removeProviderRepository;
         private readonly IRemoveProviderService removeProviderService;
 
 
 
-        public DSITEdit2iService(IDSITEdit2iRepository dSITEdit2IRepository, IMapper mapper, IEmailSender emailSender, IRemoveProviderRepository removeProviderRepository, IRemoveProviderService removeProviderService)
+        public DSITEdit2iService(IDSITEdit2iRepository dSITEdit2IRepository, IMapper mapper, EditEmailSender editEmailSender, IRemoveProviderRepository removeProviderRepository, IRemoveProviderService removeProviderService)
         {
             this.dSITEdit2IRepository = dSITEdit2IRepository;
             this.mapper = mapper;
-            this.emailSender = emailSender;
+            this.editEmailSender = editEmailSender;
             this.removeProviderRepository = removeProviderRepository;
             this.removeProviderService = removeProviderService;
         }
@@ -49,7 +49,7 @@ namespace DVSRegister.BusinessLogic.Services
                 string previousData = Helper.ConcatenateKeyValuePairs(previous);
 
                string userEmail = providerProfileDraft.User.Email;
-               await emailSender.EditProviderAccepted(userEmail, userEmail, providerProfileDraft.Provider.RegisteredName, currentData, previousData);
+               await editEmailSender.EditProviderAccepted(userEmail, userEmail, providerProfileDraft.Provider.RegisteredName, currentData, previousData);
             }
             return genericResponse;
         }
@@ -66,7 +66,7 @@ namespace DVSRegister.BusinessLogic.Services
             if(genericResponse.Success)
             {
                 string userEmail = providerProfileDraft.User.Email;
-                await emailSender.EditProviderDeclined(userEmail, userEmail, providerProfileDraft.Provider.RegisteredName);
+                await editEmailSender.EditProviderDeclined(userEmail, userEmail, providerProfileDraft.Provider.RegisteredName);
             }
             return genericResponse;
         }
@@ -370,7 +370,7 @@ namespace DVSRegister.BusinessLogic.Services
                     string previousData = Helper.ConcatenateKeyValuePairs(previous);
 
                     string userEmail = serviceDraft.User.Email;
-                    await emailSender.EditServiceAccepted(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName, currentData, previousData);
+                    await editEmailSender.EditServiceAccepted(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName, currentData, previousData);
                 }
 
 
@@ -395,7 +395,7 @@ namespace DVSRegister.BusinessLogic.Services
                 if (genericResponse.Success)
                 {
                     string userEmail = serviceDraft.User.Email;
-                    await emailSender.EditServiceDeclined(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName);
+                    await editEmailSender.EditServiceDeclined(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName);
                 }
            
             }

@@ -13,14 +13,14 @@ namespace DVSRegister.BusinessLogic.Services
 
         private readonly IConsentRepository consentRepository;     
         private readonly IMapper mapper;
-        private readonly IEmailSender emailSender;
+        private readonly DSITEdit2iEmailSender dsitEdit2IEmailSender;
 
 
-        public ConsentService(IConsentRepository consentRepository, IMapper mapper,IEmailSender emailSender)
+        public ConsentService(IConsentRepository consentRepository, IMapper mapper, DSITEdit2iEmailSender dsitEdit2IEmailSender)
         {           
             this.consentRepository = consentRepository;    
             this.mapper = mapper;
-            this.emailSender = emailSender;
+            this.dsitEdit2IEmailSender = dsitEdit2IEmailSender;
         }
 
 
@@ -68,7 +68,7 @@ namespace DVSRegister.BusinessLogic.Services
             GenericResponse genericResponse = await consentRepository.UpdateServiceStatus(serviceId, ServiceStatusEnum.Received, providerEmail);
             if(genericResponse.Success) 
             {
-                await emailSender.SendAgreementToProceedApplicationToDSIT(companyName, serviceName);
+                await dsitEdit2IEmailSender.SendAgreementToProceedApplicationToDSIT(companyName, serviceName);
             }
             return genericResponse;
         }
@@ -112,11 +112,11 @@ namespace DVSRegister.BusinessLogic.Services
                 if (genericResponse.Success)
                 {
 
-                    genericResponse.Success = await emailSender.SendAgreementToPublishToDIP(serviceDto.Provider.RegisteredName, serviceDto.ServiceName,
+                    genericResponse.Success = await dsitEdit2IEmailSender.SendAgreementToPublishToDIP(serviceDto.Provider.RegisteredName, serviceDto.ServiceName,
                     serviceDto.Provider.PrimaryContactFullName, serviceDto.Provider.PrimaryContactEmail);
-                    genericResponse.Success = await emailSender.SendAgreementToPublishToDIP(serviceDto.Provider.RegisteredName, serviceDto.ServiceName,
+                    genericResponse.Success = await dsitEdit2IEmailSender.SendAgreementToPublishToDIP(serviceDto.Provider.RegisteredName, serviceDto.ServiceName,
                     serviceDto.Provider.SecondaryContactFullName, serviceDto.Provider.SecondaryContactEmail);
-                    await emailSender.SendAgreementToPublishToDSIT(serviceDto.Provider.RegisteredName, serviceDto.ServiceName);
+                    await dsitEdit2IEmailSender.SendAgreementToPublishToDSIT(serviceDto.Provider.RegisteredName, serviceDto.ServiceName);
                 }
 
             }
