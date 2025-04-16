@@ -17,13 +17,14 @@ namespace DVSRegister.Controllers
 {
     [Route("cab-service/submit-service")]
   
-    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IEmailSender emailSender, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
+    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, LoginEmailSender loginEmailSender, DSITEdit2iEmailSender dsitEdit2iEmailSender , ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;
         private readonly IBucketService bucketService = bucketService;
         private readonly IUserService userService = userService;
-        private readonly IEmailSender emailSender = emailSender;
+        private readonly LoginEmailSender loginEmailSender = loginEmailSender;
+        private readonly DSITEdit2iEmailSender dsitEdit2iEmailSender = dsitEdit2iEmailSender ;
         private readonly ILogger<CabServiceController> _logger = logger;
         private readonly IMapper _mapper = mapper;
 
@@ -745,8 +746,8 @@ namespace DVSRegister.Controllers
         {         
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.Email = UserEmail;
-            await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail);
-            await emailSender.SendCertificateInfoSubmittedToDSIT();
+            await loginEmailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail);
+            await dsitEdit2iEmailSender.SendCertificateInfoSubmittedToDSIT();
             return View();
 
         }
