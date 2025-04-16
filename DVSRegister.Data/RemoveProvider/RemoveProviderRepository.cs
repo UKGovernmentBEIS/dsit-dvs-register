@@ -29,6 +29,10 @@ namespace DVSRegister.Data
                         existingProvider.RemovedTime = DateTime.UtcNow;
                         existingProvider.IsInRegister = false;
                     }
+                    else if(providerStatus == ProviderStatusEnum.ReadyToPublish) 
+                    {
+                        existingProvider.IsInRegister = false;
+                    }
 
                 }
                 await context.SaveChangesAsync(team, eventType, loggedInUserEmail);
