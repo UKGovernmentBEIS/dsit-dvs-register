@@ -170,7 +170,12 @@ namespace DVSRegister.Controllers
             {
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid token"));
                 return View("RemoveProviderError");
-            }           
+            }
+            else if (tokenStatus == TokenStatusEnum.RequestResent && provider == null)
+            {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Request resent"));
+                return View("RemoveProviderError");
+            }
             else if (tokenStatus == TokenStatusEnum.AdminCancelled)
             {
                 return View("RemovalRequestCancelledByDSIT");

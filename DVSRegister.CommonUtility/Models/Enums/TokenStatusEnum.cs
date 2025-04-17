@@ -10,7 +10,8 @@
         Expired = 2,
         AdminCancelled = 3,
         UserCancelled = 4,
-        RequestCompleted = 5
-        
+        RequestCompleted = 5,
+        RequestResent = 6
+
     }
 }
