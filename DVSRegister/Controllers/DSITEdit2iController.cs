@@ -156,7 +156,15 @@ namespace DVSRegister.Controllers
                     {
                         serviceDraftTokenDto = await dSITEdit2IService.GetServiceChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
 
-                        if (serviceDraftTokenDto == null || serviceDraftTokenDto.ServiceDraft == null || serviceDraftTokenDto.ServiceDraft.Service == null ||
+                        TokenStatusEnum tokenStatus = await dSITEdit2IService.GetEditServiceTokenStatus(tokenDetails);
+                        
+                        if(serviceDraftTokenDto == null && tokenStatus == TokenStatusEnum.RequestResent)
+                        {
+                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Update request resent"));
+                            return RedirectToAction("UpdatesError");
+                        }
+
+                        else if (serviceDraftTokenDto.ServiceDraft == null || serviceDraftTokenDto.ServiceDraft.Service == null ||
                         (serviceDraftTokenDto.ServiceDraft.Service != null && serviceDraftTokenDto.ServiceDraft.Service.ServiceStatus != ServiceStatusEnum.UpdatesRequested))
                         {
                             _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ServiceChanges: Attempted to access already approved or invalid service changes."));

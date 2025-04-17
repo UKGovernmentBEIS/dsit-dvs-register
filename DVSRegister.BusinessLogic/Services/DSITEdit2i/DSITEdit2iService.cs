@@ -80,6 +80,18 @@ namespace DVSRegister.BusinessLogic.Services
 
         }
 
+        public async Task<TokenStatusEnum> GetEditServiceTokenStatus(TokenDetails tokenDetails)
+        {
+            TokenStatusEnum tokenStatus = TokenStatusEnum.NA;
+            if(tokenDetails.ServiceIds != null && tokenDetails.ServiceIds.Count == 1)
+            {
+                var service = await dSITEdit2IRepository.GetService(tokenDetails.ServiceIds[0]);
+                tokenStatus = service.EditServiceTokenStatus;
+            }
+
+            return tokenStatus;
+        }
+
         public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetServiceKeyValue(ServiceDraftDto currentData, ServiceDto previousData)
         {
 
