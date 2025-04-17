@@ -7,5 +7,6 @@
         public Dictionary<string, dynamic> Personalisation { get; set; }
         public string Reference { get; set; }
         public string EmailReplyToId { get; set; }
+        public List<string> EmailList { get; set; }
     }
 }

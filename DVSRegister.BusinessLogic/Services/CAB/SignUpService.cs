@@ -9,12 +9,12 @@ namespace DVSRegister.BusinessLogic.Services
     public class SignUpService : ISignUpService
 	{
         private CognitoClient _cognitoClient;
-        private readonly IEmailSender _emailSender;
+        private readonly LoginEmailSender _loginEmailSender;
 
-        public SignUpService(CognitoClient cognitoClient, IEmailSender emailSender)
+        public SignUpService(CognitoClient cognitoClient, LoginEmailSender loginEmailSender)
 		{
             _cognitoClient = cognitoClient;
-            _emailSender = emailSender;
+            _loginEmailSender = loginEmailSender;
 		}
 
         public async Task<AuthenticationResultType> ConfirmMFAToken(string session, string email, string token)
@@ -42,7 +42,7 @@ namespace DVSRegister.BusinessLogic.Services
             string response = await _cognitoClient.MFARegistrationConfirmation(email, password, mfaCode);
             if(response == "OK")
             {
-                await _emailSender.SendEmailCabAccountCreated(email, email);
+                await _loginEmailSender.SendEmailCabAccountCreated(email, email);
             }
             return response;  
         }
@@ -52,7 +52,7 @@ namespace DVSRegister.BusinessLogic.Services
             string response = await _cognitoClient.SignInAndWaitForMfa(email, password);
             if(response == Constants.IncorrectPassword) 
             {
-                await _emailSender.SendEmailCabFailedLoginAttempt(email, Helper.GetLocalDateTime(DateTime.UtcNow, "dd MMM yyyy h:mm tt"));
+                await _loginEmailSender.SendEmailCabFailedLoginAttempt(email, Helper.GetLocalDateTime(DateTime.UtcNow, "dd MMM yyyy h:mm tt"));
             }
             return response;
         }
