@@ -26,7 +26,6 @@ namespace DVSRegister.Data.Repositories
            .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ProviderDraftToken();
         }
 
-
         public async Task<GenericResponse> UpdateProviderAndServiceStatusAndData(int providerProfileId, int providerDraftId)
         {
             GenericResponse genericResponse = new();
@@ -224,12 +223,12 @@ namespace DVSRegister.Data.Repositories
                     ICollection<ServiceIdentityProfileMapping> newServiceIdentityProfileMapping = [];
                     ICollection<ServiceSupSchemeMapping> newServiceSupSchemeMapping = [];
 
-                    existingService.EditServiceTokenStatus = TokenStatusEnum.RequestCompleted;
                     existingService.ModifiedTime = DateTime.UtcNow;
                     existingService.ServiceStatus = ServiceStatusEnum.ReadyToPublish;
                     if (existingService.Provider.ProviderStatus == ProviderStatusEnum.Published)
                         existingService.Provider.ProviderStatus = ProviderStatusEnum.ReadyToPublish;
                     existingService.Provider.ModifiedTime = DateTime.UtcNow;
+                    existingService.EditServiceTokenStatus = TokenStatusEnum.RequestCompleted;
                     existingService.IsInRegister = false;
 
                     existingService.ServiceName = existingDraftService.ServiceName ?? existingService.ServiceName;

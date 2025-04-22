@@ -31,8 +31,13 @@ namespace DVSRegister.Controllers
                 if (tokenDetails != null && tokenDetails.IsAuthorised)
                 {
                     ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByToken(tokenDetails.Token, tokenDetails.TokenId);
-                    if (serviceDto == null || serviceDto?.ServiceStatus == ServiceStatusEnum.Received || serviceDto?.CertificateReview?.CertificateReviewStatus != CertificateReviewEnum.Approved)
+                    if (serviceDto == null)
                     {                       
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationConsent failed: Consent link has been updated and resent"));
+                        return RedirectToAction("ConsentError");
+                    }
+                    if (serviceDto?.ServiceStatus == ServiceStatusEnum.Received || serviceDto?.CertificateReview?.CertificateReviewStatus != CertificateReviewEnum.Approved)
+                    {
                         _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationConsent failed: Service is not approved."));
                         return RedirectToAction("ProceedApplicationConsentError");
                     }
@@ -129,7 +134,13 @@ namespace DVSRegister.Controllers
                 if (tokenDetails!= null && tokenDetails.IsAuthorised)
                 {
                     ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByConsentToken(tokenDetails.Token, tokenDetails.TokenId);
-                    if(serviceDto== null || serviceDto?.ServiceStatus == ServiceStatusEnum.ReadyToPublish)
+                    if(serviceDto== null)
+                    {
+                        // old token that has since been resent
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Consent failed: Token has been updated and resent."));
+                        return RedirectToAction("ConsentError");
+                    }
+                    if (serviceDto?.ServiceStatus == ServiceStatusEnum.ReadyToPublish)
                     {
                         _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Consent failed: Service is already ready to publish."));
                         return RedirectToAction("ConsentErrorAlreadyAgreed");

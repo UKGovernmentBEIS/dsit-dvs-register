@@ -124,7 +124,6 @@ namespace DVSRegister.Controllers
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveProviderChanges: No token provided for provider changes."));
                 return RedirectToAction("UpdatesError");
             }
-
         }
 
         [HttpGet("provider-changes/approved")]
@@ -138,9 +137,7 @@ namespace DVSRegister.Controllers
         public IActionResult ProviderChangesCancelled()
         {
             return View();
-        }
-
-      
+        }      
 
         [HttpGet("service-changes")]
         public async Task<IActionResult> ServiceChanges(string token)
@@ -153,12 +150,11 @@ namespace DVSRegister.Controllers
                 if (tokenDetails != null )
                 {
                     if(tokenDetails.IsAuthorised)
-                    {
+                    {                      
                         serviceDraftTokenDto = await dSITEdit2IService.GetServiceChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
-
                         TokenStatusEnum tokenStatus = await dSITEdit2IService.GetEditServiceTokenStatus(tokenDetails);
-                        
-                        if(serviceDraftTokenDto == null && tokenStatus == TokenStatusEnum.RequestResent)
+
+                        if (serviceDraftTokenDto == null && tokenStatus == TokenStatusEnum.RequestResent)
                         {
                             _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Update request resent"));
                             return RedirectToAction("UpdatesError");
@@ -169,7 +165,7 @@ namespace DVSRegister.Controllers
                         {
                             _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ServiceChanges: Attempted to access already approved or invalid service changes."));
                             return RedirectToAction("UpdatesAlreadyApproved");
-                        }
+                        }                      
 
                         serviceReviewViewModel.token = tokenDetails.Token;
                         serviceReviewViewModel.CurrentServiceData = serviceDraftTokenDto.ServiceDraft;
@@ -182,8 +178,7 @@ namespace DVSRegister.Controllers
                     {
                         _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ServiceChanges: Unauthorised access attempt."));
                         return RedirectToAction("URLExpiredError");
-                    }
-                   
+                    }                  
                 }
                 else
                 {
