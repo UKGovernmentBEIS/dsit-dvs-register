@@ -24,5 +24,7 @@ namespace DVSRegister.Data.Repositories
 
         public Task<Service> GetServiceDetails(int serviceId);
         public Task<List<Service>> GetServiceList(int providerId);
+
+        public Task<Service> GetService(int serviceId);
     }
 }

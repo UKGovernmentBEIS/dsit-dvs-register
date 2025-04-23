@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Email;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using DVSRegister.Data.Repositories;
 
@@ -21,6 +21,26 @@ namespace DVSRegister.BusinessLogic.Services
             this.consentRepository = consentRepository;    
             this.mapper = mapper;
             this.emailSender = emailSender;
+        }
+
+
+        public async Task<(TokenStatusEnum, TokenStatusEnum)> GetTokenStatus(TokenDetails tokenDetails)
+        {
+            TokenStatusEnum openingLoopStatus = TokenStatusEnum.NA;
+            TokenStatusEnum closingLoopStatus = TokenStatusEnum.NA;
+
+            if (tokenDetails.ServiceIds!= null && tokenDetails.ServiceIds.Count == 1)
+            {
+                var service = await consentRepository.GetService(tokenDetails.ServiceIds[0]);
+
+                if (service.Id>0)
+                {
+                    openingLoopStatus = service.OpeningLoopTokenStatus;
+                    closingLoopStatus = service.ClosingLoopTokenStatus;
+                }
+            }
+           
+            return (openingLoopStatus,closingLoopStatus);
         }
 
         //opening loop

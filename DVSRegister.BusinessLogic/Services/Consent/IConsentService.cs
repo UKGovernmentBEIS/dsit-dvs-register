@@ -16,6 +16,8 @@ namespace DVSRegister.BusinessLogic.Services
         public Task<ServiceDto?> GetProviderAndCertificateDetailsByConsentToken(string token, string tokenId);
         public Task<GenericResponse> UpdateServiceAndProviderStatus(string token, string tokenId, ServiceDto serviceDto, string loggedInUserEmail);
 
+        public Task<(TokenStatusEnum, TokenStatusEnum)> GetTokenStatus(TokenDetails tokenDetails);
+
 
 
     }

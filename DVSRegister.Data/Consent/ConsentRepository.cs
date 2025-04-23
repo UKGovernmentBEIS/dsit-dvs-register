@@ -293,6 +293,11 @@ namespace DVSRegister.Data.Repositories
             return service;
         }
 
+        public async Task<Service> GetService(int serviceId)
+        {
+            return await context.Service.FirstOrDefaultAsync(e => e.Id == serviceId)??new();
+        }
+
         public async Task<List<Service>> GetServiceList(int providerId)
         {
             return await context.Service.Where(s => s.ProviderProfileId == providerId).ToListAsync();
