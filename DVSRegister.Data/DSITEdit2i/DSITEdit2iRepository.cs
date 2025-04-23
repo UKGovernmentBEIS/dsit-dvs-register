@@ -45,6 +45,7 @@ namespace DVSRegister.Data.Repositories
                     existingProvider.ModifiedTime = DateTime.UtcNow;
                     existingProvider.ProviderStatus = ProviderStatusEnum.ReadyToPublish; 
                     existingProvider.IsInRegister= false;
+                    existingProvider.EditProviderTokenStatus = TokenStatusEnum.RequestCompleted;
 
                     existingProvider.RegisteredName = existingDraftProvider.RegisteredName ?? existingProvider.RegisteredName;
                     existingProvider.TradingName = existingDraftProvider.TradingName != null
@@ -122,7 +123,7 @@ namespace DVSRegister.Data.Repositories
 
                     existingProvider.ProviderStatus = existingDraftProvider.PreviousProviderStatus;
                     existingProvider.ModifiedTime = DateTime.UtcNow;
-
+                    existingProvider.EditProviderTokenStatus = TokenStatusEnum.UserCancelled;
                     foreach (var serviceDraft in serviceDrafts)
                     {
                         var service = await context.Service.Where(s => s.Id == serviceDraft.ServiceId). FirstOrDefaultAsync();
@@ -189,6 +190,11 @@ namespace DVSRegister.Data.Repositories
         public async Task<Service> GetService(int serviceId)
         {
             return await context.Service. AsNoTracking().FirstOrDefaultAsync(e => e.Id ==serviceId) ?? new Service();
+        }
+
+        public async Task<ProviderProfile> GetProvider(int providerProfileId)
+        {
+            return await context.ProviderProfile.AsNoTracking().FirstOrDefaultAsync(e => e.Id == providerProfileId) ?? new ProviderProfile();
         }
 
 
