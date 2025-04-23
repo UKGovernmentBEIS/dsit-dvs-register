@@ -14,5 +14,6 @@ namespace DVSRegister.Data.Repositories
 
         public Task<bool> RemoveServiceDraftToken(string token, string tokenId);
         public Task<GenericResponse> CancelServiceUpdates(int serviceId, int serviceDraftId);
+        public  Task<Service> GetService(int serviceId);
     }
 }

@@ -187,6 +187,11 @@ namespace DVSRegister.Data.Repositories
            .AsNoTracking().FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ServiceDraftToken();
         }
 
+        public async Task<Service> GetService(int serviceId)
+        {
+            return await context.Service. AsNoTracking().FirstOrDefaultAsync(e => e.Id ==serviceId) ?? new Service();
+        }
+
 
         public async Task<GenericResponse> UpdateServiceStatusAndData(int serviceId, int serviceDraftId)
         {
@@ -219,7 +224,7 @@ namespace DVSRegister.Data.Repositories
                     ICollection<ServiceIdentityProfileMapping> newServiceIdentityProfileMapping = [];
                     ICollection<ServiceSupSchemeMapping> newServiceSupSchemeMapping = [];
 
-
+                    existingService.EditServiceTokenStatus = TokenStatusEnum.RequestCompleted;
                     existingService.ModifiedTime = DateTime.UtcNow;
                     existingService.ServiceStatus = ServiceStatusEnum.ReadyToPublish;
                     if (existingService.Provider.ProviderStatus == ProviderStatusEnum.Published)
@@ -354,6 +359,7 @@ namespace DVSRegister.Data.Repositories
             {
                 if (existingService != null && existingDraftService != null)// assign back the previous status
                 {
+                    existingService.EditServiceTokenStatus = TokenStatusEnum.UserCancelled;
                     existingService.ServiceStatus = existingDraftService.PreviousServiceStatus;
                     existingService.ModifiedTime = DateTime.UtcNow;                    
                     context.Remove(existingDraftService);
