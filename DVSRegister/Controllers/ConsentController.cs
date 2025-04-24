@@ -27,7 +27,7 @@ namespace DVSRegister.Controllers
                 token = token
             };
             TokenDetails tokenDetails = await jwtService.ValidateToken(token);
-            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByToken(tokenDetails.Token, tokenDetails.TokenId);           
+            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByOpeningLoopToken(tokenDetails.Token, tokenDetails.TokenId);           
             var invalidRequestResult = await HandleOpeningLoopInvalidRequest(tokenDetails, serviceDto);
             if (invalidRequestResult != null)
             {
@@ -47,7 +47,7 @@ namespace DVSRegister.Controllers
         {            
             
             TokenDetails tokenDetails = await jwtService.ValidateToken(consentViewModel.token);
-            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByToken(tokenDetails.Token, tokenDetails.TokenId);                  
+            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByOpeningLoopToken(tokenDetails.Token, tokenDetails.TokenId);                  
             string email = serviceDto ==null?string.Empty: serviceDto.Provider.PrimaryContactEmail + ";"+ serviceDto.Provider.SecondaryContactEmail;
 
                 var invalidRequestResult = await HandleOpeningLoopInvalidRequest(tokenDetails, serviceDto);
@@ -131,7 +131,7 @@ namespace DVSRegister.Controllers
                 token = token
             };
             TokenDetails tokenDetails = await jwtService.ValidateToken(token);
-            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByConsentToken(tokenDetails.Token, tokenDetails.TokenId);            
+            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByClosingLoopToken(tokenDetails.Token, tokenDetails.TokenId);            
             var invalidRequestResult = await HandleClosingLoopInvalidRequest(tokenDetails, serviceDto);
             if (invalidRequestResult != null)
             {
@@ -149,7 +149,7 @@ namespace DVSRegister.Controllers
         {
 
             TokenDetails tokenDetails = await jwtService.ValidateToken(consentViewModel.token);
-            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByConsentToken(tokenDetails.Token, tokenDetails.TokenId);
+            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByClosingLoopToken(tokenDetails.Token, tokenDetails.TokenId);
             string email = serviceDto == null ? string.Empty : serviceDto.Provider.PrimaryContactEmail + ";" + serviceDto.Provider.SecondaryContactEmail;
 
             var invalidRequestResult = await HandleClosingLoopInvalidRequest(tokenDetails, serviceDto);
@@ -164,7 +164,7 @@ namespace DVSRegister.Controllers
                     GenericResponse genericResponse = await consentService.UpdateServiceAndProviderStatus(tokenDetails.Token, tokenDetails.TokenId, serviceDto, email);
                     if (genericResponse.Success)
                     {
-                        await consentService.RemoveConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
+                        await consentService.RemoveProceedPublishConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
                         return View("ConsentSuccess");
                     }
                     else

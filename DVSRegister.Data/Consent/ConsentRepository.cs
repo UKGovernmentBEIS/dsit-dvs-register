@@ -20,34 +20,7 @@ namespace DVSRegister.Data.Repositories
 
 
 
-        #region Opening Loop
-
-        public async Task<GenericResponse> SaveProceedApplicationConsentToken(ProceedApplicationConsentToken consentToken, string loggedinUserEmail)
-        {
-            GenericResponse genericResponse = new();
-            using var transaction = context.Database.BeginTransaction();
-            try
-            {
-                var existingEntity = await context.ProceedApplicationConsentToken.FirstOrDefaultAsync(e => e.Token == consentToken.Token && e.TokenId == consentToken.TokenId);
-
-                if (existingEntity == null)
-                {
-                    await context.ProceedApplicationConsentToken.AddAsync(consentToken);
-                    await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.AddOpeningLoopToken, loggedinUserEmail);
-                    transaction.Commit();
-                    genericResponse.Success = true;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                genericResponse.EmailSent = false;
-                genericResponse.Success = false;
-                transaction.Rollback();
-                logger.LogError(ex.Message);
-            }
-            return genericResponse;
-        }
+        #region Opening Loop     
 
         public async Task<ProceedApplicationConsentToken> GetProceedApplicationConsentToken(string token, string tokenId)
         {
@@ -104,39 +77,14 @@ namespace DVSRegister.Data.Repositories
 
         #region closing the loop
 
-        public async Task<GenericResponse> SaveConsentToken(ProceedPublishConsentToken consentToken, string loggedinUserEmail)
-        {
-            GenericResponse genericResponse = new GenericResponse();
-            using var transaction = context.Database.BeginTransaction();
-            try
-            {
-                var existingEntity = await context.ProceedPublishConsentToken.FirstOrDefaultAsync(e => e.Token == consentToken.Token && e.TokenId == consentToken.TokenId);
+       
 
-                if (existingEntity == null)
-                {
-                    await context.ProceedPublishConsentToken.AddAsync(consentToken);
-                    await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.AddClosingLoopToken, loggedinUserEmail);
-                    transaction.Commit();
-                    genericResponse.Success = true;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                genericResponse.EmailSent = false;
-                genericResponse.Success = false;
-                transaction.Rollback();
-                logger.LogError(ex.Message);
-            }
-            return genericResponse;
-        }
-
-        public async Task<ProceedPublishConsentToken> GetConsentToken(string token, string tokenId)
+        public async Task<ProceedPublishConsentToken> GetProceedPublishConsentToken(string token, string tokenId)
         {
             return await context.ProceedPublishConsentToken.Include(p => p.Service).FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId)??new ProceedPublishConsentToken();
         }
      
-        public async Task<bool> RemoveConsentToken(string token, string tokenId, string loggedInUserEmail)
+        public async Task<bool> RemoveProceedPublishConsentToken(string token, string tokenId, string loggedInUserEmail)
         {
             var consent = await context.ProceedPublishConsentToken.Include(p => p.Service)
            .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId);

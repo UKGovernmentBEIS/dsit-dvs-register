@@ -49,7 +49,7 @@ namespace DVSRegister.BusinessLogic.Services
             return await consentRepository.RemoveProceedApplicationConsentToken(token, tokenId, loggedInUserEmail);
         }
 
-        public async Task<ServiceDto?> GetProviderAndCertificateDetailsByToken(string token, string tokenId)
+        public async Task<ServiceDto?> GetProviderAndCertificateDetailsByOpeningLoopToken(string token, string tokenId)
         {
             ProceedApplicationConsentToken consentToken = await consentRepository.GetProceedApplicationConsentToken(token, tokenId);
             if (consentToken.Service != null)
@@ -76,14 +76,14 @@ namespace DVSRegister.BusinessLogic.Services
 
         //closing loop
 
-        public async Task<bool> RemoveConsentToken(string token, string tokenId, string loggedInUserEmail)
+        public async Task<bool> RemoveProceedPublishConsentToken(string token, string tokenId, string loggedInUserEmail)
         {
-            return await consentRepository.RemoveConsentToken(token, tokenId, loggedInUserEmail);
+            return await consentRepository.RemoveProceedPublishConsentToken(token, tokenId, loggedInUserEmail);
         }
 
-        public async Task<ServiceDto?> GetProviderAndCertificateDetailsByConsentToken(string token, string tokenId)
+        public async Task<ServiceDto?> GetProviderAndCertificateDetailsByClosingLoopToken(string token, string tokenId)
         {
-            ProceedPublishConsentToken consentToken = await consentRepository.GetConsentToken(token, tokenId);
+            ProceedPublishConsentToken consentToken = await consentRepository.GetProceedPublishConsentToken(token, tokenId);
             if (consentToken.Service!=null)
             {
                 var service = await consentRepository.GetServiceDetails(consentToken.ServiceId);
@@ -99,7 +99,7 @@ namespace DVSRegister.BusinessLogic.Services
         public async Task<GenericResponse> UpdateServiceAndProviderStatus(string token, string tokenId, ServiceDto serviceDto, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new GenericResponse();
-            ProceedPublishConsentToken consentToken = await consentRepository.GetConsentToken(token, tokenId);
+            ProceedPublishConsentToken consentToken = await consentRepository.GetProceedPublishConsentToken(token, tokenId);
             if (!string.IsNullOrEmpty(consentToken.Token) && !string.IsNullOrEmpty(consentToken.TokenId))   //proceed update status if token exists           
             {
                 ProviderStatusEnum providerStatus = ProviderStatusEnum.ReadyToPublish;

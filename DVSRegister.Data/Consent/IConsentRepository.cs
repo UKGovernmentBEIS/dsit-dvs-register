@@ -8,16 +8,15 @@ namespace DVSRegister.Data.Repositories
     {
         #region opening the loop
         public Task<ProceedApplicationConsentToken> GetProceedApplicationConsentToken(string token, string tokenId);
-        public Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, string loggedInUserEmail);
-        public Task<GenericResponse> SaveProceedApplicationConsentToken(ProceedApplicationConsentToken consentToken, string loggedInUserEmail);
+        public Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, string loggedInUserEmail);    
         public Task<GenericResponse> UpdateServiceStatus(int serviceId, ServiceStatusEnum serviceStatus, string providerEmail);
         #endregion
 
 
         #region closing the loop
-        public Task<GenericResponse> SaveConsentToken(ProceedPublishConsentToken consentToken, string loggedInUserEmail);
-        public Task<bool> RemoveConsentToken(string token, string tokenId,string loggedInUserEmail);
-        public Task<ProceedPublishConsentToken> GetConsentToken(string token, string tokenId);
+        
+        public Task<bool> RemoveProceedPublishConsentToken(string token, string tokenId,string loggedInUserEmail);
+        public Task<ProceedPublishConsentToken> GetProceedPublishConsentToken(string token, string tokenId);
         public Task<GenericResponse> UpdateServiceAndProviderStatus(int serviceId, ProviderStatusEnum providerStatus, string loggedInUserEmail);
 
         #endregion
