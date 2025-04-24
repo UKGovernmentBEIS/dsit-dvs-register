@@ -114,13 +114,13 @@ namespace DVSRegister.Controllers
              //to do : resent logic
             else if (tokenStatus == TokenStatusEnum.RequestCompleted || tokenStatus == TokenStatusEnum.UserCancelled)
             {
-                return View("UpdatesAlreadyApproved");
+                return View("UpdatesAlreadyReviewed");
             }
             else if (providerDraftTokenDto == null || providerDraftTokenDto.ProviderProfileDraft == null || providerDraftTokenDto.ProviderProfileDraft.Provider == null ||
              (providerDraftTokenDto.ProviderProfileDraft.Provider != null && providerDraftTokenDto.ProviderProfileDraft.Provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested))
             {
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Provider changes were already approved."));
-                return View("UpdatesAlreadyApproved");
+                return View("UpdatesAlreadyReviewed");
             }
             else
             {
@@ -231,13 +231,13 @@ namespace DVSRegister.Controllers
             }
             else if (tokenStatus == TokenStatusEnum.RequestCompleted || tokenStatus == TokenStatusEnum.UserCancelled)
             {
-                return View("UpdatesAlreadyApproved");
+                return View("UpdatesAlreadyReviewed");
             }
             else if (serviceDraftTokenDto?.ServiceDraft == null || serviceDraftTokenDto.ServiceDraft.Service == null ||
                          (serviceDraftTokenDto.ServiceDraft.Service != null && serviceDraftTokenDto.ServiceDraft.Service.ServiceStatus != ServiceStatusEnum.UpdatesRequested))
             {// for old tokens to work
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Service changes already approved"));
-                return View("UpdatesAlreadyApproved");
+                return View("UpdatesAlreadyReviewed");
             }
             else
             {

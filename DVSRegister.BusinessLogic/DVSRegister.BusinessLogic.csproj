@@ -7,15 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Automapper\NewFolder\**" />
+    <EmbeddedResource Remove="Automapper\NewFolder\**" />
+    <None Remove="Automapper\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DVSRegister.Data\DVSRegister.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Automapper\NewFolder\" />
   </ItemGroup>
 
 </Project>

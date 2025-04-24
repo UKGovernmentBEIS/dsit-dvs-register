@@ -53,7 +53,7 @@
     <None Include="Views\DSITEdit2i\ProviderChangesCancelled.cshtml" />
     <None Include="Views\DSITEdit2i\URLExpiredError.cshtml" />
     <None Include="Views\DSITEdit2i\ServiceChanges.cshtml" />
-    <None Include="Views\DSITEdit2i\UpdatesAlreadyApproved.cshtml" />
+    <None Include="Views\DSITEdit2i\UpdatesAlreadyReviewed.cshtml" />
     <None Include="Views\DSITEdit2i\ServiceChangesApproved.cshtml" />
     <None Include="Views\DSITEdit2i\ServiceChangesCancelled.cshtml" />
     <None Include="Views\DSITEdit2i\UpdatesError.cshtml" />

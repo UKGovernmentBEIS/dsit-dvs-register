@@ -163,7 +163,7 @@ namespace DVSRegister.Controllers
             TokenStatusEnum tokenStatus = await removeProvider2iService.GetTokenStatus(tokenDetails);
             if (tokenDetails.IsExpired)
             {
-                await removeProvider2iService.UpdateRemovalTokenStatus(tokenDetails.ProviderProfileId, tokenDetails.ServiceIds, TokenStatusEnum.Expired);
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Token expired"));
                 return View("RemoveProviderURLExpired");
             }
             else if (!tokenDetails.IsAuthorised)
@@ -180,14 +180,14 @@ namespace DVSRegister.Controllers
             {
                 return View("RemovalRequestCancelledByDSIT");
             }
-            else if (tokenStatus == TokenStatusEnum.RequestCompleted)
+            else if (tokenStatus == TokenStatusEnum.RequestCompleted || tokenStatus == TokenStatusEnum.UserCancelled)
             {
-                return View("RemovedProviderAlready");
+                return View("AlreadyReviewed");
             }
             else if (provider == null || provider?.ProviderStatus == ProviderStatusEnum.RemovedFromRegister)
             {
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Provider null for the given token or token already removed"));// need to keep this condition for old requests to work, can be removed later
-                return View("RemovedProviderAlready");
+                return View("AlreadyReviewed");
             }           
             else
             {
