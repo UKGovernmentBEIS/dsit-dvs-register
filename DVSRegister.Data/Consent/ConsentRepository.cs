@@ -55,13 +55,11 @@ namespace DVSRegister.Data.Repositories
             .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId)??new ProceedApplicationConsentToken();
         }
 
-        public async Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, bool isExpired, string loggedinUserEmail)
+        public async Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, string loggedinUserEmail)
         {
             var consent = await context.ProceedApplicationConsentToken.FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId);
             var service = await context.Service.FirstOrDefaultAsync(s => s.Id == consent.ServiceId);
-            service.OpeningLoopTokenStatus = isExpired ? 
-                TokenStatusEnum.Expired :
-                TokenStatusEnum.RequestCompleted;
+            service.OpeningLoopTokenStatus = TokenStatusEnum.RequestCompleted;
 
             if (consent != null)
             {
@@ -142,6 +140,10 @@ namespace DVSRegister.Data.Repositories
         {
             var consent = await context.ProceedPublishConsentToken.Include(p => p.Service)
            .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId);
+            
+            var service = await context.Service.FirstOrDefaultAsync(s => s.Id == consent.ServiceId);
+            service.ClosingLoopTokenStatus = TokenStatusEnum.RequestCompleted;
+
             if (consent != null)
             {
                 context.ProceedPublishConsentToken.Remove(consent);

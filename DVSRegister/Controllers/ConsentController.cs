@@ -12,8 +12,7 @@ namespace DVSRegister.Controllers
     [Route("consent")]
     public class ConsentController(IJwtService jwtService, IConsentService consentService, ILogger<ConsentController> logger) : Controller
     {
-        private readonly IJwtService jwtService = jwtService;
-        
+        private readonly IJwtService jwtService = jwtService;        
         private readonly IConsentService consentService = consentService;
         private readonly ILogger<ConsentController> _logger = logger;
 
@@ -41,12 +40,10 @@ namespace DVSRegister.Controllers
                 return View(consentViewModel);
             }
             
-         }
-       
+         }       
 
 
-        [HttpPost("proceed-application-consent")]
-      
+        [HttpPost("proceed-application-consent")]     
         public async Task<ActionResult> ProceedApplicationGiveConsent(ConsentViewModel consentViewModel)
         {            
             
@@ -66,7 +63,7 @@ namespace DVSRegister.Controllers
                         GenericResponse genericResponse = await consentService.UpdateServiceStatus(serviceDto.Id, email, serviceDto?.Provider?.RegisteredName ?? string.Empty, serviceDto?.ServiceName ?? string.Empty);
                         if (genericResponse.Success)
                         {
-                            await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, tokenDetails.IsExpired, email);
+                            await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
                             return View("ProceedApplicationConsentSuccess");
                         }
                         else
@@ -93,7 +90,6 @@ namespace DVSRegister.Controllers
             if (tokenDetails.IsExpired)
             {
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Opening loop: Token is expired"));
-                await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, tokenDetails.IsExpired, email);
                 return View("ProceedApplicationConsentURLExpired");// to do : check for new content
             }
             else if (!tokenDetails.IsAuthorised)
@@ -131,115 +127,61 @@ namespace DVSRegister.Controllers
         [HttpGet("publish-service-give-consent")]
         public  async Task<ActionResult> Consent(string token)
         {
-            ConsentViewModel consentViewModel = new();
-            if (!string.IsNullOrEmpty(token))
+            ConsentViewModel consentViewModel = new()
             {
-                consentViewModel.token =  token;
-                TokenDetails tokenDetails = await jwtService.ValidateToken(token);
-                if (tokenDetails!= null && tokenDetails.IsAuthorised)
-                {
-                    ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByConsentToken(tokenDetails.Token, tokenDetails.TokenId);
-                    if(serviceDto== null)
-                    {
-                        // old token that has since been resent
-                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Consent failed: Token has been updated and resent."));
-                        return RedirectToAction("ConsentError");
-                    }
-                    if (serviceDto?.ServiceStatus == ServiceStatusEnum.ReadyToPublish)
-                    {
-                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Consent failed: Service is already ready to publish."));
-                        return RedirectToAction("ConsentErrorAlreadyAgreed");
-                    }
-                    consentViewModel.Service = serviceDto;
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Consent failed: Token is invalid or expired."));
-                    return RedirectToAction("ConsentErrorURLExpired");
-                }
+                token = token
+            };
+            TokenDetails tokenDetails = await jwtService.ValidateToken(token);
+            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByToken(tokenDetails.Token, tokenDetails.TokenId);
+            string email = serviceDto?.Provider.PrimaryContactEmail + ";" + serviceDto?.Provider.SecondaryContactEmail;
+            var invalidRequestResult = await HandleClosingLoopInvalidRequest(tokenDetails, serviceDto, email);
+            if (invalidRequestResult != null)
+            {
+                return invalidRequestResult;
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Consent failed: Token is missing."));
-                return RedirectToAction("ConsentError");
+                consentViewModel.Service = serviceDto;
+                return View(consentViewModel);
             }
-               
-           
-            return View(consentViewModel);
         }
 
-        [HttpPost("publish-service-give-consent")]        
+        [HttpPost("publish-service-give-consent")]
         public async Task<ActionResult> GiveConsent(ConsentViewModel consentViewModel)
         {
-            string email = "";
-            if (!string.IsNullOrEmpty(consentViewModel.token))
+
+            TokenDetails tokenDetails = await jwtService.ValidateToken(consentViewModel.token);
+            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByToken(tokenDetails.Token, tokenDetails.TokenId);
+            string email = serviceDto == null ? string.Empty : serviceDto.Provider.PrimaryContactEmail + ";" + serviceDto.Provider.SecondaryContactEmail;
+
+            var invalidRequestResult = await HandleClosingLoopInvalidRequest(tokenDetails, serviceDto, email);
+            if (invalidRequestResult != null)
             {
-                TokenDetails tokenDetails = await jwtService.ValidateToken(consentViewModel.token);
-               
-                if(tokenDetails!= null && tokenDetails.IsAuthorised)
+                return invalidRequestResult;
+            }
+            else
+            {
+                if (ModelState.IsValid)
                 {
-                    ServiceDto ServiceDto = await consentService.GetProviderAndCertificateDetailsByConsentToken(tokenDetails.Token, tokenDetails.TokenId);
-                    email = string.IsNullOrEmpty(email) ? ServiceDto.Provider.PrimaryContactEmail + ";"+ ServiceDto.Provider.SecondaryContactEmail : email;
-                    if (ModelState.IsValid)
+                    GenericResponse genericResponse = await consentService.UpdateServiceAndProviderStatus(tokenDetails.Token, tokenDetails.TokenId, serviceDto, email);
+                    if (genericResponse.Success)
                     {
-                        GenericResponse genericResponse = await consentService.UpdateServiceAndProviderStatus(tokenDetails.Token, tokenDetails.TokenId, ServiceDto,email);
-                        if (genericResponse.Success)
-                        {
-                            await consentService.RemoveConsentToken(tokenDetails.Token, tokenDetails.TokenId,email);
-                            return RedirectToAction("ConsentSuccess");
-                        }
-                        else
-                        {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("GiveConsent failed: Unable to update service/provider status."));
-                            return RedirectToAction("ConsentError");
-                        } 
+                        await consentService.RemoveConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
+                        return RedirectToAction("ConsentSuccess");
                     }
                     else
                     {
-                       
-                        consentViewModel.Service = ServiceDto;
-                        return View("Consent", consentViewModel);
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("GiveConsent failed: Unable to update service/provider status."));
+                        return RedirectToAction("ConsentError");
                     }
                 }
                 else
                 {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("GiveConsent failed: Token is invalid or unauthorised."));
-                    await consentService.RemoveConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
-                    return RedirectToAction("ConsentErrorURLExpired");
+                    consentViewModel.Service = serviceDto;
+                    return View("Consent", consentViewModel);
                 }
             }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("GiveConsent failed: Token is missing."));
-                return RedirectToAction("ConsentError");
-            }         
-            
         }
-
-        [HttpGet("consent-success")]
-        public ActionResult ConsentSuccess()
-        {
-            return View();
-        }
-
-        [HttpGet("consent-error-already-agreed")]
-        public ActionResult ConsentErrorAlreadyAgreed()
-        {
-            return View();
-        }
-
-        [HttpGet("consent-error")]
-        public ActionResult ConsentError()
-        {
-            return View();
-        }
-
-        [HttpGet("consent-error-url-expired")]
-        public ActionResult ConsentErrorURLExpired()
-        {
-            return View();
-        }
-
 
         private async Task<ActionResult?> HandleClosingLoopInvalidRequest(TokenDetails tokenDetails, ServiceDto? serviceDto, string email)
         {
@@ -247,8 +189,6 @@ namespace DVSRegister.Controllers
             if (tokenDetails.IsExpired)
             {
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Closing loop: Token is expired"));
-                //todo : add expired condition in repository
-               // await consentService.RemoveConsentToken(tokenDetails.Token, tokenDetails.TokenId, tokenDetails.IsExpired, email);
                 return View("ConsentErrorURLExpired");
             }
             else if (!tokenDetails.IsAuthorised)

@@ -44,9 +44,9 @@ namespace DVSRegister.BusinessLogic.Services
         }
 
         //opening loop
-        public async Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, bool isExpired, string loggedInUserEmail)
+        public async Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, string loggedInUserEmail)
         {
-            return await consentRepository.RemoveProceedApplicationConsentToken(token, tokenId, isExpired, loggedInUserEmail);
+            return await consentRepository.RemoveProceedApplicationConsentToken(token, tokenId, loggedInUserEmail);
         }
 
         public async Task<ServiceDto?> GetProviderAndCertificateDetailsByToken(string token, string tokenId)
