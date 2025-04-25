@@ -194,29 +194,7 @@ namespace DVSRegister.Data
 
 
 
-        public async Task UpdateRemovalTokenStatus(int providerProfileId, List<int> serviceIds, TokenStatusEnum tokenStatus)
-        {            
-            using var transaction = await context.Database.BeginTransactionAsync();
-            try
-            {
-                if (serviceIds != null && serviceIds.Count > 0)
-                {
-                    foreach (var item in serviceIds)
-                    {
-                        var service = await context.Service.Where(s => s.Id == item && s.ProviderProfileId == providerProfileId).FirstOrDefaultAsync();
-                        service.RemovalTokenStatus = tokenStatus;
-                    }
-                }
-                await context.SaveChangesAsync();
-                await transaction.CommitAsync();               
-            }
-            catch (Exception ex)
-            {
-                
-                await transaction.RollbackAsync();
-                logger.LogError(ex.Message);
-            }          
-        }
+       
         #endregion
 
     }

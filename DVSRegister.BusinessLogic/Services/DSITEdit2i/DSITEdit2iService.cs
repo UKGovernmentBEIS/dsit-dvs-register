@@ -92,6 +92,18 @@ namespace DVSRegister.BusinessLogic.Services
             return tokenStatus;
         }
 
+        public async Task<TokenStatusEnum> GetEditProviderTokenStatus(TokenDetails tokenDetails)
+        {
+            TokenStatusEnum tokenStatus = TokenStatusEnum.NA;
+            if (tokenDetails.ProviderProfileId>0 )
+            {
+                var provider = await dSITEdit2IRepository.GetProvider(tokenDetails.ProviderProfileId);
+                tokenStatus = provider.EditProviderTokenStatus;
+            }
+
+            return tokenStatus;
+        }
+
         public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetServiceKeyValue(ServiceDraftDto currentData, ServiceDto previousData)
         {
 
