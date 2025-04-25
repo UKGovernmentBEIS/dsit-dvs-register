@@ -9,9 +9,9 @@ namespace DVSRegister.BusinessLogic.Services
     public class SignUpService : ISignUpService
 	{
         private CognitoClient _cognitoClient;
-        private readonly IEmailSender _emailSender;
+        private readonly LoginEmailSender _emailSender;
 
-        public SignUpService(CognitoClient cognitoClient, IEmailSender emailSender)
+        public SignUpService(CognitoClient cognitoClient, LoginEmailSender emailSender)
 		{
             _cognitoClient = cognitoClient;
             _emailSender = emailSender;

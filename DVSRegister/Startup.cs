@@ -80,7 +80,7 @@ namespace DVSRegister
 
         private void ConfigureGovUkNotify(IServiceCollection services)
         {
-            services.AddScoped<IEmailSender, GovUkNotifyApi>();
+            services.AddSingleton<GovUkNotifyApi>();
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
         }
@@ -119,6 +119,12 @@ namespace DVSRegister
             services.AddScoped<IRemoveProviderService, RemoveProviderService>();
             services.AddSingleton<DVSRegister.Services.AutoMapperProfile>();
             services.AddSingleton<DVSRegister.BusinessLogic.AutoMapperProfile>();
+            services.AddTransient<LoginEmailSender>();
+            services.AddTransient<CabEmailSender>();
+            services.AddTransient<Removal2iCheckEmailSender>();
+            services.AddTransient<ConsentEmailSender>();
+            services.AddTransient<CabRemovalRequestEmailSender>();
+            services.AddTransient<Edit2iCheckEmailSender>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));

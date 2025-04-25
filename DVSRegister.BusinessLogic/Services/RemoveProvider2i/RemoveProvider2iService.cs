@@ -15,10 +15,10 @@ namespace DVSRegister.BusinessLogic.Services
         private readonly IRemoveProvider2iRepository removeProvider2iRepository;
         private readonly IRemoveProviderService removeProviderService;
         private readonly IMapper mapper;
-        private readonly IEmailSender emailSender;
+        private readonly Removal2iCheckEmailSender emailSender;
 
 
-        public RemoveProvider2iService(IRemoveProvider2iRepository removeProvider2iRepository, IMapper mapper, IEmailSender emailSender, IRemoveProviderService removeProviderService)
+        public RemoveProvider2iService(IRemoveProvider2iRepository removeProvider2iRepository, IMapper mapper, Removal2iCheckEmailSender emailSender, IRemoveProviderService removeProviderService)
         {
             this.removeProviderService = removeProviderService;
             this.removeProvider2iRepository = removeProvider2iRepository;

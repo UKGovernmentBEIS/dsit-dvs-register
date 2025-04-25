@@ -13,10 +13,10 @@ namespace DVSRegister.BusinessLogic.Services
         private readonly ICabRemovalRequestRepository cabRemovalRequestRepository;
         private readonly IRemoveProviderService removeProviderService;
         private readonly IRemoveProviderRepository removeProviderRepository;
-        private readonly IEmailSender emailSender;      
+        private readonly CabRemovalRequestEmailSender emailSender;      
     
-        public CabRemovalRequestService(ICabRemovalRequestRepository cabRemovalRequestRepository, 
-            IEmailSender emailSender, IRemoveProviderService removeProviderService, IRemoveProviderRepository removeProviderRepository)
+        public CabRemovalRequestService(ICabRemovalRequestRepository cabRemovalRequestRepository,
+            CabRemovalRequestEmailSender emailSender, IRemoveProviderService removeProviderService, IRemoveProviderRepository removeProviderRepository)
         {
             this.cabRemovalRequestRepository = cabRemovalRequestRepository;  
             this.removeProviderService = removeProviderService;

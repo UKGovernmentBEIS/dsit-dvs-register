@@ -8,9 +8,7 @@
         public string LoginLink { get; set; }
         public string CabSignUpLink { get; set; }
         public string CabLoginLink { get; set; }
-
-        public EmailConfirmationTemplate EmailConfirmationTemplate { get; set; }
-        public ApplicationReceivedTemplate ApplicationReceivedTemplate { get; set; }
+       
         public CabAccountCreatedTemplate CabAccountCreatedTemplate { get; set; }
         public CabFailedLoginAttemptTemplate CabFailedLoginAttemptTemplate { get; set; }
 

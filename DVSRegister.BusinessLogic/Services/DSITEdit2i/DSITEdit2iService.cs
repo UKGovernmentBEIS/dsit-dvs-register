@@ -15,18 +15,16 @@ namespace DVSRegister.BusinessLogic.Services
     {
         private readonly IDSITEdit2iRepository dSITEdit2IRepository;
         private readonly IMapper mapper;
-        private readonly IEmailSender emailSender;
-        private readonly IRemoveProviderRepository removeProviderRepository;
+        private readonly Edit2iCheckEmailSender emailSender;        
         private readonly IRemoveProviderService removeProviderService;
 
 
 
-        public DSITEdit2iService(IDSITEdit2iRepository dSITEdit2IRepository, IMapper mapper, IEmailSender emailSender, IRemoveProviderRepository removeProviderRepository, IRemoveProviderService removeProviderService)
+        public DSITEdit2iService(IDSITEdit2iRepository dSITEdit2IRepository, IMapper mapper, Edit2iCheckEmailSender emailSender,  IRemoveProviderService removeProviderService)
         {
             this.dSITEdit2IRepository = dSITEdit2IRepository;
             this.mapper = mapper;
-            this.emailSender = emailSender;
-            this.removeProviderRepository = removeProviderRepository;
+            this.emailSender = emailSender;            
             this.removeProviderService = removeProviderService;
         }
         public async Task<ProviderDraftTokenDto> GetProviderChangesByToken(string token, string tokenId)
