@@ -22,7 +22,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "Register", "Register", new { FromDetailsPage = true }, new { @class = "govuk-back-link" })
+    @await Html.PartialAsync("~/Views/Register/PartialViews/_RegisterBreadCrumbsView.cshtml", "Provider information")
 
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">

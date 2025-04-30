@@ -17,20 +17,19 @@ namespace DVSRegister.Controllers
 
         [Route("")]
         [HttpGet("register-search")]
-        public async Task<IActionResult> Register(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, bool FromDetailsPage = false, int RemoveRole = 0, int RemoveScheme = 0, string SearchAction = "", string SearchProvider = "")
+        public async Task<IActionResult> Register(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, int RemoveRole = 0, int RemoveScheme = 0, string SearchAction = "", string SearchProvider = "")
         {
             RegisterListViewModel registerListViewModel = new ();
-            if (FromDetailsPage)
+            Filters? filters = HttpContext?.Session.Get<Filters>("Filters");
+            if (SelectedRoleIds!= null && SelectedRoleIds.Count>0 && SelectedSupplementarySchemeIds!=null && SelectedSupplementarySchemeIds.Count>0 &&
+               string.IsNullOrEmpty(SearchAction) && string.IsNullOrEmpty(SearchProvider) &&RemoveRole == 0 && RemoveScheme == 0 && filters != null)
             {
-                Filters filters = HttpContext?.Session.Get<Filters>("Filters")??new Filters();
-                SelectedRoleIds =  filters.SelectedRoleIds;
-                SelectedSupplementarySchemeIds= filters.SelectedSupplementarySchemeIds;
-                SearchAction =  filters.SearchAction;
-                SearchProvider = filters.SearchProvider;
-                FromDetailsPage = filters.FromDetailsPage;
+                SelectedRoleIds = filters.SelectedRoleIds;
+                SelectedSupplementarySchemeIds = filters.SelectedSupplementarySchemeIds;
+                SearchAction = filters.SearchAction;
+                SearchProvider = filters.SearchProvider;                
                 RemoveRole = filters.RemoveRole;
                 RemoveScheme = filters.RemoveScheme;
-
             }
 
             await SetRoles(SelectedRoleIds, RemoveRole, registerListViewModel);
@@ -45,19 +44,19 @@ namespace DVSRegister.Controllers
             else if (SearchAction == "clearFilter")
             {
                 ModelState.Clear();
-                registerListViewModel.SelectedRoleIds = new List<int>();
-                registerListViewModel.SelectedSupplementarySchemeIds = new List<int>();
-                registerListViewModel.SelectedRoles = new List<RoleDto> { new RoleDto() };
-                registerListViewModel.SelectedSupplementarySchemes =   new List<SupplementarySchemeDto> { new SupplementarySchemeDto() };
+                registerListViewModel.SelectedRoleIds = [];
+                registerListViewModel.SelectedSupplementarySchemeIds = [];
+                registerListViewModel.SelectedRoles = [new RoleDto()];
+                registerListViewModel.SelectedSupplementarySchemes =   [new SupplementarySchemeDto()];
             }
             registerListViewModel.Providers = await registerService.GetProviders(registerListViewModel.SelectedRoleIds, registerListViewModel.SelectedSupplementarySchemeIds, SearchProvider);
             List<RegisterPublishLogDto> list = await registerService.GetRegisterPublishLogs();
-            if (list!=null && list.Any())
+            if (list!=null && list.Count != 0)
             {
                 registerListViewModel.LastUpdated =  list[0].CreatedTime.ToString("dd MMMM yyyy");
             }
 
-            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, FromDetailsPage, RemoveRole, RemoveScheme, SearchAction, SearchProvider);
+            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, RemoveRole, RemoveScheme, SearchAction, SearchProvider);
             return View("Register", registerListViewModel);
         }
 
@@ -84,25 +83,26 @@ namespace DVSRegister.Controllers
         }
 
         #region Private methods
-        private void SetFiltersInSession(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, bool FromDetailsPage, int RemoveRole, int RemoveScheme, string SearchAction, string SearchProvider)
+        private void SetFiltersInSession(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds,  int RemoveRole, int RemoveScheme, string SearchAction, string SearchProvider)
         {
-            Filters filters = new Filters();
-            filters.SelectedRoleIds = SelectedRoleIds;
-            filters.SelectedSupplementarySchemeIds= SelectedSupplementarySchemeIds;
-            filters.SearchAction = SearchAction;
-            filters.SearchProvider = SearchProvider;
-            filters.FromDetailsPage = FromDetailsPage;
-            filters.RemoveRole = RemoveRole;
-            filters.RemoveScheme = RemoveScheme;
+            Filters filters = new()
+            {
+                SelectedRoleIds = SelectedRoleIds,
+                SelectedSupplementarySchemeIds = SelectedSupplementarySchemeIds,
+                SearchAction = SearchAction,
+                SearchProvider = SearchProvider,
+                RemoveRole = RemoveRole,
+                RemoveScheme = RemoveScheme
+            };
             HttpContext?.Session.Set("Filters", filters);
         }
-        private async Task SetSchemes(List<int> SelectedSupplementarySchemeIds, int RemoveScheme, RegisterListViewModel registerListViewModel)
+        private async Task SetSchemes(List<int>? SelectedSupplementarySchemeIds, int RemoveScheme, RegisterListViewModel registerListViewModel)
         {
             registerListViewModel.AvailableSchemes =  await cabService.GetSupplementarySchemes();
 
-            if (SelectedSupplementarySchemeIds==null || !SelectedSupplementarySchemeIds.Any())
+            if (SelectedSupplementarySchemeIds==null || SelectedSupplementarySchemeIds.Count == 0)
             {
-                registerListViewModel.SelectedSupplementarySchemeIds = new List<int>();
+                registerListViewModel.SelectedSupplementarySchemeIds = [];
             }
             else
             {
@@ -115,12 +115,12 @@ namespace DVSRegister.Controllers
                 registerListViewModel.SelectedSupplementarySchemes =  registerListViewModel.AvailableSchemes.Where(c => registerListViewModel.SelectedSupplementarySchemeIds.Contains(c.Id)).ToList();
         }
 
-        private async Task SetRoles(List<int> SelectedRoleIds, int RemoveRole, RegisterListViewModel registerListViewModel)
+        private async Task SetRoles(List<int>? SelectedRoleIds, int RemoveRole, RegisterListViewModel registerListViewModel)
         {
             registerListViewModel.AvailableRoles = await cabService.GetRoles();
-            if (SelectedRoleIds==null || !SelectedRoleIds.Any())
+            if (SelectedRoleIds==null || SelectedRoleIds.Count == 0)
             {
-                registerListViewModel.SelectedRoleIds = new List<int>();
+                registerListViewModel.SelectedRoleIds = [];
             }
             else
             {
