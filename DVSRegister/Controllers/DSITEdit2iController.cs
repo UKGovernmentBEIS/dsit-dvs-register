@@ -20,50 +20,27 @@ namespace DVSRegister.Controllers
         [HttpGet("provider-changes")]
         public async Task<IActionResult> ProviderChanges(string token)
         {
-            ProviderDraftTokenDto providerDraftTokenDto = new();
-            ProviderReviewViewModel providerReviewViewModel = new();
-            if (!string.IsNullOrEmpty(token))
+            ProviderReviewViewModel providerReviewViewModel = new();           
+            TokenDetails tokenDetails = await jwtService.ValidateToken(token, "DSIT");
+            ProviderDraftTokenDto providerDraftTokenDto = await dSITEdit2IService.GetProviderChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
+
+            var invalidRequestResult = await HandleInvalidProviderUpdateRequest(tokenDetails, providerDraftTokenDto);
+            if (invalidRequestResult != null)
             {
-                TokenDetails tokenDetails = await jwtService.ValidateToken(token, "DSIT");
-                if (tokenDetails != null)
-                {
-                    if (tokenDetails.IsAuthorised)
-                    {
-                        providerDraftTokenDto = await dSITEdit2IService.GetProviderChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
-
-                        if (providerDraftTokenDto == null || providerDraftTokenDto.ProviderProfileDraft == null || providerDraftTokenDto.ProviderProfileDraft.Provider == null ||
-                        (providerDraftTokenDto.ProviderProfileDraft.Provider != null && providerDraftTokenDto.ProviderProfileDraft.Provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested))
-                        {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Provider changes were already approved."));
-                            return RedirectToAction("UpdatesAlreadyApproved");
-                        }
-
-                        providerReviewViewModel.token = tokenDetails.Token;
-                        providerReviewViewModel.PreviousProviderData = providerDraftTokenDto.ProviderProfileDraft.Provider;
-                        var (previous, current) = dSITEdit2IService.GetProviderKeyValue(providerDraftTokenDto.ProviderProfileDraft, providerDraftTokenDto.ProviderProfileDraft.Provider);
-                        providerReviewViewModel.PreviousDataKeyValuePair = previous;
-                        providerReviewViewModel.CurrentDataKeyValuePair = current;
-                    }
-                    else
-                    {
-                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Unauthorised access attempt for provider changes."));
-                        return RedirectToAction("URLExpiredError");
-                    }
-                   
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid token details retrieved."));
-                    return RedirectToAction("UpdatesError");
-                }
+                return invalidRequestResult;
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("No token provided for provider changes request."));
-                return RedirectToAction("UpdatesError");
+                providerReviewViewModel.token = tokenDetails.Token;
+                providerReviewViewModel.PreviousProviderData = providerDraftTokenDto.ProviderProfileDraft.Provider;
+                var (previous, current) = dSITEdit2IService.GetProviderKeyValue(providerDraftTokenDto.ProviderProfileDraft, providerDraftTokenDto.ProviderProfileDraft.Provider);
+                providerReviewViewModel.PreviousDataKeyValuePair = previous;
+                providerReviewViewModel.CurrentDataKeyValuePair = current;
+                return View(providerReviewViewModel);
+
             }
 
-            return View(providerReviewViewModel);
+            
         }
 
 
@@ -71,221 +48,201 @@ namespace DVSRegister.Controllers
         [HttpPost("provider-changes")]
         public async Task<IActionResult> ApproveProviderChanges(ProviderReviewViewModel providerReviewViewModel, string action)
         {
-
-            if (!string.IsNullOrEmpty(providerReviewViewModel.token))
+            TokenDetails tokenDetails = await jwtService.ValidateToken(providerReviewViewModel.token, "DSIT");
+            ProviderDraftTokenDto providerDraftTokenDto = await dSITEdit2IService.GetProviderChangesByToken(tokenDetails.Token, tokenDetails.TokenId); 
+            var invalidRequestResult = await HandleInvalidProviderUpdateRequest(tokenDetails, providerDraftTokenDto);
+            if (invalidRequestResult != null)
             {
-                TokenDetails tokenDetails = await jwtService.ValidateToken(providerReviewViewModel.token, "DSIT");
-                ProviderDraftTokenDto providerDraftTokenDto = await dSITEdit2IService.GetProviderChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
-                if (tokenDetails != null && tokenDetails.IsAuthorised)
+                return invalidRequestResult;
+            }
+            else
+            {
+                if (action == "approve")
                 {
-                    if (action == "approve")
+                    GenericResponse genericResponse = await dSITEdit2IService.UpdateProviderAndServiceStatusAndData(providerDraftTokenDto.ProviderProfileDraft);
+                    if (genericResponse.Success)
                     {
-                        GenericResponse genericResponse = await dSITEdit2IService.UpdateProviderAndServiceStatusAndData(providerDraftTokenDto.ProviderProfileDraft);
-                        if (genericResponse.Success)
-                        {
-                            //Token  removed when draft is deleted after update
-                            return RedirectToAction("ProviderChangesApproved");
-                        }
-                        else
-                        {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveProviderChanges: Failed to update provider and service status."));
-                            return RedirectToAction("UpdatesError");
-                        }
-                    }
-                    else if (action == "cancel")
-                    {
-                        GenericResponse genericResponse = await dSITEdit2IService.CancelProviderUpdates(providerDraftTokenDto.ProviderProfileDraft);
-                        if (genericResponse.Success)
-                        {
-                            //Token removed when draft is deleted after cancel
-                            return RedirectToAction("ProviderChangesCancelled");
-                        }
-                        else
-                        {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveProviderChanges: Failed to cancel provider updates."));
-                            return RedirectToAction("UpdatesError");
-                        }
+                        //Token  removed when draft is deleted after update
+                        return View("ProviderChangesApproved");
                     }
                     else
                     {
-                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveProviderChanges: Invalid action provided."));
-                        return RedirectToAction("UpdatesError");
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveProviderChanges: Failed to update provider and service status."));
+                        return View("UpdatesError");
+                    }
+                }
+                else if (action == "cancel")
+                {
+                    GenericResponse genericResponse = await dSITEdit2IService.CancelProviderUpdates(providerDraftTokenDto.ProviderProfileDraft);
+                    if (genericResponse.Success)
+                    {
+                        //Token removed when draft is deleted after cancel
+                        return View("ProviderChangesCancelled");
+                    }
+                    else
+                    {
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveProviderChanges: Failed to cancel provider updates."));
+                        return View("UpdatesError");
                     }
                 }
                 else
                 {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveProviderChanges: Unauthorised provider removal attempt."));
-                    await dSITEdit2IService.RemoveProviderDraftToken(tokenDetails.Token, tokenDetails.TokenId);
-                    return RedirectToAction("UpdatesError");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveProviderChanges: Invalid action provided."));
+                    return View("UpdatesError");
                 }
+
+            }
+            
+        }
+
+
+
+
+        private async Task<ActionResult?> HandleInvalidProviderUpdateRequest(TokenDetails tokenDetails, ProviderDraftTokenDto? providerDraftTokenDto)
+        {
+            TokenStatusEnum tokenStatus = await dSITEdit2IService.GetEditProviderTokenStatus(tokenDetails);
+            if (tokenDetails.IsExpired)
+            {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Provider changes: token expired"));
+                return View("URLExpiredError");
+            }
+            else if (!tokenDetails.IsAuthorised)
+            {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Provider changes:Invalid token"));
+                return View("UpdatesError");
+            }
+             //to do : resent logic
+            else if (tokenStatus == TokenStatusEnum.RequestCompleted || tokenStatus == TokenStatusEnum.UserCancelled)
+            {
+                return View("UpdatesAlreadyReviewed");
+            }
+            else if (providerDraftTokenDto == null || providerDraftTokenDto.ProviderProfileDraft == null || providerDraftTokenDto.ProviderProfileDraft.Provider == null ||
+             (providerDraftTokenDto.ProviderProfileDraft.Provider != null && providerDraftTokenDto.ProviderProfileDraft.Provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested))
+            {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Provider changes were already approved."));
+                return View("UpdatesAlreadyReviewed");
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveProviderChanges: No token provided for provider changes."));
-                return RedirectToAction("UpdatesError");
+                return null;
             }
-
         }
 
-        [HttpGet("provider-changes/approved")]
 
-        public IActionResult ProviderChangesApproved()
-        {
-            return View();
-        }
-
-        [HttpGet("provider-changes/cancelled")]
-        public IActionResult ProviderChangesCancelled()
-        {
-            return View();
-        }
-
-      
 
         [HttpGet("service-changes")]
         public async Task<IActionResult> ServiceChanges(string token)
         {
-            ServiceDraftTokenDto serviceDraftTokenDto = new();
-            ServiceReviewViewModel serviceReviewViewModel = new();   
-            if (!string.IsNullOrEmpty(token))
-            {
-                TokenDetails tokenDetails = await jwtService.ValidateToken(token, "DSIT");
-                if (tokenDetails != null )
-                {
-                    if(tokenDetails.IsAuthorised)
-                    {
-                        serviceDraftTokenDto = await dSITEdit2IService.GetServiceChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
-
-                        if (serviceDraftTokenDto == null || serviceDraftTokenDto.ServiceDraft == null || serviceDraftTokenDto.ServiceDraft.Service == null ||
-                        (serviceDraftTokenDto.ServiceDraft.Service != null && serviceDraftTokenDto.ServiceDraft.Service.ServiceStatus != ServiceStatusEnum.UpdatesRequested))
-                        {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ServiceChanges: Attempted to access already approved or invalid service changes."));
-                            return RedirectToAction("UpdatesAlreadyApproved");
-                        }
-
-                        serviceReviewViewModel.token = tokenDetails.Token;
-                        serviceReviewViewModel.CurrentServiceData = serviceDraftTokenDto.ServiceDraft;
-                        serviceReviewViewModel.PreviousServiceData = serviceDraftTokenDto.ServiceDraft.Service;
-                        var (previous, current) = dSITEdit2IService.GetServiceKeyValue(serviceDraftTokenDto.ServiceDraft, serviceDraftTokenDto.ServiceDraft.Service);
-                        serviceReviewViewModel.PreviousDataKeyValuePair = previous;
-                        serviceReviewViewModel.CurrentDataKeyValuePair = current;
-                    }
-                    else
-                    {
-                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ServiceChanges: Unauthorised access attempt."));
-                        return RedirectToAction("URLExpiredError");
-                    }
                    
-                }
-                else
-                {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ServiceChanges: Invalid or expired token provided."));
-                    return RedirectToAction("UpdatesError");
-                }
+            ServiceReviewViewModel serviceReviewViewModel = new();
+            TokenDetails tokenDetails = await jwtService.ValidateToken(token, "DSIT");
+            ServiceDraftTokenDto serviceDraftTokenDto = await dSITEdit2IService.GetServiceChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
+                        
+            var invalidRequestResult = await HandleInvalidServiceUpdateRequest(tokenDetails, serviceDraftTokenDto);
+            if (invalidRequestResult != null)
+            {
+                return invalidRequestResult;
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ServiceChanges: No token provided for service changes."));
-                return RedirectToAction("UpdatesError");
+                serviceReviewViewModel.token = tokenDetails.Token;
+                serviceReviewViewModel.CurrentServiceData = serviceDraftTokenDto.ServiceDraft;
+                serviceReviewViewModel.PreviousServiceData = serviceDraftTokenDto.ServiceDraft.Service;
+                var (previous, current) = dSITEdit2IService.GetServiceKeyValue(serviceDraftTokenDto.ServiceDraft, serviceDraftTokenDto.ServiceDraft.Service);
+                serviceReviewViewModel.PreviousDataKeyValuePair = previous;
+                serviceReviewViewModel.CurrentDataKeyValuePair = current;
+                return View(serviceReviewViewModel);
             }
-
-            return View(serviceReviewViewModel);
+          
         }
+       
 
 
         [HttpPost("service-changes")]
         public async Task<IActionResult> ApproveServiceChanges(ServiceReviewViewModel serviceReviewViewModel, string action)
         {
+           
+            TokenDetails tokenDetails = await jwtService.ValidateToken(serviceReviewViewModel.token, "DSIT");
+            ServiceDraftTokenDto serviceDraftTokenDto = await dSITEdit2IService.GetServiceChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
 
-            if (!string.IsNullOrEmpty(serviceReviewViewModel.token))
+            var invalidRequestResult = await HandleInvalidServiceUpdateRequest(tokenDetails, serviceDraftTokenDto);
+            if (invalidRequestResult != null)
             {
-                TokenDetails tokenDetails = await jwtService.ValidateToken(serviceReviewViewModel.token, "DSIT");
-                ServiceDraftTokenDto serviceDraftTokenDto = await dSITEdit2IService.GetServiceChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
-                if (tokenDetails != null && tokenDetails.IsAuthorised)
+                return invalidRequestResult;
+            }
+            else
+            {
+                if (action == "approve")
                 {
-                    if (action == "approve")
+                    GenericResponse genericResponse = await dSITEdit2IService.UpdateServiceStatusAndData(serviceDraftTokenDto.ServiceDraft);
+                    if (genericResponse.Success)
                     {
-                        GenericResponse genericResponse = await dSITEdit2IService.UpdateServiceStatusAndData(serviceDraftTokenDto.ServiceDraft);
-                        if (genericResponse.Success)
-                        {
-                           //Token will be removed when draft is deleted after update
-                            return RedirectToAction("ServiceChangesApproved");
-                        }
-                        else
-                        {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveServiceChanges: Failed to update service status."));
-                            return RedirectToAction("UpdatesError");
-                        }
-                    }
-                    else if (action == "cancel")
-                    {
-                        GenericResponse genericResponse = await dSITEdit2IService.CancelServiceUpdates(serviceDraftTokenDto.ServiceDraft);
-                        if (genericResponse.Success)
-                        {
-                            //Token will be removed when service draft is deleted                          
-                            return RedirectToAction("ServiceChangesCancelled");
-                        }
-                        else
-                        {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveServiceChanges: Failed to cancel service updates."));
-                            return RedirectToAction("UpdatesError");
-                        }
+                        //Token will be removed when draft is deleted after update
+                        return View("ServiceChangesApproved");
                     }
                     else
                     {
-                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveServiceChanges: Invalid action provided."));
-                        return RedirectToAction("UpdatesError");
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveServiceChanges: Failed to update service status."));
+                        return View("UpdatesError");
+                    }
+                }
+                else if (action == "cancel")
+                {
+                    GenericResponse genericResponse = await dSITEdit2IService.CancelServiceUpdates(serviceDraftTokenDto.ServiceDraft);
+                    if (genericResponse.Success)
+                    {
+                        //Token will be removed when service draft is deleted                          
+                        return View("ServiceChangesCancelled");
+                    }
+                    else
+                    {
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveServiceChanges: Failed to cancel service updates."));
+                        return View("UpdatesError");
                     }
                 }
                 else
                 {
-                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveServiceChanges: Unauthorised attempt with invalid token."));
-                    await dSITEdit2IService.RemoveServiceDraftToken(tokenDetails.Token, tokenDetails.TokenId);
-                    return RedirectToAction("UpdatesError");
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveServiceChanges: Invalid action provided."));
+                    return View("UpdatesError");
                 }
+
+            }
+           
+
+        }
+
+        private async Task<ActionResult?> HandleInvalidServiceUpdateRequest(TokenDetails tokenDetails, ServiceDraftTokenDto? serviceDraftTokenDto)
+        {
+            TokenStatusEnum tokenStatus = await dSITEdit2IService.GetEditServiceTokenStatus(tokenDetails);
+            if (tokenDetails.IsExpired)
+            {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Service changes: token expired"));
+                return View("URLExpiredError");
+            }
+            else if (!tokenDetails.IsAuthorised)
+            {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Service changes:Invalid token"));
+                return View("UpdatesError");
+            }
+            else if (tokenStatus == TokenStatusEnum.RequestResent && serviceDraftTokenDto?.ServiceDraft == null)
+            {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Opening loop: Request resent"));
+                return View("UpdatesError"); // to do : check for new content for request resent
+            }
+            else if (tokenStatus == TokenStatusEnum.RequestCompleted || tokenStatus == TokenStatusEnum.UserCancelled)
+            {
+                return View("UpdatesAlreadyReviewed");
+            }
+            else if (serviceDraftTokenDto?.ServiceDraft == null || serviceDraftTokenDto.ServiceDraft.Service == null ||
+                         (serviceDraftTokenDto.ServiceDraft.Service != null && serviceDraftTokenDto.ServiceDraft.Service.ServiceStatus != ServiceStatusEnum.UpdatesRequested))
+            {// for old tokens to work
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Service changes already approved"));
+                return View("UpdatesAlreadyReviewed");
             }
             else
             {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ApproveServiceChanges: No token provided for service changes."));
-                return RedirectToAction("UpdatesError");
+                return null;
             }
-
-        }
-
-
-        [HttpGet("service-changes/approved")]
-        public IActionResult ServiceChangesApproved()
-        {
-            return View();
-        }
-
-
-        [HttpGet("service-changes/cancelled")]
-        public IActionResult ServiceChangesCancelled()
-        {
-            return View();
-        }
-
-
-
-        [HttpGet("changes/already-approved")]
-        public IActionResult UpdatesAlreadyApproved()
-        {
-            _logger.LogInformation("UpdatesAlreadyApproved: A request was made for already approved updates.");
-            return View();
-        }
-
-        [HttpGet("changes/error")]
-        public IActionResult UpdatesError()
-        {
-            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("UpdatesError: An error occurred during the provider/service update process."));
-            return View();
-        }
-        [HttpGet("changes/url-expired")]
-        public IActionResult URLExpiredError()
-        {
-            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("URLExpiredError: A request was made using an expired or invalid URL."));
-            return View();
         }
 
         /// <summary>

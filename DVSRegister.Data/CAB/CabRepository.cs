@@ -70,7 +70,7 @@ namespace DVSRegister.Data.CAB
         public async Task<List<ProviderProfile>> GetProviders(int cabId, string searchText = "")
         {
             //Filter based on cab type as well, fetch records for users with same cab type
-            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services).Include(p => p.CabUser)
+            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(s=>s.CabUser).Include(p => p.CabUser)
             .ThenInclude(cu => cu.Cab)
             .Where(p => p.CabUser.CabId == cabId)
             .OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime);
@@ -87,6 +87,7 @@ namespace DVSRegister.Data.CAB
         {
             ProviderProfile provider = new();
             provider = await context.ProviderProfile.Include(p=>p.Services).ThenInclude(p=>p.CertificateReview)
+                .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
             .Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == providerId && p.CabUser.CabId == cabId).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
             return provider;

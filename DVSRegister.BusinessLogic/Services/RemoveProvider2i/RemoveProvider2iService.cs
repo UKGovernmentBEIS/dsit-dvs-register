@@ -15,10 +15,10 @@ namespace DVSRegister.BusinessLogic.Services
         private readonly IRemoveProvider2iRepository removeProvider2iRepository;
         private readonly IRemoveProviderService removeProviderService;
         private readonly IMapper mapper;
-        private readonly IEmailSender emailSender;
+        private readonly Removal2iCheckEmailSender emailSender;
 
 
-        public RemoveProvider2iService(IRemoveProvider2iRepository removeProvider2iRepository, IMapper mapper, IEmailSender emailSender, IRemoveProviderService removeProviderService)
+        public RemoveProvider2iService(IRemoveProvider2iRepository removeProvider2iRepository, IMapper mapper, Removal2iCheckEmailSender emailSender, IRemoveProviderService removeProviderService)
         {
             this.removeProviderService = removeProviderService;
             this.removeProvider2iRepository = removeProvider2iRepository;
@@ -69,11 +69,10 @@ namespace DVSRegister.BusinessLogic.Services
                  {
                     if (services.All(x => x.RemovalTokenStatus == TokenStatusEnum.AdminCancelled)) { tokenStatus = TokenStatusEnum.AdminCancelled; }
                     else if (services.All(x => x.RemovalTokenStatus == TokenStatusEnum.RequestCompleted)) { tokenStatus = TokenStatusEnum.RequestCompleted; }
-                }
-
-                   
-            }
-           
+                    else if (services.All(x => x.RemovalTokenStatus == TokenStatusEnum.RequestResent)) { tokenStatus = TokenStatusEnum.RequestResent; }
+                    else if (services.All(x => x.RemovalTokenStatus == TokenStatusEnum.UserCancelled)) { tokenStatus = TokenStatusEnum.UserCancelled; }
+                }                   
+            }           
             return tokenStatus;
         }
 
@@ -184,10 +183,7 @@ namespace DVSRegister.BusinessLogic.Services
             return await removeProvider2iRepository.RemoveRemovalToken(token, tokenId, loggedInUserEmail);
         }
 
-        public async Task UpdateRemovalTokenStatus(int providerProfileId, List<int> serviceIds, TokenStatusEnum tokenStatus)
-        {
-            await removeProvider2iRepository.UpdateRemovalTokenStatus(providerProfileId, serviceIds, tokenStatus);
-        }
+       
 
         
     }

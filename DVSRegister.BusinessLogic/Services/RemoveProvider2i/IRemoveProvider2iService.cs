@@ -11,7 +11,6 @@ namespace DVSRegister.BusinessLogic.Services
         public Task<GenericResponse> UpdateRemovalStatus(TeamEnum team, string token, string tokenId, ProviderProfileDto providerDto, string loggedInUserEmail);
         public Task<bool> RemoveRemovalToken(string token, string tokenId, string loggedInUserEmail);
         public Task<GenericResponse> CancelRemovalRequest(TeamEnum team, string token, string tokenId, ProviderProfileDto providerDto, string loggedInUserEmail);
-        public Task<TokenStatusEnum> GetTokenStatus(TokenDetails tokenDetails);
-        public Task UpdateRemovalTokenStatus(int providerProfileId, List<int> serviceIds, TokenStatusEnum tokenStatus);
+        public Task<TokenStatusEnum> GetTokenStatus(TokenDetails tokenDetails);       
     }
 }

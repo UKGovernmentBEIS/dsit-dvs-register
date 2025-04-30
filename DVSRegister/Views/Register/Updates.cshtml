@@ -20,7 +20,7 @@
     };
 }
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "Register", "Register", null, new { @class = "govuk-back-link" })
+    @await Html.PartialAsync("~/Views/Register/PartialViews/_RegisterBreadCrumbsView.cshtml", "Updates")
     <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
