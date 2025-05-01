@@ -98,44 +98,55 @@ namespace DVSRegister.BusinessLogic.Services
             {
 
                 genericResponse = await removeProviderService.UpdateProviderStatus(providerDto.Id, loggedInUserEmail, eventType,team);
-
-                var serviceRemovalReasonList = providerDto.Services.Where(s => s.ServiceRemovalReason.HasValue)
-                    .Select(s => ServiceRemovalReasonEnumExtensions.GetDescription(s.ServiceRemovalReason.Value)).ToList();
-                string serviceRemovalReasons = string.Join("\r", serviceRemovalReasonList);
-                string removalReason = RemovalReasonsEnumExtensions.GetDescription(providerDto.RemovalReason.Value);
-
                 if (tokenExists && eventType == EventTypeEnum.RemoveServices2i)
                 {
+
+                    var serviceRemovalReasonList = providerDto.Services.Where(s => s.ServiceRemovalReason.HasValue)
+                  .Select(s => ServiceRemovalReasonEnumExtensions.GetDescription(s.ServiceRemovalReason.Value)).ToList();
+                    string serviceRemovalReasons = string.Join("\r", serviceRemovalReasonList);
+
+
                     if (team == TeamEnum.Provider)
-                    {
-                        await emailSender.RemoveServiceConfirmationToProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail, serviceNames, serviceRemovalReasons);
+                    {                      
+                        await emailSender.RemoveServiceConfirmationToProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail, serviceNames, serviceRemovalReasons); //39/Provider/Confirmation of service removal request
                         await emailSender.RemoveServiceConfirmationToProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail, serviceNames, serviceRemovalReasons);
-                        await emailSender.ServiceRemovalConfirmationToDSIT(providerDto.RegisteredName, serviceNames, serviceRemovalReasons);
+                        await emailSender.ServiceRemovalConfirmationToDSIT(providerDto.RegisteredName, serviceNames, serviceRemovalReasons);//40/DSIT/Service removal request received
                     }
                     else if (team == TeamEnum.DSIT)
                     {
-                        await emailSender.Service2iCheckApprovedToDSIT(serviceNames, serviceRemovalReasons);
+                        await emailSender.Service2iCheckApprovedToDSIT(serviceNames, serviceRemovalReasons); //53/DSIT/2i service removal check approved
                     }
+
+
+                    await Task.Delay(500);
+                    await emailSender.ServiceRemovedConfirmedToCabOrProvider(providerDto.CabUser.CabEmail, providerDto.CabUser.CabEmail, serviceNames, serviceRemovalReasons);//41/CAB + Provider/Service removed
+                    await emailSender.ServiceRemovedToDSIT(serviceNames, serviceRemovalReasons); //42/DSIT/Service removed
+                    await emailSender.ServiceRemovedConfirmedToCabOrProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail, serviceNames, serviceRemovalReasons);//41/CAB + Provider/Service removed
+                    await emailSender.ServiceRemovedConfirmedToCabOrProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail, serviceNames, serviceRemovalReasons);//41/CAB + Provider/Service removed
                 }
                 else
                 {
+                    // provider removal confirmations
+
+                    string removalReason = providerDto.RemovalReason!=null? RemovalReasonsEnumExtensions.GetDescription(providerDto.RemovalReason.Value):string.Empty;
                     if (team == TeamEnum.Provider)
                     {
-                        await emailSender.SendRemovalRequestConfirmedToDIP(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);
+                        await emailSender.SendRemovalRequestConfirmedToDIP(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail);//31/Provider/Removal request confirmed
                         await emailSender.SendRemovalRequestConfirmedToDIP(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail);
-                        await emailSender.SendProviderRemovalConfirmationToDSIT(providerDto.RegisteredName, serviceNames);
+                        await emailSender.SendProviderRemovalConfirmationToDSIT(providerDto.RegisteredName, serviceNames);//32/DSIT/Provider removal confirmation
                     }
                     else if (team == TeamEnum.DSIT)
                     {
                         await emailSender._2iCheckApprovedNotificationToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
                     }
-                }
 
-                await Task.Delay(500);
-                await emailSender.SendRecordRemovedToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
-                await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.CabUser.CabEmail, providerDto.CabUser.CabEmail, providerDto.RegisteredName, serviceNames, removalReason);
-                await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail, providerDto.RegisteredName, serviceNames, removalReason);
-                await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail, providerDto.RegisteredName, serviceNames, removalReason);
+                    await Task.Delay(500);
+                    await emailSender.SendRecordRemovedToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
+                    await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.CabUser.CabEmail, providerDto.CabUser.CabEmail, providerDto.RegisteredName, serviceNames, removalReason);
+                    await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail, providerDto.RegisteredName, serviceNames, removalReason);
+                    await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail, providerDto.RegisteredName, serviceNames, removalReason);
+                }
+               
             }
 
             return genericResponse;

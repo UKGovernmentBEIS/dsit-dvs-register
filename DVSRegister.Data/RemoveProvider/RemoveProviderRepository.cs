@@ -33,6 +33,17 @@ namespace DVSRegister.Data
                     {
                         existingProvider.IsInRegister = false;
                     }
+                    else if (providerStatus == ProviderStatusEnum.Published)
+                    {                        
+
+                        if (existingProvider.RemovedTime != null || existingProvider.RemovalReason != null || existingProvider.RemovalRequestTime != null)
+                        {
+                            existingProvider.RemovalReason = null;
+                            existingProvider.RemovalRequestTime = null;
+                            existingProvider.RemovedTime = null;
+                        }
+
+                    }
 
                 }
                 await context.SaveChangesAsync(team, eventType, loggedInUserEmail);
