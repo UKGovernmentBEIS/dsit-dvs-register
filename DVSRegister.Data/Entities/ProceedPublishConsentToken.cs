@@ -20,5 +20,6 @@ namespace DVSRegister.Data.Entities
         public int ServiceId { get; set; }
         public Service Service { get; set; }
         public DateTime CreatedTime { get; set; }
+        public DateTime? ModifiedTime { get; set; }
     }
 }

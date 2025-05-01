@@ -24,13 +24,7 @@ namespace DVSRegister.Data
         }
 
 
-        public async Task<ProviderProfile> GetProviderWithAllServices(int providerId)
-        {
-            ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.Services.Where(x=>x.IsCurrent==true))
-            .Where(p => p.Id == providerId).FirstOrDefaultAsync() ?? new ProviderProfile();
-            return provider;
-        }
+     
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
         {
             ProviderProfile provider = new();
@@ -97,6 +91,8 @@ namespace DVSRegister.Data
                             service.ServiceStatus = ServiceStatusEnum.Removed;
                             service.ModifiedTime = DateTime.UtcNow;
                             service.RemovedTime = DateTime.UtcNow;
+                            service.RemovalTokenStatus = TokenStatusEnum.RequestCompleted;
+                            service.IsInRegister = false;
                         }
                        
                     }
@@ -107,9 +103,7 @@ namespace DVSRegister.Data
                     var existingProvider = await context.ProviderProfile.Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == providerProfileId);
                     if (existingProvider != null)
                     {
-                        existingProvider.ModifiedTime = DateTime.UtcNow;
-                        existingProvider.ProviderStatus = ProviderStatusEnum.RemovedFromRegister;
-                        existingProvider.ModifiedTime = DateTime.UtcNow;
+                        existingProvider.ModifiedTime = DateTime.UtcNow;                      
                         existingProvider.RemovedTime = DateTime.UtcNow;
                         // Update the status of each service
                         if (existingProvider.Services != null)
@@ -121,6 +115,8 @@ namespace DVSRegister.Data
                                     service.ServiceStatus = ServiceStatusEnum.Removed;
                                     service.ModifiedTime = DateTime.UtcNow;
                                     service.RemovedTime = DateTime.UtcNow;
+                                    service.RemovalTokenStatus = TokenStatusEnum.RequestCompleted;
+                                    service.IsInRegister = false;
                                 }                               
                             }
                         }
@@ -157,7 +153,8 @@ namespace DVSRegister.Data
                         {
                             service.ServiceStatus = ServiceStatusEnum.Published;
                             service.ModifiedTime = DateTime.UtcNow;
-                           
+                            service.RemovalTokenStatus = TokenStatusEnum.UserCancelled;
+
                         }
 
                     }
@@ -195,38 +192,10 @@ namespace DVSRegister.Data
         }
 
 
-        public async Task<GenericResponse> UpdateProviderStatus(int providerProfileId, ProviderStatusEnum providerStatus, string loggedInUserEmail, EventTypeEnum eventType)
-        {
-            GenericResponse genericResponse = new();
-            using var transaction = await context.Database.BeginTransactionAsync();
-            try
-            {
-                var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfileId);
-                if (existingProvider != null)
-                {
 
-                    existingProvider.ModifiedTime = DateTime.UtcNow;
-                    existingProvider.ProviderStatus = providerStatus;
 
-                    if (providerStatus == ProviderStatusEnum.RemovedFromRegister)
-                    {
-                        existingProvider.RemovedTime = DateTime.UtcNow;
-                    }
-                   
-                }
-                await context.SaveChangesAsync(TeamEnum.DSIT, eventType, loggedInUserEmail);
-                await transaction.CommitAsync();
-                genericResponse.Success = true;
-            }
-            catch (Exception ex)
-            {
-                genericResponse.Success = false;
-                await transaction.RollbackAsync();
-                logger.LogError(ex.Message);
-            }
-            return genericResponse;
-        }
+       
         #endregion
 
-  }
+    }
 }

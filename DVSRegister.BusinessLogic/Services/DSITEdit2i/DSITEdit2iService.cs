@@ -15,17 +15,17 @@ namespace DVSRegister.BusinessLogic.Services
     {
         private readonly IDSITEdit2iRepository dSITEdit2IRepository;
         private readonly IMapper mapper;
-        private readonly IEmailSender emailSender;
-        private readonly IRemoveProvider2iRepository removeProvider2IRepository;
-        private readonly IUserService userService;
+        private readonly Edit2iCheckEmailSender emailSender;        
+        private readonly IRemoveProviderService removeProviderService;
 
 
-        public DSITEdit2iService(IDSITEdit2iRepository dSITEdit2IRepository, IMapper mapper, IEmailSender emailSender, IRemoveProvider2iRepository removeProvider2IRepository)
+
+        public DSITEdit2iService(IDSITEdit2iRepository dSITEdit2IRepository, IMapper mapper, Edit2iCheckEmailSender emailSender,  IRemoveProviderService removeProviderService)
         {
             this.dSITEdit2IRepository = dSITEdit2IRepository;
             this.mapper = mapper;
-            this.emailSender = emailSender;
-            this.removeProvider2IRepository = removeProvider2IRepository;
+            this.emailSender = emailSender;            
+            this.removeProviderService = removeProviderService;
         }
         public async Task<ProviderDraftTokenDto> GetProviderChangesByToken(string token, string tokenId)
         {
@@ -76,6 +76,30 @@ namespace DVSRegister.BusinessLogic.Services
             ServiceDraftTokenDto serviceDraftTokenDto = mapper.Map<ServiceDraftTokenDto>(serviceDraftToken);
             return serviceDraftTokenDto;
 
+        }
+
+        public async Task<TokenStatusEnum> GetEditServiceTokenStatus(TokenDetails tokenDetails)
+        {
+            TokenStatusEnum tokenStatus = TokenStatusEnum.NA;
+            if(tokenDetails.ServiceIds != null && tokenDetails.ServiceIds.Count == 1)
+            {
+                var service = await dSITEdit2IRepository.GetService(tokenDetails.ServiceIds[0]);
+                tokenStatus = service.EditServiceTokenStatus;
+            }
+
+            return tokenStatus;
+        }
+
+        public async Task<TokenStatusEnum> GetEditProviderTokenStatus(TokenDetails tokenDetails)
+        {
+            TokenStatusEnum tokenStatus = TokenStatusEnum.NA;
+            if (tokenDetails.ProviderProfileId>0 )
+            {
+                var provider = await dSITEdit2IRepository.GetProvider(tokenDetails.ProviderProfileId);
+                tokenStatus = provider.EditProviderTokenStatus;
+            }
+
+            return tokenStatus;
         }
 
         public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetServiceKeyValue(ServiceDraftDto currentData, ServiceDto previousData)
@@ -330,20 +354,15 @@ namespace DVSRegister.BusinessLogic.Services
 
         public async Task<GenericResponse> UpdateServiceStatusAndData(ServiceDraftDto serviceDraft)
         {
-            // update provider status
-            
+            // update service data            
             GenericResponse genericResponse = await dSITEdit2IRepository.UpdateServiceStatusAndData(serviceDraft.ServiceId, serviceDraft.Id);
-
-
             if (genericResponse.Success)
-            {
-                ProviderProfile providerProfile = await removeProvider2IRepository.GetProviderWithAllServices(serviceDraft.ProviderProfileId);
-                ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
-                genericResponse = await removeProvider2IRepository.UpdateProviderStatus(providerProfile.Id, providerStatus, "DSIT", EventTypeEnum.ServiceEdit2i);
+            {           
+               //update provider status by priority
+                genericResponse = await removeProviderService.UpdateProviderStatus(serviceDraft.ProviderProfileId, "DSIT", EventTypeEnum.ServiceEdit2i, TeamEnum.DSIT);
 
                 if(genericResponse.Success) 
                 {
-
                     var (previous, current) = GetServiceKeyValue(serviceDraft, serviceDraft.Service);
                     string currentData = Helper.ConcatenateKeyValuePairs(current);
                     string previousData = Helper.ConcatenateKeyValuePairs(previous);
@@ -368,11 +387,10 @@ namespace DVSRegister.BusinessLogic.Services
             if(genericResponse.Success) 
             {
 
-                ProviderProfile providerProfile = await removeProvider2IRepository.GetProviderWithAllServices(serviceDraft.ProviderProfileId);
-                ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
-                genericResponse = await removeProvider2IRepository.UpdateProviderStatus(providerProfile.Id, providerStatus, "DSIT", EventTypeEnum.ServiceEdit2i);
-
-                if(genericResponse.Success)
+                //update provider status by priority
+               
+                genericResponse = await removeProviderService.UpdateProviderStatus(serviceDraft.ProviderProfileId, "DSIT", EventTypeEnum.ServiceEdit2i, TeamEnum.DSIT);
+                if (genericResponse.Success)
                 {
                     string userEmail = serviceDraft.User.Email;
                     await emailSender.EditServiceDeclined(userEmail, userEmail, serviceDraft.Provider.RegisteredName, serviceDraft.Service.ServiceName);

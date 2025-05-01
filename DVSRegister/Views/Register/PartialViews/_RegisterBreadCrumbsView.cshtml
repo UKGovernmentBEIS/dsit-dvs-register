@@ -1,0 +1,12 @@
+﻿@model string
+
+<div class="govuk-breadcrumbs">
+    <ol class="govuk-breadcrumbs__list">
+        <li class="govuk-breadcrumbs__list-item">
+            @Html.ActionLink("Home", "Register", "Register", null, new { @class = "govuk-breadcrumbs__link" })
+        </li>
+        <li class="govuk-breadcrumbs__list-item">
+            @Html.ActionLink(Model, "#", null, null, new { @class = "govuk-breadcrumbs__link" })
+        </li>
+    </ol>
+</div>

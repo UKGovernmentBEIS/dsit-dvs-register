@@ -541,6 +541,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime?>("ModifiedTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int>("ServiceId")
                         .HasColumnType("integer");
 
@@ -567,6 +570,9 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("ServiceId")
@@ -598,6 +604,9 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("ProviderProfileDraftId")
@@ -645,10 +654,16 @@ namespace DVSRegister.Data.Migrations
                     b.Property<string>("DUNSNumber")
                         .HasColumnType("text");
 
+                    b.Property<int>("EditProviderTokenStatus")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("HasParentCompany")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("HasRegistrationNumber")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsInRegister")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("ModifiedTime")
@@ -1009,6 +1024,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime?>("ModifiedTime")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<int>("ProviderProfileId")
                         .HasColumnType("integer");
 
@@ -1101,6 +1119,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("CabUserId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ClosingLoopTokenStatus")
+                        .HasColumnType("integer");
+
                     b.Property<string>("CompanyAddress")
                         .HasColumnType("text");
 
@@ -1112,6 +1133,9 @@ namespace DVSRegister.Data.Migrations
 
                     b.Property<DateTime?>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("EditServiceTokenStatus")
+                        .HasColumnType("integer");
 
                     b.Property<string>("FileLink")
                         .HasColumnType("text");
@@ -1134,8 +1158,14 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool>("IsCurrent")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsInRegister")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("OpeningLoopTokenStatus")
+                        .HasColumnType("integer");
 
                     b.Property<int>("ProviderProfileId")
                         .HasColumnType("integer");
@@ -1148,6 +1178,9 @@ namespace DVSRegister.Data.Migrations
 
                     b.Property<DateTime?>("RemovalRequestTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("RemovalTokenStatus")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("RemovedTime")
                         .HasColumnType("timestamp without time zone");
@@ -1248,6 +1281,9 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("ServiceDraftId")

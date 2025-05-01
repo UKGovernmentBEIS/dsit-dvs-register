@@ -22,7 +22,7 @@
     }
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
- 
+
     <link rel="icon" sizes="48x48" href="/assets/images/favicon.ico">
     <link rel="icon" sizes="any" href="/assets/images/favicon.svg" type="image/svg+xml">
     <link rel="mask-icon" href="/assets/images/govuk-icon-mask.svg" color="#0b0c0c">
@@ -32,7 +32,9 @@
 </head>
 <body class="govuk-frontend-supported govuk-template__body">
     @{
-       
+
+        ViewData["ServiceName"] = "page";
+
         await Html.RenderPartialAsync("_CookieBanner");
     }
     <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>

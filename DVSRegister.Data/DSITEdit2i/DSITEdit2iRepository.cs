@@ -26,7 +26,6 @@ namespace DVSRegister.Data.Repositories
            .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ProviderDraftToken();
         }
 
-
         public async Task<GenericResponse> UpdateProviderAndServiceStatusAndData(int providerProfileId, int providerDraftId)
         {
             GenericResponse genericResponse = new();
@@ -44,8 +43,9 @@ namespace DVSRegister.Data.Repositories
                     && existingDraftProvider.ProviderProfileId == existingProvider.Id)
                 {
                     existingProvider.ModifiedTime = DateTime.UtcNow;
-                    existingProvider.ProviderStatus = ProviderStatusEnum.ReadyToPublish;
-
+                    existingProvider.ProviderStatus = ProviderStatusEnum.ReadyToPublish; 
+                    existingProvider.IsInRegister= false;
+                    existingProvider.EditProviderTokenStatus = TokenStatusEnum.RequestCompleted;
 
                     existingProvider.RegisteredName = existingDraftProvider.RegisteredName ?? existingProvider.RegisteredName;
                     existingProvider.TradingName = existingDraftProvider.TradingName != null
@@ -79,6 +79,7 @@ namespace DVSRegister.Data.Repositories
                     {
                         var service = await context.Service.Where(s => s.Id == serviceDraft.ServiceId).FirstOrDefaultAsync();
                         service.ServiceStatus = ServiceStatusEnum.ReadyToPublish;
+                        service.IsInRegister = false;
                         service.ModifiedTime = DateTime.UtcNow;
                         context.Remove(serviceDraft);
                     }
@@ -122,14 +123,13 @@ namespace DVSRegister.Data.Repositories
 
                     existingProvider.ProviderStatus = existingDraftProvider.PreviousProviderStatus;
                     existingProvider.ModifiedTime = DateTime.UtcNow;
-
+                    existingProvider.EditProviderTokenStatus = TokenStatusEnum.UserCancelled;
                     foreach (var serviceDraft in serviceDrafts)
                     {
                         var service = await context.Service.Where(s => s.Id == serviceDraft.ServiceId). FirstOrDefaultAsync();
                         service.ServiceStatus = serviceDraft.PreviousServiceStatus;
                         service.ModifiedTime = DateTime.UtcNow;
                         context.Remove(serviceDraft);
-
                        
                     }
                     context.Remove(existingDraftProvider);
@@ -187,6 +187,16 @@ namespace DVSRegister.Data.Repositories
            .AsNoTracking().FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ServiceDraftToken();
         }
 
+        public async Task<Service> GetService(int serviceId)
+        {
+            return await context.Service. AsNoTracking().FirstOrDefaultAsync(e => e.Id ==serviceId) ?? new Service();
+        }
+
+        public async Task<ProviderProfile> GetProvider(int providerProfileId)
+        {
+            return await context.ProviderProfile.AsNoTracking().FirstOrDefaultAsync(e => e.Id == providerProfileId) ?? new ProviderProfile();
+        }
+
 
         public async Task<GenericResponse> UpdateServiceStatusAndData(int serviceId, int serviceDraftId)
         {
@@ -219,12 +229,13 @@ namespace DVSRegister.Data.Repositories
                     ICollection<ServiceIdentityProfileMapping> newServiceIdentityProfileMapping = [];
                     ICollection<ServiceSupSchemeMapping> newServiceSupSchemeMapping = [];
 
-
                     existingService.ModifiedTime = DateTime.UtcNow;
                     existingService.ServiceStatus = ServiceStatusEnum.ReadyToPublish;
                     if (existingService.Provider.ProviderStatus == ProviderStatusEnum.Published)
                         existingService.Provider.ProviderStatus = ProviderStatusEnum.ReadyToPublish;
                     existingService.Provider.ModifiedTime = DateTime.UtcNow;
+                    existingService.EditServiceTokenStatus = TokenStatusEnum.RequestCompleted;
+                    existingService.IsInRegister = false;
 
                     existingService.ServiceName = existingDraftService.ServiceName ?? existingService.ServiceName;
                     existingService.CompanyAddress = existingDraftService.CompanyAddress ?? existingService.CompanyAddress;
@@ -353,6 +364,7 @@ namespace DVSRegister.Data.Repositories
             {
                 if (existingService != null && existingDraftService != null)// assign back the previous status
                 {
+                    existingService.EditServiceTokenStatus = TokenStatusEnum.UserCancelled;
                     existingService.ServiceStatus = existingDraftService.PreviousServiceStatus;
                     existingService.ModifiedTime = DateTime.UtcNow;                    
                     context.Remove(existingDraftService);
