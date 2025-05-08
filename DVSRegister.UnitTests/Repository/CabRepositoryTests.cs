@@ -6,20 +6,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 
-namespace DVSRegister.UnitTests
+namespace DVSRegister.UnitTests.Repository
 {
-    public class CabRepositoryTests : IClassFixture<PostgresTestFixture>
+    [Collection("Postgres Collection")]
+    public class CabRepositoryTests 
     {
-        
-        private DVSRegisterDbContext _dbContext;
-        private readonly CabRepository cabRepository;
         private ILogger<CabRepository> logger;
+        private readonly PostgresTestFixture _fixture;       
 
         public CabRepositoryTests(PostgresTestFixture fixture)
-        {            
-            _dbContext = fixture.DbContext;
+        {
+            _fixture = fixture;          
             logger = Substitute.For<ILogger<CabRepository>>();
-            cabRepository = new CabRepository(_dbContext, logger);
         }
 
 
@@ -28,9 +26,11 @@ namespace DVSRegister.UnitTests
         [Fact]
         public async Task SaveProviderProfile_Test()
         {
-            ProviderProfile providerProfileTest = UnitTestHelper.CreateProviderProfile(1, "ABC Company");            
-            GenericResponse genericResponse= await cabRepository.SaveProviderProfile(providerProfileTest, "test.user123@test.com");
-            ProviderProfile? providerProfile = await _dbContext.ProviderProfile.FirstOrDefaultAsync(p=>p.Id == genericResponse.InstanceId);
+            ProviderProfile providerProfileTest = UnitTestHelper.CreateProviderProfile(1, "ABC Company");
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext,logger);
+            GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfileTest, "test.user123@test.com");
+            ProviderProfile? providerProfile = await dbContext.ProviderProfile.FirstOrDefaultAsync(p => p.Id == genericResponse.InstanceId);
             Assert.True(genericResponse.Success);
             Assert.NotNull(providerProfile);
             Assert.Equal(providerProfileTest.RegisteredName, providerProfile.RegisteredName);
@@ -55,12 +55,17 @@ namespace DVSRegister.UnitTests
 
         }
 
+       
+
         [Fact]
         public async Task SaveProviderProfileWithDunsNumber_Test()
         {
             ProviderProfile providerProfileTest = UnitTestHelper.CreateProviderProfileWithDunsNumber(1, "ABC Company");
+
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
             GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfileTest, "test.user123@test.com");
-            ProviderProfile? providerProfile = await _dbContext.ProviderProfile.FirstOrDefaultAsync(p => p.Id == genericResponse.InstanceId);
+            ProviderProfile? providerProfile = await dbContext.ProviderProfile.FirstOrDefaultAsync(p => p.Id == genericResponse.InstanceId);
             Assert.True(genericResponse.Success);
             Assert.NotNull(providerProfile);      
             Assert.False( providerProfile.HasRegistrationNumber);
@@ -75,8 +80,10 @@ namespace DVSRegister.UnitTests
         public async Task SaveProviderProfileWithParentCompany_Test()
         {
             ProviderProfile providerProfileTest = UnitTestHelper.CreateProviderProfileWithParentCompany(1, "ABC Company");
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new (dbContext, logger);
             GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfileTest, "test.user123@test.com");
-            ProviderProfile? providerProfile = await _dbContext.ProviderProfile.FirstOrDefaultAsync(p => p.Id == genericResponse.InstanceId);
+            ProviderProfile? providerProfile = await dbContext.ProviderProfile.FirstOrDefaultAsync(p => p.Id == genericResponse.InstanceId);
             Assert.True(genericResponse.Success);
             Assert.NotNull(providerProfile);
             Assert.True(providerProfile.HasParentCompany);
@@ -92,12 +99,16 @@ namespace DVSRegister.UnitTests
         public async Task SaveProviderProfile_InvalidProfileDetails_ReturnsFailure()
         {
             ProviderProfile providerProfile = new();
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new (dbContext, logger);
             GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfile, "test.user123@test.com");
             Assert.False(genericResponse.Success);
         }
         [Fact]
         public async Task SaveProviderProfile_NullProviderProfile_ReturnsFailure()
         {
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
             GenericResponse genericResponse = await cabRepository.SaveProviderProfile(null!, "test.user123@test.com");
             Assert.False(genericResponse.Success);
         }
@@ -105,7 +116,10 @@ namespace DVSRegister.UnitTests
         [Fact]
         public async Task RegisteredNameExists_Test()
         {
-            await SaveProviderProfileHelper("Test Company", "test.user123@test.com", 1);
+
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
+            await SaveProviderProfileHelper("Test Company", "test.user123@test.com", 1, cabRepository);
             bool actual = await cabRepository.CheckProviderRegisteredNameExists("Test Company");
             Assert.True(actual);
         }
@@ -113,7 +127,9 @@ namespace DVSRegister.UnitTests
         [Fact]
         public async Task RegisteredNameNotExists_Test()
         {
-            await SaveProviderProfileHelper("Test Company 123", "test.user123@test.com", 1);
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
+            await SaveProviderProfileHelper("Test Company 123", "test.user123@test.com", 1, cabRepository);
             bool actual = await cabRepository.CheckProviderRegisteredNameExists("Test Company 1234");
             Assert.False(actual);
         }
@@ -121,7 +137,9 @@ namespace DVSRegister.UnitTests
         [Fact]
         public async Task RegisteredNameExists_SameProvider_Test()
         {
-            int providerProfileId = await SaveProviderProfileHelper("Test Company", "test.user123@test.com", 1);
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
+            int providerProfileId = await SaveProviderProfileHelper("Test Company", "test.user123@test.com", 1,cabRepository);
             bool actual = await cabRepository.CheckProviderRegisteredNameExists("Test Company", providerProfileId);
             Assert.False(actual);
         }
@@ -129,14 +147,16 @@ namespace DVSRegister.UnitTests
         [Fact]
         public async Task RegisteredNameExists_DifferentProvider_Test()
         {
-            await SaveProviderProfileHelper("Test Company 1", "test.user123@test.com", 1);
-            int providerProfileId = await SaveProviderProfileHelper("Test Company 2", "test.user123@test.com",1);
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
+            await SaveProviderProfileHelper("Test Company 1", "test.user123@test.com", 1,cabRepository);
+            int providerProfileId = await SaveProviderProfileHelper("Test Company 2", "test.user123@test.com",1,cabRepository);
             bool actual = await cabRepository.CheckProviderRegisteredNameExists("Test Company 1", providerProfileId);
             Assert.True(actual);
         }
 
 
-     
+
         #endregion
 
 
@@ -147,11 +167,13 @@ namespace DVSRegister.UnitTests
         [Fact]
         public async Task SaveServiceWithRoles_Test()
         {
-            int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1);
-            Service serviceTest = UnitTestHelper.CreateService(1, "sample service", providerProfileId, ServiceStatusEnum.Submitted, null,null,null,0) ;
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
+            int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
+            Service serviceTest = UnitTestHelper.CreateService(1, "sample service", providerProfileId, ServiceStatusEnum.Submitted, null, null, null, 0);
             GenericResponse genericResponse = await cabRepository.SaveService(serviceTest, "test.user123@test.com");
-            Service? savedService = await _dbContext.Service.Include(p=>p.ServiceRoleMapping).ThenInclude(p=>p.Role).FirstOrDefaultAsync(p => p.Id == genericResponse.InstanceId);
-            List<Role> roles = await _dbContext.Role.ToListAsync();
+            Service? savedService = await dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role).FirstOrDefaultAsync(p => p.Id == genericResponse.InstanceId);
+            List<Role> roles = await dbContext.Role.ToListAsync();
 
             Assert.True(genericResponse.Success);
             Assert.NotNull(savedService);
@@ -162,30 +184,32 @@ namespace DVSRegister.UnitTests
             Assert.Null(savedService.HasGPG45);
             Assert.Null(savedService.HasSupplementarySchemes);
             Assert.NotNull(savedService.ServiceRoleMapping);
-            foreach(var roleMapping in savedService.ServiceRoleMapping)
+            foreach (var roleMapping in savedService.ServiceRoleMapping)
             {
                 Assert.NotNull(roleMapping);
                 Assert.NotNull(roleMapping.Role);
-                Assert.Equal(roles.Where(r=>r.Id == roleMapping.RoleId).Select(r=>r.RoleName).FirstOrDefault(), roleMapping.Role.RoleName);
-            }         
+                Assert.Equal(roles.Where(r => r.Id == roleMapping.RoleId).Select(r => r.RoleName).FirstOrDefault(), roleMapping.Role.RoleName);
+            }
 
         }
 
         [Fact]
         public async Task SaveServiceWithGpg44Gpg55Schemes_Test()
         {
-            int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1);
-            Service serviceTest = UnitTestHelper.CreateService(1, "sample service", providerProfileId, ServiceStatusEnum.Submitted, true, true, true,0);
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
+            int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
+            Service serviceTest = UnitTestHelper.CreateService(1, "sample service", providerProfileId, ServiceStatusEnum.Submitted, true, true, true, 0);
             GenericResponse genericResponse = await cabRepository.SaveService(serviceTest, "test.user123@test.com");
-            Service? savedService = await _dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role)
+            Service? savedService = await dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role)
             .Include(p => p.ServiceQualityLevelMapping).ThenInclude(p => p.QualityLevel)
             .Include(p => p.ServiceIdentityProfileMapping).ThenInclude(p => p.IdentityProfile)
             .Include(p => p.ServiceSupSchemeMapping).ThenInclude(p => p.SupplementaryScheme)
             .FirstOrDefaultAsync(p => p.Id == genericResponse.InstanceId);
 
-            List<QualityLevel> qualityLevels = await _dbContext.QualityLevel.ToListAsync();
-            List<IdentityProfile> identityProfiles = await _dbContext.IdentityProfile.ToListAsync();
-            List<SupplementaryScheme> supplementarySchemes = await _dbContext.SupplementaryScheme.ToListAsync();
+            List<QualityLevel> qualityLevels = await dbContext.QualityLevel.ToListAsync();
+            List<IdentityProfile> identityProfiles = await dbContext.IdentityProfile.ToListAsync();
+            List<SupplementaryScheme> supplementarySchemes = await dbContext.SupplementaryScheme.ToListAsync();
 
             Assert.True(genericResponse.Success);
             Assert.NotNull(savedService);
@@ -226,6 +250,9 @@ namespace DVSRegister.UnitTests
         [Fact]
         public async Task SaveService_InvalidServiceDetails_ReturnsFailure()
         {
+
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
             Service service = new();
             GenericResponse genericResponse = await cabRepository.SaveService(service, "test.user123@test.com");
             Assert.False(genericResponse.Success);
@@ -239,12 +266,14 @@ namespace DVSRegister.UnitTests
         // Save a service first as draft, then again update samae service - first as draft then submit 
         public async Task SaveServiceWithNewVersion_Test(ServiceStatusEnum serviceStatus, string serviceName)
         {
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
             int serviceKey = 0;
-            int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1);
+            int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
             Service serviceTest = UnitTestHelper.CreateService(1, "sample service draft 1", providerProfileId, ServiceStatusEnum.SavedAsDraft, true, true, true, serviceKey);
             GenericResponse genericResponse = await cabRepository.SaveService(serviceTest, "test.user123@test.com");
             serviceKey = genericResponse.InstanceId;
-            Service? savedService = await _dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role)
+            Service? savedService = await dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role)
             .Include(p => p.ServiceQualityLevelMapping).ThenInclude(p => p.QualityLevel)
             .Include(p => p.ServiceIdentityProfileMapping).ThenInclude(p => p.IdentityProfile)
             .Include(p => p.ServiceSupSchemeMapping).ThenInclude(p => p.SupplementaryScheme)
@@ -252,41 +281,50 @@ namespace DVSRegister.UnitTests
 
             Assert.NotNull(savedService);
 
-            var serviceslist = await _dbContext.Service.ToListAsync();
+            var serviceslist = await dbContext.Service.ToListAsync();
             // test for 2 service status values
             Service newVersionServiceTest = UnitTestHelper.CreateService(1, serviceName, providerProfileId, serviceStatus, null, null, null, savedService.ServiceKey); // to modify saved service
 
-            newVersionServiceTest.ServiceRoleMapping =  [ new() { RoleId = 1}];
+            newVersionServiceTest.ServiceRoleMapping = [new() { RoleId = 1 }];
             GenericResponse newGenericResponse = await cabRepository.SaveService(newVersionServiceTest, "test.user123@test.com");
 
-           Service? newSavedService = await _dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role)
-          .Include(p => p.ServiceQualityLevelMapping).ThenInclude(p => p.QualityLevel)
-          .Include(p => p.ServiceIdentityProfileMapping).ThenInclude(p => p.IdentityProfile)
-          .Include(p => p.ServiceSupSchemeMapping).ThenInclude(p => p.SupplementaryScheme)
-          .FirstOrDefaultAsync(p => p.Id == newGenericResponse.InstanceId);
+            Service? newSavedService = await dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role)
+           .Include(p => p.ServiceQualityLevelMapping).ThenInclude(p => p.QualityLevel)
+           .Include(p => p.ServiceIdentityProfileMapping).ThenInclude(p => p.IdentityProfile)
+           .Include(p => p.ServiceSupSchemeMapping).ThenInclude(p => p.SupplementaryScheme)
+           .FirstOrDefaultAsync(p => p.Id == newGenericResponse.InstanceId);
 
 
             Assert.True(newGenericResponse.Success);
             Assert.NotNull(newSavedService);
-            Assert.Equal(serviceName, newSavedService.ServiceName);           
+            Assert.Equal(serviceName, newSavedService.ServiceName);
             Assert.Equal(genericResponse.InstanceId, newSavedService.ServiceKey); // id of first saved service and current service key will be same         
             Assert.NotNull(newSavedService.ServiceRoleMapping);
             Assert.Equal(0, newSavedService?.ServiceQualityLevelMapping?.Count);
             Assert.Equal(0, newSavedService?.ServiceIdentityProfileMapping?.Count);
-            Assert.Equal(0,newSavedService?.ServiceSupSchemeMapping?.Count);
+            Assert.Equal(0, newSavedService?.ServiceSupSchemeMapping?.Count);
         }
 
 
         #endregion
 
         #region Private methods
-        private async Task<int> SaveProviderProfileHelper(string registeredName, string loggedInUserId, int cabUserId)
+        private async Task<int> SaveProviderProfileHelper(string registeredName, string loggedInUserId, int cabUserId, CabRepository cabRepository)
         {
             ProviderProfile providerProfile2 = UnitTestHelper.CreateProviderProfile(cabUserId, registeredName);
             GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfile2, loggedInUserId);
             Assert.NotEqual(0, genericResponse.InstanceId);
             Assert.True(genericResponse.Success);
             return genericResponse.InstanceId;
+        }
+
+        private void InitializeDbContext(out DVSRegisterDbContext dbContext)
+        {
+            var options = new DbContextOptionsBuilder<DVSRegisterDbContext>()
+          .UseNpgsql(_fixture.GetConnectionString())
+          .Options;
+            dbContext = new DVSRegisterDbContext(options);
+
         }
         #endregion
     }
