@@ -1,4 +1,5 @@
 ﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 
 namespace DVSRegister.UnitTests
@@ -143,6 +144,47 @@ namespace DVSRegister.UnitTests
             };
 
             return service;
+        }
+        public static CertificateReview CreateFailedCertificateReview(int verifiedUser, int serviceId, int providerId, CertificateReviewEnum certificateReviewStatus,
+           string comments = "", string commentsForIncorrect = "", string rejectionComments = "", string amendments = "")
+        {
+            CertificateReview certificateReview = new()
+            {
+
+                ServiceId = serviceId,
+                ProviProviderProfileId = providerId,
+                IsCabLogoCorrect = true,
+                IsCabDetailsCorrect = true,
+                IsProviderDetailsCorrect = false,
+                IsServiceNameCorrect = true,
+                IsRolesCertifiedCorrect = true,
+                IsCertificationScopeCorrect = true,
+                IsServiceSummaryCorrect = false,
+                IsURLLinkToServiceCorrect = true,
+                IsGPG44Correct = true,
+                IsGPG45Correct = false,
+                IsServiceProvisionCorrect = true,
+                IsLocationCorrect = true,
+                IsDateOfIssueCorrect = true,
+                IsDateOfExpiryCorrect = false,
+                IsAuthenticyVerifiedCorrect = true,
+                Comments = comments,
+                InformationMatched = true,
+                CommentsForIncorrect = commentsForIncorrect,
+                RejectionComments = rejectionComments,
+                Amendments = amendments,
+                VerifiedUser = verifiedUser,
+                CreatedDate = DateTime.Now,
+                CertificateReviewStatus = certificateReviewStatus,
+                CertificateReviewRejectionReasonMapping = certificateReviewStatus == CertificateReviewEnum.Rejected ?
+                 new List<CertificateReviewRejectionReasonMapping>
+                {
+                    new() {CertificateReviewRejectionReasonId = 1 },
+                    new() { CertificateReviewRejectionReasonId = 2 }
+                } : null
+            };
+
+            return certificateReview;
         }
 
     }
