@@ -29,7 +29,7 @@ namespace DVSRegister.UnitTests.DVSRegister
 
         }
 
-        #region Test registed name
+        #region Test registered name
 
         [Theory]
         [InlineData("Hello World!", true)]
@@ -47,7 +47,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         [InlineData("Special Characters: !@#$%^&*()", false)]
 
 
-        public void RegisteredNameAcceptedCharacters_Test(string input, bool expectedIsValid)
+        public void RegisteredName_AcceptsValidCharacters_WhenInputIsValid_Test(string input, bool expectedIsValid)
         {
             string pattern = @"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$";
             var isValid = Regex.IsMatch(input, pattern);
@@ -55,7 +55,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         }
 
         [Fact]
-        public async Task SaveRegisteredName_Test()
+        public async Task SaveRegisteredName_RedirectsToTradingName_WhenValidModelAndFromSummaryPageFalse_Test()
         {
             ProfileSummaryViewModel profileSummaryViewModel = MockRegisteredNameDetails("Test registered name", false, false);
             var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
@@ -66,7 +66,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         }
 
         [Fact]
-        public async Task SaveRegisteredNameFromSummaryPage_Test()
+        public async Task SaveRegisteredName_RedirectsToProfileSummary_WhenFromSummaryPageTrue_Test()
         {
             ProfileSummaryViewModel profileSummaryViewModel = MockRegisteredNameDetails("Test registered name", true,false);
             var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
@@ -74,38 +74,53 @@ namespace DVSRegister.UnitTests.DVSRegister
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.False(cabProviderController.ModelState["RegisteredName"].Errors.Count > 0);
             Assert.Equal("ProfileSummary", redirectResult.ActionName);
-
+        }
+        
+        [Fact]
+        public async Task SaveRegisteredName_ReturnsViewWithErrors_WhenModelStateInvalid_Test()
+        {
+            var profileSummaryViewModel = new ProfileSummaryViewModel { RegisteredName = "" };
+            cabProviderController.ModelState.AddModelError("RegisteredName", "This field is required.");
+            var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
+            var viewResult = Assert.IsType<ViewResult>(result);
+            
+            Assert.Equal("RegisteredName", viewResult.ViewName);
+            Assert.True(cabProviderController.ModelState["RegisteredName"].Errors.Count > 0);
         }
 
-       
+        [Fact]
+        public async Task SaveRegisteredName_RedirectsToNextStep_WhenNoErrors_Test()
+        {
+            var profileSummaryViewModel = MockRegisteredNameDetails("Test Registered Name", false, false);
+            cabService.CheckProviderRegisteredNameExists(Arg.Any<string>()).Returns(false);
+            var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            
+            Assert.Equal("TradingName", redirectResult.ActionName);
+        }
 
         [Theory]
         [InlineData("", "Enter the digital identity and attribute provider's registered name",  false)]
         [InlineData(TestDataConstants.LongRegisteredName, "The company's registered name must be less than 161 characters",false)]
         [InlineData("Test", Constants.RegisteredNameExistsError, true)]
-        public async Task RegisteredNameInvalid_Test(string? registeredName, string errorMessage, bool registerdNameExists)
+        public async Task SaveRegisteredName_ReturnsViewWithError_WhenRegisteredNameExists_Test(string? registeredName, string errorMessage, bool registeredNameExists)
         {
-           
             ProfileSummaryViewModel profileSummaryViewModel = new();
             profileSummaryViewModel.RegisteredName = registeredName;        
-            cabService.CheckProviderRegisteredNameExists(registeredName).Returns(registerdNameExists);
+            cabService.CheckProviderRegisteredNameExists(registeredName).Returns(registeredNameExists);
             cabProviderController.ModelState.AddModelError("RegisteredName", errorMessage);
             var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
 
             Assert.NotNull(result);
-            var redirectResult = Assert.IsType<ViewResult>(result);
-            Assert.Equal("RegisteredName", redirectResult.ViewName);
             
-           
+            var redirectResult = Assert.IsType<ViewResult>(result);
+            
+            Assert.Equal("RegisteredName", redirectResult.ViewName);
             Assert.True(cabProviderController.ModelState["RegisteredName"].Errors.Count > 0);
             Assert.Equal(errorMessage, cabProviderController.ModelState["RegisteredName"].Errors[0].ErrorMessage);
-
         }
 
-
         #endregion
-
-
 
         private ProfileSummaryViewModel MockRegisteredNameDetails(string registeredName, bool fromSummaryPage, bool registeredNameExists)
         {
@@ -117,10 +132,5 @@ namespace DVSRegister.UnitTests.DVSRegister
             cabProviderController.ModelState["RegisteredName"].Errors.Clear();
             return profileSummaryViewModel;
         }
-
-     
-
-
-
     }
 }
