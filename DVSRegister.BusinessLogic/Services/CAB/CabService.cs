@@ -149,7 +149,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             if (existingServiceCabId != cabId)
                 throw new InvalidOperationException(string.Format("Invalid CabId, Cab Id in Service  {0}, Cab Id in Session {1}",
                   existingServiceCabId, cabId));
-            if (!string.IsNullOrEmpty(existingFileLink) && !string.IsNullOrEmpty(existingFileLink) && existingFileLink != currentFileLink)
+            if (!string.IsNullOrEmpty(existingFileLink) && !string.IsNullOrEmpty(currentFileLink) && existingFileLink != currentFileLink)
             {
                canDelete = true;
             }
