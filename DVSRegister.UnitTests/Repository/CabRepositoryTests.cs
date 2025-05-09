@@ -27,7 +27,7 @@ namespace DVSRegister.UnitTests.Repository
         [Fact]
         public async Task Save_ProviderProfile_ReturnsSuccess()
         {
-            ProviderProfile providerProfileTest = UnitTestHelper.CreateProviderProfile(1, "ABC Company");
+            ProviderProfile providerProfileTest = RepositoryTestHelper.CreateProviderProfile(1, "ABC Company");
             InitializeDbContext(out DVSRegisterDbContext dbContext);
             CabRepository cabRepository = new(dbContext, logger);
             GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfileTest, "test.user123@test.com");
@@ -61,7 +61,7 @@ namespace DVSRegister.UnitTests.Repository
         [Fact]
         public async Task Save_ProviderProfile_With_DunsNumber_ReturnsSuccess()
         {
-            ProviderProfile providerProfileTest = UnitTestHelper.CreateProviderProfileWithDunsNumber(1, "ABC Company");
+            ProviderProfile providerProfileTest = RepositoryTestHelper.CreateProviderProfileWithDunsNumber(1, "ABC Company");
 
             InitializeDbContext(out DVSRegisterDbContext dbContext);
             CabRepository cabRepository = new(dbContext, logger);
@@ -80,7 +80,7 @@ namespace DVSRegister.UnitTests.Repository
         [Fact]
         public async Task Save_ProviderProfile_With_ParentCompany_ReturnsSuccess()
         {
-            ProviderProfile providerProfileTest = UnitTestHelper.CreateProviderProfileWithParentCompany(1, "ABC Company");
+            ProviderProfile providerProfileTest = RepositoryTestHelper.CreateProviderProfileWithParentCompany(1, "ABC Company");
             InitializeDbContext(out DVSRegisterDbContext dbContext);
             CabRepository cabRepository = new(dbContext, logger);
             GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfileTest, "test.user123@test.com");
@@ -171,7 +171,7 @@ namespace DVSRegister.UnitTests.Repository
             InitializeDbContext(out DVSRegisterDbContext dbContext);
             CabRepository cabRepository = new(dbContext, logger);
             int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
-            Service serviceTest = UnitTestHelper.CreateService(1, "sample service", providerProfileId, ServiceStatusEnum.Submitted, null, null, null, 0);
+            Service serviceTest = RepositoryTestHelper.CreateService(1, "sample service", providerProfileId, ServiceStatusEnum.Submitted, null, null, null, 0);
             GenericResponse genericResponse = await cabRepository.SaveService(serviceTest, "test.user123@test.com");
             Service? savedService = await dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role).FirstOrDefaultAsync(p => p.Id == genericResponse.InstanceId);
             List<Role> roles = await dbContext.Role.ToListAsync();
@@ -200,7 +200,7 @@ namespace DVSRegister.UnitTests.Repository
             InitializeDbContext(out DVSRegisterDbContext dbContext);
             CabRepository cabRepository = new(dbContext, logger);
             int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
-            Service serviceTest = UnitTestHelper.CreateService(1, "sample service", providerProfileId, ServiceStatusEnum.Submitted, true, true, true, 0);
+            Service serviceTest = RepositoryTestHelper.CreateService(1, "sample service", providerProfileId, ServiceStatusEnum.Submitted, true, true, true, 0);
             GenericResponse genericResponse = await cabRepository.SaveService(serviceTest, "test.user123@test.com");
             Service? savedService = await dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role)
             .Include(p => p.ServiceQualityLevelMapping).ThenInclude(p => p.QualityLevel)
@@ -271,7 +271,7 @@ namespace DVSRegister.UnitTests.Repository
             CabRepository cabRepository = new(dbContext, logger);
             int serviceKey = 0;
             int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
-            Service serviceTest = UnitTestHelper.CreateService(1, "sample service draft 1", providerProfileId, ServiceStatusEnum.SavedAsDraft, true, true, true, serviceKey);
+            Service serviceTest = RepositoryTestHelper.CreateService(1, "sample service draft 1", providerProfileId, ServiceStatusEnum.SavedAsDraft, true, true, true, serviceKey);
             GenericResponse genericResponse = await cabRepository.SaveService(serviceTest, "test.user123@test.com");
             serviceKey = genericResponse.InstanceId;
             Service? savedService = await dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role)
@@ -284,7 +284,7 @@ namespace DVSRegister.UnitTests.Repository
 
             var serviceslist = await dbContext.Service.ToListAsync();
             // test for 2 service status values
-            Service newServiceTest = UnitTestHelper.CreateService(1, serviceName, providerProfileId, serviceStatus, null, null, null, savedService.ServiceKey); // to modify saved service
+            Service newServiceTest = RepositoryTestHelper.CreateService(1, serviceName, providerProfileId, serviceStatus, null, null, null, savedService.ServiceKey); // to modify saved service
 
             newServiceTest.ServiceRoleMapping = [new() { RoleId = 1 }];
             GenericResponse newGenericResponse = await cabRepository.SaveService(newServiceTest, "test.user123@test.com");
@@ -318,7 +318,7 @@ namespace DVSRegister.UnitTests.Repository
             CabRepository cabRepository = new(dbContext, logger);
             int serviceKey = 0;
             int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
-            Service version1Service = UnitTestHelper.CreateService(1, "sample service version1", providerProfileId, ServiceStatusEnum.Submitted, true, true, true, serviceKey);
+            Service version1Service = RepositoryTestHelper.CreateService(1, "sample service version1", providerProfileId, ServiceStatusEnum.Submitted, true, true, true, serviceKey);
             GenericResponse genericResponse = await cabRepository.SaveService(version1Service, "test.user123@test.com");
             serviceKey = genericResponse.InstanceId;
             Service? savedVersion1Service = await dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role)
@@ -332,7 +332,7 @@ namespace DVSRegister.UnitTests.Repository
             Assert.Equal(1, savedVersion1Service.ServiceVersion);
 
 
-            Service newVersionServiceTest = UnitTestHelper.CreateService(1, serviceName, providerProfileId, serviceStatus, null, null, null, savedVersion1Service.ServiceKey); // to modify saved service
+            Service newVersionServiceTest = RepositoryTestHelper.CreateService(1, serviceName, providerProfileId, serviceStatus, null, null, null, savedVersion1Service.ServiceKey); // to modify saved service
 
             newVersionServiceTest.ServiceRoleMapping = [new() { RoleId = 1 }];
             GenericResponse newGenericResponse = await cabRepository.SaveServiceReApplication(newVersionServiceTest, "test.user123@test.com");
@@ -373,17 +373,17 @@ namespace DVSRegister.UnitTests.Repository
             CabRepository cabRepository = new(dbContext, logger);
 
             int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
-            Service sampleService = UnitTestHelper.CreateService(1, "sample service 1", providerProfileId, ServiceStatusEnum.AmendmentsRequired, true, true, true, 0);
+            Service sampleService = RepositoryTestHelper.CreateService(1, "sample service 1", providerProfileId, ServiceStatusEnum.AmendmentsRequired, true, true, true, 0);
             GenericResponse genericResponse = await cabRepository.SaveService(sampleService, "test.user123@test.com");
 
-            CertificateReview certificateReview = UnitTestHelper.CreateFailedCertificateReview(1, genericResponse.InstanceId, providerProfileId,
+            CertificateReview certificateReview = RepositoryTestHelper.CreateFailedCertificateReview(1, genericResponse.InstanceId, providerProfileId,
             CertificateReviewEnum.AmendmentsRequired, "test comments", "comments for incorrect", "", "amendments needed comment");
             dbContext.CertificateReview.Add(certificateReview);
             dbContext.SaveChanges();
 
 
 
-            Service amendedService = UnitTestHelper.CreateService(1, "sample service 1 amended", providerProfileId, ServiceStatusEnum.AmendmentsRequired, null, null, null, genericResponse.InstanceId);
+            Service amendedService = RepositoryTestHelper.CreateService(1, "sample service 1 amended", providerProfileId, ServiceStatusEnum.AmendmentsRequired, null, null, null, genericResponse.InstanceId);
             amendedService.Id = genericResponse.InstanceId;
 
             GenericResponse amendmentsResponse = await cabRepository.SaveServiceAmendments(amendedService, "test.user123@test.com");
@@ -412,7 +412,7 @@ namespace DVSRegister.UnitTests.Repository
         #region Private methods
         private async Task<int> SaveProviderProfileHelper(string registeredName, string loggedInUserId, int cabUserId, CabRepository cabRepository)
         {
-            ProviderProfile providerProfile2 = UnitTestHelper.CreateProviderProfile(cabUserId, registeredName);
+            ProviderProfile providerProfile2 = RepositoryTestHelper.CreateProviderProfile(cabUserId, registeredName);
             GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfile2, loggedInUserId);
             Assert.NotEqual(0, genericResponse.InstanceId);
             Assert.True(genericResponse.Success);

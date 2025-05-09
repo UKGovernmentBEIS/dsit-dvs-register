@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="BusinessLogic\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
