@@ -36,6 +36,9 @@ namespace DVSRegister.Controllers
         [HttpPost("reg-name")]
         public async Task<IActionResult> SaveRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
         {
+           var emailTest=  HttpContext.Session.Get<string>("Email") ?? string.Empty;
+            ProfileSummaryViewModel profileSummaryTest  = GetProfileSummary();
+
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
             profileSummaryViewModel.FromSummaryPage = false;
 

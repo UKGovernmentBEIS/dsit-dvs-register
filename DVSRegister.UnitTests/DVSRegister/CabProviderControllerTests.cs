@@ -2,10 +2,14 @@
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.Controllers;
+using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Session;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 
 namespace DVSRegister.UnitTests.DVSRegister
@@ -15,19 +19,26 @@ namespace DVSRegister.UnitTests.DVSRegister
         private readonly ICabService cabService;
         private readonly IUserService userService;
         private readonly ILogger<CabProviderController> logger;
-        private readonly CabProviderController cabProviderController;      
+        private readonly CabProviderController cabProviderController;     
+        private ISession session;
+        private Dictionary<string, byte[]> sessionStore;
 
         public CabProviderControllerTests()
         {
+          
+            session = Substitute.For<ISession>();
             cabService = Substitute.For<ICabService>();
             userService = Substitute.For<IUserService>();
-            logger = Substitute.For<ILogger<CabProviderController>>();     
+            logger = Substitute.For<ILogger<CabProviderController>>();
+           
             cabProviderController = new CabProviderController(cabService, userService, logger)
             {
                 ControllerContext = Substitute.For<ControllerContext>()
-            };            
-
+            };
+            InitializeHttpContextAndSession();
         }
+
+       
 
         #region Test registered name
 
@@ -57,7 +68,11 @@ namespace DVSRegister.UnitTests.DVSRegister
         [Fact]
         public async Task SaveRegisteredName_RedirectsToTradingName_WhenValidModelAndFromSummaryPageFalse_Test()
         {
+            //mock required session key value
+
+            session.Set("Email", "test@test123");
             ProfileSummaryViewModel profileSummaryViewModel = MockRegisteredNameDetails("Test registered name", false, false);
+            session.Set("ProfileSummary", profileSummaryViewModel);
             var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
             Assert.NotNull(result);
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
@@ -131,6 +146,31 @@ namespace DVSRegister.UnitTests.DVSRegister
             cabProviderController.ModelState.AddModelError("RegisteredName", "");
             cabProviderController.ModelState["RegisteredName"].Errors.Clear();
             return profileSummaryViewModel;
+        }
+
+        private void InitializeHttpContextAndSession()
+        {
+
+            sessionStore = new Dictionary<string, byte[]>();
+            session.When(s => s.Set(Arg.Any<string>(), Arg.Any<byte[]>()))
+                  .Do(call =>
+                  {
+                      var key = call.Arg<string>();
+                      var value = call.Arg<byte[]>();
+                      sessionStore[key] = value;
+                  });
+
+            session.TryGetValue(Arg.Any<string>(), out Arg.Any<byte[]>())
+                   .Returns(call =>
+                   {
+                       var key = call.Arg<string>();
+                       var found = sessionStore.TryGetValue(key, out var value);
+                       call[1] = value;
+                       return found;
+                   });
+            var httpContext = new DefaultHttpContext();
+            httpContext.Session = session;
+            cabProviderController.ControllerContext = new ControllerContext { HttpContext = httpContext };
         }
     }
 }
