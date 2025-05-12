@@ -278,10 +278,17 @@ namespace DVSRegister.Data.CAB
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                         genericResponse.InstanceId = existingService.ServiceKey;
                     }
+                    transaction.Commit();
+                    genericResponse.Success = true;
+                }
+                else
+                {
+                    transaction.Rollback();
+                    genericResponse.Success = false;
+                    logger.LogError("Service id {ServiceKey} doesnt exist ", service.ServiceKey);
                 }
 
-                transaction.Commit();
-                genericResponse.Success = true;
+               
 
             }
             catch (Exception ex)
