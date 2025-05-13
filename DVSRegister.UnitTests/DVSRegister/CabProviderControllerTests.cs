@@ -3,10 +3,12 @@ using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.Controllers;
 using DVSRegister.Models.CAB;
+using DVSRegister.UnitTests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 
 namespace DVSRegister.UnitTests.DVSRegister
 {
@@ -15,18 +17,26 @@ namespace DVSRegister.UnitTests.DVSRegister
         private readonly ICabService cabService;
         private readonly IUserService userService;
         private readonly ILogger<CabProviderController> logger;
-        private readonly CabProviderController cabProviderController;      
+        private readonly CabProviderController cabProviderController;
+        private readonly DefaultHttpContext httpContext;
+        private readonly FakeSession session;
 
         public CabProviderControllerTests()
         {
             cabService = Substitute.For<ICabService>();
             userService = Substitute.For<IUserService>();
-            logger = Substitute.For<ILogger<CabProviderController>>();     
-            cabProviderController = new CabProviderController(cabService, userService, logger)
-            {
-                ControllerContext = Substitute.For<ControllerContext>()
-            };            
-
+            logger = Substitute.For<ILogger<CabProviderController>>();
+            
+            session = new FakeSession();
+            httpContext = new DefaultHttpContext {
+                Session = session
+            };
+            
+            cabProviderController = new CabProviderController(cabService, userService, logger) {
+                ControllerContext = new ControllerContext {
+                    HttpContext = httpContext
+                }
+            };
         }
 
         #region Test registered name
