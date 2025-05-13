@@ -10,7 +10,7 @@
 }
 @using (Html.BeginForm("GiveConsent", "Consent", FormMethod.Post))
 {
-    @Html.AntiForgeryToken()
+   
     @Html.HiddenFor(m => m.token)
    
     <div class="govuk-width-container">
