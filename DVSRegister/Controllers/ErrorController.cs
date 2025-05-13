@@ -12,16 +12,28 @@ namespace DVSRegister.Controllers
         public IActionResult CabHandleException()
         {
             ErrorViewModel errorViewModel = new() { ApplicationType = "cab" };
-            HttpContext?.Session.Clear();
+            ClearHttpContextAndSetHttpStatus();
             return View("ServiceIssue", errorViewModel);
         }
 
+        
         [HttpGet("service-error")]
         public IActionResult ServiceError()
         {   
             ErrorViewModel errorViewModel = new() { ApplicationType = string.Empty };
-            HttpContext?.Session.Clear();
+            ClearHttpContextAndSetHttpStatus();
             return View("ServiceIssue", errorViewModel);
         }
+
+        private void ClearHttpContextAndSetHttpStatus()
+        {
+            if (HttpContext != null)
+            {
+                HttpContext.Session.Clear();
+                HttpContext.Response.Clear();
+                HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            }
+        }
+
     }
 }
