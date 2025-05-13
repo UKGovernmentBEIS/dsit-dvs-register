@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVSRegister.UnitTests", "DV
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVSRegister.CommonUtility", "DVSRegister.CommonUtility\DVSRegister.CommonUtility.csproj", "{ABDD8283-1B81-4D5C-898E-59E338976411}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DVSRegister.IntegrationTests", "DVSRegister.IntegrationTests\DVSRegister.IntegrationTests.csproj", "{CA8B28F7-13AA-4390-B968-FA7522A1D2DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{ABDD8283-1B81-4D5C-898E-59E338976411}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABDD8283-1B81-4D5C-898E-59E338976411}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABDD8283-1B81-4D5C-898E-59E338976411}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA8B28F7-13AA-4390-B968-FA7522A1D2DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA8B28F7-13AA-4390-B968-FA7522A1D2DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA8B28F7-13AA-4390-B968-FA7522A1D2DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA8B28F7-13AA-4390-B968-FA7522A1D2DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
