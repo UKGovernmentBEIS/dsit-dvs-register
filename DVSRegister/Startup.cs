@@ -53,7 +53,7 @@ namespace DVSRegister
                 options.IncludeSubDomains = true;
                 options.MaxAge = TimeSpan.FromDays(1);
             });
-            string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));
+            string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING")??string.Empty);
             services.AddDbContext<DVSRegisterDbContext>(opt =>
                 opt.UseNpgsql(connectionString));
             // This allows encrypted cookies to be understood across multiple web server instances

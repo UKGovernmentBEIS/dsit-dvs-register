@@ -1,10 +1,10 @@
-﻿using System.Net;
+﻿using DVSRegister.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System.Net;
 using System.Security.Claims;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 public class ValidCognitoTokenAttribute : ActionFilterAttribute
 {   
@@ -42,8 +42,7 @@ public class ValidCognitoTokenAttribute : ActionFilterAttribute
                 ValidateLifetime = true,
                 ValidAudience = cognitoAudience
             };
-            var tokenHandler = new JsonWebTokenHandler();
-            var result = tokenHandler.ValidateTokenAsync(sessionToken, validationParameters);
+            var result = TokenHandlerProvider.TokenHandler.ValidateTokenAsync(sessionToken, validationParameters);
             if (result.Result.IsValid)
             {
                 var claimsPrincipal = new ClaimsPrincipal(result.Result.ClaimsIdentity);
