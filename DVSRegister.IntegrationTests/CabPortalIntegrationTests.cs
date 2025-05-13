@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
@@ -26,7 +25,6 @@ namespace DVSRegister.IntegrationTests
             string base64EncodedAuthenticationString = Convert.ToBase64String(Encoding.UTF8.GetBytes(authenticationString));
             var request = new HttpRequestMessage(HttpMethod.Get, "/cab-service/home");
             request.Headers.Add("Authorization", "Basic " + base64EncodedAuthenticationString);
-
             var response = await client.SendAsync(request);
             response.EnsureSuccessStatusCode(); 
 
