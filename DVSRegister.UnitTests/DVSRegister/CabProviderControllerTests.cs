@@ -1,9 +1,11 @@
-﻿using DVSRegister.BusinessLogic.Services;
+﻿using System.Text.Json;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.Controllers;
 using DVSRegister.Models.CAB;
 using DVSRegister.UnitTests.Helpers;
+using DVSRegister.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -142,5 +144,25 @@ namespace DVSRegister.UnitTests.DVSRegister
             cabProviderController.ModelState["RegisteredName"].Errors.Clear();
             return profileSummaryViewModel;
         }
+        
+        [Fact]
+        public async Task SaveRegisteredName_RetainsEmailAndStoresProfileSummaryInSession_Test()
+        {
+            session.SetString("Email", JsonSerializer.Serialize("test@example.com"));
+            
+            var vm = MockRegisteredNameDetails("Test LTD", fromSummaryPage: false, registeredNameExists: false);
+            cabService
+                .CheckProviderRegisteredNameExists("Test LTD")
+                .Returns(false);
+
+            await cabProviderController.SaveRegisteredName(vm);
+
+            Assert.Equal(JsonSerializer.Serialize("test@example.com"), 
+                httpContext.Session.GetString("Email"));
+            var stored = httpContext.Session.Get<ProfileSummaryViewModel>("ProfileSummary");
+            Assert.NotNull(stored);
+            Assert.Equal("Test LTD", stored.RegisteredName);
+        }
+
     }
 }
