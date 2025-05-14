@@ -143,7 +143,6 @@ namespace DVSRegister.UnitTests.Repository
             var service = RepositoryTestHelper.CreateService(1, "sample service 1", providerProfileId, ServiceStatusEnum.ReadyToPublish, false, false, false, 1);
             var serviceEntity = await dbContext.Service.AddAsync(service);
             await dbContext.SaveChangesAsync();
-            int serviceId = serviceEntity.Entity.Id;
             return serviceEntity.Entity.Id;
         }
 
