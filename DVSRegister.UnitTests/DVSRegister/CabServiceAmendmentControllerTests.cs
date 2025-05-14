@@ -1,49 +1,29 @@
-﻿using AutoMapper;
-using DVSRegister.BusinessLogic.Models;
+﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.Controllers;
-using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Service;
-using DVSRegister.UnitTests.Helpers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
-using System;
 using System.Text.Json;
-using System.Threading.Tasks;
-using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
-using Xunit;
+using DVSRegister.Extensions;
 
 namespace DVSRegister.UnitTests.DVSRegister
 {
     public class CabServiceAmendmentControllerTests
+            : ControllerTestBase<CabServiceAmendmentController>
     {
-        private readonly ICabService          cabService;
-        private readonly IBucketService       bucketService;
-        private readonly IMapper              mapper;
-        private readonly ILogger<CabServiceAmendmentController> logger;
-        private readonly CabServiceAmendmentController controller;
-        private readonly DefaultHttpContext   httpContext;
-        private readonly FakeSession          session;
-
         public CabServiceAmendmentControllerTests()
         {
-            cabService   = Substitute.For<ICabService>();
-            bucketService = Substitute.For<IBucketService>();
-            mapper       = Substitute.For<IMapper>();
-            logger       = Substitute.For<ILogger<CabServiceAmendmentController>>();
-
-            session      = new FakeSession();
-            httpContext  = new DefaultHttpContext { Session = session };
-
-            controller = new CabServiceAmendmentController(cabService, logger, mapper, bucketService)
-            {
-                ControllerContext = new ControllerContext { HttpContext = httpContext }
-            };
+            ConfigureFakes(() =>
+                new CabServiceAmendmentController(
+                    CabService,
+                    Logger,
+                    Mapper,
+                    BucketService
+                )
+            );
         }
 
         #region ServiceAmendments GET
@@ -55,21 +35,21 @@ namespace DVSRegister.UnitTests.DVSRegister
             var fakeDto = new ServiceDto
             {
                 Id = serviceId,
-                CertificateReview = new CertificateReviewDto {},
+                CertificateReview = new CertificateReviewDto { },
                 CabUser = new CabUserDto { CabId = 123 }
             };
-            cabService.GetServiceDetails(serviceId, Arg.Any<int>()).Returns(fakeDto);
+            CabService.GetServiceDetails(serviceId, Arg.Any<int>()).Returns(fakeDto);
 
-            var result = await controller.ServiceAmendments(serviceId);
+            var result = await Controller.ServiceAmendments(serviceId);
 
             var view = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<AmendmentViewModel>(view.Model);
 
             Assert.Equal(fakeDto.CertificateReview, model.CertificateReview);
 
-            var stored = httpContext.Session.Get<CertificateReviewDto>("CertificateReviewDetails");
+            var stored = HttpContext.Session.Get<CertificateReviewDto>("CertificateReviewDetails");
             var expectedJson = JsonSerializer.Serialize(fakeDto.CertificateReview);
-            var actualJson   = JsonSerializer.Serialize(stored);
+            var actualJson = JsonSerializer.Serialize(stored);
             Assert.Equal(expectedJson, actualJson);
         }
 
@@ -81,15 +61,15 @@ namespace DVSRegister.UnitTests.DVSRegister
         public void ServiceAmendmentsSummary_ReadsFromSessionAndReturnsView_Test()
         {
             var review = new CertificateReviewDto { };
-            session.Set("CertificateReviewDetails", review);
+            Session.Set("CertificateReviewDetails", review);
 
-            var result = controller.ServiceAmendmentsSummary();
+            var result = Controller.ServiceAmendmentsSummary();
 
             var view = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<AmendmentViewModel>(view.Model);
-            
+
             var expectedJson = JsonSerializer.Serialize(review);
-            var actualJson   = JsonSerializer.Serialize(model.CertificateReview);
+            var actualJson = JsonSerializer.Serialize(model.CertificateReview);
             Assert.Equal(expectedJson, actualJson);
         }
 
@@ -100,22 +80,23 @@ namespace DVSRegister.UnitTests.DVSRegister
         [Fact]
         public async Task SaveServiceAmendmentsSummary_SaveAction_CallsSaveAndRedirects_Test()
         {
-            var summary = new ServiceSummaryViewModel {
-                ServiceId   = 1,
+            var summary = new ServiceSummaryViewModel
+            {
+                ServiceId = 1,
                 IsAmendment = true
             };
-            session.Set("ServiceSummary", summary);
+            Session.Set("ServiceSummary", summary);
 
             var mappedDto = new ServiceDto { FileLink = "old.pdf", CabUser = new CabUserDto { CabId = 123 } };
-            mapper
+            Mapper
                 .Map<ServiceDto>(Arg.Any<ServiceSummaryViewModel>())
                 .Returns(mappedDto);
 
-            cabService
+            CabService
                 .GetServiceDetails(summary.ServiceId, Arg.Any<int>())
                 .Returns(mappedDto);
 
-            cabService
+            CabService
                 .SaveServiceAmendments(
                     mappedDto,
                     mappedDto.FileLink,
@@ -125,37 +106,38 @@ namespace DVSRegister.UnitTests.DVSRegister
                 )
                 .Returns(new GenericResponse { Success = true });
 
-            var result = await controller.SaveServiceAmendmentsSummary("save");
+            var result = await Controller.SaveServiceAmendmentsSummary("save");
 
             var redirect = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("InformationSubmitted", redirect.ActionName);
-            Assert.Equal("CabService",         redirect.ControllerName);
+            Assert.Equal("CabService", redirect.ControllerName);
         }
 
         [Fact]
         public async Task SaveServiceAmendmentsSummary_DiscardAction_RedirectsToServiceAmendments_Test()
         {
             var summary = new ServiceSummaryViewModel { ServiceId = 99, IsAmendment = false };
-            session.Set("ServiceSummary", summary);
-            
+            Session.Set("ServiceSummary", summary);
+
             var existing = new ServiceDto
             {
-                FileLink = "old.pdf", 
+                FileLink = "old.pdf",
                 CabUser = new CabUserDto { CabId = 123 }
             };
-            cabService
+            CabService
                 .GetServiceDetails(summary.ServiceId, Arg.Any<int>())
                 .Returns(existing);
-            
-            var mappedDto = new ServiceDto {
+
+            var mappedDto = new ServiceDto
+            {
                 FileLink = existing.FileLink,
-                CabUser  = existing.CabUser
+                CabUser = existing.CabUser
             };
-            mapper
+            Mapper
                 .Map<ServiceDto>(Arg.Any<ServiceSummaryViewModel>())
                 .Returns(mappedDto);
-            
-            cabService
+
+            CabService
                 .CanDeleteCertificate(
                     mappedDto.FileLink,
                     existing.FileLink,
@@ -163,8 +145,8 @@ namespace DVSRegister.UnitTests.DVSRegister
                     Arg.Any<int>()
                 )
                 .Returns(true);
-            
-            var result = await controller.SaveServiceAmendmentsSummary("discard");
+
+            var result = await Controller.SaveServiceAmendmentsSummary("discard");
 
             var redirect = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("ServiceAmendments", redirect.ActionName);
@@ -175,7 +157,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         public async Task SaveServiceAmendmentsSummary_InvalidAction_ThrowsArgumentException_Test()
         {
             await Assert.ThrowsAsync<ArgumentException>(() =>
-                controller.SaveServiceAmendmentsSummary("not-a-valid-action")
+                Controller.SaveServiceAmendmentsSummary("not-a-valid-action")
             );
         }
 
