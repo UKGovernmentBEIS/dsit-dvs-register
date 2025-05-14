@@ -187,5 +187,20 @@ namespace DVSRegister.UnitTests
             return certificateReview;
         }
 
+        public static ProceedApplicationConsentToken CreateProceedApplicationConsentToken(int serviceId, Service service)
+        {
+            var token = new ProceedApplicationConsentToken
+            {
+                CreatedTime = DateTime.Now,
+                TokenId = Guid.NewGuid().ToString(),
+                Token = Guid.NewGuid().ToString(),
+                ServiceId = serviceId,
+                Service = service
+            };
+
+            return token;
+        }
+
+
     }
 }
