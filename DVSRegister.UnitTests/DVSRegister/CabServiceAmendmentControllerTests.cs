@@ -8,6 +8,7 @@ using NSubstitute;
 using System.Text.Json;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
+using DVSRegister.UnitTests.Helpers;
 
 namespace DVSRegister.UnitTests.DVSRegister
 {
@@ -32,14 +33,11 @@ namespace DVSRegister.UnitTests.DVSRegister
         public async Task ServiceAmendments_SetsSessionAndReturnsView_Test()
         {
             const int serviceId = 42;
-            var fakeDto = new ServiceDto
-            {
-                Id = serviceId,
-                CertificateReview = new CertificateReviewDto { },
-                CabUser = new CabUserDto { CabId = 123 }
-            };
-            CabService.GetServiceDetails(serviceId, Arg.Any<int>()).Returns(fakeDto);
-
+            var fakeDto = TestDataFactory.CreateServiceDto(serviceId);
+            CabService
+                .GetServiceDetails(serviceId, Arg.Any<int>())
+                .Returns(fakeDto);
+            
             var result = await Controller.ServiceAmendments(serviceId);
 
             var view = Assert.IsType<ViewResult>(result);
@@ -60,7 +58,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         [Fact]
         public void ServiceAmendmentsSummary_ReadsFromSessionAndReturnsView_Test()
         {
-            var review = new CertificateReviewDto { };
+            var review = TestDataFactory.CreateCertificateReviewDto();
             Session.Set("CertificateReviewDetails", review);
 
             var result = Controller.ServiceAmendmentsSummary();
@@ -80,14 +78,17 @@ namespace DVSRegister.UnitTests.DVSRegister
         [Fact]
         public async Task SaveServiceAmendmentsSummary_SaveAction_CallsSaveAndRedirects_Test()
         {
-            var summary = new ServiceSummaryViewModel
-            {
-                ServiceId = 1,
-                IsAmendment = true
-            };
+            var summary = TestDataFactory.CreateServiceSummaryViewModel(serviceId: 1, isAmendment: true);
             Session.Set("ServiceSummary", summary);
 
-            var mappedDto = new ServiceDto { FileLink = "old.pdf", CabUser = new CabUserDto { CabId = 123 } };
+            var mappedDto = TestDataFactory.CreateServiceDto(
+                serviceId: 1,
+                cabId: 123,
+                review: TestDataFactory.CreateCertificateReviewDto()
+            );
+            
+            mappedDto.FileLink = "old.pdf";
+
             Mapper
                 .Map<ServiceDto>(Arg.Any<ServiceSummaryViewModel>())
                 .Returns(mappedDto);
@@ -116,14 +117,14 @@ namespace DVSRegister.UnitTests.DVSRegister
         [Fact]
         public async Task SaveServiceAmendmentsSummary_DiscardAction_RedirectsToServiceAmendments_Test()
         {
-            var summary = new ServiceSummaryViewModel { ServiceId = 99, IsAmendment = false };
+            var summary = TestDataFactory.CreateServiceSummaryViewModel(serviceId: 99, isAmendment: false);
             Session.Set("ServiceSummary", summary);
 
-            var existing = new ServiceDto
-            {
-                FileLink = "old.pdf",
-                CabUser = new CabUserDto { CabId = 123 }
-            };
+            var existing = TestDataFactory.CreateServiceDto(
+                serviceId: summary.ServiceId,
+                cabId: 123,
+                review: TestDataFactory.CreateCertificateReviewDto()
+            );
             CabService
                 .GetServiceDetails(summary.ServiceId, Arg.Any<int>())
                 .Returns(existing);
