@@ -1,74 +1,19 @@
-﻿using DVSRegister.BusinessLogic.Services;
-using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Services.CAB;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Controllers;
 using DVSRegister.Models.CAB;
-using DVSRegister.UnitTests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
-using DVSRegister.CommonUtility.Models;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DVSRegister.UnitTests.DVSRegister
 {
-    public class CabRemovalRequestControllerTests
+    public class CabRemovalRequestControllerTests : ControllerTestBase<CabRemovalRequestController>
     {
-        readonly ICabService               cabService;
-        readonly ICabRemovalRequestService cabRemovalRequestService;
-        readonly ILogger<CabRemovalRequestController> logger;
-        readonly CabRemovalRequestController          controller;
-        readonly HttpContext                          httpContext;
-        readonly FakeSession                          session;
-
         public CabRemovalRequestControllerTests()
         {
-            cabService               = Substitute.For<ICabService>();
-            cabRemovalRequestService = Substitute.For<ICabRemovalRequestService>();
-            logger                   = Substitute.For<ILogger<CabRemovalRequestController>>();
-
-            var services = new ServiceCollection();
-
-            var tempDataFactory = Substitute.For<ITempDataDictionaryFactory>();
-            tempDataFactory
-                .GetTempData(Arg.Any<HttpContext>())
-                .Returns(_ => Substitute.For<ITempDataDictionary>());
-            services.AddSingleton<ITempDataDictionaryFactory>(tempDataFactory);
-
-            var urlFactory = Substitute.For<IUrlHelperFactory>();
-            var urlHelper  = Substitute.For<IUrlHelper>();
-            urlHelper
-                .Action(Arg.Any<UrlActionContext>())
-                .Returns("/dummy");
-            urlFactory
-                .GetUrlHelper(Arg.Any<ActionContext>())
-                .Returns(urlHelper);
-            services.AddSingleton<IUrlHelperFactory>(urlFactory);
-
-            var provider = services.BuildServiceProvider();
-
-            session     = new FakeSession();
-            session.SetString("CabId", "123");
-            httpContext = new DefaultHttpContext
-            {
-                Session         = session,
-                RequestServices = provider
-            };
-
-            controller = new CabRemovalRequestController(
-                cabService,
-                cabRemovalRequestService,
-                logger
-            )
-            {
-                ControllerContext = new ControllerContext
-                {
-                    HttpContext = httpContext
-                }
-            };
+            ConfigureFakes(() =>
+            new CabRemovalRequestController(CabService, CabRemovalRequestService,Logger) );
         }
         
         #region ReasonForRemoval GET
@@ -76,8 +21,8 @@ namespace DVSRegister.UnitTests.DVSRegister
         [Fact]
         public void ReasonForRemoval_ReturnsViewWithCorrectModel_WhenSessionContainsReason_Test()
         {
-            session.SetString("ReasonForRemoval", "Removal reason");
-            var result = controller.ReasonForRemoval(1, 1, "service");
+            Session.SetString("ReasonForRemoval", "Removal reason");
+            var result = Controller.ReasonForRemoval(1, 1, "service");
             
             var vr    = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<RemovalRequestViewModel>(vr.Model);
@@ -88,7 +33,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         [Fact]
         public void ReasonForRemoval_ReturnsViewWithEmptyModel_WhenSessionDoesNotContainReason_Test()
         {
-            var result = controller.ReasonForRemoval(1, 1, "service");
+            var result = Controller.ReasonForRemoval(1, 1, "service");
             
             var vr    = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<RemovalRequestViewModel>(vr.Model);
@@ -107,10 +52,10 @@ namespace DVSRegister.UnitTests.DVSRegister
                 RemovalReasonByCab = "Valid removal reason",
                 ServiceId          = 1
             };
-            controller.ModelState.Clear();
-            session.SetString("ReasonForRemoval", vm.RemovalReasonByCab);
+            Controller.ModelState.Clear();
+            Session.SetString("ReasonForRemoval", vm.RemovalReasonByCab);
 
-            var result = controller.SaveReasonForRemoval(vm);
+            var result = Controller.SaveReasonForRemoval(vm);
 
             var rr = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("AboutToRemove", rr.ActionName);
@@ -122,16 +67,16 @@ namespace DVSRegister.UnitTests.DVSRegister
             var vm = new RemovalRequestViewModel {
                 RemovalReasonByCab = ""
             };
-            controller.ModelState.AddModelError(
+            Controller.ModelState.AddModelError(
                 "RemovalReasonByCab",
                 "This field is required."
             );
 
-            var result = controller.SaveReasonForRemoval(vm);
+            var result = Controller.SaveReasonForRemoval(vm);
 
             var vr = Assert.IsType<ViewResult>(result);
             Assert.Equal("ReasonForRemoval", vr.ViewName);
-            Assert.True(controller.ModelState["RemovalReasonByCab"].Errors.Count > 0);
+            Assert.True(Controller.ModelState["RemovalReasonByCab"].Errors.Count > 0);
         }
 
         #endregion
@@ -142,13 +87,13 @@ namespace DVSRegister.UnitTests.DVSRegister
         public async Task AboutToRemove_ReturnsViewWithServiceDetails_WhenServiceIdIsValid_Test()
         {
             var dto = new ServiceDto { Id = 1 };
-            cabService
+            CabService
                 .GetServiceDetailsWithProvider(1, Arg.Any<int>())
                 .Returns(dto);
-            session.SetString("ReasonForRemoval", "Reason");
-            session.SetString("WhatToRemove",      "Service");
+            Session.SetString("ReasonForRemoval", "Reason");
+            Session.SetString("WhatToRemove",      "Service");
 
-            var result = await controller.AboutToRemove(1);
+            var result = await Controller.AboutToRemove(1);
 
             var vr    = Assert.IsType<ViewResult>(result);
             var model = Assert.IsType<ServiceDto>(vr.Model);
@@ -164,7 +109,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         public async Task RequestRemoval_ThrowsArgumentException_WhenProviderIdIsInvalid_Test()
         {
             var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
-                controller.RequestRemoval(-1, 1)
+                Controller.RequestRemoval(-1, 1)
             );
             Assert.Equal("RequestRemoval failed: Invalid ProviderId.", ex.Message);
         }
@@ -173,7 +118,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         public async Task RequestRemoval_ThrowsArgumentException_WhenServiceIdIsInvalid_Test()
         {
             var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
-                controller.RequestRemoval(1, -1)
+                Controller.RequestRemoval(1, -1)
             );
             Assert.Equal("RequestRemoval failed: Invalid ServiceId.", ex.Message);
         }
@@ -181,10 +126,10 @@ namespace DVSRegister.UnitTests.DVSRegister
         [Fact]
         public async Task RequestRemoval_ReturnsRemovalRequestedView_WhenRemovalIsSuccessful_Test()
         {
-            session.SetString("ReasonForRemoval", "Removal reason");
-            session.SetString("WhatToRemove",      "service");
+            Session.SetString("ReasonForRemoval", "Removal reason");
+            Session.SetString("WhatToRemove",      "service");
 
-            cabRemovalRequestService
+            CabRemovalRequestService
               .UpdateRemovalStatus(
                  Arg.Any<int>(),
                  1, 1, Arg.Any<string>(),
@@ -192,11 +137,11 @@ namespace DVSRegister.UnitTests.DVSRegister
               )
               .Returns(new GenericResponse { Success = true });
 
-            cabService
+            CabService
               .GetServiceDetailsWithProvider(1, Arg.Any<int>())
               .Returns(new ServiceDto { Id = 1 });
 
-            var result = await controller.RequestRemoval(1, 1);
+            var result = await Controller.RequestRemoval(1, 1);
 
             var vr = Assert.IsType<ViewResult>(result);
             Assert.Equal("RemovalRequested", vr.ViewName);

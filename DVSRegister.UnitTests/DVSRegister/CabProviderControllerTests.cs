@@ -1,44 +1,24 @@
-﻿using System.Text.Json;
-using DVSRegister.BusinessLogic.Services;
-using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility;
+﻿using DVSRegister.CommonUtility;
 using DVSRegister.Controllers;
-using DVSRegister.Models.CAB;
-using DVSRegister.UnitTests.Helpers;
 using DVSRegister.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using NSubstitute;
-using System.Text.RegularExpressions;
+using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using NSubstitute;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace DVSRegister.UnitTests.DVSRegister
 {
-    public class CabProviderControllerTests
+    public class CabProviderControllerTests : ControllerTestBase<CabProviderController>
     {
-        private readonly ICabService cabService;
-        private readonly IUserService userService;
-        private readonly ILogger<CabProviderController> logger;
-        private readonly CabProviderController cabProviderController;
-        private readonly DefaultHttpContext httpContext;
-        private readonly FakeSession session;
-
         public CabProviderControllerTests()
         {
-            cabService = Substitute.For<ICabService>();
-            userService = Substitute.For<IUserService>();
-            logger = Substitute.For<ILogger<CabProviderController>>();
-            
-            session = new FakeSession();
-            httpContext = new DefaultHttpContext {
-                Session = session
-            };
-            
-            cabProviderController = new CabProviderController(cabService, userService, logger) {
-                ControllerContext = new ControllerContext {
-                    HttpContext = httpContext
-                }
-            };
+            ConfigureFakes(() =>
+            {
+                var controllerInstance = new CabProviderController(CabService, UserService, Logger);
+                return controllerInstance;
+            });
         }
 
         #region Test registered name
@@ -70,21 +50,21 @@ namespace DVSRegister.UnitTests.DVSRegister
         public async Task SaveRegisteredName_RedirectsToTradingName_WhenValidModelAndFromSummaryPageFalse_Test()
         {
             ProfileSummaryViewModel profileSummaryViewModel = MockRegisteredNameDetails("Test registered name", false, false);
-            var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
+            var result = await Controller.SaveRegisteredName(profileSummaryViewModel);
             Assert.NotNull(result);
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("TradingName", redirectResult.ActionName);
-            Assert.False(cabProviderController.ModelState["RegisteredName"].Errors.Count > 0);
+            Assert.False(Controller.ModelState["RegisteredName"].Errors.Count > 0);
         }
 
         [Fact]
         public async Task SaveRegisteredName_RedirectsToProfileSummary_WhenFromSummaryPageTrue_Test()
         {
             ProfileSummaryViewModel profileSummaryViewModel = MockRegisteredNameDetails("Test registered name", true,false);
-            var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
+            var result = await Controller.SaveRegisteredName(profileSummaryViewModel);
             Assert.NotNull(result);
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.False(cabProviderController.ModelState["RegisteredName"].Errors.Count > 0);
+            Assert.False(Controller.ModelState["RegisteredName"].Errors.Count > 0);
             Assert.Equal("ProfileSummary", redirectResult.ActionName);
         }
         
@@ -92,20 +72,20 @@ namespace DVSRegister.UnitTests.DVSRegister
         public async Task SaveRegisteredName_ReturnsViewWithErrors_WhenModelStateInvalid_Test()
         {
             var profileSummaryViewModel = new ProfileSummaryViewModel { RegisteredName = "" };
-            cabProviderController.ModelState.AddModelError("RegisteredName", "This field is required.");
-            var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
+            Controller.ModelState.AddModelError("RegisteredName", "This field is required.");
+            var result = await Controller.SaveRegisteredName(profileSummaryViewModel);
             var viewResult = Assert.IsType<ViewResult>(result);
             
             Assert.Equal("RegisteredName", viewResult.ViewName);
-            Assert.True(cabProviderController.ModelState["RegisteredName"].Errors.Count > 0);
+            Assert.True(Controller.ModelState["RegisteredName"].Errors.Count > 0);
         }
 
         [Fact]
         public async Task SaveRegisteredName_RedirectsToNextStep_WhenNoErrors_Test()
         {
             var profileSummaryViewModel = MockRegisteredNameDetails("Test Registered Name", false, false);
-            cabService.CheckProviderRegisteredNameExists(Arg.Any<string>()).Returns(false);
-            var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
+            CabService.CheckProviderRegisteredNameExists(Arg.Any<string>()).Returns(false);
+            var result = await Controller.SaveRegisteredName(profileSummaryViewModel);
             var redirectResult = Assert.IsType<RedirectToActionResult>(result);
             
             Assert.Equal("TradingName", redirectResult.ActionName);
@@ -119,17 +99,17 @@ namespace DVSRegister.UnitTests.DVSRegister
         {
             ProfileSummaryViewModel profileSummaryViewModel = new();
             profileSummaryViewModel.RegisteredName = registeredName;        
-            cabService.CheckProviderRegisteredNameExists(registeredName).Returns(registeredNameExists);
-            cabProviderController.ModelState.AddModelError("RegisteredName", errorMessage);
-            var result = await cabProviderController.SaveRegisteredName(profileSummaryViewModel);
+            CabService.CheckProviderRegisteredNameExists(registeredName).Returns(registeredNameExists);
+            Controller.ModelState.AddModelError("RegisteredName", errorMessage);
+            var result = await Controller.SaveRegisteredName(profileSummaryViewModel);
 
             Assert.NotNull(result);
             
             var redirectResult = Assert.IsType<ViewResult>(result);
             
             Assert.Equal("RegisteredName", redirectResult.ViewName);
-            Assert.True(cabProviderController.ModelState["RegisteredName"].Errors.Count > 0);
-            Assert.Equal(errorMessage, cabProviderController.ModelState["RegisteredName"].Errors[0].ErrorMessage);
+            Assert.True(Controller.ModelState["RegisteredName"].Errors.Count > 0);
+            Assert.Equal(errorMessage, Controller.ModelState["RegisteredName"].Errors[0].ErrorMessage);
         }
 
         #endregion
@@ -139,27 +119,27 @@ namespace DVSRegister.UnitTests.DVSRegister
             ProfileSummaryViewModel profileSummaryViewModel = new();
             profileSummaryViewModel.RegisteredName = registeredName;
             profileSummaryViewModel.FromSummaryPage = fromSummaryPage;
-            cabService.CheckProviderRegisteredNameExists("").Returns(registeredNameExists);
-            cabProviderController.ModelState.AddModelError("RegisteredName", "");
-            cabProviderController.ModelState["RegisteredName"].Errors.Clear();
+            CabService.CheckProviderRegisteredNameExists("").Returns(registeredNameExists);
+            Controller.ModelState.AddModelError("RegisteredName", "");
+            Controller.ModelState["RegisteredName"].Errors.Clear();
             return profileSummaryViewModel;
         }
         
         [Fact]
         public async Task SaveRegisteredName_RetainsEmailAndStoresProfileSummaryInSession_Test()
         {
-            session.SetString("Email", JsonSerializer.Serialize("test@example.com"));
+            Session.SetString("Email", JsonSerializer.Serialize("test@example.com"));
             
             var vm = MockRegisteredNameDetails("Test LTD", fromSummaryPage: false, registeredNameExists: false);
-            cabService
+            CabService
                 .CheckProviderRegisteredNameExists("Test LTD")
                 .Returns(false);
 
-            await cabProviderController.SaveRegisteredName(vm);
+            await Controller.SaveRegisteredName(vm);
 
             Assert.Equal(JsonSerializer.Serialize("test@example.com"), 
-                httpContext.Session.GetString("Email"));
-            var stored = httpContext.Session.Get<ProfileSummaryViewModel>("ProfileSummary");
+                HttpContext.Session.GetString("Email"));
+            var stored = HttpContext.Session.Get<ProfileSummaryViewModel>("ProfileSummary");
             Assert.NotNull(stored);
             Assert.Equal("Test LTD", stored.RegisteredName);
         }
