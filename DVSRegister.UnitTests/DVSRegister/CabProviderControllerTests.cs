@@ -1,32 +1,22 @@
-﻿using System.Text.Json;
-using DVSRegister.BusinessLogic.Services;
-using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility;
+﻿using DVSRegister.CommonUtility;
 using DVSRegister.Controllers;
-using DVSRegister.Models.CAB;
-using DVSRegister.UnitTests.Helpers;
 using DVSRegister.Extensions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using NSubstitute;
-using System.Text.RegularExpressions;
+using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using NSubstitute;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace DVSRegister.UnitTests.DVSRegister
 {
-    public class CabProviderControllerTests
-        : ControllerTestBase<CabProviderController>
+    public class CabProviderControllerTests : ControllerTestBase<CabProviderController>
     {
         public CabProviderControllerTests()
         {
             ConfigureFakes(() =>
             {
-                var controllerInstance = new CabProviderController(
-                    CabService,
-                    UserService,
-                    Logger
-                );
-
+                var controllerInstance = new CabProviderController(CabService, UserService, Logger);
                 return controllerInstance;
             });
         }

@@ -12,19 +12,12 @@ using DVSRegister.UnitTests.Helpers;
 
 namespace DVSRegister.UnitTests.DVSRegister
 {
-    public class CabServiceAmendmentControllerTests
-            : ControllerTestBase<CabServiceAmendmentController>
+    public class CabServiceAmendmentControllerTests  : ControllerTestBase<CabServiceAmendmentController>
     {
         public CabServiceAmendmentControllerTests()
         {
             ConfigureFakes(() =>
-                new CabServiceAmendmentController(
-                    CabService,
-                    Logger,
-                    Mapper,
-                    BucketService
-                )
-            );
+                new CabServiceAmendmentController(CabService,Logger, Mapper, BucketService ));
         }
 
         #region ServiceAmendments GET

@@ -1,32 +1,19 @@
-﻿using DVSRegister.BusinessLogic.Services;
-using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Services.CAB;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Controllers;
 using DVSRegister.Models.CAB;
-using DVSRegister.UnitTests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
-using DVSRegister.CommonUtility.Models;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DVSRegister.UnitTests.DVSRegister
 {
-    public class CabRemovalRequestControllerTests
-        : ControllerTestBase<CabRemovalRequestController>
+    public class CabRemovalRequestControllerTests : ControllerTestBase<CabRemovalRequestController>
     {
         public CabRemovalRequestControllerTests()
         {
             ConfigureFakes(() =>
-                new CabRemovalRequestController(
-                    CabService,
-                    CabRemovalRequestService,
-                    Logger
-                )
-            );
+            new CabRemovalRequestController(CabService, CabRemovalRequestService,Logger) );
         }
         
         #region ReasonForRemoval GET
