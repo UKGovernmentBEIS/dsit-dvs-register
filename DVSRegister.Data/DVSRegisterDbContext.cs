@@ -51,6 +51,9 @@ namespace DVSRegister.Data
         public DbSet<ServiceQualityLevelMappingDraft> ServiceQualityLevelMappingDraft { get; set; }
         public DbSet<ServiceIdentityProfileMappingDraft> ServiceIdentityProfileMappingDraft { get; set; }
         public DbSet<ServiceSupSchemeMappingDraft> ServiceSupSchemeMappingDraft { get; set; }
+
+        public DbSet<CabTransferRequest> CabTransferRequest { get; set; }
+        public DbSet<RequestManagement> RequestManagement { get; set; }
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
             if (actorId !=null)
