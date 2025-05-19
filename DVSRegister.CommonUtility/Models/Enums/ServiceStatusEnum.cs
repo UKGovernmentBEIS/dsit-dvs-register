@@ -28,7 +28,7 @@ namespace DVSRegister.CommonUtility.Models
         [Description("Submitted")]
         Resubmitted = 11,
         [Description("Published - under reassignment")]
-        Reassignment = 11
+        Reassignment = 12
 
     }
 }
