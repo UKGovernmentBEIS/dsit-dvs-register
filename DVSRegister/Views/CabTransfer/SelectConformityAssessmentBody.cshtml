@@ -1,0 +1,90 @@
+﻿@{
+    ViewData["Title"] = "Select the accepting Conformity Assessment Body";
+    Layout = "~/Views/Shared/_LayoutConsent.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink(
+        "Back",
+        "ProviderServiceDetails",
+        "Cab",
+        new {},
+        new { @class = "govuk-back-link" }
+    )
+
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
+
+                <p class="govuk-body">
+                    The Conformity Assessment Body (CAB) that has access to this service record is:
+                    ((name of issuing CAB))
+                </p>
+                <p class="govuk-body">
+                    Tell us which CAB this service record should be reassigned to and select 'Continue'.
+                </p>
+
+                @if (ViewData["Error"] != null)
+                {
+                    <span class="govuk-error-message">@ViewData["Error"]</span>
+                }
+
+                <form method="post" class="govuk-!-margin-top-6" class="govuk-form">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                            CAB name
+                        </legend>
+                        
+
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input
+                                    class="govuk-radios__input"
+                                    id="cab1"
+                                    name="SelectedCab"
+                                    type="radio"
+                                    value="cab1" />
+                                <label class="govuk-label govuk-radios__label" for="cab1">
+                                    CAB name – option 1
+                                </label>
+                            </div>
+
+                            <div class="govuk-radios__item">
+                                <input
+                                    class="govuk-radios__input"
+                                    id="cab2"
+                                    name="SelectedCab"
+                                    type="radio"
+                                    value="cab2" />
+                                <label class="govuk-label govuk-radios__label" for="cab2">
+                                    CAB name – option 2
+                                </label>
+                            </div>
+
+                            <div class="govuk-radios__item">
+                                <input
+                                    class="govuk-radios__input"
+                                    id="cab3"
+                                    name="SelectedCab"
+                                    type="radio"
+                                    value="cab3" />
+                                <label class="govuk-label govuk-radios__label" for="cab3">
+                                    CAB name – option 3
+                                </label>
+                            </div>
+                        </div>
+
+                        <button
+                            class="govuk-button govuk-!-margin-top-4"
+                            data-module="govuk-button">
+                            Continue
+                        </button>
+                    </fieldset>
+                </form>
+
+            </div>
+        </div>
+    </main>
+</div>
