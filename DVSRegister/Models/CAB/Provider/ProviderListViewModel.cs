@@ -1,4 +1,5 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 
 namespace DVSRegister.Models.CAB.Provider
 {
@@ -6,5 +7,8 @@ namespace DVSRegister.Models.CAB.Provider
     {
         public List<ProviderProfileDto>? Providers { get; set; }
         public string? SearchText { get; set; }
+        public bool HasPendingReAssignments {  get; set; }
+        public List<CabTransferRequestDto> PendingCertificateUploads { get; set; }
+        public string? ProviderServiceNames {  get; set; }
     }
 }

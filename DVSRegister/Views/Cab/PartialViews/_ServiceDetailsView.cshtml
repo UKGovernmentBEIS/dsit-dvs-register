@@ -10,8 +10,9 @@
     var notificationBanner = new NotificationBannerViewModel
             {
                 Title = "Important",
-                Heading = "You have a pending submission which is incomplete",
-                HtmlContent = "Select 'Resume submission' to continue your submission."
+                NotificationContent = new List<NotificationContent> { new () { Heading = "You have a pending submission which is incomplete", 
+                HtmlContent = "Select 'Resume submission' to continue your submission."} }               
+               
             };
 }
 

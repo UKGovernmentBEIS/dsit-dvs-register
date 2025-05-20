@@ -21,9 +21,35 @@
     <main id="main-content" class="govuk-main-wrapper" role="main">
 
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
+           
                 <h1 class="govuk-heading-xl">Your service provider profiles</h1>
-            </div>
+
+            @if (Model.HasPendingReAssignments || Model.PendingCertificateUploads.Count > 0)
+            {
+                var notificationBanner = new NotificationBannerViewModel { Title = "Important", NotificationContent = [] };
+                if (Model.PendingCertificateUploads.Count > 0)
+                {
+                    notificationBanner.NotificationContent.Add(new()
+                    {
+                        Heading = "You have new services added to your profile, that you need to upload replacement certificates for.",
+                        HtmlContent = Model.ProviderServiceNames??string.Empty
+                });
+                }
+                if (Model.HasPendingReAssignments)
+                {
+                    notificationBanner.NotificationContent.Add(new()
+                    {
+                        Heading = "You have service reassignment requests waiting for your review",
+                        HtmlContent = "Go to <a href=#' class='govuk-link'>service management requests</a> to view, accept or reject these requests"
+                    });
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)
+
+            }
+                
+             
+      
         </div>
 
         <div class="govuk-grid-row">

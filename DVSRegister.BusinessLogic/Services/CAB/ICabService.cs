@@ -1,4 +1,5 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models;
 namespace DVSRegister.BusinessLogic.Services.CAB
 {
@@ -16,6 +17,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId);
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto);
         public Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId);
+        public Task<(bool, List<CabTransferRequestDto>)> GetPendingReassignRequests(int cabId);
 
         #region Save/update
         public Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfile, string loggedInUserEmail);

@@ -6,12 +6,17 @@
             @Model.Title
         </h2>
     </div>
+
+    @foreach (var item in @Model.NotificationContent)
+    {
     <div class="govuk-notification-banner__content dsit-notification-banner-content">
         <h3 class="govuk-notification-banner__heading">
-            @Model.Heading
+            @item.Heading
         </h3>
         <p class="govuk-body">
-            @Html.Raw(Model.HtmlContent)
+            @Html.Raw(@item.HtmlContent)
         </p>
     </div>
+    }
+
 </div>

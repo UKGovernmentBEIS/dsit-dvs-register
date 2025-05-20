@@ -28,10 +28,12 @@
                 </h1>
                 @{
                     var notificationBanner = new NotificationBannerViewModel
-            {
+                {
                 Title = "Important",
-                Heading = "Your changes will not be reflected on the service submission until you select ‘Resubmit’ below."
-            };
+                NotificationContent = new List<NotificationContent> { new () 
+                { Heading = "Your changes will not be reflected on the service submission until you select ‘Resubmit’ below." } }
+              
+                };
                 }
 
                 @await Html.PartialAsync("~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)

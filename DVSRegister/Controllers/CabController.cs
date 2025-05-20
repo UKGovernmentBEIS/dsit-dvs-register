@@ -40,16 +40,22 @@ namespace DVSRegister.Controllers
                 return HandleInvalidCabId(CabId);
 
             ProviderListViewModel providerListViewModel = new();
-                if (SearchAction == "clearSearch")
-                {
-                    ModelState.Clear();
-                    providerListViewModel.SearchText = null;
-                    SearchText = string.Empty;
-                }
-                providerListViewModel.Providers = await cabService.GetProviders(CabId, SearchText);
-                return View(providerListViewModel);
-
-            
+            if (SearchAction == "clearSearch")
+            {
+                ModelState.Clear();
+                providerListViewModel.SearchText = null;
+                SearchText = string.Empty;
+            }
+          providerListViewModel.Providers = await cabService.GetProviders(CabId, SearchText);
+          var (hasPendingRequests, uploadList) = await cabService.GetPendingReassignRequests(CabId);
+          providerListViewModel.HasPendingReAssignments = hasPendingRequests;
+          providerListViewModel.PendingCertificateUploads = uploadList;
+          if(providerListViewModel.PendingCertificateUploads.Count>0)
+          {
+            providerListViewModel.ProviderServiceNames = string.Join("<br>", providerListViewModel.PendingCertificateUploads
+            .Select(request =>  request.ProviderProfile.RegisteredName + " " + request.Service.ServiceName));
+          }             
+            return View(providerListViewModel);          
           
         }
 
