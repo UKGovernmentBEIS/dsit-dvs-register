@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
@@ -101,6 +102,12 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         {
             return await cabRepository.CheckValidCabAndProviderProfile(providerId, cabId);
 
+        }
+
+        public async Task<(bool, List<CabTransferRequestDto>)> GetPendingReassignRequests(int cabId)
+        {
+            var(pendingRequestCount, requestList) = await cabRepository.GetPendingReassignRequestsCount(cabId);
+            return (pendingRequestCount>0?true:false, automapper.Map<List<CabTransferRequestDto>>(requestList));
         }
 
         #region Save/ update

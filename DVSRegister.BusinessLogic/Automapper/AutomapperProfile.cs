@@ -118,6 +118,14 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceDraftTokenDto, ServiceDraftToken>();
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
+
+            CreateMap<RequestManagement, RequestManagementDto>();
+            CreateMap<RequestManagementDto, RequestManagement>();
+
+            CreateMap<CabTransferRequest, CabTransferRequestDto>()
+          .ForMember(dest => dest.RequestManagement, opt => opt.MapFrom(src => src.RequestManagement));
+            CreateMap<CabTransferRequestDto, CabTransferRequest>()
+            .ForMember(dest => dest.RequestManagement, opt => opt.MapFrom(src => src.RequestManagement));
         }
     }
 }
