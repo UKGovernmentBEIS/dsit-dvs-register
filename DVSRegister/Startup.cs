@@ -3,6 +3,7 @@ using Amazon.S3;
 using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.BusinessLogic.Services.CabTransfer;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.GoogleAnalytics;
@@ -11,6 +12,7 @@ using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.CabRemovalRequest;
+using DVSRegister.Data.CabTransfer;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
 using DVSRegister.Services.Cookies;
@@ -30,16 +32,7 @@ namespace DVSRegister
             this.webHostEnvironment = webHostEnvironment;
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            app.UseStaticFiles();
-            app.UseMvc();
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
-        }
+       
         public void ConfigureServices(IServiceCollection services)
         {
 
@@ -119,6 +112,8 @@ namespace DVSRegister
             services.AddScoped<IRemoveProviderService, RemoveProviderService>();
             services.AddSingleton<DVSRegister.Services.AutoMapperProfile>();
             services.AddSingleton<DVSRegister.BusinessLogic.AutoMapperProfile>();
+            services.AddScoped<ICabTransferRepository, CabTransferRepository>();
+            services.AddScoped<ICabTransferService, CabTransferService>();
             services.AddTransient<LoginEmailSender>();
             services.AddTransient<CabEmailSender>();
             services.AddTransient<Removal2iCheckEmailSender>();

@@ -46,6 +46,7 @@
     <Content Remove="wwwroot\css\utilities\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Views\CabTransfer\PartialViews\_PendingSubmissions.cshtml" />
     <None Include="Views\DSITEdit2i\ProviderChanges.cshtml" />
     <None Include="Views\DSITEdit2i\ProviderChangesApproved.cshtml" />
     <None Include="Views\DSITEdit2i\ProviderChangesCancelled.cshtml" />
