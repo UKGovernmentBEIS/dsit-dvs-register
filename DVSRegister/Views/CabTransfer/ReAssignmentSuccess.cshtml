@@ -1,46 +1,48 @@
 ﻿@{
-    ViewData["Title"] = "Service reassignment request accepted";
+    ViewData["Title"] = "You are about to approve this reassignment request";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 <div class="govuk-width-container">
-    <a href="#" class="govuk-back-link">Back</a>
+  <a href="#" class="govuk-back-link">Back</a>
     <main class="govuk-main-wrapper">
-        <div class="govuk-grid-row">
+       <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <div class="govuk-panel govuk-panel--confirmation">
-                    <h1 class="govuk-panel__title">
-                        Service reassignment request accepted
-                    </h1>
-                </div>
-                <p class="govuk-body">
-                    You have accepted a request to reassign this service record to your
-                    Conformity Assessment Body.
+                <h1 class="govuk-heading-xl">You are about to approve this reassignment request</h1>
+                <p class="govuk-body">You are about to accept this request to reassign a service to your
+                    Conformity Assessment Body (CAB).
                 </p>
-                <p class="govuk-body">
+            <p class="govuk-body">
                     Provider: ((provider name)) <br />
                     Service: ((service name)) <br />
                 </p>
-                <p class="govuk-body govuk-!-margin-bottom-0">You will be able:</p>
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>
-                        access the service in 'Your service provider profiles' on the <a href="#" class="govuk-link">Conformity Assessment Body Service</a>
-                    </li>
-                    <li>
-                        issue a replacement certificate for this service, if it has recently been
-                        transferred to your CAB
-                    </li>
-                </ul>
-            <h2 class="govuk-heading-m">If you need help</h2>
             <p class="govuk-body">
-                If you need help, you can email the Office for Digital Identities and Attributes
-                on: <strong>digital.identity.register@dsit.gov.uk.</strong>
+                Once you approve the request, the service record will appear in 'Your service provider profiles'
+                on the Conformity Assessment Body Service. The CAB that has transferred this service will no longer
+                be able to view or make changes to the record.
+                </p>
+            <p class="govuk-body"> 
+                    If you wish to continue, please select 'Accept reassignment request'.</p>
+            <p class="govuk-body">
+                If you do not wish to continue, please select 'Cancel' to return to 'Your service
+                provider profiles'
             </p>
-            <p class="govuk-body"> You can close this page now.</p>
-            <button type="submit" class="govuk-button" data-module="govuk-button">
-                Return to your provider profiles
-            </button>
-                </div>
+            <div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-visually-hidden">Warning</span>
+                    Once you approve this reassignment request, the action cannot be undone.
+                </strong>
             </div>
+            <div class="govuk-button-group">
+                <button type="submit" class="govuk-button" data-module="govuk-button">
+                    Accept reassignment request
+                </button>
+                <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                   Cancel
+                </button>
+           </div>
+         </div>
+       </div>
     </main>
 </div>
 
