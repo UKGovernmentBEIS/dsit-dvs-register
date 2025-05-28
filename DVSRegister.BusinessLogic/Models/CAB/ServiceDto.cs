@@ -42,5 +42,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public ProceedPublishConsentTokenDto ProceedPublishConsentToken { get; set; }
         public string? RemovalReasonByCab { get; set; }
         public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
+        [JsonIgnore]
+        public CabTransferRequestDto CabTransferRequest { get; set; }
     }
 }

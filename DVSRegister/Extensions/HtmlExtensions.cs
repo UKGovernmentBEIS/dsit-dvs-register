@@ -29,6 +29,7 @@ namespace DVSRegister.Extensions
 
                 case ServiceStatusEnum.Published:
                 case CertificateReviewEnum.Approved:
+                case ServiceStatusEnum.PublishedUnderReassign:
                     return "govuk-tag govuk-tag--green";
 
                 case CertificateReviewEnum.Rejected:
@@ -37,6 +38,7 @@ namespace DVSRegister.Extensions
                     return "govuk-tag govuk-tag--red";
                 
                 case ServiceStatusEnum.Removed:
+                case ServiceStatusEnum.RemovedUnderReassign:
                     return "govuk-tag govuk-tag--grey";
 
                 case ServiceStatusEnum.SavedAsDraft:

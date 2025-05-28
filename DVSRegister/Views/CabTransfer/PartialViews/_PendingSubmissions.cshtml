@@ -1,0 +1,49 @@
+﻿@model DVSRegister.Models.CabTransfer.ServiceManagementRequestsViewModel;
+<h2 class="govuk-heading-l">Transfer service requests</h2>
+
+
+@foreach(var item in Model.PendingRequests)
+{
+    <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">
+                Service details: @item.Service.ServiceName
+            </h2>
+        </div>
+        <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Registered name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @item.ProviderProfile.RegisteredName
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                       
+                        <a class="govuk-link" href="/cab-transfer/service-details?serviceId=@item.ServiceId&fromCabId=@item.FromCabUser.CabId">View service details<span class="govuk-visually-hidden"> Service details:  @item.Service.ServiceName</span></a>
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Reassignment
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        Reassign to @item.ToCab.CabName
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        <ul class="govuk-summary-list__actions-list">
+                            <li class="govuk-summary-list__actions-list-item">
+                                <a class="govuk-link" href="#">Approve<span class="govuk-visually-hidden"> Approve reassignment</span></a>
+                            </li>
+                            <li class="govuk-summary-list__actions-list-item">
+                                <a class="govuk-link" href="#">Reject<span class="govuk-visually-hidden"> Reject reassignment</span></a>
+                            </li>
+                        </ul>                      
+                    </dd>
+                </div>
+
+            </dl>
+        </div>
+    </div>
+}
