@@ -1,5 +1,5 @@
 ﻿@model DVSRegister.Models.CabTransfer.ServiceManagementRequestsViewModel;
-<h2 class="govuk-heading-l">Transfer service requests</h2>
+<h2 class="govuk-heading-l">@(ViewData["TabTitle"] as string)</h2>
 
 
 @foreach(var item in Model.PendingRequests)
@@ -31,16 +31,19 @@
                     <dd class="govuk-summary-list__value">
                         Reassign to @item.ToCab.CabName
                     </dd>
-                    <dd class="govuk-summary-list__actions">
-                        <ul class="govuk-summary-list__actions-list">
-                            <li class="govuk-summary-list__actions-list-item">
-                                <a class="govuk-link" href="#">Approve<span class="govuk-visually-hidden"> Approve reassignment</span></a>
-                            </li>
-                            <li class="govuk-summary-list__actions-list-item">
-                                <a class="govuk-link" href="#">Reject<span class="govuk-visually-hidden"> Reject reassignment</span></a>
-                            </li>
-                        </ul>                      
-                    </dd>
+                    @if (!(ViewData["IsApproved"] as bool? ?? false))
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            <ul class="govuk-summary-list__actions-list">
+                                <li class="govuk-summary-list__actions-list-item">
+                                    <a class="govuk-link" href="#">Approve<span class="govuk-visually-hidden"> Approve reassignment</span></a>
+                                </li>
+                                <li class="govuk-summary-list__actions-list-item">
+                                    <a class="govuk-link" href="#">Reject<span class="govuk-visually-hidden"> Reject reassignment</span></a>
+                                </li>
+                            </ul>                      
+                        </dd>
+                    }
                 </div>
 
             </dl>
