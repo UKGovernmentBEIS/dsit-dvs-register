@@ -212,20 +212,18 @@
         </div>
     </div>
 
-        <div class="govuk-grid-column-two-thirds">
-            @using (Html.BeginForm("SaveOrCancelReassignment", "CabTransfer", FormMethod.Post))
+            @if (Model?.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || Model?.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
             {
-               @Html.Hidden("requestId", @Model?.CabTransferRequest?.Id)               
-                <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button" data-module="govuk-button" name="saveReassignment" value="save">
-                        Approve reassignment
-                    </button>
-                    <button type="submit" class="govuk-button govuk-button--warning" data-module="govuk-button" name="saveReassignment" value="cancel">
-                        Reject reassignment
-                    </button>
+                <div class="govuk-grid-column-two-thirds">
+                    <div class="govuk-button-group">
+                        <a href="@( Url.Action("AboutToApproveReAssignment", "CabTransfer", new { requestId = Model?.CabTransferRequest.Id }) )" class="govuk-button" role="button">Approve reassignment</a>
+                        <button type="submit" class="govuk-button govuk-button--warning" data-module="govuk-button" name="action" value="cancel">
+                            Reject reassignment
+                        </button>
+                    </div>
                 </div>
             }
-        </div>
+       
 </div>
 </main>
 </div>
