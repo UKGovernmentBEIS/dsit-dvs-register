@@ -1,9 +1,9 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services.CabTransfer;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models.CabTransfer;
 using Microsoft.AspNetCore.Mvc;
-using DVSRegister.CommonUtility.Models;
 
 namespace DVSRegister.Controllers
 {
@@ -22,7 +22,7 @@ namespace DVSRegister.Controllers
                 PendingRequests = list.Where(x => x.RequestManagement != null && x.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
                 && (x.RequestManagement.RequestStatus == RequestStatusEnum.Pending)).ToList(),
                 CompletedRequests = list.Where(x => x.RequestManagement != null && x.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
-                && (x.RequestManagement.RequestStatus == RequestStatusEnum.Approved || x.RequestManagement.RequestStatus == RequestStatusEnum.Rejected)).ToList()
+                && (x.RequestManagement.RequestStatus == RequestStatusEnum.Approved)).ToList()
             };
 
             return View(serviceManagementRequestsViewModel);
@@ -38,14 +38,24 @@ namespace DVSRegister.Controllers
             else throw new InvalidOperationException("Invalid service status for reassign");
            
         }
+      
 
-        [HttpPost("save-reassignment")]
-        public async Task<IActionResult> SaveOrCancelReassignment(int requestId, string saveReassignment)
-        {
-            //to do
-            return View();
-           
+        [HttpGet("about-to-approve")]
+        public async Task<IActionResult> AboutToApproveReAssignment(int requestId)
+        {           
+            var cabTransferRequest = await cabTransferService.GetCabTransferRequestDeatils(requestId);           
+            return View(cabTransferRequest);
         }
+
+        [HttpPost("about-to-approve")]
+        public async Task<IActionResult> ApproveReAssignment(int requestId, int providerProfileId)
+        {           
+            GenericResponse genericResponse = await cabTransferService.ApproveOrCancelTransferRequest(true,requestId, providerProfileId ,UserEmail);
+            if (genericResponse.Success)
+                return RedirectToAction("ReAssignmentSuccess");
+            else throw new InvalidOperationException("ApproveReAssignment failed");           
+        }
+
         [HttpGet("reassignment-success")]
         public IActionResult ReAssignmentSuccess()
         {
