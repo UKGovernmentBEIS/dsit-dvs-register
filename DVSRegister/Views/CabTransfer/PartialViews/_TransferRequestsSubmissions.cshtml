@@ -1,13 +1,18 @@
-﻿@model DVSRegister.Models.CabTransfer.ServiceManagementRequestsViewModel;
-<h2 class="govuk-heading-l">@(ViewData["TabTitle"] as string)</h2>
+﻿@model DVSRegister.Models.CabTransfer.ServiceManagementRequestsViewModel
+@{
+    var title      = ViewData["TabTitle"] as string;
+    var isApproved = (ViewData["isApproved"] as bool? ?? false);
+    var requestsList      = isApproved ? Model.CompletedRequests : Model.PendingRequests;
+}
 
+<h2 class="govuk-heading-l">@title</h2>
 
-@foreach(var item in Model.PendingRequests)
+@foreach(var request in requestsList)
 {
     <div class="govuk-summary-card">
         <div class="govuk-summary-card__title-wrapper">
             <h2 class="govuk-summary-card__title">
-                Service details: @item.Service.ServiceName
+                Service details: @request.Service.ServiceName
             </h2>
         </div>
         <div class="govuk-summary-card__content">
@@ -17,11 +22,11 @@
                         Registered name
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @item.ProviderProfile.RegisteredName
+                        @request.ProviderProfile.RegisteredName
                     </dd>
                     <dd class="govuk-summary-list__actions">
                        
-                        <a class="govuk-link" href="/cab-transfer/service-details?serviceId=@item.ServiceId&fromCabId=@item.FromCabUser.CabId">View service details<span class="govuk-visually-hidden"> Service details:  @item.Service.ServiceName</span></a>
+                        <a class="govuk-link" href="/cab-transfer/service-details?serviceId=@request.ServiceId&fromCabId=@request.FromCabUser.CabId">View service details<span class="govuk-visually-hidden"> Service details:  @request.Service.ServiceName</span></a>
                     </dd>
                 </div>
                 <div class="govuk-summary-list__row">
@@ -29,9 +34,9 @@
                         Reassignment
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        Reassign to @item.ToCab.CabName
+                        Reassign to @request.ToCab.CabName
                     </dd>
-                    @if (!(ViewData["IsApproved"] as bool? ?? false))
+                    @if (!isApproved)
                     {
                         <dd class="govuk-summary-list__actions">
                             <ul class="govuk-summary-list__actions-list">
