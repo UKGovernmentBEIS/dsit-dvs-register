@@ -3,7 +3,6 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 <div class="govuk-width-container">
-    <a href="#" class="govuk-back-link">Back</a>
     <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -17,13 +16,13 @@
                     Conformity Assessment Body.
                 </p>
                 <p class="govuk-body">
-                    Provider: ((provider name)) <br />
-                    Service: ((service name)) <br />
+                    Provider: @TempData["ProviderName"]<br />
+                    Service:  @TempData["ServiceName"] <br />
                 </p>
                 <p class="govuk-body govuk-!-margin-bottom-0">You will be able to:</p>
                 <ul class="govuk-list govuk-list--bullet">
                     <li>
-                        access the service in 'Your service provider profiles' on the <a href="#" class="govuk-link">Conformity Assessment Body Service</a>
+                        access the service in 'Your service provider profiles' on the <a href=@TempData["CabURL"] class="govuk-link">Conformity Assessment Body Service</a>
                     </li>
                     <li>
                         issue a replacement certificate for this service, if it has recently been
@@ -36,9 +35,9 @@
                     on: <strong>digital.identity.register@dsit.gov.uk.</strong>
                 </p>
                 <p class="govuk-body"> You can close this page now.</p>
-                <button type="submit" class="govuk-button" data-module="govuk-button">
+                <a href="@Url.Action("ListProviders", "Cab")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                     Return to your provider profiles
-                </button>
+                </a>
             </div>
         </div>
     </main>
