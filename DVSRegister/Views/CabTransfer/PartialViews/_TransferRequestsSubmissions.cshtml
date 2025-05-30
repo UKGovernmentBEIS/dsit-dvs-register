@@ -41,10 +41,10 @@
                         <dd class="govuk-summary-list__actions">
                             <ul class="govuk-summary-list__actions-list">
                                 <li class="govuk-summary-list__actions-list-item">
-                                    <a class="govuk-link" href="#">Approve<span class="govuk-visually-hidden"> Approve reassignment</span></a>
+                                    <a class="govuk-link" href="@( Url.Action("AboutToApproveReAssignment", "CabTransfer", new { requestId = request.Id}) )">Approve<span class="govuk-visually-hidden"> Approve reassignment</span></a>
                                 </li>
                                 <li class="govuk-summary-list__actions-list-item">
-                                    <a class="govuk-link" href="#">Reject<span class="govuk-visually-hidden"> Reject reassignment</span></a>
+                                    <a class="govuk-link" href="@( Url.Action("AboutToRejectReAssignment", "CabTransfer", new { requestId = request.Id }) )">Reject<span class="govuk-visually-hidden"> Reject reassignment</span></a>
                                 </li>
                             </ul>                      
                         </dd>
