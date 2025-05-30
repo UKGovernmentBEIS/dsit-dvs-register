@@ -45,9 +45,8 @@
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Accept reassignment request
                     </button>
-                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                        Cancel
-                    </button>
+                    <a href="@( Url.Action("ServiceDetails", "CabTransfer", new { serviceId = Model?.ServiceId, fromCabId = Model?.FromCabUser.CabId }) )"
+                    class="govuk-button govuk-button--secondary" role="button">Cancel</a>
                 </div>
                 }
             </div>

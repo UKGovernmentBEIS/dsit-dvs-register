@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-transfer")]
-    public class CabTransferController(ICabTransferService cabTransferService, ILogger<CabTransferController> logger) : BaseController(logger)
+    public class CabTransferController(ICabTransferService cabTransferService, IConfiguration configuration, ILogger<CabTransferController> logger) : BaseController(logger)
     {
-        private readonly ICabTransferService cabTransferService = cabTransferService;        
-
+        private readonly ICabTransferService cabTransferService = cabTransferService;
+        private readonly IConfiguration configuration = configuration;        
+        
         [HttpGet("service-management-requests")]
         public async Task<IActionResult> ServiceManagementRequests()
         {
@@ -35,21 +36,23 @@ namespace DVSRegister.Controllers
             ServiceDto serviceDto = await cabTransferService.GetServiceDetailsWithCabTransferDetails(serviceId, fromCabId);
             if (serviceDto.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || serviceDto.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
                 return View(serviceDto);
-            else throw new InvalidOperationException("Invalid service status for reassign");
-           
+            else throw new InvalidOperationException("Invalid service status for reassign");           
         }
       
 
         [HttpGet("about-to-approve")]
         public async Task<IActionResult> AboutToApproveReAssignment(int requestId)
         {           
-            var cabTransferRequest = await cabTransferService.GetCabTransferRequestDeatils(requestId);           
+            var cabTransferRequest = await cabTransferService.GetCabTransferRequestDeatils(requestId);
+            TempData["ServiceName"] = cabTransferRequest.Service.ServiceName;
+            TempData["ProviderName"] = cabTransferRequest.ProviderProfile.RegisteredName;
             return View(cabTransferRequest);
         }
 
         [HttpPost("about-to-approve")]
         public async Task<IActionResult> ApproveReAssignment(int requestId, int providerProfileId)
-        {           
+        {
+            TempData.Keep();
             GenericResponse genericResponse = await cabTransferService.ApproveOrCancelTransferRequest(true,requestId, providerProfileId ,UserEmail);
             if (genericResponse.Success)
                 return RedirectToAction("ReAssignmentSuccess");
@@ -59,6 +62,33 @@ namespace DVSRegister.Controllers
         [HttpGet("reassignment-success")]
         public IActionResult ReAssignmentSuccess()
         {
+            TempData["CabURL"] = configuration.GetValue<string>("GovUkNotify:CabLoginLink") ?? string.Empty;
+            return View();
+        }
+
+        [HttpGet("about-to-reject")]
+        public async Task<IActionResult> AboutToRejectReAssignment(int requestId)
+        {
+            var cabTransferRequest = await cabTransferService.GetCabTransferRequestDeatils(requestId);
+            TempData["ServiceName"] = cabTransferRequest.Service.ServiceName;
+            TempData["ProviderName"] = cabTransferRequest.ProviderProfile.RegisteredName;         
+            return View(cabTransferRequest);
+        }
+
+        [HttpPost("about-to-reject")]
+        public async Task<IActionResult> RejectReAssignment(int requestId, int providerProfileId)
+        {
+            TempData.Keep();
+            GenericResponse genericResponse = await cabTransferService.ApproveOrCancelTransferRequest(false, requestId, providerProfileId, UserEmail);
+            if (genericResponse.Success)
+                return RedirectToAction("ReAssignmentRejected");
+            else throw new InvalidOperationException("ApproveReAssignment failed");
+        }
+
+        [HttpGet("reassignment-rejected")]
+        public IActionResult ReAssignmentRejected()
+        {
+            TempData["CabURL"] = configuration.GetValue<string>("GovUkNotify:CabLoginLink") ?? string.Empty; 
             return View();
         }
     }

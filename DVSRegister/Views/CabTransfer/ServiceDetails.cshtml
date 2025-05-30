@@ -11,7 +11,7 @@
  @Html.ActionLink("Back", "ServiceManagementRequests", "CabTransfer", null, new { @class = "govuk-back-link" })
 <main id="main-content" class="govuk-main-wrapper" role="main">
  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-three-quarters">
      <h1 class="govuk-heading-xl"> Service details: @Model.ServiceName</h1>
     </div>
     <div class="govuk-grid-column-full">
@@ -217,9 +217,7 @@
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-button-group">
                         <a href="@( Url.Action("AboutToApproveReAssignment", "CabTransfer", new { requestId = Model?.CabTransferRequest.Id }) )" class="govuk-button" role="button">Approve reassignment</a>
-                        <button type="submit" class="govuk-button govuk-button--warning" data-module="govuk-button" name="action" value="cancel">
-                            Reject reassignment
-                        </button>
+                        <a href="@( Url.Action("AboutToRejectReAssignment", "CabTransfer", new { requestId = Model?.CabTransferRequest.Id }) )" class="govuk-button govuk-button--warning" role="button">Reject reassignment</a>
                     </div>
                 </div>
             }
