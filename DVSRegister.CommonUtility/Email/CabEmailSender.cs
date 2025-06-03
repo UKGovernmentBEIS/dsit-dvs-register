@@ -9,13 +9,16 @@ namespace DVSRegister.CommonUtility.Email
         {
         }
 
-        public async Task<bool> SendEmailCabInformationSubmitted(string emailAddress, string recipientName)
+        public async Task<bool> SendEmailCabInformationSubmitted(string emailAddress, string recipientName, string providerName, string serviceName)
         {
             var template = govUkNotifyConfig.CabInformationSubmittedTemplate;
 
             var personalisation = new Dictionary<string, dynamic>
             {
-                { template.RecipientName, recipientName  }
+                { template.RecipientName, recipientName },
+                { template.ProviderName,  providerName},
+                { template.ServiceName,  serviceName},
+
             };
             return await SendNotification(emailAddress, template, personalisation);
         }
