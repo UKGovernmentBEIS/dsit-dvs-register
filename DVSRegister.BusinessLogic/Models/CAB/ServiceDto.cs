@@ -43,6 +43,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public string? RemovalReasonByCab { get; set; }
         public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
         [JsonIgnore]
-        public CabTransferRequestDto CabTransferRequest { get; set; }
+        public ICollection<CabTransferRequestDto> CabTransferRequest { get; set; }
+
+        public int CabTransferRequestId { get; set; }
     }
 }

@@ -14,7 +14,7 @@
                     Conformity Assessment Body (CAB).
                 </p>
                 <p class="govuk-body">
-                    Provider: @Model.ProviderProfile.RegisteredName<br />
+                    Provider: @Model.Service.Provider.RegisteredName<br />
                     Service: @Model.Service.ServiceName<br />
                 </p>
                 <p class="govuk-body">
@@ -39,7 +39,7 @@
                 @using (Html.BeginForm("ApproveReAssignment", "CabTransfer", FormMethod.Post))
                 {
                     @Html.Hidden("requestId", @Model?.Id)
-                    @Html.Hidden("providerProfileId", @Model?.ProviderProfileId)
+                    @Html.Hidden("providerProfileId", @Model?.Service.ProviderProfileId)
 
                 <div class="govuk-button-group">
                     <button type="submit" class="govuk-button" data-module="govuk-button">

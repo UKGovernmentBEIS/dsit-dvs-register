@@ -15,10 +15,6 @@ namespace DVSRegister.Data.Entities
         public int ServiceId { get; set; }
         public Service Service { get; set; }
 
-        [ForeignKey("ProviderProfile")]
-        public int ProviderProfileId { get; set; }
-        public ProviderProfile ProviderProfile { get; set; }
-
         [ForeignKey("CabUser")]
         public int FromCabUserId { get; set; }       
         public CabUser FromCabUser { get; set; }

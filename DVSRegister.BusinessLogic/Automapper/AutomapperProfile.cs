@@ -60,6 +60,7 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
             .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
             .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview))
+            .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest))
             .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom<CreatedTimeResolver>());
 
             CreateMap<ServiceDto, Service>()
@@ -69,7 +70,8 @@ namespace DVSRegister.BusinessLogic
            .ForMember(dest => dest.ServiceSupSchemeMapping, opt => opt.MapFrom(src => src.ServiceSupSchemeMapping))
            .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
-           .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview));
+           .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview))
+           .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest));
 
             CreateMap<ProceedApplicationConsentToken, ProceedApplicationConsentTokenDto>()
            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));

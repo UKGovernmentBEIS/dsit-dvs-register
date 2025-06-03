@@ -174,7 +174,7 @@ namespace DVSRegister.Data.CAB
 
             var pendingRequests = await context.RequestManagement.Where(r => r.CabId == cabId && r.RequestStatus == RequestStatusEnum.Pending && r.RequestType== RequestTypeEnum.CabTransfer).ToListAsync();
 
-            var pendingUploads= await context.CabTransferRequest.Include(c=>c.Service).Include(c=>c.ProviderProfile)
+            var pendingUploads= await context.CabTransferRequest.Include(c=>c.Service).ThenInclude(c=>c.Provider)
                 .Where(c => c.ToCabId == cabId && c.CertificateUploaded == false && c.RequestManagement != null && c.RequestManagement.RequestStatus == RequestStatusEnum.Approved).ToListAsync();
 
             return (pendingRequests.Count, pendingUploads);           

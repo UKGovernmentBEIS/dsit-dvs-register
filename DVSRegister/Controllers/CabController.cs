@@ -53,7 +53,7 @@ namespace DVSRegister.Controllers
           if(providerListViewModel.PendingCertificateUploads.Count>0)
           {
             providerListViewModel.ProviderServiceNames = string.Join("<br>", providerListViewModel.PendingCertificateUploads
-            .Select(request =>  request.ProviderProfile.RegisteredName + " " + request.Service.ServiceName));
+            .Select(request =>  request.Service.Provider.RegisteredName + " " + request.Service.ServiceName));
           }             
             return View(providerListViewModel);          
           
