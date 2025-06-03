@@ -120,6 +120,7 @@ namespace DVSRegister
             services.AddTransient<ConsentEmailSender>();
             services.AddTransient<CabRemovalRequestEmailSender>();
             services.AddTransient<Edit2iCheckEmailSender>();
+            services.AddTransient<CabTransferEmailSender>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));

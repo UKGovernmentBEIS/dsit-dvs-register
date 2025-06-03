@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CabTransfer;
+using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic.Services.CabTransfer
 {
@@ -11,12 +13,14 @@ namespace DVSRegister.BusinessLogic.Services.CabTransfer
     {
         private readonly ICabTransferRepository cabTransferRepository;
         private readonly IRemoveProviderService removeProviderService;
+        private readonly CabTransferEmailSender emailSender;
         private readonly IMapper automapper;
 
-        public CabTransferService(ICabTransferRepository cabTransferRepository, IRemoveProviderService removeProviderService, IMapper automapper)
+        public CabTransferService(ICabTransferRepository cabTransferRepository, IRemoveProviderService removeProviderService, CabTransferEmailSender emailSender, IMapper automapper)
         {
             this.cabTransferRepository = cabTransferRepository;
             this.removeProviderService = removeProviderService;
+            this.emailSender = emailSender;
             this.automapper = automapper;            
         }
 
@@ -34,20 +38,65 @@ namespace DVSRegister.BusinessLogic.Services.CabTransfer
             ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
             return serviceDto;
         }
-        public async Task<CabTransferRequestDto> GetCabTransferRequestDeatils(int requestId)
+        public async Task<CabTransferRequestDto> GetCabTransferRequestDetails(int requestId)
         {
-            var requestDetails = await cabTransferRepository.GetCabTransferRequestDeatils(requestId);
+            var requestDetails = await cabTransferRepository.GetCabTransferRequestDetails(requestId);
             return automapper.Map<CabTransferRequestDto>(requestDetails);
 
         }
 
         public async Task<GenericResponse> ApproveOrCancelTransferRequest(bool approve, int requestId, int providerProfileId, string loggedInUserEmail)
         {            
-            GenericResponse genericResponse = await cabTransferRepository.ApproveOrCancelTransferRequest(approve,requestId, providerProfileId,loggedInUserEmail);
-            if(genericResponse.Success) 
+            GenericResponse genericResponse = await cabTransferRepository.ApproveOrCancelTransferRequest(approve,requestId,providerProfileId, loggedInUserEmail);
+            
+            if (!genericResponse.Success)
+                return genericResponse;
+            
+            genericResponse = await removeProviderService.UpdateProviderStatus(providerProfileId, loggedInUserEmail, EventTypeEnum.ApproveOrRejectReAssign, TeamEnum.CAB);
+            
+            if (!genericResponse.Success)
+                return genericResponse;
+            
+            var fullRequest = await cabTransferRepository.GetCabTransferRequestDetails(requestId);
+            if (fullRequest == null)
             {
-                genericResponse = await removeProviderService.UpdateProviderStatus(providerProfileId, loggedInUserEmail, EventTypeEnum.ApproveOrRejectReAssign, TeamEnum.CAB);
+                return new GenericResponse {
+                    Success      = false,
+                    ErrorMessage = $"Transfer request #{requestId} not found after approval/rejection."
+                };
             }
+            
+            var requestDto = automapper.Map<CabTransferRequestDto>(fullRequest);
+
+            string serviceName = requestDto.Service.ServiceName;
+            string providerName = requestDto.Service.Provider.RegisteredName;
+            
+            List<CabUser> activeCabBUsers = await cabTransferRepository.GetActiveCabUsers(requestDto.ToCabId);
+            var acceptingCabName = activeCabBUsers.FirstOrDefault()?.Cab.CabName??string.Empty;
+            
+            if (approve)
+            {
+                foreach(var user in activeCabBUsers)
+                {                 
+                    await emailSender.SendCabTransferConfirmationToCabB(user.CabEmail, acceptingCabName, providerName, serviceName);
+                }
+                
+                List<CabUser> activeCabAUsers = await cabTransferRepository.GetActiveCabUsers(requestDto.FromCabUser.CabId);
+                var currentCabName = activeCabAUsers.FirstOrDefault()?.Cab.CabName??string.Empty;
+                
+                foreach(var user in activeCabAUsers)
+                {                 
+                    await emailSender.SendCabTransferConfirmationToCabA(user.CabEmail, currentCabName, acceptingCabName, providerName, serviceName);
+                }
+            }
+            else
+            {
+                foreach(var user in activeCabBUsers)
+                {                 
+                    await emailSender.SendCabTransferCancellationToCabB(user.CabEmail, acceptingCabName, providerName, serviceName);
+                }
+            }
+            
             return genericResponse;
         }
     }

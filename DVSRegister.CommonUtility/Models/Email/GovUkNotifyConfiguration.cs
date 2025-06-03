@@ -55,5 +55,9 @@
 
         public EditServiceAccepted EditServiceAccepted { get; set; }
         public EditServiceDeclined EditServiceDeclined { get; set; }
+        
+        public CabTransferConfirmationToCabA CabTransferConfirmationToCabA { get; set; }
+        public CabTransferConfirmationToCabB CabTransferConfirmationToCabB { get; set; }
+        public CabTransferCancellationToCabB CabTransferCancellationToCabB { get; set; }
     }
 }

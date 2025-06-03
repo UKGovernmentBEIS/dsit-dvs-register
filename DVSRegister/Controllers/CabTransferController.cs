@@ -48,7 +48,7 @@ namespace DVSRegister.Controllers
         [HttpGet("about-to-approve")]
         public async Task<IActionResult> AboutToApproveReAssignment(int requestId)
         {           
-            var cabTransferRequest = await cabTransferService.GetCabTransferRequestDeatils(requestId);
+            var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
             TempData["ServiceName"] = cabTransferRequest.Service.ServiceName;
             TempData["ProviderName"] = cabTransferRequest.Service.Provider.RegisteredName;
             return View(cabTransferRequest);
@@ -74,7 +74,7 @@ namespace DVSRegister.Controllers
         [HttpGet("about-to-reject")]
         public async Task<IActionResult> AboutToRejectReAssignment(int requestId)
         {
-            var cabTransferRequest = await cabTransferService.GetCabTransferRequestDeatils(requestId);
+            var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
             TempData["ServiceName"] = cabTransferRequest.Service.ServiceName;
             TempData["ProviderName"] = cabTransferRequest.Service.Provider.RegisteredName;         
             return View(cabTransferRequest);

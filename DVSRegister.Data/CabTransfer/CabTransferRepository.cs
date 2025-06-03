@@ -59,7 +59,7 @@ namespace DVSRegister.Data.CabTransfer
             return service;
         }
 
-        public async Task<CabTransferRequest> GetCabTransferRequestDeatils(int requestId)
+        public async Task<CabTransferRequest> GetCabTransferRequestDetails(int requestId)
         {
             return await context.CabTransferRequest.Include(r => r.Service).ThenInclude(r => r.Provider)            
             .Include(r => r.FromCabUser).Where(r => r.Id == requestId).FirstOrDefaultAsync() ?? new CabTransferRequest();
@@ -91,7 +91,6 @@ namespace DVSRegister.Data.CabTransfer
                         }
                         entity.RequestManagement.RequestStatus = RequestStatusEnum.Approved;
                         entity.Service.CabUserId =  cabUser.Id;
-                        
                     }
                     else
                     {
@@ -105,7 +104,6 @@ namespace DVSRegister.Data.CabTransfer
                 }
                 else
                 {
-
                     await transaction.RollbackAsync();
                     genericResponse.Success = true;
                     throw new InvalidOperationException("Details null or invalid service status");
@@ -120,6 +118,11 @@ namespace DVSRegister.Data.CabTransfer
                 logger.LogError(ex, "Error in ApproveOrCancelTransferRequest");
             }
             return genericResponse;
+        }
+        
+        public async Task<List<CabUser>> GetActiveCabUsers(int cabId)
+        {
+            return await context.CabUser.Include(s=>s.Cab).Where(s => s.CabId ==cabId && s.IsActive).ToListAsync();
         }
     }
 }
