@@ -216,8 +216,8 @@
             {
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-button-group">
-                        <a href="@( Url.Action("AboutToApproveReAssignment", "CabTransfer", new { requestId = Model?.CabTransferRequest.Id }) )" class="govuk-button" role="button">Approve reassignment</a>
-                        <a href="@( Url.Action("AboutToRejectReAssignment", "CabTransfer", new { requestId = Model?.CabTransferRequest.Id }) )" class="govuk-button govuk-button--warning" role="button">Reject reassignment</a>
+                        <a href="@( Url.Action("AboutToApproveReAssignment", "CabTransfer", new { requestId = Model?.CabTransferRequestId }) )" class="govuk-button" role="button">Approve reassignment</a>
+                        <a href="@( Url.Action("AboutToRejectReAssignment", "CabTransfer", new { requestId = Model?.CabTransferRequestId }) )" class="govuk-button govuk-button--warning" role="button">Reject reassignment</a>
                     </div>
                 </div>
             }

@@ -19,7 +19,7 @@ namespace DVSRegister.Data.CabTransfer
 
         public async Task<List<CabTransferRequest>> GetServiceTransferRequests(int cabId)
         {
-            return await context.CabTransferRequest.Include(r=>r.RequestManagement).Include(r=>r.Service).Include(r=>r.ProviderProfile).Include(r => r.ToCab)
+            return await context.CabTransferRequest.Include(r=>r.RequestManagement).Include(r=>r.Service).ThenInclude(r=>r.Provider).Include(r => r.ToCab)
             .Include(r=>r.FromCabUser)
            .Where(r=>r.ToCabId == cabId).OrderBy(r=>r.DecisionTime).ToListAsync();
         }
@@ -61,7 +61,7 @@ namespace DVSRegister.Data.CabTransfer
 
         public async Task<CabTransferRequest> GetCabTransferRequestDeatils(int requestId)
         {
-            return await context.CabTransferRequest.Include(r => r.Service).Include(r => r.ProviderProfile)            
+            return await context.CabTransferRequest.Include(r => r.Service).ThenInclude(r => r.Provider)            
             .Include(r => r.FromCabUser).Where(r => r.Id == requestId).FirstOrDefaultAsync() ?? new CabTransferRequest();
         }
 

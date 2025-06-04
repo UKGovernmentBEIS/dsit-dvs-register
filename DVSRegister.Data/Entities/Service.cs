@@ -59,6 +59,6 @@ namespace DVSRegister.Data.Entities
         public TokenStatusEnum OpeningLoopTokenStatus { get; set; }
         public TokenStatusEnum ClosingLoopTokenStatus { get; set; }
         public bool IsInRegister { get; set; }
-        public CabTransferRequest CabTransferRequest { get; set; }
+        public ICollection<CabTransferRequest>? CabTransferRequest { get; set; }
     }
 }

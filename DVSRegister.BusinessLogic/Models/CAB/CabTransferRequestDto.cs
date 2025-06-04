@@ -7,9 +7,7 @@ namespace DVSRegister.BusinessLogic.Models
     {
         public int Id { get; set; }
         public int ServiceId { get; set; }
-        public ServiceDto Service { get; set; }
-        public int ProviderProfileId { get; set; }
-        public ProviderProfileDto ProviderProfile { get; set; }
+        public ServiceDto Service { get; set; }      
         public int FromCabUserId { get; set; }
         public CabUserDto FromCabUser { get; set; }
         public int ToCabId { get; set; }

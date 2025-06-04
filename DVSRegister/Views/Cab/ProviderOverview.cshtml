@@ -8,6 +8,7 @@
 @{
     ViewData["Title"] = "Provider overview";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    bool certificateUploadRequired = false;
 }
 
 <div class="govuk-width-container">
@@ -71,35 +72,54 @@
 
                     foreach (var item in orderedServices)
                     {
+
+                        var latestCabTransferRequest = item?.CabTransferRequest?.OrderByDescending(c => c.Id).FirstOrDefault();
+                        certificateUploadRequired = (item?.ServiceStatus == ServiceStatusEnum.Published || item?.ServiceStatus == ServiceStatusEnum.Removed) &&
+                        latestCabTransferRequest != null && latestCabTransferRequest.RequestManagement != null
+                        && latestCabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
+                        && latestCabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
+                        && latestCabTransferRequest.CertificateUploaded == false;
                         <div class="govuk-summary-card">
 
                             <div class="govuk-summary-card__title-wrapper">
                                 <h2 class="govuk-summary-card__title">
-                                    Service details: @item.ServiceName
+                                    Service details: @item?.ServiceName
                                 </h2>
                                 <ul class="govuk-summary-card__actions">
-                                    @if (item.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)
+
+
+                                    @if (certificateUploadRequired)
                                     {
                                         <li class="govuk-summary-card__action">
-                                            <a class="govuk-link" href="/cab-service/amend/service-amendments?serviceId=@item.Id">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
+                                            <a class="govuk-link" href="@Url.Action("BeforeYouSubmitNewCertificate", "CabServiceReApplication", new { serviceKey = item.ServiceKey, providerProfileId = item.ProviderProfileId })">Upload a replacement certificate</a>
                                         </li>
-
                                     }
                                     else
                                     {
-                                        <li class="govuk-summary-card__action">
-                                            <a class="govuk-link" href="/cab-service/service-details?serviceKey=@item.ServiceKey">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
-                                        </li>
+                                        @if (item?.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)
+                                        {
+                                            <li class="govuk-summary-card__action">
+                                                <a class="govuk-link" href="/cab-service/amend/service-amendments?serviceId=@item.Id">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
+                                            </li>
+
+                                        }
+                                        else
+                                        {
+                                            <li class="govuk-summary-card__action">
+                                                <a class="govuk-link" href="/cab-service/service-details?serviceKey=@item?.ServiceKey">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
+                                            </li>
+                                        }
+                                        @if (item.ServiceStatus == ServiceStatusEnum.Published)
+                                        {
+                                            string whatToRemove = removeProvider ? "provider" : "service";
+                                            <li class="govuk-summary-card__action">
+                                                <a class="govuk-link" href="/cab-service/remove/reason-for-removing?whatToRemove=@whatToRemove&providerid=@item.ProviderProfileId&serviceId=@item.Id">
+                                                    Request @whatToRemove removal <span class="govuk-visually-hidden"> of @whatToRemove @item.ServiceName</span>
+                                                </a>
+                                            </li>
+                                        }
                                     }
-                                    @if (item.ServiceStatus == ServiceStatusEnum.Published)
-                                    {
-                                        string whatToRemove = removeProvider ? "provider" : "service";
-                                        <li class="govuk-summary-card__action">
-                                            <a class="govuk-link" href="/cab-service/remove/reason-for-removing?whatToRemove=@whatToRemove&providerid=@item.ProviderProfileId&serviceId=@item.Id">
-                                                Request @whatToRemove removal <span class="govuk-visually-hidden"> of @whatToRemove @item.ServiceName</span>
-                                            </a>
-                                        </li>
-                                    }
+                                    
                                 </ul>
                             </div>
                             <div class="govuk-summary-card__content">
@@ -112,6 +132,18 @@
                                             @DateTimeExtensions.FormatDateTime(item.CreatedTime)                                            
                                         </dd>
                                     </div>
+                                    @if (certificateUploadRequired)
+                                    {
+                                        <div class="govuk-summary-list__row">
+                                            <dt class="govuk-summary-list__key">
+                                                Service provider s certificate of conformity
+                                            </dt>
+                                            <dd class="govuk-summary-list__value">
+                                                This service has been reassigned to you. You need to replace the certificate of
+                                                conformity for it to remain eligible to appear on the register.
+                                            </dd>
+                                        </div>
+                                    }
                                     <div class="govuk-summary-list__row">
                                         <dt class="govuk-summary-list__key">
                                             Status

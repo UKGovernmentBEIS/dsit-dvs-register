@@ -35,7 +35,12 @@ namespace DVSRegister.Controllers
         {
             ServiceDto serviceDto = await cabTransferService.GetServiceDetailsWithCabTransferDetails(serviceId, fromCabId);
             if (serviceDto.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || serviceDto.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
+            {
+                serviceDto.CabTransferRequestId = serviceDto.CabTransferRequest.Where(x=>x.ServiceId == serviceDto.Id && x.CertificateUploaded== false && x.RequestManagement!=null 
+                && x.RequestManagement.RequestStatus == RequestStatusEnum.Pending && x.RequestManagement.RequestType== RequestTypeEnum.CabTransfer).Select(x=>x.Id).FirstOrDefault();
                 return View(serviceDto);
+            }
+                
             else throw new InvalidOperationException("Invalid service status for reassign");           
         }
       
@@ -45,7 +50,7 @@ namespace DVSRegister.Controllers
         {           
             var cabTransferRequest = await cabTransferService.GetCabTransferRequestDeatils(requestId);
             TempData["ServiceName"] = cabTransferRequest.Service.ServiceName;
-            TempData["ProviderName"] = cabTransferRequest.ProviderProfile.RegisteredName;
+            TempData["ProviderName"] = cabTransferRequest.Service.Provider.RegisteredName;
             return View(cabTransferRequest);
         }
 
@@ -71,7 +76,7 @@ namespace DVSRegister.Controllers
         {
             var cabTransferRequest = await cabTransferService.GetCabTransferRequestDeatils(requestId);
             TempData["ServiceName"] = cabTransferRequest.Service.ServiceName;
-            TempData["ProviderName"] = cabTransferRequest.ProviderProfile.RegisteredName;         
+            TempData["ProviderName"] = cabTransferRequest.Service.Provider.RegisteredName;         
             return View(cabTransferRequest);
         }
 

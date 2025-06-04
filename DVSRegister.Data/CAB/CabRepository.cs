@@ -72,7 +72,7 @@ namespace DVSRegister.Data.CAB
             //Filter based on cab type as well, fetch records for users with same cab type
             IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(s=>s.CabUser).Include(p => p.CabUser)
             .ThenInclude(cu => cu.Cab)
-            .Where(p => p.CabUser.CabId == cabId)
+            .Where(p => p.CabUser.CabId == cabId || (p.Services.Any(s => s.ServiceStatus == ServiceStatusEnum.Published || s.ServiceStatus == ServiceStatusEnum.Removed)))
             .OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime);
             if (!string.IsNullOrEmpty(searchText))
             {
@@ -87,9 +87,10 @@ namespace DVSRegister.Data.CAB
         {
             ProviderProfile provider = new();
             provider = await context.ProviderProfile.Include(p=>p.Services).ThenInclude(p=>p.CertificateReview)
-                .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
+            .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
+             .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId)).ThenInclude(p => p.CabTransferRequest).ThenInclude(p => p.RequestManagement)
             .Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
-            .Where(p => p.Id == providerId && p.CabUser.CabId == cabId).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+            .Where(p => p.Id == providerId && (p.CabUser.CabId == cabId || p.Services.Any(s => s.ServiceStatus == ServiceStatusEnum.Published || s.ServiceStatus == ServiceStatusEnum.Removed))).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
             return provider;
         }
 
@@ -157,8 +158,8 @@ namespace DVSRegister.Data.CAB
         public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.CabUser).ThenInclude(p=>p.Cab).Where(x=>x.Id == providerId).FirstOrDefaultAsync()??new ProviderProfile();
-            if(provider.CabUser.Cab.Id > 0 &&  provider.CabUser.Cab.Id == cabId)
+            provider = await context.ProviderProfile.Include(p=>p.Services). Include(p => p.CabUser).ThenInclude(p=>p.Cab).Where(x=>x.Id == providerId).FirstOrDefaultAsync()??new ProviderProfile();
+            if(provider.CabUser.Cab.Id > 0 &&  (provider.CabUser.Cab.Id == cabId || provider.Services.Any(s => s.ServiceStatus == ServiceStatusEnum.Published || s.ServiceStatus == ServiceStatusEnum.Removed)))
             {
                 return true;
             }
@@ -174,7 +175,7 @@ namespace DVSRegister.Data.CAB
 
             var pendingRequests = await context.RequestManagement.Where(r => r.CabId == cabId && r.RequestStatus == RequestStatusEnum.Pending && r.RequestType== RequestTypeEnum.CabTransfer).ToListAsync();
 
-            var pendingUploads= await context.CabTransferRequest.Include(c=>c.Service).Include(c=>c.ProviderProfile)
+            var pendingUploads= await context.CabTransferRequest.Include(c=>c.Service).ThenInclude(c=>c.Provider)
                 .Where(c => c.ToCabId == cabId && c.CertificateUploaded == false && c.RequestManagement != null && c.RequestManagement.RequestStatus == RequestStatusEnum.Approved).ToListAsync();
 
             return (pendingRequests.Count, pendingUploads);           
@@ -267,6 +268,8 @@ namespace DVSRegister.Data.CAB
                .Where(x => x.ServiceKey == service.ServiceKey && x.IsCurrent == true).FirstOrDefaultAsync();
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
+                    var cabTransferRequest = context.CabTransferRequest.Include(c=>c.RequestManagement).Where(c => c.ServiceId == existingService.Id).OrderByDescending(c => c.Id).FirstOrDefault();
+
                     if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
                     {
                         // reapplication - save as draft
@@ -286,6 +289,14 @@ namespace DVSRegister.Data.CAB
                         service.ModifiedTime = DateTime.UtcNow;
                         service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue?null: service.ConformityExpiryDate;
                         service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue?null :service.ConformityIssueDate;
+                        //if it is a transfered service, update certificate upload flag
+                        if (cabTransferRequest != null && cabTransferRequest.RequestManagement != null
+                          && cabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
+                          && cabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
+                          && cabTransferRequest.CertificateUploaded == false)
+                        {
+                            cabTransferRequest.CertificateUploaded = true;
+                        }
                         var entity = await context.Service.AddAsync(service);
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                         genericResponse.InstanceId = existingService.ServiceKey;

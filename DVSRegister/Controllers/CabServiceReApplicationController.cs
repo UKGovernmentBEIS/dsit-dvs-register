@@ -45,7 +45,9 @@ namespace DVSRegister.Controllers
                 serviceSummary.IsResubmission = true;                 
                 serviceSummary.CabId = cabUserDto.CabId;
                 serviceSummary.CabUserId = cabUserDto.Id;
-                if(!serviceSummary.IsDraft)
+                serviceSummary.ServiceKey = serviceKey;
+                serviceSummary.ProviderProfileId = providerProfileId;
+                if (!serviceSummary.IsDraft)
                     serviceSummary.ResetInpuData(); // clear current input data from session for resubmission if it is not a draft version
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
                 return View();
