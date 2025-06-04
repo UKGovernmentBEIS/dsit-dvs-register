@@ -41,16 +41,15 @@
                         <dd class="govuk-summary-list__actions">
                             <ul class="govuk-summary-list__actions-list">
                                 <li class="govuk-summary-list__actions-list-item">
-                                    <a class="govuk-link" href="@( Url.Action("AboutToApproveReAssignment", "CabTransfer", new { requestId = request.Id}) )">Approve<span class="govuk-visually-hidden"> Approve reassignment</span></a>
+                                    <a class="govuk-link" style="color:	#00703c" href="@( Url.Action("AboutToApproveReAssignment", "CabTransfer", new { requestId = request.Id}) )">Approve<span class="govuk-visually-hidden"> Approve reassignment</span></a>
                                 </li>
                                 <li class="govuk-summary-list__actions-list-item">
-                                    <a class="govuk-link" href="@( Url.Action("AboutToRejectReAssignment", "CabTransfer", new { requestId = request.Id }) )">Reject<span class="govuk-visually-hidden"> Reject reassignment</span></a>
+                                    <a class="govuk-link" style="color:	#d4351c" href="@( Url.Action("AboutToRejectReAssignment", "CabTransfer", new { requestId = request.Id }) )">Reject<span class="govuk-visually-hidden"> Reject reassignment</span></a>
                                 </li>
                             </ul>                      
-                        </dd>
+                         </dd>
                     }
-                </div>
-
+                </div>   
             </dl>
         </div>
     </div>
