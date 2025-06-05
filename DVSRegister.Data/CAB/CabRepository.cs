@@ -70,9 +70,9 @@ namespace DVSRegister.Data.CAB
         public async Task<List<ProviderProfile>> GetProviders(int cabId, string searchText = "")
         {
             //Filter based on cab type as well, fetch records for users with same cab type
-            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(s=>s.CabUser).Include(p => p.CabUser)
-            .ThenInclude(cu => cu.Cab)
-            .Where(p => p.CabUser.CabId == cabId || (p.Services.Any(s => s.ServiceStatus == ServiceStatusEnum.Published || s.ServiceStatus == ServiceStatusEnum.Removed)))
+            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(s=>s.CabUser)
+             .Include(p => p.ProviderProfileCabMapping).ThenInclude(p => p.Cab)
+            .Where(p => p.ProviderProfileCabMapping.Any(m => m.CabId == cabId))
             .OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime);
             if (!string.IsNullOrEmpty(searchText))
             {
@@ -89,8 +89,8 @@ namespace DVSRegister.Data.CAB
             provider = await context.ProviderProfile.Include(p=>p.Services).ThenInclude(p=>p.CertificateReview)
             .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
              .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId)).ThenInclude(p => p.CabTransferRequest).ThenInclude(p => p.RequestManagement)
-            .Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
-            .Where(p => p.Id == providerId && (p.CabUser.CabId == cabId || p.Services.Any(s => s.ServiceStatus == ServiceStatusEnum.Published || s.ServiceStatus == ServiceStatusEnum.Removed))).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+            .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
+            .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
             return provider;
         }
 
@@ -158,8 +158,8 @@ namespace DVSRegister.Data.CAB
         public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p=>p.Services). Include(p => p.CabUser).ThenInclude(p=>p.Cab).Where(x=>x.Id == providerId).FirstOrDefaultAsync()??new ProviderProfile();
-            if(provider.CabUser.Cab.Id > 0 &&  (provider.CabUser.Cab.Id == cabId || provider.Services.Any(s => s.ServiceStatus == ServiceStatusEnum.Published || s.ServiceStatus == ServiceStatusEnum.Removed)))
+            provider = await context.ProviderProfile.Include(p=>p.Services). Include(p => p.ProviderProfileCabMapping).ThenInclude(p=>p.Cab).Where(x=>x.Id == providerId).FirstOrDefaultAsync()??new ProviderProfile();
+            if(provider.ProviderProfileCabMapping.Any(m => m.CabId == cabId))
             {
                 return true;
             }
@@ -182,6 +182,11 @@ namespace DVSRegister.Data.CAB
 
         }
 
+        public async Task<List<string>> GetCabEmailListForProvider(int providerId)
+        {          
+            return  await context.Service.Include(p => p.CabUser).Where(x => x.ProviderProfileId == providerId).Select(x => x.CabUser.CabEmail).Distinct().ToListAsync();          
+
+        }
 
         #region Save/update
         public async Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile, string loggedInUserEmail)

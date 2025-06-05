@@ -7,7 +7,7 @@ namespace DVSRegister.Data.CabTransfer
     {
         public Task<List<CabTransferRequest>> GetServiceTransferRequests(int cabId);
         public Task<Service> GetServiceDetailsWithCabTransferDetails(int serviceId, int cabId);
-        public Task<GenericResponse> ApproveOrCancelTransferRequest(bool approve, int requestId, string loggedInUserEmail);
+        public Task<GenericResponse> ApproveOrCancelTransferRequest(bool approve, int requestId, int providerProfileId, string loggedInUserEmail);
         public Task<CabTransferRequest> GetCabTransferRequestDeatils(int requestId);
     }
 }

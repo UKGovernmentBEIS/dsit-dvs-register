@@ -36,11 +36,16 @@ namespace DVSRegister.BusinessLogic
             CreateMap<RegisterPublishLog, RegisterPublishLogDto>();
             CreateMap<RegisterPublishLogDto, RegisterPublishLog>();
 
+            CreateMap<ProviderProfileCabMapping, ProviderProfileCabMappingDto>();
+            CreateMap<ProviderProfileCabMappingDto, ProviderProfileCabMapping>();
+
 
             CreateMap<ProviderProfile, ProviderProfileDto>()
             .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services))
-          .ForMember(dest => dest.LastUpdatedInfo, opt => opt.MapFrom<LastModifiedDateResolver>());
+            .ForMember(dest => dest.ProviderProfileCabMapping, opt => opt.MapFrom(src => src.ProviderProfileCabMapping))
+            .ForMember(dest => dest.LastUpdatedInfo, opt => opt.MapFrom<LastModifiedDateResolver>());
             CreateMap<ProviderProfileDto, ProviderProfile>()
+            .ForMember(dest => dest.ProviderProfileCabMapping, opt => opt.MapFrom(src => src.ProviderProfileCabMapping))
             .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services));
 
             CreateMap<Cab, CabDto>();

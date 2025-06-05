@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250605085551_ProviderProfileCabMapping")]
+    partial class ProviderProfileCabMapping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -697,6 +700,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("CabEditedTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("CabUserId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("CompanyRegistrationNumber")
                         .HasColumnType("text");
 
@@ -793,6 +799,8 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CabUserId");
 
                     b.ToTable("ProviderProfile");
                 });
@@ -1868,6 +1876,17 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("ProviderProfileDraft");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.CabUser", "CabUser")
+                        .WithMany()
+                        .HasForeignKey("CabUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CabUser");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfileCabMapping", b =>

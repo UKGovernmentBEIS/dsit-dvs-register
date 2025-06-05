@@ -110,6 +110,12 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return (pendingRequestCount>0?true:false, automapper.Map<List<CabTransferRequestDto>>(requestList));
         }
 
+        public async Task<List<string>> GetCabEmailListForProvider(int providerId)
+        {
+            return await cabRepository.GetCabEmailListForProvider(providerId);
+
+        }
+
         #region Save/ update
         public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
         {

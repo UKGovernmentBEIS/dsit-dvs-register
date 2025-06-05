@@ -27,7 +27,7 @@ namespace DVSRegister.UnitTests
                 PublicContactEmail = "contact@abccorp.com",
                 ProviderTelephoneNumber = "555-555-5555",
                 ProviderWebsiteAddress = "www.abccorp.com",
-                CabUserId = cabUserId
+                //CabUserId = cabUserId
 
             };
 
