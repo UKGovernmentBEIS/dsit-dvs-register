@@ -18,6 +18,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto);
         public Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId);
         public Task<(bool, List<CabTransferRequestDto>)> GetPendingReassignRequests(int cabId);
+        public Task<List<string>> GetCabEmailListForProvider(int providerId);
 
         #region Save/update
         public Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfile, string loggedInUserEmail);

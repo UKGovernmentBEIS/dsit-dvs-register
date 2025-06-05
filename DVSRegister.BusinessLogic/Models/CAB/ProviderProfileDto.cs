@@ -36,9 +36,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? ProviderTelephoneNumber { get; set; }
         public string ProviderWebsiteAddress { get; set; }
-        public int CompanyId { get; set; }
-        public int CabUserId { get; set; }
-        public CabUser CabUser { get; set; }
+        public int CompanyId { get; set; }       
         public ProviderStatusEnum ProviderStatus { get; set; }
 
         [JsonIgnore]
@@ -48,5 +46,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime? PublishedTime { get; set; }
         public DateTimeInfoDto LastUpdatedInfo { get; set; }
         public RemovalReasonsEnum? RemovalReason { get; set; }
+
+        [JsonIgnore]
+        public ICollection<ProviderProfileCabMappingDto>? ProviderProfileCabMapping { get; set; }
     }
 }

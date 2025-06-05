@@ -883,6 +883,7 @@ namespace DVSRegister.Controllers
                 && !string.IsNullOrEmpty(model.ProviderWebsiteAddress) && cabUserId > 0)
             {
                 providerDto = new();
+                providerDto.ProviderProfileCabMapping = [new ProviderProfileCabMappingDto { CabId = CabId }];
                 providerDto.RegisteredName = model.RegisteredName;
                 providerDto.TradingName = model.TradingName ?? string.Empty;
                 providerDto.HasRegistrationNumber = model.HasRegistrationNumber ?? false;
@@ -902,7 +903,7 @@ namespace DVSRegister.Controllers
                 providerDto.PublicContactEmail = model.PublicContactEmail;
                 providerDto.ProviderTelephoneNumber = model.ProviderTelephoneNumber;
                 providerDto.ProviderWebsiteAddress = model.ProviderWebsiteAddress;
-                providerDto.CabUserId = cabUserId;
+                providerDto.ProviderProfileCabMapping = [new ProviderProfileCabMappingDto { CabId = CabId }];
                 providerDto.ProviderStatus = ProviderStatusEnum.Unpublished;
                 providerDto.CreatedTime = DateTime.UtcNow;
             }

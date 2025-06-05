@@ -43,7 +43,7 @@ namespace DVSRegister.BusinessLogic.Services.CabTransfer
 
         public async Task<GenericResponse> ApproveOrCancelTransferRequest(bool approve, int requestId, int providerProfileId, string loggedInUserEmail)
         {            
-            GenericResponse genericResponse = await cabTransferRepository.ApproveOrCancelTransferRequest(approve,requestId,loggedInUserEmail);
+            GenericResponse genericResponse = await cabTransferRepository.ApproveOrCancelTransferRequest(approve,requestId, providerProfileId,loggedInUserEmail);
             if(genericResponse.Success) 
             {
                 genericResponse = await removeProviderService.UpdateProviderStatus(providerProfileId, loggedInUserEmail, EventTypeEnum.ApproveOrRejectReAssign, TeamEnum.CAB);

@@ -5,6 +5,7 @@ using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data;
+using DVSRegister.Data.CAB;
 using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic.Services
@@ -16,14 +17,16 @@ namespace DVSRegister.BusinessLogic.Services
         private readonly IRemoveProviderService removeProviderService;
         private readonly IMapper mapper;
         private readonly Removal2iCheckEmailSender emailSender;
+        private readonly ICabRepository cabRepository;
 
 
-        public RemoveProvider2iService(IRemoveProvider2iRepository removeProvider2iRepository, IMapper mapper, Removal2iCheckEmailSender emailSender, IRemoveProviderService removeProviderService)
+        public RemoveProvider2iService(IRemoveProvider2iRepository removeProvider2iRepository, ICabRepository cabRepository, IMapper mapper, Removal2iCheckEmailSender emailSender, IRemoveProviderService removeProviderService)
         {
             this.removeProviderService = removeProviderService;
             this.removeProvider2iRepository = removeProvider2iRepository;
             this.mapper = mapper;
             this.emailSender = emailSender;
+            this.cabRepository = cabRepository;
         }
         public async Task<ProviderProfileDto?> GetProviderAndServiceDetailsByRemovalToken(string token, string tokenId)
         {
@@ -81,6 +84,7 @@ namespace DVSRegister.BusinessLogic.Services
             GenericResponse genericResponse = new();
             string serviceNames = string.Join("\r", providerDto.Services.Select(s => s.ServiceName).ToList());
             List<int> serviceIds = providerDto.Services.Select(s => s.Id).ToList();
+            List<string> cabEmails = await cabRepository.GetCabEmailListForProvider(providerDto.Id);
 
             RemoveProviderToken removeProviderToken = await removeProvider2iRepository.GetRemoveProviderToken(token, tokenId);
 
@@ -119,7 +123,10 @@ namespace DVSRegister.BusinessLogic.Services
 
 
                     await Task.Delay(500);
-                    await emailSender.ServiceRemovedConfirmedToCabOrProvider(providerDto.CabUser.CabEmail, providerDto.CabUser.CabEmail, serviceNames, serviceRemovalReasons);//41/CAB + Provider/Service removed
+                    foreach(var cabEmail in cabEmails)
+                    {
+                        await emailSender.ServiceRemovedConfirmedToCabOrProvider(cabEmail, cabEmail, serviceNames, serviceRemovalReasons);//41/CAB + Provider/Service removed
+                    }                   
                     await emailSender.ServiceRemovedToDSIT(serviceNames, serviceRemovalReasons); //42/DSIT/Service removed
                     await emailSender.ServiceRemovedConfirmedToCabOrProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail, serviceNames, serviceRemovalReasons);//41/CAB + Provider/Service removed
                     await emailSender.ServiceRemovedConfirmedToCabOrProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail, serviceNames, serviceRemovalReasons);//41/CAB + Provider/Service removed
@@ -141,8 +148,11 @@ namespace DVSRegister.BusinessLogic.Services
                     }
 
                     await Task.Delay(500);
+                    foreach (var cabEmail in cabEmails)
+                    {
+                        await emailSender.RecordRemovedConfirmedToCabOrProvider(cabEmail, cabEmail, providerDto.RegisteredName, serviceNames, removalReason);
+                    }
                     await emailSender.SendRecordRemovedToDSIT(providerDto.RegisteredName, serviceNames, removalReason);
-                    await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.CabUser.CabEmail, providerDto.CabUser.CabEmail, providerDto.RegisteredName, serviceNames, removalReason);
                     await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.PrimaryContactFullName, providerDto.PrimaryContactEmail, providerDto.RegisteredName, serviceNames, removalReason);
                     await emailSender.RecordRemovedConfirmedToCabOrProvider(providerDto.SecondaryContactFullName, providerDto.SecondaryContactEmail, providerDto.RegisteredName, serviceNames, removalReason);
                 }
