@@ -7,23 +7,7 @@
 
 @{    ViewData["Title"] = "Provider overview";    
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";    
-    bool certificateUploadRequired = true; 
-    var needsUploadList = Model.Services
-        .Where(s => s.IsCurrent)
-        .Where(s => 
-        { 
-            var latestCabTransfer = s.CabTransferRequest?
-                .OrderByDescending(c => c.Id)
-                .FirstOrDefault(); 
-            return (s.ServiceStatus == ServiceStatusEnum.Published 
-                    || s.ServiceStatus == ServiceStatusEnum.Removed) 
-                   && latestCabTransfer != null
-                   && latestCabTransfer.RequestManagement?.RequestType == RequestTypeEnum.CabTransfer    
-                   && latestCabTransfer.RequestManagement.RequestStatus == RequestStatusEnum.Approved 
-                   && !latestCabTransfer.CertificateUploaded; 
-        })
-        .Select(s => s.ServiceName)
-        .ToList();
+    bool certificateUploadRequired = false;    
 }
 
 <div class="govuk-width-container">
@@ -35,15 +19,15 @@
                     @Model.RegisteredName profile overview</h1>
                 </div>
                </div>
-        @if (needsUploadList.Any())
+        @if (Model.HasPendingCertificateUpload)
         {
-            @await Html.PartialAsync(
-                "~/Views/Cab/PartialViews/_CertificateUploadNotificationBanner.cshtml",
-                new {
-                    RegisteredName = Model.RegisteredName,
-                    ServicesNeedingCertificateUpload = needsUploadList
-                }
-            )
+            var notificationBanner = new NotificationBannerViewModel { Title = "Important", NotificationContent = [] };
+            notificationBanner.NotificationContent.Add(new()
+                {
+                    Heading = "You have new services added to your profile, that you need to upload replacement certificates for",
+                    HtmlContent = Model.ProviderServiceNames ?? string.Empty
+                });
+            @await Html.PartialAsync("~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)
         }
             <div class="govuk-grid-column-full">
                 <div class="govuk-summary-card">
