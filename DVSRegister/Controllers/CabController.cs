@@ -50,7 +50,7 @@ namespace DVSRegister.Controllers
           providerListViewModel.Providers = await cabService.GetProviders(CabId, SearchText);
           var (hasPendingRequests, uploadList) = await cabService.GetPendingReassignRequests(CabId);
           providerListViewModel.HasPendingReAssignments = hasPendingRequests;
-          if(uploadList.Count>0)
+          if(uploadList?.Count>0)
            {
              providerListViewModel.PendingCertificateUploads = uploadList.OrderBy(x=>x.Service.Provider.RegisteredName).ToList();
              providerListViewModel.ProviderServiceNames = string.Join("<br>", providerListViewModel.PendingCertificateUploads
