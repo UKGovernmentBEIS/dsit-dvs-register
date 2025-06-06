@@ -27,7 +27,7 @@
             @if (Model.HasPendingReAssignments || Model?.PendingCertificateUploads?.Count > 0)
             {
                 var notificationBanner = new NotificationBannerViewModel { Title = "Important", NotificationContent = [] };
-                if (Model.PendingCertificateUploads.Count > 0)
+                if (Model?.PendingCertificateUploads?.Count > 0)
                 {
                     notificationBanner.NotificationContent.Add(new()
                     {
