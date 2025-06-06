@@ -3,12 +3,11 @@
 @using DVSRegister.Extensions
 @using DVSRegister.CommonUtility.Models;
 @using DVSRegister.CommonUtility.Models.Enums;
-
 @model ProviderProfileDto
-@{
-    ViewData["Title"] = "Provider overview";
-    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    bool certificateUploadRequired = false;
+
+@{    ViewData["Title"] = "Provider overview";    
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";    
+    bool certificateUploadRequired = false;    
 }
 
 <div class="govuk-width-container">
@@ -16,11 +15,20 @@
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-
                 <h1 class="govuk-heading-xl">
-                    @Model.RegisteredName profile overview
-                </h1>
-            </div>
+                    @Model.RegisteredName profile overview</h1>
+                </div>
+               </div>
+        @if (Model.HasPendingCertificateUpload)
+        {
+            var notificationBanner = new NotificationBannerViewModel { Title = "Important", NotificationContent = [] };
+            notificationBanner.NotificationContent.Add(new()
+                {
+                    Heading = "You have new services added to your profile, that you need to upload replacement certificates for",
+                    HtmlContent = Model.ProviderServiceNames ?? string.Empty
+                });
+            @await Html.PartialAsync("~/Views/PartialViews/_NotificationBanner.cshtml", notificationBanner)
+        }
             <div class="govuk-grid-column-full">
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
@@ -136,9 +144,9 @@
                                     {
                                         <div class="govuk-summary-list__row">
                                             <dt class="govuk-summary-list__key">
-                                                Service provider s certificate of conformity
+                                                Service providers certificate of conformity
                                             </dt>
-                                            <dd class="govuk-summary-list__value">
+                                        <dd class="govuk-summary-list__value" style="color:	#d4351c">
                                                 This service has been reassigned to you. You need to replace the certificate of
                                                 conformity for it to remain eligible to appear on the register.
                                             </dd>
@@ -161,6 +169,8 @@
 
             <div class="govuk-grid-column-two-thirds">
 
+            </div>
+
             @if(Model.Services == null || Model.Services.Count == 0)
             {               
                     <p class="govuk-body"><strong>No services have been submitted for this provider.</strong></p>
@@ -170,10 +180,7 @@
             {
 
                     @Html.ActionLink("Add a new service", "BeforeYouStart", "CabService", new { providerProfileId = Model.Id}, new { @class = "govuk-button", role = "button", draggable = "false", data_module = "govuk-button" })
-                }
-            </div>
-            
-        </div>
-    </main>
-</div>
+            }
+    </main>  
+</div>    
 

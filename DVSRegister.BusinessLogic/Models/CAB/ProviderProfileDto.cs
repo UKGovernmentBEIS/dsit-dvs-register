@@ -49,5 +49,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
 
         [JsonIgnore]
         public ICollection<ProviderProfileCabMappingDto>? ProviderProfileCabMapping { get; set; }
+        public bool HasPendingCertificateUpload { get; set; }
+        public string ProviderServiceNames { get; set; }
     }
 }

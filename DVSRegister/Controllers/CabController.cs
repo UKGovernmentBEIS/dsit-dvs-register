@@ -49,13 +49,13 @@ namespace DVSRegister.Controllers
           providerListViewModel.Providers = await cabService.GetProviders(CabId, SearchText);
           var (hasPendingRequests, uploadList) = await cabService.GetPendingReassignRequests(CabId);
           providerListViewModel.HasPendingReAssignments = hasPendingRequests;
-          providerListViewModel.PendingCertificateUploads = uploadList;
-          if(providerListViewModel.PendingCertificateUploads.Count>0)
-          {
-            providerListViewModel.ProviderServiceNames = string.Join("<br>", providerListViewModel.PendingCertificateUploads
-            .Select(request =>  request.Service.Provider.RegisteredName + " " + request.Service.ServiceName));
-          }             
-            return View(providerListViewModel);          
+          if(uploadList.Count>0)
+           {
+             providerListViewModel.PendingCertificateUploads = uploadList.OrderBy(x=>x.Service.Provider.RegisteredName).ToList();
+             providerListViewModel.ProviderServiceNames = string.Join("<br>", providerListViewModel.PendingCertificateUploads
+             .Select(request => request.Service.Provider.RegisteredName + " - " + request.Service.ServiceName));
+           }
+           return View(providerListViewModel);          
           
         }
 
@@ -68,6 +68,15 @@ namespace DVSRegister.Controllers
                 return HandleInvalidCabId(CabId);
 
             ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
+            var (hasPendingRequests, uploadList) = await cabService.GetPendingReassignRequests(CabId);
+            var pendingUploads =  uploadList.Where(x=>x.Service.Provider.Id == providerId).OrderBy(x=>x.Service.Provider.RegisteredName).ToList();
+            if(pendingUploads?.Count>0)
+            {
+                providerProfileDto.HasPendingCertificateUpload = true;
+                providerProfileDto.ProviderServiceNames = string.Join("<br>", pendingUploads
+               .Select(request => request.Service.Provider.RegisteredName + " - " + request.Service.ServiceName));
+            }           
+
             HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
             HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
             return View(providerProfileDto);

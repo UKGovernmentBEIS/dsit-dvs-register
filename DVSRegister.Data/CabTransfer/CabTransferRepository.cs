@@ -80,7 +80,7 @@ namespace DVSRegister.Data.CabTransfer
                 {
                     if(approve)
                     {
-                        var existingMapping = await context.ProviderProfileCabMapping.FirstOrDefaultAsync(m => m.CabId == cabUser.Id && m.ProviderId == providerProfileId);
+                        var existingMapping = await context.ProviderProfileCabMapping.FirstOrDefaultAsync(m => m.CabId == cabUser.CabId && m.ProviderId == providerProfileId);
                         if (existingMapping == null)
                         {
                             await context.ProviderProfileCabMapping.AddAsync(new ProviderProfileCabMapping
