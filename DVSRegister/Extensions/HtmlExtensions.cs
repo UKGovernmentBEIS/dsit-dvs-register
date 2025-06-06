@@ -34,7 +34,8 @@ namespace DVSRegister.Extensions
 
                 case CertificateReviewEnum.Rejected:
                 case CertificateReviewEnum.AmendmentsRequired:
-                case ServiceStatusEnum.AmendmentsRequired:
+                case ServiceStatusEnum.AmendmentsRequired:               
+                case PublicInterestCheckEnum.ApplicationRejected:
                     return "govuk-tag govuk-tag--red";
                 
                 case ServiceStatusEnum.Removed:
@@ -70,12 +71,17 @@ namespace DVSRegister.Extensions
         }
 
 
-        public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview, ServiceStatusEnum serviceStatus)
+        public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview,PublicInterestCheckDto publicInterestCheck,  ServiceStatusEnum serviceStatus)
         {
             // Check for Certificate Review Rejected
             if (certificateReview != null && certificateReview.CertificateReviewStatus == CertificateReviewEnum.Rejected)
             {
                 return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
+            }
+            // Check for publicInterestCheckRejected
+            if (publicInterestCheck != null && publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.ApplicationRejected)
+            {
+                return HtmlExtensions.ToStyledStrongTag(publicInterestCheck.PublicInterestCheckStatus);
             }
 
             // Check for ServiceStatus Received or ReadyToPublish

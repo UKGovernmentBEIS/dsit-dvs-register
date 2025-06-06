@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB.Provider;
@@ -114,6 +115,21 @@ namespace DVSRegister.Controllers
             ServiceDto currentServiceVersion = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
             serviceVersions.CurrentServiceVersion = currentServiceVersion;
             serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
+
+            if (serviceVersions.ServiceHistoryVersions.Any())
+            {
+                serviceVersions.CurrentServiceVersion.EnableResubmission = (currentServiceVersion.ServiceStatus == ServiceStatusEnum.Published || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed) ||
+                (serviceVersions.ServiceHistoryVersions.Any(x => x.ServiceStatus == ServiceStatusEnum.Published || x.ServiceStatus == ServiceStatusEnum.Removed) &&
+                (currentServiceVersion?.CertificateReview?.CertificateReviewStatus == CommonUtility.Models.Enums.CertificateReviewEnum.Rejected ||            
+                currentServiceVersion?.PublicInterestCheck?.PublicInterestCheckStatus == CommonUtility.Models.Enums.PublicInterestCheckEnum.ApplicationRejected));
+
+            }
+            else
+            {
+                serviceVersions.CurrentServiceVersion.EnableResubmission = currentServiceVersion.ServiceStatus == ServiceStatusEnum.Published
+                || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed;
+
+            }
 
             SetServiceDataToSession(CabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
             return View(serviceVersions);
