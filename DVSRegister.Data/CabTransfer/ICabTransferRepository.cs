@@ -8,6 +8,7 @@ namespace DVSRegister.Data.CabTransfer
         public Task<List<CabTransferRequest>> GetServiceTransferRequests(int cabId);
         public Task<Service> GetServiceDetailsWithCabTransferDetails(int serviceId, int cabId);
         public Task<GenericResponse> ApproveOrCancelTransferRequest(bool approve, int requestId, int providerProfileId, string loggedInUserEmail);
-        public Task<CabTransferRequest> GetCabTransferRequestDeatils(int requestId);
+        public Task<CabTransferRequest> GetCabTransferRequestDetails(int requestId);
+        public Task<List<CabUser>> GetActiveCabUsers(int cabId);
     }
 }
