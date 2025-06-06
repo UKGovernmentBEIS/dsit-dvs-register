@@ -48,52 +48,45 @@ namespace DVSRegister.BusinessLogic.Services.CabTransfer
         public async Task<GenericResponse> ApproveOrCancelTransferRequest(bool approve, int requestId, int providerProfileId, string loggedInUserEmail)
         {            
             GenericResponse genericResponse = await cabTransferRepository.ApproveOrCancelTransferRequest(approve,requestId,providerProfileId, loggedInUserEmail);
-            
-            if (!genericResponse.Success)
-                return genericResponse;
-            
-            genericResponse = await removeProviderService.UpdateProviderStatus(providerProfileId, loggedInUserEmail, EventTypeEnum.ApproveOrRejectReAssign, TeamEnum.CAB);
-            
-            if (!genericResponse.Success)
-                return genericResponse;
-            
-            var fullRequest = await cabTransferRepository.GetCabTransferRequestDetails(requestId);
-            if (fullRequest == null)
-            {
-                return new GenericResponse {
-                    Success      = false,
-                    ErrorMessage = $"Transfer request #{requestId} not found after approval/rejection."
-                };
-            }
-            
-            var requestDto = automapper.Map<CabTransferRequestDto>(fullRequest);
 
-            string serviceName = requestDto.Service.ServiceName;
-            string providerName = requestDto.Service.Provider.RegisteredName;
-            
-            List<CabUser> activeCabBUsers = await cabTransferRepository.GetActiveCabUsers(requestDto.ToCabId);
-            var acceptingCabName = activeCabBUsers.FirstOrDefault()?.Cab.CabName??string.Empty;
-            
-            if (approve)
-            {
-                foreach(var user in activeCabBUsers)
-                {                 
-                    await emailSender.SendCabTransferConfirmationToCabB(user.CabEmail, acceptingCabName, providerName, serviceName);
+            if (genericResponse.Success)
+            {               
+
+                genericResponse = await removeProviderService.UpdateProviderStatus(providerProfileId, loggedInUserEmail, EventTypeEnum.ApproveOrRejectReAssign, TeamEnum.CAB);
+
+                if (!genericResponse.Success)
+                    return genericResponse;
+
+                var fullRequest = await cabTransferRepository.GetCabTransferRequestDetails(requestId);
+                string serviceName = fullRequest.Service.ServiceName;
+                string providerName = fullRequest.Service.Provider.RegisteredName;
+
+                //Tranfered to or accepting cab list
+                List<CabUser> activeCabBUsers = await cabTransferRepository.GetActiveCabUsers(fullRequest.ToCabId);
+                var acceptingCabName = activeCabBUsers.FirstOrDefault()?.Cab.CabName ?? string.Empty;
+
+                if (approve)
+                {
+                    foreach (var user in activeCabBUsers)
+                    {
+                        await emailSender.SendCabTransferConfirmationToCabB(user.CabEmail, acceptingCabName, providerName, serviceName);
+                    }
+
+                    //Tranfered from  cab list
+                    List<CabUser> activeCabAUsers = await cabTransferRepository.GetActiveCabUsers(fullRequest.FromCabUser.CabId);
+                    var currentCabName = activeCabAUsers.FirstOrDefault()?.Cab.CabName ?? string.Empty;
+
+                    foreach (var user in activeCabAUsers)
+                    {
+                        await emailSender.SendCabTransferConfirmationToCabA(user.CabEmail, currentCabName, acceptingCabName, providerName, serviceName);
+                    }
                 }
-                
-                List<CabUser> activeCabAUsers = await cabTransferRepository.GetActiveCabUsers(requestDto.FromCabUser.CabId);
-                var currentCabName = activeCabAUsers.FirstOrDefault()?.Cab.CabName??string.Empty;
-                
-                foreach(var user in activeCabAUsers)
-                {                 
-                    await emailSender.SendCabTransferConfirmationToCabA(user.CabEmail, currentCabName, acceptingCabName, providerName, serviceName);
-                }
-            }
-            else
-            {
-                foreach(var user in activeCabBUsers)
-                {                 
-                    await emailSender.SendCabTransferCancellationToCabB(user.CabEmail, acceptingCabName, providerName, serviceName);
+                else
+                {
+                    foreach (var user in activeCabBUsers)
+                    {
+                        await emailSender.SendCabTransferCancellationToCabB(user.CabEmail, acceptingCabName, providerName, serviceName);
+                    }
                 }
             }
             
