@@ -47,6 +47,7 @@ namespace DVSRegister.Data.Entities
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
         public CertificateReview CertificateReview { get; set; }
+        public PublicInterestCheck PublicInterestCheck { get; set; }
         public ProceedApplicationConsentToken ProceedApplicationConsentToken { get; set; }
         public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
         public string? RemovalReasonByCab { get; set; }

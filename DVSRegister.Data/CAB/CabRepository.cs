@@ -87,6 +87,7 @@ namespace DVSRegister.Data.CAB
         {
             ProviderProfile provider = new();
             provider = await context.ProviderProfile.Include(p=>p.Services).ThenInclude(p=>p.CertificateReview)
+            .Include(p => p.Services).ThenInclude(p => p.PublicInterestCheck)
             .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
              .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId)).ThenInclude(p => p.CabTransferRequest).ThenInclude(p => p.RequestManagement)
             .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
@@ -142,6 +143,7 @@ namespace DVSRegister.Data.CAB
             {
             return await context.Service
             .Include(s => s.CertificateReview)
+            .Include(s => s.PublicInterestCheck)
             .Include(s => s.ServiceSupSchemeMapping)
             .ThenInclude(s=> s.SupplementaryScheme)
             .Include(s => s.ServiceRoleMapping)            

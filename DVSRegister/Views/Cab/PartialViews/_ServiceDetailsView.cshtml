@@ -37,7 +37,7 @@
 
                 </ul>
             }
-            else if (Model.ServiceStatus == ServiceStatusEnum.Published && Model.IsCurrent == true)
+            else if (Model.EnableResubmission)
             {
                 <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
@@ -95,7 +95,7 @@
                         Status
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview, Model.ServiceStatus)
+                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview, Model.PublicInterestCheck, Model.ServiceStatus)
                     </dd>
                 </div>
 

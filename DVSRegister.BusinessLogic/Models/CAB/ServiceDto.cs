@@ -1,5 +1,6 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data.Entities;
 using System.Text.Json.Serialization;
 
 namespace DVSRegister.BusinessLogic.Models.CAB
@@ -35,6 +36,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
         public CertificateReviewDto CertificateReview { get; set; }
+        public PublicInterestCheckDto PublicInterestCheck { get; set; }
         [JsonIgnore]
         public ProceedApplicationConsentTokenDto ProceedApplicationConsentToken { get; set; }
 
@@ -46,5 +48,6 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public ICollection<CabTransferRequestDto> CabTransferRequest { get; set; }
 
         public int CabTransferRequestId { get; set; }
+        public bool EnableResubmission { get; set; }
     }
 }
