@@ -41,13 +41,12 @@
                     @Html.Hidden("requestId", @Model?.Id)
                     @Html.Hidden("providerProfileId", @Model?.Service.ProviderProfileId)
 
-                <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button" data-module="govuk-button">
-                        Accept reassignment request
-                    </button>
-                    <a href="@( Url.Action("ServiceDetails", "CabTransfer", new { serviceId = Model?.ServiceId, fromCabId = Model?.FromCabUser.CabId }) )"
-                    class="govuk-button govuk-button--secondary" role="button">Cancel</a>
-                </div>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" data-module="govuk-button">
+                            Accept reassignment request
+                        </button>
+                        <a href="@Url.Action("ServiceManagementRequests", "CabTransfer")" class="govuk-button govuk-button--secondary" role="button">Cancel</a>
+                    </div>
                 }
             </div>
         </div>
