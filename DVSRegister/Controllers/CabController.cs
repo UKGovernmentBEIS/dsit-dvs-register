@@ -121,7 +121,7 @@ namespace DVSRegister.Controllers
                 serviceVersions.CurrentServiceVersion.EnableResubmission = (currentServiceVersion.ServiceStatus == ServiceStatusEnum.Published || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed) ||
                 (serviceVersions.ServiceHistoryVersions.Any(x => x.ServiceStatus == ServiceStatusEnum.Published || x.ServiceStatus == ServiceStatusEnum.Removed) &&
                 (currentServiceVersion?.CertificateReview?.CertificateReviewStatus == CommonUtility.Models.Enums.CertificateReviewEnum.Rejected ||            
-                currentServiceVersion?.PublicInterestCheck?.PublicInterestCheckStatus == CommonUtility.Models.Enums.PublicInterestCheckEnum.ApplicationRejected));
+                currentServiceVersion?.PublicInterestCheck?.PublicInterestCheckStatus == CommonUtility.Models.Enums.PublicInterestCheckEnum.PublicInterestCheckFailed));
 
             }
             else
