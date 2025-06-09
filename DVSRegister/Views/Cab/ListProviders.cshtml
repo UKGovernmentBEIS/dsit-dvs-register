@@ -24,10 +24,10 @@
            
                 <h1 class="govuk-heading-xl">Your service provider profiles</h1>
 
-            @if (Model.HasPendingReAssignments || Model.PendingCertificateUploads.Count > 0)
+            @if (Model.HasPendingReAssignments || Model?.PendingCertificateUploads?.Count > 0)
             {
                 var notificationBanner = new NotificationBannerViewModel { Title = "Important", NotificationContent = [] };
-                if (Model.PendingCertificateUploads.Count > 0)
+                if (Model?.PendingCertificateUploads?.Count > 0)
                 {
                     notificationBanner.NotificationContent.Add(new()
                     {
