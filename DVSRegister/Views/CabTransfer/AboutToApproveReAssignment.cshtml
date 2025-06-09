@@ -5,7 +5,7 @@
 }
 <div class="govuk-width-container">
     @Html.ActionLink("Back", "ServiceDetails", "CabTransfer", new { serviceId = Model.ServiceId, fromCabId  = Model.FromCabUser.CabId}, new { @class = "govuk-back-link" })
-    <main class="govuk-main-wrapper">
+    <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl">You are about to approve this reassignment request</h1>
