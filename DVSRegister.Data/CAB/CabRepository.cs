@@ -262,7 +262,7 @@ namespace DVSRegister.Data.CAB
             return genericResponse;
         }
 
-       
+
 
         public async Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail)
         {
@@ -275,12 +275,12 @@ namespace DVSRegister.Data.CAB
                .Where(x => x.ServiceKey == service.ServiceKey && x.IsCurrent == true).FirstOrDefaultAsync();
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
-                    var cabTransferRequest = context.CabTransferRequest.Include(c=>c.RequestManagement).Where(c => c.ServiceId == existingService.Id).OrderByDescending(c => c.Id).FirstOrDefault();
+                    var cabTransferRequest = context.CabTransferRequest.Include(c => c.RequestManagement).Where(c => c.ServiceId == existingService.Id).OrderByDescending(c => c.Id).FirstOrDefault();
 
                     if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
                     {
                         // reapplication - save as draft
-                        UpdateExistingServiceRecord(service, existingService);                      
+                        UpdateExistingServiceRecord(service, existingService);
                         genericResponse.InstanceId = existingService.ServiceKey;
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
                     }
@@ -294,8 +294,8 @@ namespace DVSRegister.Data.CAB
                         service.ServiceVersion = maxServiceVersion + 1;
                         service.CreatedTime = DateTime.UtcNow;
                         service.ModifiedTime = DateTime.UtcNow;
-                        service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue?null: service.ConformityExpiryDate;
-                        service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue?null :service.ConformityIssueDate;
+                        service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue ? null : service.ConformityExpiryDate;
+                        service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;
                         //if it is a transfered service, update certificate upload flag
                         if (cabTransferRequest != null && cabTransferRequest.RequestManagement != null
                           && cabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
@@ -304,6 +304,18 @@ namespace DVSRegister.Data.CAB
                         {
                             cabTransferRequest.CertificateUploaded = true;
                             existingService.ServiceStatus = cabTransferRequest.PreviousServiceStatus;
+
+                            var existingProvider = await context.ProviderProfile
+                                .Include(service => service.Services)
+                                .FirstOrDefaultAsync(p => p.Id == service.ProviderProfileId);
+
+                            if (existingProvider != null)
+                            {
+                                var services = existingProvider.Services;
+                                var providerStatus = GetProviderStatus(services, existingProvider.ProviderStatus);
+                                existingProvider.ModifiedTime = DateTime.UtcNow;
+                                existingProvider.ProviderStatus = providerStatus;
+                            }
                         }
                         var entity = await context.Service.AddAsync(service);
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
@@ -318,9 +330,6 @@ namespace DVSRegister.Data.CAB
                     genericResponse.Success = false;
                     logger.LogError("Service id {ServiceKey} doesnt exist ", service.ServiceKey);
                 }
-
-               
-
             }
             catch (Exception ex)
             {
@@ -581,6 +590,65 @@ namespace DVSRegister.Data.CAB
                     context.Entry(mapping).State = EntityState.Added;
                 } 
             }
+        }
+
+        private static ProviderStatusEnum GetProviderStatus(ICollection<Service> services, ProviderStatusEnum currentStatus)
+        {
+            ProviderStatusEnum providerStatus = currentStatus;
+            if (services != null && services.Count > 0)
+            {
+                var priorityOrder = new List<ServiceStatusEnum>
+                    {
+                        ServiceStatusEnum.CabAwaitingRemovalConfirmation,
+                        ServiceStatusEnum.ReadyToPublish,
+                        ServiceStatusEnum.UpdatesRequested,
+                        ServiceStatusEnum.AwaitingRemovalConfirmation,
+                        ServiceStatusEnum.PublishedUnderReassign,
+                        ServiceStatusEnum.Published,
+                        ServiceStatusEnum.RemovedUnderReassign,
+                        ServiceStatusEnum.Removed
+                    };
+
+                ServiceStatusEnum highestPriorityStatus = services
+                  .Where(service => service.ServiceStatus == ServiceStatusEnum.ReadyToPublish ||
+                    service.ServiceStatus == ServiceStatusEnum.Published ||
+                    service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign ||
+                    service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign ||
+                    service.ServiceStatus == ServiceStatusEnum.Removed ||
+                    service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation ||
+                    service.ServiceStatus == ServiceStatusEnum.UpdatesRequested ||
+                    service.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
+                    .Select(service => service.ServiceStatus)
+                    .OrderBy(status => priorityOrder.IndexOf(status))
+                    .FirstOrDefault();
+
+
+
+                switch (highestPriorityStatus)
+                {
+                    case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
+                        return ProviderStatusEnum.CabAwaitingRemovalConfirmation;
+                    case ServiceStatusEnum.ReadyToPublish:
+                        bool hasPublishedServices = services.Any(service => service.ServiceStatus == ServiceStatusEnum.Published);
+                        return hasPublishedServices ? ProviderStatusEnum.ReadyToPublishNext : ProviderStatusEnum.ReadyToPublish;
+                    case ServiceStatusEnum.UpdatesRequested:
+                        return ProviderStatusEnum.UpdatesRequested;
+                    case ServiceStatusEnum.AwaitingRemovalConfirmation:
+                        return ProviderStatusEnum.AwaitingRemovalConfirmation;
+                    case ServiceStatusEnum.Published:
+                        return ProviderStatusEnum.Published;
+                    case ServiceStatusEnum.PublishedUnderReassign:
+                        return ProviderStatusEnum.PublishedUnderReassign;
+                    case ServiceStatusEnum.RemovedUnderReassign:
+                        return ProviderStatusEnum.RemovedUnderReassign;
+                    case ServiceStatusEnum.Removed:
+                        return ProviderStatusEnum.RemovedFromRegister;
+                    default:
+                        return ProviderStatusEnum.AwaitingRemovalConfirmation;
+                }
+
+            }
+            return providerStatus;
         }
         #endregion
     }
