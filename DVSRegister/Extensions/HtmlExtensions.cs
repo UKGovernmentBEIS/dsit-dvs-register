@@ -90,10 +90,16 @@ namespace DVSRegister.Extensions
                 return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Submitted);
             }
 
-            // if status is under 2i review with admin return published
-            else if (serviceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
+            // if status is under 2i review with admin return published 
+            //or if status is published under reassignment, show as published
+            else if (serviceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || serviceStatus == ServiceStatusEnum.PublishedUnderReassign)
             {
                 return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Published);
+            }
+            //or if status is removed under reassignment, show as removed
+            else if (serviceStatus == ServiceStatusEnum.RemovedUnderReassign)
+            {
+                return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Removed);
             }
 
             // Default to displaying the actual ServiceStatus

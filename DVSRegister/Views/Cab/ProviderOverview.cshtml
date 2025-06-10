@@ -82,8 +82,7 @@
                     {
 
                         var latestCabTransferRequest = item?.CabTransferRequest?.OrderByDescending(c => c.Id).FirstOrDefault();
-                        certificateUploadRequired = (item?.ServiceStatus == ServiceStatusEnum.Published || item?.ServiceStatus == ServiceStatusEnum.Removed) &&
-                        latestCabTransferRequest != null && latestCabTransferRequest.RequestManagement != null
+                        certificateUploadRequired = latestCabTransferRequest != null && latestCabTransferRequest.RequestManagement != null
                         && latestCabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
                         && latestCabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
                         && latestCabTransferRequest.CertificateUploaded == false;
