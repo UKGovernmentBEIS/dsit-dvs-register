@@ -303,6 +303,7 @@ namespace DVSRegister.Data.CAB
                           && cabTransferRequest.CertificateUploaded == false)
                         {
                             cabTransferRequest.CertificateUploaded = true;
+                            existingService.ServiceStatus = cabTransferRequest.PreviousServiceStatus;
                         }
                         var entity = await context.Service.AddAsync(service);
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
