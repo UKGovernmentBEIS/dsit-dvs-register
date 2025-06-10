@@ -24,12 +24,11 @@ namespace DVSRegister.Data.Repositories
                 if(existingEntity == null)
                 {
                     user.CreatedTime = DateTime.UtcNow;
+                    user.IsActive = true;
                     var entity = await context.CabUser.AddAsync(user);
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddService, user.CabEmail);
                     transaction.Commit();                    
                     return user;
-
-
                 }
                 return existingEntity;
                

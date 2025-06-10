@@ -36,11 +36,16 @@ namespace DVSRegister.BusinessLogic
             CreateMap<RegisterPublishLog, RegisterPublishLogDto>();
             CreateMap<RegisterPublishLogDto, RegisterPublishLog>();
 
+            CreateMap<ProviderProfileCabMapping, ProviderProfileCabMappingDto>();
+            CreateMap<ProviderProfileCabMappingDto, ProviderProfileCabMapping>();
+
 
             CreateMap<ProviderProfile, ProviderProfileDto>()
             .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services))
-          .ForMember(dest => dest.LastUpdatedInfo, opt => opt.MapFrom<LastModifiedDateResolver>());
+            .ForMember(dest => dest.ProviderProfileCabMapping, opt => opt.MapFrom(src => src.ProviderProfileCabMapping))
+            .ForMember(dest => dest.LastUpdatedInfo, opt => opt.MapFrom<LastModifiedDateResolver>());
             CreateMap<ProviderProfileDto, ProviderProfile>()
+            .ForMember(dest => dest.ProviderProfileCabMapping, opt => opt.MapFrom(src => src.ProviderProfileCabMapping))
             .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services));
 
             CreateMap<Cab, CabDto>();
@@ -48,7 +53,9 @@ namespace DVSRegister.BusinessLogic
             CreateMap<CabUser, CabUserDto>();
             CreateMap<CabUserDto, CabUser>();
 
-           
+            CreateMap<PublicInterestCheck, PublicInterestCheckDto>();
+            CreateMap<PublicInterestCheckDto, PublicInterestCheck>();
+
             CreateMap<CertificateReview, CertificateReviewDto>();
             CreateMap<CertificateReviewDto, CertificateReview>();
 
@@ -60,6 +67,8 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
             .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
             .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview))
+            .ForMember(dest => dest.PublicInterestCheck, opt => opt.MapFrom(src => src.PublicInterestCheck))
+            .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest))
             .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom<CreatedTimeResolver>());
 
             CreateMap<ServiceDto, Service>()
@@ -69,7 +78,9 @@ namespace DVSRegister.BusinessLogic
            .ForMember(dest => dest.ServiceSupSchemeMapping, opt => opt.MapFrom(src => src.ServiceSupSchemeMapping))
            .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
-           .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview));
+           .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview))
+           .ForMember(dest => dest.PublicInterestCheck, opt => opt.MapFrom(src => src.PublicInterestCheck))
+           .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest));
 
             CreateMap<ProceedApplicationConsentToken, ProceedApplicationConsentTokenDto>()
            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
@@ -118,6 +129,14 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceDraftTokenDto, ServiceDraftToken>();
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
+
+            CreateMap<RequestManagement, RequestManagementDto>();
+            CreateMap<RequestManagementDto, RequestManagement>();
+
+            CreateMap<CabTransferRequest, CabTransferRequestDto>()
+          .ForMember(dest => dest.RequestManagement, opt => opt.MapFrom(src => src.RequestManagement));
+            CreateMap<CabTransferRequestDto, CabTransferRequest>()
+            .ForMember(dest => dest.RequestManagement, opt => opt.MapFrom(src => src.RequestManagement));
         }
     }
 }

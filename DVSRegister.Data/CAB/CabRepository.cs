@@ -70,9 +70,9 @@ namespace DVSRegister.Data.CAB
         public async Task<List<ProviderProfile>> GetProviders(int cabId, string searchText = "")
         {
             //Filter based on cab type as well, fetch records for users with same cab type
-            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(s=>s.CabUser).Include(p => p.CabUser)
-            .ThenInclude(cu => cu.Cab)
-            .Where(p => p.CabUser.CabId == cabId)
+            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(s=>s.CabUser)
+             .Include(p => p.ProviderProfileCabMapping).ThenInclude(p => p.Cab)
+            .Where(p => p.ProviderProfileCabMapping.Any(m => m.CabId == cabId))
             .OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime);
             if (!string.IsNullOrEmpty(searchText))
             {
@@ -87,9 +87,11 @@ namespace DVSRegister.Data.CAB
         {
             ProviderProfile provider = new();
             provider = await context.ProviderProfile.Include(p=>p.Services).ThenInclude(p=>p.CertificateReview)
-                .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
-            .Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
-            .Where(p => p.Id == providerId && p.CabUser.CabId == cabId).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+            .Include(p => p.Services).ThenInclude(p => p.PublicInterestCheck)
+            .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
+             .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId)).ThenInclude(p => p.CabTransferRequest).ThenInclude(p => p.RequestManagement)
+            .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
+            .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
             return provider;
         }
 
@@ -141,6 +143,7 @@ namespace DVSRegister.Data.CAB
             {
             return await context.Service
             .Include(s => s.CertificateReview)
+            .Include(s => s.PublicInterestCheck)
             .Include(s => s.ServiceSupSchemeMapping)
             .ThenInclude(s=> s.SupplementaryScheme)
             .Include(s => s.ServiceRoleMapping)            
@@ -157,8 +160,8 @@ namespace DVSRegister.Data.CAB
         public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.CabUser).ThenInclude(p=>p.Cab).Where(x=>x.Id == providerId).FirstOrDefaultAsync()??new ProviderProfile();
-            if(provider.CabUser.Cab.Id > 0 &&  provider.CabUser.Cab.Id == cabId)
+            provider = await context.ProviderProfile.Include(p=>p.Services). Include(p => p.ProviderProfileCabMapping).ThenInclude(p=>p.Cab).Where(x=>x.Id == providerId).FirstOrDefaultAsync()??new ProviderProfile();
+            if(provider.ProviderProfileCabMapping.Any(m => m.CabId == cabId))
             {
                 return true;
             }
@@ -169,6 +172,23 @@ namespace DVSRegister.Data.CAB
             
         }
 
+        public async Task<(int,List<CabTransferRequest>)> GetPendingReassignRequestsCount(int cabId)
+        {
+
+            var pendingRequests = await context.RequestManagement.Where(r => r.CabId == cabId && r.RequestStatus == RequestStatusEnum.Pending && r.RequestType== RequestTypeEnum.CabTransfer).ToListAsync();
+
+            var pendingUploads= await context.CabTransferRequest.Include(c=>c.Service).ThenInclude(c=>c.Provider)
+                .Where(c => c.ToCabId == cabId && c.CertificateUploaded == false && c.RequestManagement != null && c.RequestManagement.RequestStatus == RequestStatusEnum.Approved).ToListAsync();
+
+            return (pendingRequests.Count, pendingUploads);           
+
+        }
+
+        public async Task<List<string>> GetCabEmailListForProvider(int providerId)
+        {          
+            return  await context.Service.Include(p => p.CabUser).Where(x => x.ProviderProfileId == providerId).Select(x => x.CabUser.CabEmail).Distinct().ToListAsync();          
+
+        }
 
         #region Save/update
         public async Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile, string loggedInUserEmail)
@@ -242,7 +262,7 @@ namespace DVSRegister.Data.CAB
             return genericResponse;
         }
 
-       
+
 
         public async Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail)
         {
@@ -255,10 +275,12 @@ namespace DVSRegister.Data.CAB
                .Where(x => x.ServiceKey == service.ServiceKey && x.IsCurrent == true).FirstOrDefaultAsync();
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
+                    var cabTransferRequest = context.CabTransferRequest.Include(c => c.RequestManagement).Where(c => c.ServiceId == existingService.Id).OrderByDescending(c => c.Id).FirstOrDefault();
+
                     if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
                     {
                         // reapplication - save as draft
-                        UpdateExistingServiceRecord(service, existingService);                      
+                        UpdateExistingServiceRecord(service, existingService);
                         genericResponse.InstanceId = existingService.ServiceKey;
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
                     }
@@ -272,17 +294,42 @@ namespace DVSRegister.Data.CAB
                         service.ServiceVersion = maxServiceVersion + 1;
                         service.CreatedTime = DateTime.UtcNow;
                         service.ModifiedTime = DateTime.UtcNow;
-                        service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue?null: service.ConformityExpiryDate;
-                        service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue?null :service.ConformityIssueDate;
+                        service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue ? null : service.ConformityExpiryDate;
+                        service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;
+                        //if it is a transfered service, update certificate upload flag
+                        if (cabTransferRequest != null && cabTransferRequest.RequestManagement != null
+                          && cabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
+                          && cabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
+                          && cabTransferRequest.CertificateUploaded == false)
+                        {
+                            cabTransferRequest.CertificateUploaded = true;
+                            existingService.ServiceStatus = cabTransferRequest.PreviousServiceStatus;
+
+                            var existingProvider = await context.ProviderProfile
+                                .Include(service => service.Services)
+                                .FirstOrDefaultAsync(p => p.Id == service.ProviderProfileId);
+
+                            if (existingProvider != null)
+                            {
+                                var services = existingProvider.Services;
+                                var providerStatus = GetProviderStatus(services, existingProvider.ProviderStatus);
+                                existingProvider.ModifiedTime = DateTime.UtcNow;
+                                existingProvider.ProviderStatus = providerStatus;
+                            }
+                        }
                         var entity = await context.Service.AddAsync(service);
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                         genericResponse.InstanceId = existingService.ServiceKey;
                     }
+                    transaction.Commit();
+                    genericResponse.Success = true;
                 }
-
-                transaction.Commit();
-                genericResponse.Success = true;
-
+                else
+                {
+                    transaction.Rollback();
+                    genericResponse.Success = false;
+                    logger.LogError("Service id {ServiceKey} doesnt exist ", service.ServiceKey);
+                }
             }
             catch (Exception ex)
             {
@@ -543,6 +590,65 @@ namespace DVSRegister.Data.CAB
                     context.Entry(mapping).State = EntityState.Added;
                 } 
             }
+        }
+
+        private static ProviderStatusEnum GetProviderStatus(ICollection<Service> services, ProviderStatusEnum currentStatus)
+        {
+            ProviderStatusEnum providerStatus = currentStatus;
+            if (services != null && services.Count > 0)
+            {
+                var priorityOrder = new List<ServiceStatusEnum>
+                    {
+                        ServiceStatusEnum.CabAwaitingRemovalConfirmation,
+                        ServiceStatusEnum.ReadyToPublish,
+                        ServiceStatusEnum.UpdatesRequested,
+                        ServiceStatusEnum.AwaitingRemovalConfirmation,
+                        ServiceStatusEnum.PublishedUnderReassign,
+                        ServiceStatusEnum.Published,
+                        ServiceStatusEnum.RemovedUnderReassign,
+                        ServiceStatusEnum.Removed
+                    };
+
+                ServiceStatusEnum highestPriorityStatus = services
+                  .Where(service => service.ServiceStatus == ServiceStatusEnum.ReadyToPublish ||
+                    service.ServiceStatus == ServiceStatusEnum.Published ||
+                    service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign ||
+                    service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign ||
+                    service.ServiceStatus == ServiceStatusEnum.Removed ||
+                    service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation ||
+                    service.ServiceStatus == ServiceStatusEnum.UpdatesRequested ||
+                    service.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
+                    .Select(service => service.ServiceStatus)
+                    .OrderBy(status => priorityOrder.IndexOf(status))
+                    .FirstOrDefault();
+
+
+
+                switch (highestPriorityStatus)
+                {
+                    case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
+                        return ProviderStatusEnum.CabAwaitingRemovalConfirmation;
+                    case ServiceStatusEnum.ReadyToPublish:
+                        bool hasPublishedServices = services.Any(service => service.ServiceStatus == ServiceStatusEnum.Published);
+                        return hasPublishedServices ? ProviderStatusEnum.ReadyToPublishNext : ProviderStatusEnum.ReadyToPublish;
+                    case ServiceStatusEnum.UpdatesRequested:
+                        return ProviderStatusEnum.UpdatesRequested;
+                    case ServiceStatusEnum.AwaitingRemovalConfirmation:
+                        return ProviderStatusEnum.AwaitingRemovalConfirmation;
+                    case ServiceStatusEnum.Published:
+                        return ProviderStatusEnum.Published;
+                    case ServiceStatusEnum.PublishedUnderReassign:
+                        return ProviderStatusEnum.PublishedUnderReassign;
+                    case ServiceStatusEnum.RemovedUnderReassign:
+                        return ProviderStatusEnum.RemovedUnderReassign;
+                    case ServiceStatusEnum.Removed:
+                        return ProviderStatusEnum.RemovedFromRegister;
+                    default:
+                        return ProviderStatusEnum.AwaitingRemovalConfirmation;
+                }
+
+            }
+            return providerStatus;
         }
         #endregion
     }

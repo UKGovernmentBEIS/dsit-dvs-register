@@ -34,6 +34,7 @@
         ReapplyService = 28,
         ProviderEdit2i = 29,
         ServiceEdit2i = 30,
-        ServiceAmendments = 31
+        ServiceAmendments = 31,
+        ApproveOrRejectReAssign = 32
     }
 }

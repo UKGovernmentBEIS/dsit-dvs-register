@@ -26,7 +26,13 @@ namespace DVSRegister.CommonUtility.Models
         [Description("Amendments needed")]
         AmendmentsRequired = 10,
         [Description("Submitted")]
-        Resubmitted = 11
+        Resubmitted = 11,
+        [Description("Published - under reassignment")]
+        Reassignment = 12,
+        [Description("Published, under reassignment")]
+        PublishedUnderReassign = 12,
+        [Description("Removed, under reassignment")]
+        RemovedUnderReassign = 13
 
     }
 }

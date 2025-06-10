@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB.Provider;
@@ -40,16 +41,22 @@ namespace DVSRegister.Controllers
                 return HandleInvalidCabId(CabId);
 
             ProviderListViewModel providerListViewModel = new();
-                if (SearchAction == "clearSearch")
-                {
-                    ModelState.Clear();
-                    providerListViewModel.SearchText = null;
-                    SearchText = string.Empty;
-                }
-                providerListViewModel.Providers = await cabService.GetProviders(CabId, SearchText);
-                return View(providerListViewModel);
-
-            
+            if (SearchAction == "clearSearch")
+            {
+                ModelState.Clear();
+                providerListViewModel.SearchText = null;
+                SearchText = string.Empty;
+            }
+          providerListViewModel.Providers = await cabService.GetProviders(CabId, SearchText);
+          var (hasPendingRequests, uploadList) = await cabService.GetPendingReassignRequests(CabId);
+          providerListViewModel.HasPendingReAssignments = hasPendingRequests;
+          if(uploadList?.Count>0)
+           {
+             providerListViewModel.PendingCertificateUploads = uploadList.OrderBy(x=>x.Service.Provider.RegisteredName).ToList();
+             providerListViewModel.ProviderServiceNames = string.Join("<br>", providerListViewModel.PendingCertificateUploads
+             .Select(request => request.Service.Provider.RegisteredName + " - " + request.Service.ServiceName));
+           }
+           return View(providerListViewModel);          
           
         }
 
@@ -62,6 +69,15 @@ namespace DVSRegister.Controllers
                 return HandleInvalidCabId(CabId);
 
             ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
+            var (hasPendingRequests, uploadList) = await cabService.GetPendingReassignRequests(CabId);
+            var pendingUploads =  uploadList.Where(x=>x.Service.Provider.Id == providerId).OrderBy(x=>x.Service.Provider.RegisteredName).ToList();
+            if(pendingUploads?.Count>0)
+            {
+                providerProfileDto.HasPendingCertificateUpload = true;
+                providerProfileDto.ProviderServiceNames = string.Join("<br>", pendingUploads
+               .Select(request => request.Service.Provider.RegisteredName + " - " + request.Service.ServiceName));
+            }           
+
             HttpContext?.Session.Remove("ProviderProfile");// clear existing data if any
             HttpContext?.Session.Set("ProviderProfile", providerProfileDto);
             return View(providerProfileDto);
@@ -99,6 +115,21 @@ namespace DVSRegister.Controllers
             ServiceDto currentServiceVersion = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
             serviceVersions.CurrentServiceVersion = currentServiceVersion;
             serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
+
+            if (serviceVersions.ServiceHistoryVersions.Any())
+            {
+                serviceVersions.CurrentServiceVersion.EnableResubmission = (currentServiceVersion.ServiceStatus == ServiceStatusEnum.Published || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed) ||
+                (serviceVersions.ServiceHistoryVersions.Any(x => x.ServiceStatus == ServiceStatusEnum.Published || x.ServiceStatus == ServiceStatusEnum.Removed) &&
+                (currentServiceVersion?.CertificateReview?.CertificateReviewStatus == CommonUtility.Models.Enums.CertificateReviewEnum.Rejected ||            
+                currentServiceVersion?.PublicInterestCheck?.PublicInterestCheckStatus == CommonUtility.Models.Enums.PublicInterestCheckEnum.PublicInterestCheckFailed));
+
+            }
+            else
+            {
+                serviceVersions.CurrentServiceVersion.EnableResubmission = currentServiceVersion.ServiceStatus == ServiceStatusEnum.Published
+                || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed;
+
+            }
 
             SetServiceDataToSession(CabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
             return View(serviceVersions);
