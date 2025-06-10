@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
@@ -103,6 +104,18 @@ namespace DVSRegister.BusinessLogic.Services.CAB
 
         }
 
+        public async Task<(bool, List<CabTransferRequestDto>)> GetPendingReassignRequests(int cabId)
+        {
+            var(pendingRequestCount, requestList) = await cabRepository.GetPendingReassignRequestsCount(cabId);
+            return (pendingRequestCount>0?true:false, automapper.Map<List<CabTransferRequestDto>>(requestList));
+        }
+
+        public async Task<List<string>> GetCabEmailListForProvider(int providerId)
+        {
+            return await cabRepository.GetCabEmailListForProvider(providerId);
+
+        }
+
         #region Save/ update
         public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
         {
@@ -149,7 +162,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             if (existingServiceCabId != cabId)
                 throw new InvalidOperationException(string.Format("Invalid CabId, Cab Id in Service  {0}, Cab Id in Session {1}",
                   existingServiceCabId, cabId));
-            if (!string.IsNullOrEmpty(existingFileLink) && !string.IsNullOrEmpty(existingFileLink) && existingFileLink != currentFileLink)
+            if (!string.IsNullOrEmpty(existingFileLink) && !string.IsNullOrEmpty(currentFileLink) && existingFileLink != currentFileLink)
             {
                canDelete = true;
             }

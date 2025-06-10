@@ -16,11 +16,11 @@ namespace DVSRegister.Extensions
             {
                 (12, 0) => "Midday",
                 (0, 0) => "Midnight",
-                _ => localTime.ToString("h:mmtt").ToLower()
+                _ => localTime.ToString("h:mm tt").ToLower()
             };
 
             string date = localTime.ToString("d MMM yyyy");
-            return new HtmlString($"{date}; {time}");
+            return new HtmlString($"{date}, {time}");
         }
         public static HtmlString FormatDateTime(DateTime? dateTime, string format )
         {          

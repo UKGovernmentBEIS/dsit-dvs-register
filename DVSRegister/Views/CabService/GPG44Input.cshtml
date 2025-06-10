@@ -1,7 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @using DVSRegister.Models.UI.Enums
 @{
-    ViewData["Title"] = "Is the service certified against GPG44";
+    ViewData["Title"] = "Is the service certified against GPG 44";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -41,7 +41,7 @@
                        PropertyName = "HasGPG44",
                        Value = Model.HasGPG44,
                        HasError = hasError,
-                       FieldSet = "Is the service certified against GPG44?",
+                       FieldSet = "Is the service certified against GPG 44?",
                        ParagraphText = "This must match the information on the certificate of conformity.",
                        Heading = HeadingEnum.H1,
                        LegendStyleClass = "govuk-fieldset__legend--xl",

@@ -22,8 +22,6 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
     <PackageReference Include="libphonenumber-csharp" Version="8.13.40" />
-    <PackageReference Include="NUnit" Version="4.2.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
     <PackageReference Include="Sentry.AspNetCore" Version="4.12.0" />
     <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
     <PackageReference Include="System.Text.Json" Version="9.0.2" />
@@ -48,6 +46,7 @@
     <Content Remove="wwwroot\css\utilities\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Views\CabTransfer\PartialViews\_PendingSubmissions.cshtml" />
     <None Include="Views\DSITEdit2i\ProviderChanges.cshtml" />
     <None Include="Views\DSITEdit2i\ProviderChangesApproved.cshtml" />
     <None Include="Views\DSITEdit2i\ProviderChangesCancelled.cshtml" />

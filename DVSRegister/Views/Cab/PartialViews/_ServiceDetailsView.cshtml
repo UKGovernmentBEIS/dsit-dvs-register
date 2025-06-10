@@ -10,8 +10,9 @@
     var notificationBanner = new NotificationBannerViewModel
             {
                 Title = "Important",
-                Heading = "You have a pending submission which is incomplete",
-                HtmlContent = "Select 'Resume submission' to continue your submission."
+                NotificationContent = new List<NotificationContent> { new () { Heading = "You have a pending submission which is incomplete", 
+                HtmlContent = "Select 'Resume submission' to continue your submission."} }               
+               
             };
 }
 
@@ -36,7 +37,7 @@
 
                 </ul>
             }
-            else if (Model.ServiceStatus == ServiceStatusEnum.Published && Model.IsCurrent == true)
+            else if (Model.EnableResubmission)
             {
                 <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
@@ -94,7 +95,7 @@
                         Status
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview, Model.ServiceStatus)
+                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview, Model.PublicInterestCheck, Model.ServiceStatus)
                     </dd>
                 </div>
 
@@ -181,7 +182,7 @@
                 {
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            GPG44 quality levels
+                            GPG 44 quality levels
                         </dt>
                         <dd class="govuk-summary-list__value">
                             @Constants.NullFieldsDisplay
@@ -200,7 +201,7 @@
 
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            GPG44 quality of authenticator
+                            GPG 44 quality of authenticator
                         </dt>
                         <dd class="govuk-summary-list__value">
                             @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
@@ -227,7 +228,7 @@
 
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            GPG44 level of protection
+                            GPG 44 level of protection
                         </dt>
                         <dd class="govuk-summary-list__value">
                             @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
@@ -257,7 +258,7 @@
                 {
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            GPG45 identity profiles
+                            GPG 45 identity profiles
                         </dt>
                         <dd class="govuk-summary-list__value">
                             @Constants.NullFieldsDisplay
@@ -275,7 +276,7 @@
                 {
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            GPG45 identity profiles
+                            GPG 45 identity profiles
                         </dt>
                         <dd class="govuk-summary-list__value">
                             @if (Model?.ServiceIdentityProfileMapping?.Count > 0)

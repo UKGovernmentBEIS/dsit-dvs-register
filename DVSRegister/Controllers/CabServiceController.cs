@@ -728,7 +728,9 @@ namespace DVSRegister.Controllers
                 }               
                 if (genericResponse.Success)
                 {
-                    return RedirectToAction("InformationSubmitted");
+                    ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
+                    string providerName = provider?.RegisteredName;
+                    return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName});
                 }
                 else
                 {
@@ -741,11 +743,11 @@ namespace DVSRegister.Controllers
         /// </summary>       
         /// <returns></returns>
         [HttpGet("service-submitted")]
-        public async Task <IActionResult> InformationSubmitted()
+        public async Task <IActionResult> InformationSubmitted(string providerName, string serviceName)
         {         
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.Email = UserEmail;
-            await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail);
+            await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail, providerName, serviceName);
             await emailSender.SendCertificateInfoSubmittedToDSIT();
             return View();
 

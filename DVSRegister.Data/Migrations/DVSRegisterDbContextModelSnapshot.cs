@@ -38,6 +38,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.HasKey("Id");
 
                     b.ToTable("Cab");
@@ -47,38 +50,87 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             CabName = "EY",
-                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
-                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
-                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
-                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
-                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
-                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc)
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true
                         });
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.CabTransferRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("CertificateUploaded")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("DecisionTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("FromCabUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PreviousServiceStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RequestManagementId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ToCabId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromCabUserId");
+
+                    b.HasIndex("RequestManagementId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("ToCabId");
+
+                    b.ToTable("CabTransferRequest");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.CabUser", b =>
@@ -98,6 +150,9 @@ namespace DVSRegister.Data.Migrations
 
                     b.Property<DateTime>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -642,9 +697,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("CabEditedTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("CabUserId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("CompanyRegistrationNumber")
                         .HasColumnType("text");
 
@@ -742,9 +794,30 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CabUserId");
-
                     b.ToTable("ProviderProfile");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfileCabMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CabId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProviderId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CabId");
+
+                    b.HasIndex("ProviderId");
+
+                    b.ToTable("ProviderProfileCabMapping");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfileDraft", b =>
@@ -1066,6 +1139,36 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("ServiceId");
 
                     b.ToTable("RemoveTokenServiceMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.RequestManagement", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CabId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("InitiatedUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ModifiedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("RequestStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RequestType")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CabId");
+
+                    b.HasIndex("InitiatedUserId");
+
+                    b.ToTable("RequestManagement");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Role", b =>
@@ -1631,6 +1734,41 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("DataProtectionKeys");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.CabTransferRequest", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.CabUser", "FromCabUser")
+                        .WithMany()
+                        .HasForeignKey("FromCabUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.RequestManagement", "RequestManagement")
+                        .WithMany()
+                        .HasForeignKey("RequestManagementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithMany("CabTransferRequest")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.Cab", "ToCab")
+                        .WithMany()
+                        .HasForeignKey("ToCabId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FromCabUser");
+
+                    b.Navigation("RequestManagement");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("ToCab");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.CabUser", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.Cab", "Cab")
@@ -1732,15 +1870,23 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("ProviderProfileDraft");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfileCabMapping", b =>
                 {
-                    b.HasOne("DVSRegister.Data.Entities.CabUser", "CabUser")
+                    b.HasOne("DVSRegister.Data.Entities.Cab", "Cab")
                         .WithMany()
-                        .HasForeignKey("CabUserId")
+                        .HasForeignKey("CabId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CabUser");
+                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "ProviderProfile")
+                        .WithMany("ProviderProfileCabMapping")
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cab");
+
+                    b.Navigation("ProviderProfile");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfileDraft", b =>
@@ -1834,6 +1980,25 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("RemoveProviderToken");
 
                     b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.RequestManagement", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.Cab", "Cab")
+                        .WithMany()
+                        .HasForeignKey("CabId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("InitiatedUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cab");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
@@ -2071,6 +2236,8 @@ namespace DVSRegister.Data.Migrations
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderProfile", b =>
                 {
+                    b.Navigation("ProviderProfileCabMapping");
+
                     b.Navigation("ProviderProfileDraft")
                         .IsRequired();
 
@@ -2084,6 +2251,8 @@ namespace DVSRegister.Data.Migrations
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
                 {
+                    b.Navigation("CabTransferRequest");
+
                     b.Navigation("CertificateReview")
                         .IsRequired();
 

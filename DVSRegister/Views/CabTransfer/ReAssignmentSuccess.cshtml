@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Service reassignment request accepted";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-panel govuk-panel--confirmation">
+                    <h1 class="govuk-panel__title">
+                        Service reassignment request accepted
+                    </h1>
+                </div>
+                <p class="govuk-body">
+                    You have accepted a request to reassign this service record to your
+                    Conformity Assessment Body.
+                </p>
+                <p class="govuk-body">
+                    Provider: @TempData["ProviderName"]<br />
+                    Service:  @TempData["ServiceName"] <br />
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-0">You will be able to:</p>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>
+                        access the service in 'Your service provider profiles' on the <a href=@TempData["CabURL"] class="govuk-link">Conformity Assessment Body Service</a>
+                    </li>
+                    <li>
+                        issue a replacement certificate for this service, if it has recently been
+                        transferred to your CAB
+                    </li>
+                </ul>
+                <h2 class="govuk-heading-m">If you need help</h2>
+                <p class="govuk-body">
+                    If you need help, you can email the Office for Digital Identities and Attributes
+                    on: <strong>digital.identity.register@dsit.gov.uk.</strong>
+                </p>
+                <p class="govuk-body"> You can close this page now.</p>
+                <a href="@Url.Action("ListProviders", "Cab")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                    Return to your provider profiles
+                </a>
+            </div>
+        </div>
+    </main>
+</div>

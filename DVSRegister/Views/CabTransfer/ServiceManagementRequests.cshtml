@@ -1,0 +1,48 @@
+﻿@model DVSRegister.Models.CabTransfer.ServiceManagementRequestsViewModel
+@{
+    ViewData["Title"] = "ServiceManagementRequests";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ListProviders", "Cab", null, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full govuk-!-padding-bottom-5">
+                <h1 class="govuk-heading-xl">Service management requests</h1>
+
+                <div class="govuk-tabs" data-module="govuk-tabs">
+                    <ul class="govuk-tabs__list">
+                        <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                            <a class="govuk-tabs__tab" href="#pending-submissions">
+                                Pending
+                            </a>
+                        </li>
+                        <li class="govuk-tabs__list-item">
+                            <a class="govuk-tabs__tab" href="#completed-submissions">
+                                Approved
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="govuk-tabs__panel" id="pending-submissions">
+                        @{
+                            ViewData["TabTitle"] = "Pending transfer requests";
+                            ViewData["isApproved"] = false;
+                        }
+                        @await Html.PartialAsync("~/Views/CabTransfer/PartialViews/_TransferRequestsSubmissions.cshtml", Model)
+                    </div>
+                    <div class="govuk-tabs__panel" id="completed-submissions">
+                        @{
+                            ViewData["TabTitle"] = "Approved transfer requests";
+                            ViewData["isApproved"] = true;
+                        }
+                        @await Html.PartialAsync("~/Views/CabTransfer/PartialViews/_TransferRequestsSubmissions.cshtml", Model)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

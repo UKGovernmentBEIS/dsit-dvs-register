@@ -73,7 +73,9 @@ namespace DVSRegister.Controllers
 
                 if (genericResponse.Success)
                 {
-                    return RedirectToAction("InformationSubmitted", "CabService");
+                    ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
+                    string providerName = provider?.RegisteredName;
+                    return RedirectToAction("InformationSubmitted", "CabService", new { providerName, serviceName = summaryViewModel.ServiceName });
                 }
                 else
                 {

@@ -30,18 +30,17 @@ namespace DVSRegister.Data.Repositories
 
         public async Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, string loggedinUserEmail)
         {
-            var consent = await context.ProceedApplicationConsentToken.FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId);
-            var service = await context.Service.FirstOrDefaultAsync(s => s.Id == consent.ServiceId);
-            service.OpeningLoopTokenStatus = TokenStatusEnum.RequestCompleted;
+            var consent = await context.ProceedApplicationConsentToken.FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId);            
 
             if (consent != null)
             {
+                var service = await context.Service.FirstOrDefaultAsync(s => s.Id == consent.ServiceId);
+                service.OpeningLoopTokenStatus = TokenStatusEnum.RequestCompleted;
                 context.ProceedApplicationConsentToken.Remove(consent);
                 await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveOpeningLoopToken, loggedinUserEmail);
                 logger.LogInformation("Opening Loop : Token Removed for service {0}", consent.Service.ServiceName);
                 return true;
             }
-
             return false;
         }
 
