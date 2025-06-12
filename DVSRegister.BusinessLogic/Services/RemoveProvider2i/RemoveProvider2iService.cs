@@ -84,7 +84,7 @@ namespace DVSRegister.BusinessLogic.Services
             GenericResponse genericResponse = new();
             string serviceNames = string.Join("\r", providerDto.Services.Select(s => s.ServiceName).ToList());
             List<int> serviceIds = providerDto.Services.Select(s => s.Id).ToList();
-            List<string> cabEmails = await cabRepository.GetCabEmailListForProvider(providerDto.Id);
+            List<string> cabEmails = await cabRepository.GetCabEmailListForServices(serviceIds);
 
             RemoveProviderToken removeProviderToken = await removeProvider2iRepository.GetRemoveProviderToken(token, tokenId);
 

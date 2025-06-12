@@ -184,10 +184,11 @@ namespace DVSRegister.Data.CAB
 
         }
 
-        public async Task<List<string>> GetCabEmailListForProvider(int providerId)
-        {          
-            return  await context.Service.Include(p => p.CabUser).Where(x => x.ProviderProfileId == providerId).Select(x => x.CabUser.CabEmail).Distinct().ToListAsync();          
-
+        public async Task<List<string>> GetCabEmailListForServices(List<int> serviceIds)
+        {
+            List<int> cabIds = await context.Service.Include(p => p.CabUser).Where(x => serviceIds.Contains(x.Id)).Select(x => x.CabUser.CabId).Distinct().ToListAsync();
+            List<string> activeCabUserEmails = await context.CabUser.Where(c => cabIds.Contains(c.CabId) && c.IsActive).Select(c => c.CabEmail).ToListAsync();
+            return activeCabUserEmails;
         }
 
         #region Save/update
