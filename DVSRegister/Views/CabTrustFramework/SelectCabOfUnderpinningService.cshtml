@@ -1,0 +1,57 @@
+﻿@model AllCabsViewModel
+@using DVSRegister.Extensions
+@using DVSRegister.CommonUtility.Models
+@using DVSRegister.CommonUtility
+@using DVSRegister.Models.CabTrustFramework
+@{
+    ViewData["Title"] = "Service details";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "#", "#", null, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">Conformity Assessment Body of the underpinning service</h1>
+                <p class="govuk-body">
+                    This must match the certifying CAB listed on the certificate. The information
+                    you provide will be publicly displayed on the register of digital identity and
+                    attribute services.
+                </p>
+                @using (Html.BeginForm("#", "#", FormMethod.Post))
+                {
+                    <div class="govuk-form-group govuk-!-margin-bottom-7">
+                        <label class="govuk-label govuk-!-font-weight-bold govuk-!-margin-bottom-2" for="select-cab">
+                            CAB name
+                        </label>
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <p id="select-cab-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> Select the Conformity Assessment Body for the underpinning service
+                            </p>
+                        }
+                        <select class="govuk-select govuk-!-width-two-thirds @(ViewData.ModelState.IsValid ? "" : "govuk-select--error")"
+                                id="select-cab"
+                                name="select-cab"
+                                aria-describedby="@(!ViewData.ModelState.IsValid ? "select-cab-error" : "")">
+                            <option selected> Choose a CAB </option>
+                            @foreach (var cab in Model.Cabs)
+                            {
+                                <option value="@cab.Id">@cab.CabName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" value="continue" data-module="govuk-button">
+                            Continue
+                        </button>
+                        <button type="submit" class="govuk-button govuk-button--secondary" value="save" data-module="govuk-button">
+                            Save and continue later
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </main>
+</div>
