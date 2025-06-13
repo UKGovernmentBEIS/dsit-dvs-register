@@ -1,4 +1,43 @@
-﻿@page
-@model DVSRegister.Views.TrustFrameUpLift.TrustFrameworkVersionModel
-@{
+﻿@{
+    ViewData["Title"] = "Select the version of the trust framework that you have certified the service against";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
+
+<div class="govuk-width-container">
+    <a href="#" class="govuk-back-link">Back</a>
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">Select the version of the trust framework that you have certified the against</h1>
+                <h3 class="govuk-heading-s">Trust framework version</h3>
+                <p class="govuk-body-s">
+                    This must match the version of the trust framework that
+                    appears on the certificate of conformity for this service.
+                </p>
+                <div class="govuk-radios" data-module="govuk-radios">
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="TrustFrameworkVersion" name="TrustFrameworkVersion" type="radio" value="0.4gamma">
+                        <label class="govuk-label govuk-radios__label" for="TrustFrameworkVersion">
+                            0.4 gamma
+                        </label>
+                    </div>
+                    <div class="govuk-radios__item">
+                        <input class="govuk-radios__input" id="TrustFrameworkVersion-2" name="TrustFrameworkVersion" type="radio" value="0.3beta">
+                        <label class="govuk-label govuk-radios__label" for="TrustFrameworkVersion">
+                            0.3 beta
+                        </label>
+                    </div>
+                    <div class="govuk-!-padding-bottom-5"></div>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" data-module="govuk-button">
+                            Continue
+                        </button>
+                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                            Save and complete later
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
