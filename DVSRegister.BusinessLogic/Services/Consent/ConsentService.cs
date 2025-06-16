@@ -101,14 +101,8 @@ namespace DVSRegister.BusinessLogic.Services
             GenericResponse genericResponse = new GenericResponse();
             ProceedPublishConsentToken consentToken = await consentRepository.GetProceedPublishConsentToken(token, tokenId);
             if (!string.IsNullOrEmpty(consentToken.Token) && !string.IsNullOrEmpty(consentToken.TokenId))   //proceed update status if token exists           
-            {
-                ProviderStatusEnum providerStatus = ProviderStatusEnum.ReadyToPublish;
-                List<Service> serviceList = await consentRepository.GetServiceList(serviceDto.ProviderProfileId);
-                if (serviceList.Any(item => item.ServiceStatus == ServiceStatusEnum.Published))
-                {
-                    providerStatus = ProviderStatusEnum.ReadyToPublishNext;
-                }
-                genericResponse = await consentRepository.UpdateServiceAndProviderStatus(serviceDto.Id, providerStatus, loggedInUserEmail);
+            {                
+                genericResponse = await consentRepository.UpdateServiceAndProviderStatus(serviceDto.Id, loggedInUserEmail);
                 if (genericResponse.Success)
                 {
 
