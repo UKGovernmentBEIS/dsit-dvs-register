@@ -31,10 +31,9 @@ namespace DVSRegister.BusinessLogic.Services
             if(genericResponse.Success) 
             {
 
-                // get updated service list and decide provider status
-                ProviderProfile providerProfile = await removeProviderRepository.GetProviderWithAllServices(providerProfileId);
+        
+                ProviderProfile providerProfile = await removeProviderRepository.GetProviderWithAllServices(providerProfileId);               
                
-                genericResponse = await removeProviderService.UpdateProviderStatus(providerProfile, providerProfileId, loggedInUserEmail, EventTypeEnum.RemoveServiceRequestedByCab, TeamEnum.CAB);
 
                 if (whatToRemove == "provider")
                 {
