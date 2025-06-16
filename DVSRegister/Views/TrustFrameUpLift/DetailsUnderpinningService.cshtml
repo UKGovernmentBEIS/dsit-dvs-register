@@ -1,0 +1,86 @@
+﻿@model DVSRegister.Views.TrustFrameUpLift._ServiceDetailsTableModel
+    ViewData["Title"] = "Details you have provided about the underpinning service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    @await Html.PartialAsync("_ServiceDetailsTable", Model)
+}
+
+<div class="govuk-width-container">
+  <a href="#" class="govuk-back-link">Back</a>
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">Details you have provided about the underpinning service</h1>
+                <p class="govuk-body-s">
+                    The certificate of the white-labelled service will be linked to this underpinning service.
+                </p>
+                <p class="govuk-body-s">
+                    Select 'Continue' to provide further details about the white-labelled service.
+                </p>
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <p class="govuk-summary-card__title">
+                            Underpinning service
+                        </p>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Service name
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    Arc
+                                </dd>
+                                <p class="govuk-body">
+                                    <a href="#" class="govuk-link">Change</a>
+                                </p>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Service provider
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    TrustedPoint
+                                </dd>
+                                <p class="govuk-body">
+                                    <a href="#" class="govuk-link">Change</a>
+                                </p>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    CAB of underpinning service
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    ABC
+                                </dd>
+                                <p class="govuk-body">
+                                    <a href="#" class="govuk-link">Change</a>
+                                </p>
+                            </div>
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Underpinning certificate expiry date
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    20 june 2026
+                                </dd>
+                                <p class="govuk-body">
+                                    <a href="#" class="govuk-link">Change</a>
+                                </p>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+                <div class="govuk-!-padding-bottom-5"></div>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        Continue
+                    </button>
+                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                        Save and complete later
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
