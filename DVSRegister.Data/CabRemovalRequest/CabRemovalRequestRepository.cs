@@ -27,6 +27,10 @@ namespace DVSRegister.Data.CabRemovalRequest
                 service.ModifiedTime = DateTime.UtcNow;
                 service.RemovalRequestTime = DateTime.UtcNow;
                 service.RemovalReasonByCab = removalReasonByCab;
+                //update provider status
+                var providerEntity = await context.ProviderProfile.Include(p => p.Services).FirstOrDefaultAsync(e => e.Id == providerProfileId);
+                ProviderStatusEnum providerStatus = RepositoryHelper.GetProviderStatus(providerEntity.Services, providerEntity.ProviderStatus);
+                providerEntity.ProviderStatus = providerStatus;
                 await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveServiceRequestedByCab, loggedInUserEmail);    
                 await transaction.CommitAsync();
                 genericResponse.Success = true;
