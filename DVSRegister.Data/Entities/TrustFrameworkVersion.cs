@@ -9,6 +9,8 @@ namespace DVSRegister.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string TrustFrameworkName { get; set; }
+
+        public Decimal Version { get; set; }
         public int Order { get; set; }
     }
 }
