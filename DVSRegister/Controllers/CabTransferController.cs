@@ -14,7 +14,7 @@ namespace DVSRegister.Controllers
         private readonly IConfiguration configuration = configuration;        
         
         [HttpGet("service-management-requests")]
-        public async Task<IActionResult> ServiceManagementRequests()
+        public async Task<IActionResult> ServiceManagementRequests(string previousPage)
         {
             var list = await cabTransferService.GetServiceTransferRequests(CabId);
 
@@ -25,7 +25,7 @@ namespace DVSRegister.Controllers
                 CompletedRequests = list.Where(x => x.RequestManagement != null && x.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
                 && (x.RequestManagement.RequestStatus == RequestStatusEnum.Approved)).ToList()
             };
-
+            ViewBag.previousPage = previousPage;
             return View(serviceManagementRequestsViewModel);
         }
       
