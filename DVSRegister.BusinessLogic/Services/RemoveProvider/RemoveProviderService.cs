@@ -13,17 +13,11 @@ namespace DVSRegister.BusinessLogic.Services
         {
 
             ProviderProfile providerProfile = await removeProviderRepository.GetProviderWithAllServices(providerProfileId);
-            ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
+            ProviderStatusEnum providerStatus = RepositoryHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
             return await removeProviderRepository.UpdateProviderStatus(providerProfileId, providerStatus, loggedInUserEmail, eventType, team);
-
         }
 
 
-        public async Task<GenericResponse> UpdateProviderStatus(ProviderProfile providerProfile,int providerProfileId, string loggedInUserEmail, EventTypeEnum eventType, TeamEnum team)
-        {           
-            ProviderStatusEnum providerStatus = ServiceHelper.GetProviderStatus(providerProfile.Services, providerProfile.ProviderStatus);
-            return await removeProviderRepository.UpdateProviderStatus(providerProfileId, providerStatus, loggedInUserEmail, eventType, team);
-
-        }
+       
     }
 }

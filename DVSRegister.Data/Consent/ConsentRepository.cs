@@ -103,24 +103,27 @@ namespace DVSRegister.Data.Repositories
         }
 
         // closing the loop
-        public async Task<GenericResponse> UpdateServiceAndProviderStatus(int serviceId, ProviderStatusEnum providerStatus, string loggedInUserEmail)
+        public async Task<GenericResponse> UpdateServiceAndProviderStatus(int serviceId, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();
             using var transaction = context.Database.BeginTransaction();
             try
             {
 
-                var serviceEntity = await context.Service.FirstOrDefaultAsync(e => e.Id == serviceId);
-                var providerEntity = await context.ProviderProfile.FirstOrDefaultAsync(e => e.Id == serviceEntity.ProviderProfileId);
+                var serviceEntity = await context.Service.FirstOrDefaultAsync(e => e.Id == serviceId);               
 
-                if (serviceEntity != null && providerEntity != null)
-                {
+                if (serviceEntity != null )
+                {                   
+
                     serviceEntity.ServiceStatus = ServiceStatusEnum.ReadyToPublish;
                     serviceEntity.ModifiedTime = DateTime.UtcNow;
+               
+                    var providerEntity = await context.ProviderProfile.Include(p => p.Services).FirstOrDefaultAsync(e => e.Id == serviceEntity.ProviderProfileId);
+                    ProviderStatusEnum providerStatus = RepositoryHelper.GetProviderStatus(providerEntity.Services, providerEntity.ProviderStatus);
                     providerEntity.ProviderStatus = providerStatus;
                     providerEntity.ModifiedTime = DateTime.UtcNow;
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.ClosingTheLoop, loggedInUserEmail);
-                  
+
                     if (await AddTrustMarkNumber(serviceEntity.Id,serviceEntity.ServiceKey, providerEntity.Id, loggedInUserEmail))
                     {
                         transaction.Commit();
