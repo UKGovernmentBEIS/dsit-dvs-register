@@ -23,9 +23,9 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             this.bucketService = bucketService;
         }
      
-        public async Task<List<RoleDto>> GetRoles()
+        public async Task<List<RoleDto>> GetRoles(decimal tfVersion)
         {
-            var list = await cabRepository.GetRoles();
+            var list = await cabRepository.GetRoles(tfVersion);
             return automapper.Map<List<RoleDto>>(list);
         }
 

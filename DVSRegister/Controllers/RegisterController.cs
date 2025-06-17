@@ -2,9 +2,11 @@
 using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.Data.Entities;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace DVSRegister.Controllers
 {
@@ -14,6 +16,7 @@ namespace DVSRegister.Controllers
     {         
         private readonly IRegisterService registerService = registerService;
         private readonly ICabService cabService = cabService;
+        private readonly decimal TFVersionNumber = 0.3m;//To Do : update after all tf changes 
 
         [Route("")]
         [HttpGet("register-search")]
@@ -117,7 +120,7 @@ namespace DVSRegister.Controllers
 
         private async Task SetRoles(List<int>? SelectedRoleIds, int RemoveRole, RegisterListViewModel registerListViewModel)
         {
-            registerListViewModel.AvailableRoles = await cabService.GetRoles();
+            registerListViewModel.AvailableRoles = await cabService.GetRoles(TFVersionNumber);
             if (SelectedRoleIds==null || SelectedRoleIds.Count == 0)
             {
                 registerListViewModel.SelectedRoleIds = [];
