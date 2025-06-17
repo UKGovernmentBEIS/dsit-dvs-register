@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "You have selected this underpinning service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <a href="#" class="govuk-back-link">Back</a>
+    <main class="govuk-main-wrapper">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">You have selected this underpinning service</h1>
+                <p class="govuk-body-s">
+                    The certificate of the white-labelled service will be linked to this underpinning service.
+                </p>
+                <p class="govuk-body-s">
+                    Select 'Continue' to provide further details about the white-labelled service.
+                </p>
+                @await Html.PartialAsync("~/Views/TrustFrameUpLift/PartialViews/_ServiceDetailsTable.cshtml")
+            </div>
+        </div>
+        <div class="govuk-!-padding-bottom-5"></div>
+        <div class="govuk-button-group">
+            <button type="submit" class="govuk-button" data-module="govuk-button">
+                Continue
+            </button>
+            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                Save and complete later
+            </button>
+        </div>
+    </main>
+</div>
