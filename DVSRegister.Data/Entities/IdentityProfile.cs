@@ -11,5 +11,9 @@ namespace DVSRegister.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string IdentityProfileName { get; set; }
+
+        [ForeignKey("TrustFrameworkVersion")]
+        public int TrustFrameworkVersionId { get; set; }
+        public TrustFrameworkVersion TrustFrameworkVersion { get; set; }
     }
 }
