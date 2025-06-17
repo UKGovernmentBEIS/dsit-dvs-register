@@ -2,11 +2,11 @@
 @{
     ViewData["Title"] = "ServiceManagementRequests";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+
+    string action = ViewBag.previousPage == "landing" ? "LandingPage" : "ListProviders";
 }
-
-
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ListProviders", "Cab", null, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", action , "Cab", null, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full govuk-!-padding-bottom-5">
