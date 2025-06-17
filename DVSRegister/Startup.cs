@@ -14,6 +14,7 @@ using DVSRegister.Data.CAB;
 using DVSRegister.Data.CabRemovalRequest;
 using DVSRegister.Data.CabTransfer;
 using DVSRegister.Data.Repositories;
+using DVSRegister.Data.TrustFramework;
 using DVSRegister.Middleware;
 using DVSRegister.Services.Cookies;
 using Microsoft.AspNetCore.DataProtection;
@@ -114,6 +115,8 @@ namespace DVSRegister
             services.AddSingleton<DVSRegister.BusinessLogic.AutoMapperProfile>();
             services.AddScoped<ICabTransferRepository, CabTransferRepository>();
             services.AddScoped<ICabTransferService, CabTransferService>();
+            services.AddScoped<ITrustFrameworkRepository, TrustFrameworkRepository>();
+            services.AddScoped<ITrustFrameworkService, TrustFrameworkService>();
             services.AddTransient<LoginEmailSender>();
             services.AddTransient<CabEmailSender>();
             services.AddTransient<Removal2iCheckEmailSender>();

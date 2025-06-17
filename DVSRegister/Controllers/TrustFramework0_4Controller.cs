@@ -4,10 +4,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab-trust-framework")]
-    public class CabTrustFrameworkController(ILogger<CabTrustFrameworkController> logger) : BaseController(logger)
+
+    /// <summary>
+    /// Views specific for Trustframework 0_4
+    /// </summary>
+    /// <param name="logger"></param>
+    [Route("trust-framework-0.4")]
+    public class TrustFramework0_4Controller(ILogger<TrustFramework0_4Controller> logger) : BaseController(logger)
     {
-        private readonly ILogger<CabTrustFrameworkController> logger = logger;
+        private readonly ILogger<TrustFramework0_4Controller> logger = logger;
 
 
         [HttpGet("select-underpinning")]
