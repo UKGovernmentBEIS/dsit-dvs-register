@@ -13,5 +13,8 @@ namespace DVSRegister.Data.Entities
         public int Id { get; set; }
         public string Level { get; set; }
         public QualityTypeEnum QualityType { get; set; }
+        [ForeignKey("TrustFrameworkVersion")]
+        public int TrustFrameworkVersionId { get; set; }
+        public TrustFrameworkVersion TrustFrameworkVersion { get; set; }
     }
 }

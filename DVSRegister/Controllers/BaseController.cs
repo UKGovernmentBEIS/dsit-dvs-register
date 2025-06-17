@@ -32,6 +32,9 @@ namespace DVSRegister.Controllers
             }
         }
 
+        //TODO: set value in session 
+        protected Decimal TFVersionNumber => 0.3m;
+
         protected bool IsValidCabId(int cabId)
         {
             return cabId > 0;

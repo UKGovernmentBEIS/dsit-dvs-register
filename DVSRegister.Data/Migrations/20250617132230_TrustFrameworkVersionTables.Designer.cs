@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250617132230_TrustFrameworkVersionTables")]
+    partial class TrustFrameworkVersionTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1832,9 +1835,6 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Version")
-                        .HasColumnType("numeric");
-
                     b.HasKey("Id");
 
                     b.ToTable("TrustFrameworkVersion");
@@ -1844,15 +1844,13 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             Order = 1,
-                            TrustFrameworkName = "0.4 gamma",
-                            Version = 0m
+                            TrustFrameworkName = "0.4 gamma"
                         },
                         new
                         {
                             Id = 2,
                             Order = 2,
-                            TrustFrameworkName = "0.3 beta",
-                            Version = 0m
+                            TrustFrameworkName = "0.3 beta"
                         });
                 });
 

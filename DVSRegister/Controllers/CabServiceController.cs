@@ -165,7 +165,7 @@ namespace DVSRegister.Controllers
             RoleViewModel roleViewModel = new()
             {
                 SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList(),
-                AvailableRoles = await cabService.GetRoles(),
+                AvailableRoles = await cabService.GetRoles(TFVersionNumber),
                 IsAmendment = summaryViewModel.IsAmendment,
                 RefererURL = GetRefererURL()
             };
@@ -184,7 +184,7 @@ namespace DVSRegister.Controllers
             bool fromSummaryPage = roleViewModel.FromSummaryPage;
             bool fromDetailsPage = roleViewModel.FromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            List<RoleDto> availableRoles = await cabService.GetRoles();          
+            List<RoleDto> availableRoles = await cabService.GetRoles(TFVersionNumber);          
             roleViewModel.AvailableRoles = availableRoles;
             roleViewModel.SelectedRoleIds =  roleViewModel.SelectedRoleIds??[];
             roleViewModel.IsAmendment = summaryViewModel.IsAmendment;

@@ -55,7 +55,11 @@ namespace DVSRegister.Data
         public DbSet<CabTransferRequest> CabTransferRequest { get; set; }
         public DbSet<RequestManagement> RequestManagement { get; set; }
 
-        public DbSet<ProviderProfileCabMapping> ProviderProfileCabMapping { get; set; }
+        public DbSet<ProviderProfileCabMapping> ProviderProfileCabMapping { get; set; }        
+        public DbSet<TrustFrameworkVersion> TrustFrameworkVersion { get; set; }
+        public DbSet<SchemeGPG44Mapping> SchemeGPG44Mapping { get; set; }
+        public DbSet<SchemeGPG45Mapping> SchemeGPG45Mapping { get; set; }
+        public DbSet<ManualUnderPinningService> ManualUnderPinningService { get; set; }
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
             if (actorId !=null)
@@ -183,7 +187,9 @@ namespace DVSRegister.Data
             modelBuilder.Entity<Role>().HasData(
             new Role { Id =1, RoleName = "Identity Service Provider (IDSP)",Order = 1 },
             new Role { Id =2, RoleName = "Attribute Service Provider (ASP)", Order = 2 },
-            new Role { Id =3, RoleName = "Orchestration Service Provider (OSP)", Order = 3 });
+            new Role { Id =3, RoleName = "Orchestration Service Provider (OSP)", Order = 3 },
+            new Role { Id = 4, RoleName = "Holder Service Provider (HSP)", Order = 4 },
+            new Role { Id = 5, RoleName = "Component Service Provider (CSP)", Order = 5 });
 
                 modelBuilder.Entity<IdentityProfile>().HasData(
                 new IdentityProfile { Id =1, IdentityProfileName = "L1A " },
@@ -223,6 +229,10 @@ namespace DVSRegister.Data
                 new SupplementaryScheme { Id =1, SchemeName = "Right to Work", Order = 2 },
                 new SupplementaryScheme { Id =2, SchemeName = "Right to Rent", Order =1 },
                 new SupplementaryScheme { Id =3, SchemeName = "Disclosure and Barring Service", Order =3 });
+
+            modelBuilder.Entity<TrustFrameworkVersion>().HasData(
+                new TrustFrameworkVersion { Id = 1, TrustFrameworkName = "0.4 gamma", Order = 1 },
+                new TrustFrameworkVersion { Id = 2, TrustFrameworkName = "0.3 beta", Order = 2 });
 
         }
     }

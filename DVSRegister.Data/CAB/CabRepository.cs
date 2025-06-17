@@ -18,9 +18,9 @@ namespace DVSRegister.Data.CAB
         }
     
 
-        public async Task<List<Role>> GetRoles()
+        public async Task<List<Role>> GetRoles(decimal tfVersion)
         {
-            return await context.Role.OrderBy(c => c.Order).ToListAsync();
+            return await context.Role.Include(x=>x.TrustFrameworkVersion).Where(x=>x.TrustFrameworkVersion.Version <= tfVersion).OrderBy(c => c.Order).ToListAsync();
         }
 
         public async Task<List<IdentityProfile>> GetIdentityProfiles()
