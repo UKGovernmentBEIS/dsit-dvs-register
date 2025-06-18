@@ -132,12 +132,24 @@
                             <div class="govuk-summary-card__content">
                                 <dl class="govuk-summary-list">
                                     <div class="govuk-summary-list__row">
-                                        <dt class="govuk-summary-list__key">
-                                            Submission date (GMT)
-                                        </dt>
-                                        <dd class="govuk-summary-list__value">
-                                            @DateTimeExtensions.FormatDateTime(item.CreatedTime)                                            
-                                        </dd>
+                                        @if(item.PublishedTime != null)
+                                        {
+                                            <dt class="govuk-summary-list__key">
+                                                Publication date (GMT)
+                                            </dt>
+                                            <dd class="govuk-summary-list__value">
+                                                @DateTimeExtensions.FormatDateTime(item.PublishedTime) 
+                                            </dd>
+                                        }
+                                        else
+                                        {
+                                            <dt class="govuk-summary-list__key">
+                                                Submission date (GMT)
+                                            </dt>
+                                            <dd class="govuk-summary-list__value">
+                                                @DateTimeExtensions.FormatDateTime(item.CreatedTime) 
+                                            </dd>
+                                        }
                                     </div>
                                     @if (certificateUploadRequired)
                                     {

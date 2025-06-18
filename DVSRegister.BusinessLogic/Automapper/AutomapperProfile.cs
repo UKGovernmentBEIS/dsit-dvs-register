@@ -69,7 +69,8 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview))
             .ForMember(dest => dest.PublicInterestCheck, opt => opt.MapFrom(src => src.PublicInterestCheck))
             .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest))
-            .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom<CreatedTimeResolver>());
+            .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom<CreatedTimeResolver>())
+            .ForMember(dest => dest.TrustFrameworkVersion, opt => opt.MapFrom(src => src.TrustFrameworkVersion));
 
             CreateMap<ServiceDto, Service>()
            .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
@@ -80,7 +81,9 @@ namespace DVSRegister.BusinessLogic
            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
            .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview))
            .ForMember(dest => dest.PublicInterestCheck, opt => opt.MapFrom(src => src.PublicInterestCheck))
-           .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest));
+           .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest))
+           .ForMember(dest => dest.TrustFrameworkVersion, opt => opt.MapFrom(src => src.TrustFrameworkVersion));
+
 
             CreateMap<ProceedApplicationConsentToken, ProceedApplicationConsentTokenDto>()
            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
@@ -137,6 +140,9 @@ namespace DVSRegister.BusinessLogic
           .ForMember(dest => dest.RequestManagement, opt => opt.MapFrom(src => src.RequestManagement));
             CreateMap<CabTransferRequestDto, CabTransferRequest>()
             .ForMember(dest => dest.RequestManagement, opt => opt.MapFrom(src => src.RequestManagement));
+
+            CreateMap<TrustFrameworkVersion, TrustFrameworkVersionDto>();
+            CreateMap<TrustFrameworkVersionDto, TrustFrameworkVersion>();
         }
     }
 }
