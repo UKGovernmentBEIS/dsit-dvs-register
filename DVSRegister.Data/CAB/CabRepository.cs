@@ -153,6 +153,7 @@ namespace DVSRegister.Data.CAB
             .Include(s => s.ServiceIdentityProfileMapping)
             .ThenInclude(s => s.IdentityProfile)
             .Include(s => s.CabUser).ThenInclude(s => s.Cab)
+            .Include(s => s.TrustFrameworkVersion)
             .Where(s => s.ServiceKey == serviceKey)
             .ToListAsync();
         }
