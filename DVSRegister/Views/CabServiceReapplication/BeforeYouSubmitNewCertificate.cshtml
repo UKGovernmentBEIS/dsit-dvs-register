@@ -9,24 +9,44 @@
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
 
+                <p class="govuk-body">Before starting your submission, check you have all the required information and
+                    documentation.</p>
+                <p class="govuk-body">Once you start a submission, you will be able to select 'Save and complete later'
+                    to save your answers as a draft.</p>
+                <p class="govuk-body">You will need the following information. You will need to enter this exactly as it
+                    is shown on the service provider’s certificate:</p>
 
-                <h1 class="govuk-heading-xl">Before you submit a new certificate for this service</h1>
-
-                <p class="govuk-body">You should  continue with this certificate submission if you are submitting a new certificate for an existing service. This could be for one of the following reasons:</p>
-                
                 <ul class="govuk-list govuk-list--bullet">
-                    <li>The previous certificate for this service has expired or is expiring soon</li>
-                    <li>The scope of the certification for this service has changed and a new certificate is required</li>
-                    <li>This service was previously certified under a version of the trust framework which is no longer valid</li>
+                    <li>Version of the trust framework this service is certified against</li>
+                    <li>Name of service</li>
+                    <li>URL link to the service</li>
+                    <li>Company address details</li>
+                    <li>Role types the service is certified against</li>
+                    <li>Supplementary codes (if applicable)</li>
+                    <li>GPG 45 identity profiles (including information for any supplementary codes relevant to the
+                        service)
+                    </li>
+                    <li>GPG 44 quality of authenticator and quality of protection (including information for any
+                        supplementary codes relevant to the service)
+                    </li>
+                    <li>Certificate of conformity issue and expiry dates</li>
+                    <li>Underpinning service details (if applicable), including the name of the provider and the
+                        service, the certifying CAB, registration status, and the underpinning certificate expiry date
+                    </li>
                 </ul>
 
-                <p class="govuk-body">If the certificate is for a different service, or if the service details have changed significantly, you should create a new service submission for this certificate.</p>
+                <p class="govuk-body">You will need to upload the following documentation:</p>
 
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>A PDF copy of the service provider’s certificate of conformity</li>
+                </ul>
 
-
+                <p class="govuk-body">Once the Office of Digital Identities and Attributes has approved this submission,
+                    the information you have provided will be publicly available on the register of digital identity and
+                    attribute services.</p>
                 <p class="govuk-body">@Html.ActionLink("Continue", "ServiceName", "CabService", new { providerProfileId = ViewBag.ProviderProfileId }, new { @class = "govuk-button" })</p>
-
             </div>
         </div>
     </main>

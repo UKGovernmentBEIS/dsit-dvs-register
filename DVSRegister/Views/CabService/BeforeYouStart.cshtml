@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "Before you submit a service";
+    ViewData["Title"] = "Before you start your submission";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
@@ -9,35 +9,32 @@
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
 
-
-                <h1 class="govuk-heading-xl">Before you submit a service</h1>
-
-                <p class="govuk-body">Before starting your submission, check that you have all the required information and documentation listed below.If you need to save your progress while completing your submission and resume later, you can select 'Save and return later'.</p>
-
-                <p class="govuk-body">You will need the following information exactly as it is shown on the service provider’s certificate:</p>
+                <p class="govuk-body">Before starting your submission, check you have all the required information and documentation.</p>
+                <p class="govuk-body">Once you start a submission, you will be able to select 'Save and complete later' to save your answers as a draft.</p>
+                <p class="govuk-body">You will need the following information. You will need to enter this exactly as it is shown on the service provider’s certificate:</p>
 
                 <ul class="govuk-list govuk-list--bullet">
-                    <li>name of service</li>
+                    <li>Version of the trust framework this service is certified against</li>
+                    <li>Name of service</li>
                     <li>URL link to the service</li>
-                    <li>company address details</li>
-                    <li>type of roles certified against</li>
-                    <li>GPG 44 quality of authenticator and level of protection, if applicable</li>
-                    <li>GPG 45 identity profiles, if applicable</li>
-                    <li>supplementary codes, if applicable</li>
-                    <li>certificate of conformity issue date</li>
-                    <li>certificate of conformity expiry date</li>
+                    <li>Company address details</li>
+                    <li>Role types the service is certified against</li>
+                    <li>Supplementary codes (if applicable)</li>
+                    <li>GPG 45 identity profiles (including information for any supplementary codes relevant to the service)</li>
+                    <li>GPG 44 quality of authenticator and quality of protection (including information for any supplementary codes relevant to the service)</li>
+                    <li>Certificate of conformity issue and expiry dates</li>
+                    <li>Underpinning service details (if applicable), including the name of the provider and the service, the certifying CAB, registration status, and the underpinning certificate expiry date</li>
                 </ul>
 
                 <p class="govuk-body">You will need to upload the following documentation:</p>
+                
                 <ul class="govuk-list govuk-list--bullet">
-                    <li>PDF copy of the service provider’s certificate of conformity</li>
+                    <li>A PDF copy of the service provider’s certificate of conformity</li>
                 </ul>
-
-
-                <p class="govuk-body">Once OfDIA has approved the submission, some of the information you have provided will be publicly available on the register of digital identity and attribute services.</p>
-
-
+                
+                <p class="govuk-body">Once the Office of Digital Identities and Attributes has approved this submission, the information you have provided will be publicly available on the register of digital identity and attribute services.</p>
                 <p class="govuk-body">@Html.ActionLink("Continue", "ServiceName", "CabService", new { providerProfileId = ViewBag.ProviderProfileId }, new { @class = "govuk-button" })</p>
             </div>
         </div>
