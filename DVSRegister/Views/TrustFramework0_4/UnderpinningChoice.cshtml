@@ -1,10 +1,9 @@
-@using DVSRegister.Models.TrustFramework0_4
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@model DVSRegister.Models.TrustFramework0_4.UnderpinningViewModel
 
 @{
     ViewData["Title"] = "Tell us if the service is an underpinning or a white-labelled service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    // Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
 }
 
 <div class="govuk-width-container">
@@ -17,11 +16,11 @@
 
                 <div class="govuk-body">
                     <h2 class="govuk-heading-m">Underpinning and white-label services</h2>
-                    <p class="govuk-body">
+                    <p class="govuk-hint">
                         An underpinning service can be used by a second-party to white-label and
                         redistribute a product, service, or process.
                     </p>
-                    <p class="govuk-body">
+                    <p class="govuk-hint">
                         A white-labelled service relies on an underpinning service produced by
                         another digital identity and attributes service provider.
                     </p>
@@ -33,25 +32,23 @@
                         <div class="govuk-radios" data-module="govuk-radios">
                             <div class="govuk-radios__item">
                                 <input
+                                    asp-for="SelectedOption"
                                     class="govuk-radios__input"
-                                    id="Underpinning"
-                                    name="SelectedOption"
                                     type="radio"
                                     value="Underpinning"
-                                    @(Model.SelectedOption == UnderpinType.Underpinning ? "checked" : "")/>
+                                    id="Underpinning" />
                                 <label class="govuk-label govuk-radios__label" for="Underpinning">
                                     It is an underpinning service
                                 </label>
                             </div>
 
                             <div class="govuk-radios__item">
-                                <input
+                                <input 
+                                    asp-for="SelectedOption"
                                     class="govuk-radios__input"
-                                    id="WhiteLabelled"
-                                    name="SelectedOption"
                                     type="radio"
                                     value="WhiteLabelled"
-                                    @(Model.SelectedOption == UnderpinType.WhiteLabelled ? "checked" : "")/>
+                                    id="WhiteLabelled"/>
                                 <label class="govuk-label govuk-radios__label" for="WhiteLabelled">
                                     It is a white-labelled service
                                 </label>
@@ -59,19 +56,17 @@
 
                             <div class="govuk-radios__item">
                                 <input
+                                    asp-for="SelectedOption"
                                     class="govuk-radios__input"
-                                    id="Neither"
-                                    name="SelectedOption"
                                     type="radio"
                                     value="Neither"
-                                    @(Model.SelectedOption == UnderpinType.Neither ? "checked" : "")/>
+                                    id="Neither"/>
                                 <label class="govuk-label govuk-radios__label" for="Neither">
                                     Neither
                                 </label>
                             </div>
                         </div>
                     </fieldset>
-
                     <div class="govuk-button-group">
                         <button type="submit" class="govuk-button govuk-!-margin-top-4" data-module="govuk-button">
                             Continue
