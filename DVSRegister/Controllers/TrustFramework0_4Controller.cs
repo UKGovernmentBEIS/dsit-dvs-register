@@ -1,6 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.Models.CabTrustFramework;
-using DVSRegister.Models.TrustFramework0_4;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
@@ -42,7 +41,10 @@ namespace DVSRegister.Controllers
         
         [HttpGet("select-underpinning-or-white-labelled")]
         public IActionResult UnderpinningChoice()
-            => View(new UnderpinningViewModel());
+            => View();
         
+        [HttpGet("status-of-underpinning-service")]
+        public IActionResult StatusOfUnderpinningService()
+            => View();
     }
 }
