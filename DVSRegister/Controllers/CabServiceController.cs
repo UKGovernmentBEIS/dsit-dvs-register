@@ -194,7 +194,15 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");
+                if (TFVersionNumber == Constants.TFVersion0_4)
+                {
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");
+                }
+                else
+                {
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SelectServiceType", "TrustFramework0_4");
+                }
+
             }
             else
             {
@@ -798,14 +806,14 @@ namespace DVSRegister.Controllers
 
         #region Handle save/draft/amend actions
 
-        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage)
+        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage,  string controller = "CabService")
         {
             switch (action)
             {
                 case "continue":
                     return fromSummaryPage ? RedirectToAction("ServiceSummary")
                         : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
-                        : RedirectToAction(nextPage);
+                        : RedirectToAction(nextPage,controller);
 
                 case "draft":
                     return await SaveAsDraftAndRedirect(serviceSummary);
