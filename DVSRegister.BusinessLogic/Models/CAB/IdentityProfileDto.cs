@@ -4,5 +4,7 @@
     {
         public int Id { get; set; }
         public string IdentityProfileName { get; set; }
+        public int TrustFrameworkVersionId { get; set; }
+        public TrustFrameworkVersionDto TrustFrameworkVersion { get; set; }
     }
 }
