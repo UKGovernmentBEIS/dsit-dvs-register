@@ -1,4 +1,7 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Models.CAB.Service;
 using DVSRegister.Validations;
 using System.ComponentModel.DataAnnotations;
 
@@ -42,6 +45,13 @@ namespace DVSRegister.Models.CAB
         public int ServiceId { get; set; }
         public int ServiceKey { get; set; }      
         public DateTime? CreatedDate { get; set; }
+        public TFVersionViewModel? TFVersionViewModel { get; set; }
+
+        public ServiceTypeEnum ServiceType { get; set; }
+        public List<SchemeIdentityProfileViewModel>? SchemeIdentityProfileMappingViewModel { get; set; }
+        public List<SchemeQualityLevelViewModel>? SchemeQualityLevelMappingViewModel { get; set; }     
+
+        public ManualUnderPinningServiceDto? ManualUnderPinningService { get; set; }
 
 
         public void ResetInpuData()
@@ -81,6 +91,11 @@ namespace DVSRegister.Models.CAB
             FileSizeInKb = null;
             ConformityIssueDate = null;
             ConformityExpiryDate = null;
+            TFVersionViewModel = null;
+
+            SchemeIdentityProfileMappingViewModel = [];
+            SchemeQualityLevelMappingViewModel = [];
+            ManualUnderPinningService = null;
         }
     }
 }

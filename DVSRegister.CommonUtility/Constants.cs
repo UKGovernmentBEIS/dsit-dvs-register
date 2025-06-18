@@ -31,6 +31,7 @@
         public const string NullFieldsDisplay = "No data";
 
         public const string RegisteredNameExistsError = "The registered name you have entered already exists";
+        public const decimal TFVersion0_4 = 0.4m;
 
 
     }
