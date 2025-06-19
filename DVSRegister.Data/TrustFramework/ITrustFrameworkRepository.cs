@@ -1,6 +1,10 @@
-﻿namespace DVSRegister.Data.TrustFramework
+﻿using DVSRegister.Data.Entities;
+
+namespace DVSRegister.Data.TrustFramework
 {
     public interface ITrustFrameworkRepository
     {
+        public Task<List<TrustFrameworkVersion>> GetTrustFrameworkVersions();
+        public Task<List<Cab>> GetCabs();
     }
 }

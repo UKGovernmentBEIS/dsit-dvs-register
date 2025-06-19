@@ -1,11 +1,14 @@
-﻿using AutoMapper;
+﻿using DVSRegister.BusinessLogic.Models;
+using AutoMapper;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
+using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using DVSRegister.Models.CabTrustFramework;
 using Microsoft.AspNetCore.Mvc;
+using DVSRegister.CommonUtility.Models;
 
 namespace DVSRegister.Controllers
 {
@@ -15,12 +18,13 @@ namespace DVSRegister.Controllers
     /// </summary>
     /// <param name="logger"></param>
     [Route("trust-framework-0.4")]
-    public class TrustFramework0_4Controller(ICabService cabService,IMapper mapper, ILogger<TrustFramework0_4Controller> logger) : BaseController(logger)
+    public class TrustFramework0_4Controller(ITrustFrameworkService trustFrameworkService, ICabService cabService,IMapper mapper, ILogger<TrustFramework0_4Controller> logger) : BaseController(logger)
     {
-        private readonly ILogger<TrustFramework0_4Controller> logger = logger;
+        private readonly ILogger<TrustFramework0_4Controller> logger = logger;        
+        private readonly ITrustFrameworkService trustFrameworkService = trustFrameworkService;
         private readonly ICabService cabService = cabService;
         private readonly IMapper mapper = mapper;
-
+        
 
         [HttpGet("select-underpinning")]
         public IActionResult SelectUnderpinning()
@@ -29,15 +33,9 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("select-cab")]
-        public IActionResult SelectCabOfUnderpinningService()
-        {   
-            // need to get cabs from repo
-            var allCabs = new List<CabDto>
-            {
-                new CabDto { Id = 1, CabName = "Cab A" },
-                new CabDto { Id = 2, CabName = "Cab B" },
-                new CabDto { Id = 3, CabName = "Cab C" }
-            };
+        public async Task<IActionResult> SelectCabOfUnderpinningService()
+        {
+            var allCabs = await trustFrameworkService.GetCabs();
             var AllCabsViewModel = new AllCabsViewModel
             {
                 Cabs = allCabs
@@ -85,6 +83,10 @@ namespace DVSRegister.Controllers
         [HttpGet("status-of-underpinning-service")]
         public IActionResult StatusOfUnderpinningService()
             => View();
+
+        [HttpGet("select-underpinning-or-white-labelled")]
+        public IActionResult UnderpinningChoice()
+             => View();
 
 
         private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage, string controller = "TrustFramework0_4")
@@ -135,6 +137,49 @@ namespace DVSRegister.Controllers
                 throw new InvalidOperationException("SaveAsDraftAndRedirect: Failed to save draft");
             }
 
+        }
+
+        [HttpGet("tf-version")]
+        public async Task<IActionResult> SelectVersionOfTrustFrameWork(bool fromSummaryPage, bool fromDetailsPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            TFVersionViewModel TFVersionViewModel = new()
+            {
+                SelectedTFVersionId = summaryViewModel?.TFVersionViewModel?.SelectedTFVersionId,
+                AvailableVersions = await trustFrameworkService.GetTrustFrameworkVersions(),
+                IsAmendment = summaryViewModel.IsAmendment,
+                RefererURL = GetRefererURL()
+            };
+            return View(TFVersionViewModel);
+        }
+
+        [HttpPost("tf-version")]
+        public async Task<IActionResult> SaveTFVersion(TFVersionViewModel TFVersionViewModel, string action)
+        {
+            bool fromSummaryPage = TFVersionViewModel.FromSummaryPage;
+            bool fromDetailsPage = TFVersionViewModel.FromDetailsPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            List<TrustFrameworkVersionDto> availableVersion = await trustFrameworkService.GetTrustFrameworkVersions();
+            TFVersionViewModel.AvailableVersions = availableVersion;
+            TFVersionViewModel.SelectedTFVersionId = TFVersionViewModel.SelectedTFVersionId ?? null;
+            TFVersionViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            if (TFVersionViewModel.SelectedTFVersionId != null)
+            {
+                summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion
+                    .FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);
+            }
+
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ServiceName", "CabService");
+            }
+            else
+            {
+                return View("SelectVersionOfTrustFrameWork", TFVersionViewModel);
+            }
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Amazon.S3.Model.Internal.MarshallTransformations;
+using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
+using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -18,7 +20,7 @@ namespace DVSRegister.Controllers
             _logger = logger;
         }
         protected string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
-        protected int CabId => HttpContext.Session.Get<int>("CabId") ;
+        protected int CabId => HttpContext.Session.Get<int>("CabId");
 
         protected string ControllerName => ControllerContext.ActionDescriptor.ControllerName;
         protected string ActionName => ControllerContext.ActionDescriptor.ActionName;
@@ -55,21 +57,22 @@ namespace DVSRegister.Controllers
 
 
         protected IActionResult HandleInvalidCabId(int cabId)
-        {  
+        {
             _logger.LogError("Invalid CabId: {CabId}. Controller: {ControllerName}, Action: {ActionName}",
                 cabId, ControllerName, ActionName);
             return RedirectToAction("CabHandleException", "Error");
         }
 
-      
+
 
         protected ServiceSummaryViewModel GetServiceSummary()
         {
-            
+
             ServiceSummaryViewModel model = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel
             {
                 QualityLevelViewModel = new QualityLevelViewModel { SelectedLevelOfProtections = new List<QualityLevelDto>(), SelectedQualityofAuthenticators = new List<QualityLevelDto>() },
                 RoleViewModel = new RoleViewModel { SelectedRoles = new List<RoleDto>() },
+                TFVersionViewModel = new TFVersionViewModel { SelectedTFVersion = new TrustFrameworkVersionDto() },
                 IdentityProfileViewModel = new IdentityProfileViewModel { SelectedIdentityProfiles = new List<IdentityProfileDto>() },
                 SupplementarySchemeViewModel = new SupplementarySchemeViewModel { SelectedSupplementarySchemes = new List<SupplementarySchemeDto> { } }
             };
@@ -77,8 +80,12 @@ namespace DVSRegister.Controllers
         }
 
 
-        protected void SetServiceDataToSession(int cabId, ServiceDto serviceDto, int historyCount=0)
+        protected void SetServiceDataToSession(int cabId, ServiceDto serviceDto, int historyCount = 0)
         {
+            TFVersionViewModel TFVersionViewModel = new()
+            {
+                SelectedTFVersion = null
+            };
             RoleViewModel roleViewModel = new()
             {
                 SelectedRoles = []
@@ -99,7 +106,10 @@ namespace DVSRegister.Controllers
                 SelectedSupplementarySchemes = []
             };
 
-
+            if (serviceDto.TrustFrameworkVersion != null)
+            {
+                TFVersionViewModel.SelectedTFVersion = serviceDto.TrustFrameworkVersion;
+            }
             if (serviceDto.ServiceRoleMapping != null && serviceDto.ServiceRoleMapping.Count > 0)
             {
                 roleViewModel.SelectedRoles = serviceDto.ServiceRoleMapping.Select(mapping => mapping.Role).ToList();
@@ -139,6 +149,7 @@ namespace DVSRegister.Controllers
 
             ServiceSummaryViewModel serviceSummary = new()
             {
+                TFVersionViewModel = TFVersionViewModel,
                 ServiceName = serviceDto.ServiceName,
                 ServiceURL = serviceDto.WebSiteAddress,
                 CompanyAddress = serviceDto.CompanyAddress,
@@ -168,6 +179,6 @@ namespace DVSRegister.Controllers
             HttpContext?.Session.Set("ServiceSummary", serviceSummary);
         }
 
-       
+
     }
 }
