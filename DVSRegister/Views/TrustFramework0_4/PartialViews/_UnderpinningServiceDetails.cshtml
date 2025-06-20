@@ -1,0 +1,56 @@
+﻿@{
+    bool unregistered = (ViewData["Unregistered"] as bool?) == true;
+}
+<div class="govuk-grid-column-full govuk-!-padding-0">
+    <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">
+                Underpinning Service
+            </h2>
+            @if (unregistered)
+            {
+                <ul class="govuk-summary-card__actions">
+                    <li class="govuk-summary-card__action">
+                        <a class="govuk-link" href="/trust-framework-0.4/confirmed-unregistered-underpinning-service">Confirm</a>
+                    </li>
+                </ul>
+            }
+        </div>
+        <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        Arc
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service provider
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        TrustedPoint
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Conformity Assessment Body of Underpinning service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        ABC
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Underpinning service certificate expiry date
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        20 June 2026
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+</div>

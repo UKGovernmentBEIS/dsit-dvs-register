@@ -181,5 +181,10 @@ namespace DVSRegister.Controllers
                 return View("SelectVersionOfTrustFrameWork", TFVersionViewModel);
             }
         }
+        
+        [HttpGet("unregistered-underpinning-service")]
+        public IActionResult UnregisteredUnderpinningService()
+            => View();
+        
     }
 }
