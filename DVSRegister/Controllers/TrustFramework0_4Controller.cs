@@ -19,11 +19,12 @@ namespace DVSRegister.Controllers
     /// </summary>
     /// <param name="logger"></param>
     [Route("cab-service/submit-service")]
-    public class TrustFramework0_4Controller(ITrustFrameworkService trustFrameworkService, ICabService cabService,IMapper mapper, ILogger<TrustFramework0_4Controller> logger) : BaseController(logger)
+    public class TrustFramework0_4Controller(ITrustFrameworkService trustFrameworkService, ICabService cabService, IUserService userService, IMapper mapper, ILogger<TrustFramework0_4Controller> logger) : BaseController(logger)
     {
         private readonly ILogger<TrustFramework0_4Controller> logger = logger;        
         private readonly ITrustFrameworkService trustFrameworkService = trustFrameworkService;
         private readonly ICabService cabService = cabService;
+        private readonly IUserService userService = userService;
         private readonly IMapper mapper = mapper;
         
 
@@ -141,18 +142,29 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("tf-version")]
-        public async Task<IActionResult> SelectVersionOfTrustFrameWork(bool fromSummaryPage, bool fromDetailsPage)
+        public async Task<IActionResult> SelectVersionOfTrustFrameWork(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
+
+            CabUserDto cabUserDto = await userService.GetUser(UserEmail);
+            await HandleInvalidProfileAndCab(providerProfileId, cabUserDto);
+
+            var referralUrl = GetRefererURL();
+
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             TFVersionViewModel TFVersionViewModel = new()
             {
                 SelectedTFVersionId = summaryViewModel?.TFVersionViewModel?.SelectedTFVersionId,
                 AvailableVersions = await trustFrameworkService.GetTrustFrameworkVersions(),
                 IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = GetRefererURL()
+                RefererURL = referralUrl
             };
+
+            summaryViewModel.ProviderProfileId = providerProfileId;
+            summaryViewModel.RefererURL = referralUrl;
+            HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+
             return View(TFVersionViewModel);
         }
 
@@ -505,6 +517,15 @@ namespace DVSRegister.Controllers
       
         #endregion
 
+
+
+        private async Task HandleInvalidProfileAndCab(int providerProfileId, CabUserDto cabUserDto)
+        {
+            // to prevent another cab changing the providerProfileId from url
+            bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
+            if (!isValid)
+                throw new InvalidOperationException("Invalid provider profile ID for Cab ID");
+        }
 
     }
 }

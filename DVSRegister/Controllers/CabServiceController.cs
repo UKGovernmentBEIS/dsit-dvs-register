@@ -50,18 +50,12 @@ namespace DVSRegister.Controllers
 
         #region Service Name
         [HttpGet("name-of-service")]
-        public async Task<IActionResult> ServiceName(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
-        {
-            
+        public IActionResult ServiceName(bool fromSummaryPage, bool fromDetailsPage)
+        {           
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;          
-            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();         
-            CabUserDto cabUserDto = await userService.GetUser(UserEmail);
-            await HandleInvalidProfileAndCab(providerProfileId, cabUserDto);
-
-            serviceSummaryViewModel.ProviderProfileId = providerProfileId;
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
             serviceSummaryViewModel.RefererURL = GetRefererURL();
-            HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
             return View(serviceSummaryViewModel);
 
         }
