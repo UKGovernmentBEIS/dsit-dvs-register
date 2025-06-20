@@ -160,7 +160,7 @@ namespace DVSRegister.Controllers
             RoleViewModel roleViewModel = new()
             {
                 SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList(),
-                AvailableRoles = await cabService.GetRoles(TFVersionNumber),
+                AvailableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version),
                 IsAmendment = summaryViewModel.IsAmendment,
                 RefererURL = GetRefererURL()
             };
@@ -179,7 +179,7 @@ namespace DVSRegister.Controllers
             bool fromSummaryPage = roleViewModel.FromSummaryPage;
             bool fromDetailsPage = roleViewModel.FromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            List<RoleDto> availableRoles = await cabService.GetRoles(TFVersionNumber);          
+            List<RoleDto> availableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version);          
             roleViewModel.AvailableRoles = availableRoles;
             roleViewModel.SelectedRoleIds =  roleViewModel.SelectedRoleIds??[];
             roleViewModel.IsAmendment = summaryViewModel.IsAmendment;
@@ -189,7 +189,7 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                if (TFVersionNumber == Constants.TFVersion0_4)
+                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
                 {
                     return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");
                 }
@@ -278,11 +278,13 @@ namespace DVSRegister.Controllers
               qualityLevelViewModel.IsAmendment = summaryViewModel.IsAmendment;
             List<QualityLevelDto> availableQualityLevels = await cabService.GetQualitylevels();
             qualityLevelViewModel.AvailableQualityOfAuthenticators = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
+
             qualityLevelViewModel.SelectedQualityofAuthenticatorIds = qualityLevelViewModel.SelectedQualityofAuthenticatorIds ?? [];
             if (qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Count > 0)
                 summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Contains(c.Id)).ToList();
 
             qualityLevelViewModel.AvailableLevelOfProtections = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
+
             qualityLevelViewModel.SelectedLevelOfProtectionIds =  qualityLevelViewModel.SelectedLevelOfProtectionIds??[];
             if (qualityLevelViewModel.SelectedLevelOfProtectionIds.Count > 0)
                 summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedLevelOfProtectionIds.Contains(c.Id)).ToList();
@@ -448,7 +450,7 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                if (TFVersionNumber == Constants.TFVersion0_4)
+                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
                 {
                    
                     HttpContext?.Session.Set("SelectedSchemeIds", supplementarySchemeViewModel.SelectedSupplementarySchemeIds);
@@ -727,7 +729,9 @@ namespace DVSRegister.Controllers
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
+            summaryViewModel.ServiceType = ServiceTypeEnum.UnderPinning;
             ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
+            
             MapTFVersion0_4Fields(summaryViewModel, serviceDto);
 
             if (!IsValidCabId(summaryViewModel.CabId))
@@ -763,8 +767,8 @@ namespace DVSRegister.Controllers
         {         
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.Email = UserEmail;
-            await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail, providerName, serviceName);
-            await emailSender.SendCertificateInfoSubmittedToDSIT();
+            //await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail, providerName, serviceName);
+            //await emailSender.SendCertificateInfoSubmittedToDSIT();
             return View();
 
         }
@@ -1051,8 +1055,8 @@ namespace DVSRegister.Controllers
 
                             }
                         }
-                        serviceSchemeMapping.SchemeGpg44Mapping = schemeGPG44Mapping;
-                        serviceSchemeMapping.SchemeGpg45Mapping = schemeGPG45Mapping;
+                        serviceSchemeMapping.SchemeGPG44Mapping = schemeGPG44Mapping;
+                        serviceSchemeMapping.SchemeGPG45Mapping = schemeGPG45Mapping;
                     }
                 }
 

@@ -20,8 +20,8 @@ namespace DVSRegister.Data.Entities
 
         public bool? HasGpg44Mapping { get; set; }
 
-        public ICollection<SchemeGPG44Mapping> SchemeGpg44Mapping { get; set; }
+        public ICollection<SchemeGPG44Mapping>? SchemeGPG44Mapping { get; set; }
 
-        public ICollection<SchemeGPG45Mapping> SchemeGpg45Mapping { get; set; }
+        public ICollection<SchemeGPG45Mapping>? SchemeGPG45Mapping { get; set; }
     }
 }

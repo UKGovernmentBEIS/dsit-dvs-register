@@ -32,9 +32,9 @@ namespace DVSRegister.BusinessLogic
             CreateMap<SchemeGPG45MappingDto, SchemeGPG45Mapping>();
 
             CreateMap<ServiceSupSchemeMapping, ServiceSupSchemeMappingDto>()
-            .ForMember(dest => dest.SchemeGpg44Mapping, opt => opt.MapFrom(src =>src.SchemeGpg44Mapping));
+            .ForMember(dest => dest.SchemeGPG44Mapping, opt => opt.MapFrom(src =>src.SchemeGPG44Mapping));
             CreateMap<ServiceSupSchemeMappingDto, ServiceSupSchemeMapping>()
-            .ForMember(dest => dest.SchemeGpg45Mapping, opt => opt.MapFrom(src => src.SchemeGpg45Mapping));
+            .ForMember(dest => dest.SchemeGPG45Mapping, opt => opt.MapFrom(src => src.SchemeGPG45Mapping));
             CreateMap<ServiceQualityLevelMapping, ServiceQualityLevelMappingDto>();
             CreateMap<ServiceQualityLevelMappingDto, ServiceQualityLevelMapping>();         
           

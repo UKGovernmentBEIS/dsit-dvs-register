@@ -1,6 +1,8 @@
 ﻿using QRCoder;
 using System.Text;
 using System.Runtime.CompilerServices;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace DVSRegister.CommonUtility
 {
@@ -57,6 +59,18 @@ namespace DVSRegister.CommonUtility
             {
                 return $"{message} (Method: {caller}, Line: {lineNumber})";
             }
+        }
+
+        public static string GetEnumDescription(this Enum value)
+        {
+            string result = string.Empty;
+            FieldInfo? field = value.GetType().GetField(value.ToString());
+            if(field!=null)
+            {
+                DescriptionAttribute attribute = (DescriptionAttribute)Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute))!;
+                result =  attribute == null ? value.ToString() : attribute.Description;
+            }
+            return result;
         }
 
     }

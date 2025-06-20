@@ -1,19 +1,21 @@
 ﻿@using DVSRegister.CommonUtility
 @using DVSRegister.CommonUtility.Models
 @using DVSRegister.Extensions
+@using DVSRegister.BusinessLogic.Models.CAB
 @model DVSRegister.BusinessLogic.Models.CAB.ServiceDto
 
 @{
     bool isDraft = Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft ? true : false;
     bool hasValue = true;
+    bool is0_4GammaVersion = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
 
     var notificationBanner = new NotificationBannerViewModel
-            {
-                Title = "Important",
-                NotificationContent = new List<NotificationContent> { new () { Heading = "You have a pending submission which is incomplete", 
-                HtmlContent = "Select 'Resume submission' to continue your submission."} }               
+    {
+        Title = "Important",
+        NotificationContent = new List<NotificationContent> { new () { Heading = "You have a pending submission which is incomplete", 
+        HtmlContent = "Select 'Resume submission' to continue your submission."} }               
                
-            };
+    };
 }
 
 @if (isDraft)
@@ -449,3 +451,104 @@
             </dl>
         </div>
     </div>
+
+
+@if (is0_4GammaVersion)
+{
+   @if (Model?.ServiceSupSchemeMapping != null && Model.ServiceSupSchemeMapping.Count > 0)
+   {
+        @foreach (var schemeMapping in Model.ServiceSupSchemeMapping)
+        {
+           <hr class="govuk-section-break govuk-section-break--m">
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                    <h2 class="govuk-summary-card__title">
+                      Supplementary codes: @schemeMapping.SupplementaryScheme.SchemeName
+                    </h2>
+                </div>
+                <div class="govuk-summary-card__content">
+                    <dl class="govuk-summary-list">
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG 45 identity profiles
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+
+                                @if (schemeMapping.SchemeGPG45Mapping != null && schemeMapping.SchemeGPG45Mapping .Count > 0)
+                                {
+                                    @foreach (var item in schemeMapping.SchemeGPG45Mapping)
+                                    {
+                                        @item.IdentityProfile.IdentityProfileName
+                                        <br>
+                                    }
+                                }
+                                else
+                                {
+                                    <div>@Constants.NullFieldsDisplay</div>
+                                }
+
+                            </dd>
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
+                                         new { @class = "govuk-link", @aria_label = "" })
+                            </dd>
+                        </div>
+
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG 44 quality of authentication
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                   @if (schemeMapping.SchemeGPG44Mapping != null && schemeMapping.SchemeGPG44Mapping.Count > 0)
+                                {
+                                     @foreach (var item in schemeMapping.SchemeGPG44Mapping.Where(x=>x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                    {
+                                            @item.QualityLevel.Level
+                                        <br>
+                                    }
+                                }
+                                else
+                                {
+                                    <div>@Constants.NullFieldsDisplay</div>
+                                }
+                            </dd>
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
+                                         new { @class = "govuk-link", @aria_label = "" })
+                            </dd>
+                        </div>
+
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG 44 quality of protection
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (schemeMapping.SchemeGPG44Mapping != null && schemeMapping.SchemeGPG44Mapping.Count > 0)
+                                {
+                                    @foreach (var item in schemeMapping.SchemeGPG44Mapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                    {
+                                        @item.QualityLevel.Level
+                                        <br>
+                                    }
+                                }
+                                else
+                                {
+                                    <div>@Constants.NullFieldsDisplay</div>
+                                }
+                            </dd>
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
+                                         new { @class = "govuk-link", @aria_label = "" })
+                            </dd>
+                        </div>
+
+                    </dl>
+                </div>
+            </div>
+        }
+    }
+
+
+}

@@ -146,6 +146,12 @@ namespace DVSRegister.Data.CAB
             .Include(s => s.PublicInterestCheck)
             .Include(s => s.ServiceSupSchemeMapping)
             .ThenInclude(s=> s.SupplementaryScheme)
+             .Include(s => s.ServiceSupSchemeMapping)
+            .ThenInclude(s => s.SchemeGPG44Mapping)
+             .ThenInclude(s=>s.QualityLevel)
+            .Include(s => s.ServiceSupSchemeMapping)
+            .ThenInclude(s => s.SchemeGPG45Mapping)
+            .ThenInclude(s=>s.IdentityProfile)
             .Include(s => s.ServiceRoleMapping)            
             .ThenInclude(s => s.Role)
             .Include(s=> s.ServiceQualityLevelMapping)
@@ -244,6 +250,31 @@ namespace DVSRegister.Data.CAB
                     service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;
                     AttachListToDbContext(service);
                     var entity = await context.Service.AddAsync(service);
+
+                   
+                    if(service.ServiceSupSchemeMapping !=null)
+                    {
+                        foreach (var mapping in service.ServiceSupSchemeMapping)
+                        {
+                            if(mapping.SchemeGPG44Mapping!=null)
+                            {
+                                foreach (var gpg44 in mapping.SchemeGPG44Mapping)
+                                {
+                                    await context.SchemeGPG44Mapping.AddAsync(gpg44);
+                                }
+                            }
+
+                            if (mapping.SchemeGPG45Mapping != null)
+                            {
+                                foreach (var gpg45 in mapping.SchemeGPG45Mapping)
+                                {
+                                    await context.SchemeGPG45Mapping.AddAsync(gpg45);
+                                }
+                            }
+
+                        }
+                    }
+
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddService, loggedInUserEmail);
                     genericResponse.InstanceId = entity.Entity.Id;
                     service.ServiceKey = entity.Entity.Id; // for new service addition , assign service key same as that of primary key

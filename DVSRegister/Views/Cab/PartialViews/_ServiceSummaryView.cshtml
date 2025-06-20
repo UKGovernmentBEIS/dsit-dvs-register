@@ -123,7 +123,7 @@
                         Underpinning or white-labelled service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @Model.ServiceType
+                        @Helper.GetEnumDescription(@Model.ServiceType)
                     </dd>
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
@@ -137,7 +137,7 @@
                     GPG 44 quality of authenticator
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @if (Model.QualityLevelViewModel.SelectedQualityofAuthenticators != null && Model.QualityLevelViewModel.SelectedQualityofAuthenticators.Count > 0)
+                    @if (Model?.QualityLevelViewModel?.SelectedQualityofAuthenticators != null && Model.QualityLevelViewModel.SelectedQualityofAuthenticators.Count > 0)
                     {
                         @foreach (var item in Model.QualityLevelViewModel.SelectedQualityofAuthenticators)
                         {
@@ -162,9 +162,8 @@
                 </dt>
 
                 <dd class="govuk-summary-list__value">
-                    @if (Model.QualityLevelViewModel.SelectedLevelOfProtections != null && Model.QualityLevelViewModel.SelectedLevelOfProtections.Count > 0)
+                    @if (Model?.QualityLevelViewModel?.SelectedLevelOfProtections != null && Model.QualityLevelViewModel.SelectedLevelOfProtections.Count > 0)
                     {
-
                         @foreach (var item in Model.QualityLevelViewModel.SelectedLevelOfProtections)
                         {
                             @item.Level
@@ -187,7 +186,7 @@
                     GPG 45 identity profiles
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @if (Model.IdentityProfileViewModel.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
+                    @if (Model?.IdentityProfileViewModel?.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
                     {
                         @foreach (var item in Model.IdentityProfileViewModel.SelectedIdentityProfiles)
                         {
@@ -211,7 +210,7 @@
                     Supplementary codes
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @if (Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count > 0)
+                    @if (Model?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count > 0)
                     {
 
                         @foreach (var item in Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
@@ -308,7 +307,7 @@
         <div class="govuk-summary-card">
             <div class="govuk-summary-card__title-wrapper">
                 <h2 class="govuk-summary-card__title">
-                    Supplementary codes @schemeMapping.SchemeName
+                    Supplementary codes: @schemeMapping.SchemeName
                 </h2>
             </div>
             <div class="govuk-summary-card__content">
@@ -322,7 +321,6 @@
 
                             @if (identityProfilesMappings != null && identityProfilesMappings.Count > 0)
                             {
-
                                 @foreach (var item in identityProfilesMappings)
                                 {
                                     @item.IdentityProfileName
@@ -349,7 +347,6 @@
                         <dd class="govuk-summary-list__value">
                             @if (qualityLevelAuthenticationMappings != null && qualityLevelAuthenticationMappings.Count > 0)
                             {
-
                                 @foreach (var item in qualityLevelAuthenticationMappings)
                                 {
                                     @item.Level
@@ -372,9 +369,8 @@
                             GPG 44 quality of protection
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (qualityLevelprotectionMappings != null && qualityLevelAuthenticationMappings.Count > 0)
+                            @if (qualityLevelprotectionMappings != null && qualityLevelprotectionMappings.Count > 0)
                             {
-
                                 @foreach (var item in qualityLevelprotectionMappings)
                                 {
                                     @item.Level
