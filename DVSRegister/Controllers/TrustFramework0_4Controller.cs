@@ -91,55 +91,7 @@ namespace DVSRegister.Controllers
              => View();
 
 
-        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage, string controller = "TrustFramework0_4")
-        {
-            switch (action)
-            {
-                case "continue":
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
-                        : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
-                        : RedirectToAction(nextPage, controller);
-
-                case "draft":
-                    return await SaveAsDraftAndRedirect(serviceSummary);
-
-                case "amend":
-                    return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
-
-                default:
-                    throw new ArgumentException("Invalid action parameter");
-            }
-        }
-        private async Task<IActionResult> SaveAsDraftAndRedirect(ServiceSummaryViewModel serviceSummary)
-        {
-            GenericResponse genericResponse = new();
-            serviceSummary.ServiceStatus = ServiceStatusEnum.SavedAsDraft;
-            ServiceDto serviceDto = mapper.Map<ServiceDto>(serviceSummary);
-            if (!IsValidCabId(serviceSummary.CabId))
-                return HandleInvalidCabId(serviceSummary.CabId);
-
-            if (serviceDto.CabUserId < 0) throw new InvalidDataException("Invalid CabUserId");
-
-            if (serviceSummary.IsResubmission)
-            {
-                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
-            }
-            else
-            {
-                genericResponse = await cabService.SaveService(serviceDto, UserEmail);
-            }
-
-            if (genericResponse.Success)
-            {
-                HttpContext?.Session.Remove("ServiceSummary");
-                return RedirectToAction("ProviderServiceDetails", "Cab", new { serviceKey = genericResponse.InstanceId });
-            }
-            else
-            {
-                throw new InvalidOperationException("SaveAsDraftAndRedirect: Failed to save draft");
-            }
-
-        }
+  
 
         [HttpGet("tf-version")]
         public async Task<IActionResult> SelectVersionOfTrustFrameWork(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
@@ -186,7 +138,7 @@ namespace DVSRegister.Controllers
 
             if (ModelState.IsValid)
             {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);                
                 return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ServiceName", "CabService");
             }
             else
@@ -219,8 +171,6 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
 
             var identityProfile = summaryViewModel?.SchemeIdentityProfileMapping?.Where(scheme => scheme.SchemeId == schemeId)?.FirstOrDefault()?.IdentityProfile;
-
-
             IdentityProfileViewModel identityProfileViewModel = new()
             {
                 SchemeId = schemeId,
@@ -229,7 +179,6 @@ namespace DVSRegister.Controllers
                 IsAmendment = summaryViewModel.IsAmendment,
                 SelectedIdentityProfileIds = identityProfile?.SelectedIdentityProfiles?.Select(c => c.Id)?.ToList() ?? [],
                 AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
-
                 RefererURL = summaryViewModel.RefererURL
             };
 
@@ -354,7 +303,7 @@ namespace DVSRegister.Controllers
             {
                 SchemeId = schemeId,
                 SchemeName = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Where(scheme => scheme.Id == schemeId)
-             .Select(scheme => scheme.SchemeName).FirstOrDefault() ?? string.Empty,
+                .Select(scheme => scheme.SchemeName).FirstOrDefault() ?? string.Empty,
                 IsAmendment = summaryViewModel.IsAmendment,
                 RefererURL = summaryViewModel.RefererURL
             };
@@ -496,6 +445,55 @@ namespace DVSRegister.Controllers
                     throw new ArgumentException("Invalid action parameter");
             }
         }
+        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage, string controller = "TrustFramework0_4")
+        {
+            switch (action)
+            {
+                case "continue":
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
+                        : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
+                        : RedirectToAction(nextPage, controller);
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(serviceSummary);
+
+                case "amend":
+                    return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+        private async Task<IActionResult> SaveAsDraftAndRedirect(ServiceSummaryViewModel serviceSummary)
+        {
+            GenericResponse genericResponse = new();
+            serviceSummary.ServiceStatus = ServiceStatusEnum.SavedAsDraft;
+            ServiceDto serviceDto = mapper.Map<ServiceDto>(serviceSummary);
+            if (!IsValidCabId(serviceSummary.CabId))
+                return HandleInvalidCabId(serviceSummary.CabId);
+
+            if (serviceDto.CabUserId < 0) throw new InvalidDataException("Invalid CabUserId");
+
+            if (serviceSummary.IsResubmission)
+            {
+                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
+            }
+            else
+            {
+                genericResponse = await cabService.SaveService(serviceDto, UserEmail);
+            }
+
+            if (genericResponse.Success)
+            {
+                HttpContext?.Session.Remove("ServiceSummary");
+                return RedirectToAction("ProviderServiceDetails", "Cab", new { serviceKey = genericResponse.InstanceId });
+            }
+            else
+            {
+                throw new InvalidOperationException("SaveAsDraftAndRedirect: Failed to save draft");
+            }
+
+        }
 
         private bool HasRemainingSchemes(int schemeId)
         {
@@ -514,11 +512,6 @@ namespace DVSRegister.Controllers
                 return false;
             }
         }
-      
-        #endregion
-
-
-
         private async Task HandleInvalidProfileAndCab(int providerProfileId, CabUserDto cabUserDto)
         {
             // to prevent another cab changing the providerProfileId from url
@@ -526,6 +519,12 @@ namespace DVSRegister.Controllers
             if (!isValid)
                 throw new InvalidOperationException("Invalid provider profile ID for Cab ID");
         }
+
+        #endregion
+
+
+
+
 
     }
 }
