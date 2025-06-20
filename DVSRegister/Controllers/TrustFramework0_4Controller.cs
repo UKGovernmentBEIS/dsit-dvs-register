@@ -186,5 +186,9 @@ namespace DVSRegister.Controllers
         public IActionResult UnregisteredUnderpinningService()
             => View();
         
+        [HttpGet("confirmed-unregistered-underpinning-service")]
+        public IActionResult ConfirmedUnregisteredUnderpinningService()
+            => View();
+        
     }
 }
