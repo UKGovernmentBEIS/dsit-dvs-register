@@ -2,10 +2,10 @@
 
 namespace DVSRegister.Models.CAB.Service
 {
-    public class SchemeIdentityProfileViewModel :IdentityProfileViewModel
-    {
+    public class SchemeIdentityProfileMappingViewModel 
+    {      
         public int SchemeId { get; set; }
-        public string SchemeName { get; set; }
+        public IdentityProfileViewModel IdentityProfile { get; set; }
 
     }
 }

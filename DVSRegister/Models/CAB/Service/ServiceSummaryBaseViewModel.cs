@@ -11,5 +11,7 @@ namespace DVSRegister.Models.CAB
         public bool FromDetailsPage { get; set; }
         public bool IsResubmission { get; set; }
         public string? RefererURL { get; set; }
+        public int SchemeId { get; set; }
+        public string SchemeName { get; set; } = string.Empty;
     }
 }

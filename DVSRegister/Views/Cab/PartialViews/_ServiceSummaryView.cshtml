@@ -5,7 +5,7 @@
 @using DVSRegister.Extensions
 
 @{
-    bool is0_4GammaVersion = Model?.TFVersionViewModel?.SelectedTFVersion.Version == Constants.TFVersion0_4;
+    bool is0_4GammaVersion = Model?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_4;
 }
 
 
@@ -278,6 +278,8 @@
 
 @if (is0_4GammaVersion)
 {
+    @if(Model?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count>0)
+    {
     List<IdentityProfileDto> identityProfilesMappings = [];
     List<QualityLevelDto> qualityLevelprotectionMappings = [];
     List<QualityLevelDto> qualityLevelAuthenticationMappings = [];
@@ -285,15 +287,21 @@
     @foreach (var schemeMapping in Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
     {
 
-        @if (Model.SchemeIdentityProfileMappingViewModel != null && Model.SchemeIdentityProfileMappingViewModel.Count > 0)
+        @if (Model.SchemeIdentityProfileMapping != null && Model.SchemeIdentityProfileMapping.Count > 0)
         {
-            identityProfilesMappings = Model.SchemeIdentityProfileMappingViewModel.Where(x => x.SchemeId == schemeMapping.Id).SelectMany(x => x.SelectedIdentityProfiles).ToList();
+            var maapings = Model.SchemeIdentityProfileMapping.Where(x => x.SchemeId == schemeMapping.Id).FirstOrDefault();
+            identityProfilesMappings = maapings?.IdentityProfile?.SelectedIdentityProfiles??[];
+
         }
 
-        @if (Model.SchemeQualityLevelMappingViewModel != null && Model.SchemeQualityLevelMappingViewModel.Count > 0)
+        @if (Model.SchemeQualityLevelMapping != null && Model.SchemeQualityLevelMapping.Count > 0)
         {
-            qualityLevelprotectionMappings = Model.SchemeQualityLevelMappingViewModel.Where(x => x.SchemeId == schemeMapping.Id).SelectMany(x => x.SelectedLevelOfProtections).ToList();
-            qualityLevelAuthenticationMappings = Model.SchemeQualityLevelMappingViewModel.Where(x => x.SchemeId == schemeMapping.Id).SelectMany(x => x.SelectedQualityofAuthenticators).ToList();
+            var protectionMappings = Model.SchemeQualityLevelMapping.Where(x => x.SchemeId == schemeMapping.Id).FirstOrDefault();
+            qualityLevelprotectionMappings = protectionMappings?.QualityLevel?.SelectedLevelOfProtections??[];
+
+            var authenticationMappings = Model.SchemeQualityLevelMapping.Where(x => x.SchemeId == schemeMapping.Id).FirstOrDefault();
+
+            qualityLevelAuthenticationMappings = authenticationMappings?.QualityLevel?.SelectedQualityofAuthenticators??[];
         }
 
 
@@ -387,6 +395,7 @@
                 </dl>
             </div>
         </div>
+    }
 
     }
 
