@@ -37,7 +37,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\css\settings\" />
-    <Folder Include="wwwroot\css\components\" />
     <Folder Include="wwwroot\css\utilities\" />
   </ItemGroup>
   <ItemGroup>

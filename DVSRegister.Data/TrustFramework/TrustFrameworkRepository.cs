@@ -30,5 +30,25 @@ namespace DVSRegister.Data.TrustFramework
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<List<String>> GetProviderNames()
+        {
+            return await context.ProviderProfile
+                .Where(p => p.RegisteredName != null)
+                .Distinct()
+                .Select(p => p.RegisteredName)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<String>> GetServiceNames()
+        {
+            return await context.Service
+                .Where(p => p.ServiceName != null)
+                .Distinct()
+                .Select(s => s.ServiceName)
+                .AsNoTracking()
+                .ToListAsync();
+        }
     }
 }

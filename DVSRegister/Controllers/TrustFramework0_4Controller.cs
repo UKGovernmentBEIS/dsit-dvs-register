@@ -26,13 +26,7 @@ namespace DVSRegister.Controllers
         private readonly ICabService cabService = cabService;
         private readonly IUserService userService = userService;
         private readonly IMapper mapper = mapper;
-        
-
-        [HttpGet("select-underpinning")]
-        public IActionResult SelectUnderpinning()
-        {
-            return View();
-        }
+       
 
         [HttpGet("select-cab")]
         public async Task<IActionResult> SelectCabOfUnderpinningService()
@@ -206,6 +200,14 @@ namespace DVSRegister.Controllers
         [HttpGet("edit-underpinning-service-details")]
         public IActionResult EditUnderpinningServiceDetails()
             => View();
+
+        [HttpGet("select-underpinning-service")]
+        public async Task<IActionResult> SelectUnderpinningService()
+        {
+            List<String> allServiceAndProviderNames = await trustFrameworkService.GetPSNames();
+            ViewBag.ServiceAndProviderNames = allServiceAndProviderNames;
+            return View();
+        }
 
 
         #region GPG45

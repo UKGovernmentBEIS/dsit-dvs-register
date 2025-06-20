@@ -7,6 +7,7 @@ namespace DVSRegister.BusinessLogic.Services
     {
         public Task<List<TrustFrameworkVersionDto>> GetTrustFrameworkVersions();
         public Task<List<CabDto>> GetCabs();
+        public Task<List<String>> GetPSNames();
 
     }
 }

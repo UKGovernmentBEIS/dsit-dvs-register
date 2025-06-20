@@ -24,5 +24,16 @@ namespace DVSRegister.BusinessLogic.Services
             var cabs = await trustFrameworkRepository.GetCabs();
             return automapper.Map<List<CabDto>>(cabs);
         }
+
+        public async Task<List<String>> GetPSNames()
+        {
+            var providerNames = await trustFrameworkRepository.GetProviderNames();
+            var serviceNames = await trustFrameworkRepository.GetServiceNames();
+            var combinedNames = new List<string>();
+            combinedNames.AddRange(providerNames);
+            combinedNames.AddRange(serviceNames);
+
+            return combinedNames;
+        }
     }
 }
