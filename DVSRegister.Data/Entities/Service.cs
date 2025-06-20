@@ -66,6 +66,8 @@ namespace DVSRegister.Data.Entities
         public TrustFrameworkVersion TrustFrameworkVersion { get; set; }
         public ServiceTypeEnum? ServiceType { get; set; }
 
+        public bool? IsUnderPinningServicePublished { get; set; }
+
         // Foreign key for self-referencing
         [ForeignKey("UnderPinningService")]
         public int? UnderPinningServiceId { get; set; }

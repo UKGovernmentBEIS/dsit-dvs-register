@@ -9,18 +9,16 @@ namespace DVSRegister.Data.Entities
         public SchemeGPG44Mapping() { }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }    
-
-        [ForeignKey("Service")]
-        public int ServiceId { get; set; }
-        public Service Service { get; set; }
+        public int Id { get; set; }        
 
         [ForeignKey("QualityLevel")]
         public int QualityLevelId { get; set; }
         public QualityLevel QualityLevel { get; set; }
 
-        [ForeignKey("SupplementaryScheme")]
-        public int SupplementarySchemeId { get; set; }
-        public SupplementaryScheme SupplementaryScheme { get; set; }
+        [ForeignKey("ServiceSupSchemeMapping")]
+        public int ServiceSupSchemeMappingId { get; set; }
+        public ServiceSupSchemeMapping ServiceSupSchemeMapping { get; set; }
+
+
     }
 }
