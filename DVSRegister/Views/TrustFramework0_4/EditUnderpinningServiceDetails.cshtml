@@ -1,0 +1,36 @@
+@{
+    ViewData["Title"] = "Details you have provided about the underpinning service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+
+    ViewData["Manual"] = true;
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "PreviousStep", "TrustFramework0_4", null, new { @class = "govuk-back-link" })
+
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
+                <p class="govuk-body govuk-hint">
+                    The certification of the white-labelled service will be linked to this underpinning service.
+                </p>
+                <p class="govuk-body govuk-hint govuk-!-padding-bottom-6">
+                    Select 'Continue' to provide further details about the white-labelled service.
+                </p>
+                @await Html.PartialAsync("PartialViews/_UnderpinningServiceDetails",model: null)
+
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button govuk-!-margin-top-4" data-module="govuk-button">
+                        Continue
+                    </button>
+                    <a asp-action="SaveAndCompleteLater"
+                       asp-controller="TrustFramework0_4"
+                       class="govuk-button govuk-button--secondary">
+                        Save and complete later
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

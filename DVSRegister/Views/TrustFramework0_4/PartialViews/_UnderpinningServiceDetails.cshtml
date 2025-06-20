@@ -1,5 +1,6 @@
 ﻿@{
-    bool unregistered = (ViewData["Unregistered"] as bool?) == true;
+    bool unregistered = (ViewData["Unregistered"] as bool?) ?? false;
+    bool manual = (ViewData["Manual"] as bool?) ?? false;
 }
 <div class="govuk-grid-column-full govuk-!-padding-0">
     <div class="govuk-summary-card">
@@ -25,6 +26,17 @@
                     <dd class="govuk-summary-list__value">
                         Arc
                     </dd>
+                    @if (manual)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            <a asp-action="EditUnderpinningServiceName"
+                               asp-controller="TrustFramework0_4"
+                               asp-route-serviceId="#"
+                               class="govuk-link">
+                                Change <span class="govuk-visually-hidden">service name</span>
+                            </a>
+                        </dd>
+                    }
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -33,6 +45,17 @@
                     <dd class="govuk-summary-list__value">
                         TrustedPoint
                     </dd>
+                    @if (manual)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            <a asp-action="EditUnderpinningServiceProvider"
+                               asp-controller="TrustFramework0_4"
+                               asp-route-serviceId="#"
+                               class="govuk-link">
+                                Change <span class="govuk-visually-hidden">service provider</span>
+                            </a>
+                        </dd>
+                    }
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -41,6 +64,17 @@
                     <dd class="govuk-summary-list__value">
                         ABC
                     </dd>
+                    @if (manual)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            <a asp-action="EditUnderpinningServiceCAB"
+                               asp-controller="TrustFramework0_4"
+                               asp-route-serviceId="#"
+                               class="govuk-link">
+                                Change <span class="govuk-visually-hidden">conformity assessment body of underpinning service</span>
+                            </a>
+                        </dd>
+                    }
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -49,6 +83,17 @@
                     <dd class="govuk-summary-list__value">
                         20 June 2026
                     </dd>
+                    @if (manual)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            <a asp-action="EditUnderpinningServiceCertificateExpiryDate"
+                               asp-controller="TrustFramework0_4"
+                               asp-route-serviceId="#"
+                               class="govuk-link">
+                                Change <span class="govuk-visually-hidden">underpinning service certificate expiry date</span>
+                            </a>
+                        </dd>
+                    }
                 </div>
             </dl>
         </div>
