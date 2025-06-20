@@ -1,5 +1,6 @@
 ﻿@using DVSRegister.Models.CAB.Service
-@model SchemeIdentityProfileViewModel
+@using DVSRegister.Models.CAB
+@model IdentityProfileViewModel
 @{
     ViewData["Title"] = "SchemeGPG45";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
@@ -10,11 +11,13 @@
 
 }
 
-@using (Html.BeginForm("SaveGPG45", "CabService", FormMethod.Post))
+@using (Html.BeginForm("SaveSchemeGPG45", "TrustFramework0_4", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
     @Html.HiddenFor(m => m.RefererURL)
+    @Html.HiddenFor(m => m.SchemeId)
+    @Html.HiddenFor(m => m.SchemeName)
     <div class="govuk-width-container">
         <a href="@Model.RefererURL" class="govuk-back-link">
             Back
@@ -23,7 +26,7 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
                     <h1 class="govuk-heading-xl">
-                        Select GPG 45 identity profiles certified for this service
+                        @Model.SchemeName: GPG 45 identity profiles for the service
                     </h1>
 
 
@@ -59,7 +62,15 @@
                     }
 
                     <p class="govuk-body">
-                        This must match the information on the certificate of conformity.
+                        You have told us that the service is certified against Right to work.
+                    </p>
+                    <p class="govuk-body">
+                        You should only answer this question in relation to Right to work checks. We
+                        will ask you to provide information about any other supplementary codes
+                        separately.
+                    </p>
+                    <p class="govuk-body">
+                        This must match the information on the certificate.
                     </p>
                     @if (hasError)
                     {

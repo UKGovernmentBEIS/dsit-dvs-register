@@ -6,6 +6,7 @@ using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
@@ -349,7 +350,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             IdentityProfileViewModel identityProfileViewModel = new()
-            {
+            {                
                 IsAmendment = summaryViewModel.IsAmendment,
                 SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList(),
                 AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
@@ -452,8 +453,20 @@ namespace DVSRegister.Controllers
 
             if (ModelState.IsValid)
             {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);                
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "CertificateUploadPage");
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                if (TFVersionNumber == Constants.TFVersion0_4)
+                {
+                   
+                    HttpContext?.Session.Set("SelectedSchemeIds", supplementarySchemeViewModel.SelectedSupplementarySchemeIds);
+                    int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];
+
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage,
+                   "SchemeGPG45","TrustFramework0_4", new { schemeId = firstSchemeId });
+                }
+                else
+                {
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "CertificateUploadPage");
+                }
             }
             else
             {
@@ -721,30 +734,31 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
             ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
+            MapTFVersion0_4Fields(summaryViewModel, serviceDto);
 
             if (!IsValidCabId(summaryViewModel.CabId))
-                return HandleInvalidCabId(summaryViewModel.CabId);           
+                return HandleInvalidCabId(summaryViewModel.CabId);
 
-               GenericResponse genericResponse = new();
-                if(summaryViewModel.IsResubmission) 
-                {
-                    genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
-                }
-                else
-                {
-                    genericResponse = await cabService.SaveService(serviceDto, UserEmail);
-                }               
-                if (genericResponse.Success)
-                {
-                    ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
-                    string providerName = provider?.RegisteredName;
-                    return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName});
-                }
-                else
-                {
-                  throw new InvalidOperationException("Service submission failed");
-                }
-        }
+            GenericResponse genericResponse = new();
+            if(summaryViewModel.IsResubmission)
+            {
+                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
+            }
+            else
+            {
+                genericResponse = await cabService.SaveService(serviceDto, UserEmail);
+            }
+            if (genericResponse.Success)
+            {
+                ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
+                string providerName = provider?.RegisteredName;
+                return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName});
+            }
+            else
+            {
+                throw new InvalidOperationException("Service submission failed");
+            }
+        }        
 
         /// <summary>
         ///Final page if save success
@@ -806,14 +820,15 @@ namespace DVSRegister.Controllers
 
         #region Handle save/draft/amend actions
 
-        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage,  string controller = "CabService")
+        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, 
+            string nextPage,  string controller = "CabService", object routeValues = null!)
         {
             switch (action)
             {
                 case "continue":
                     return fromSummaryPage ? RedirectToAction("ServiceSummary")
                         : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
-                        : RedirectToAction(nextPage,controller);
+                        : routeValues== null? RedirectToAction(nextPage,controller): RedirectToAction(nextPage, controller, routeValues);
 
                 case "draft":
                     return await SaveAsDraftAndRedirect(serviceSummary);
@@ -962,11 +977,100 @@ namespace DVSRegister.Controllers
             }
         }
 
+        private static void MapTFVersion0_4Fields(ServiceSummaryViewModel summaryViewModel, ServiceDto serviceDto)
+        {
+            if (summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_4)
+            {
+                serviceDto.ServiceType = summaryViewModel?.ServiceType;
+
+                if (serviceDto.ServiceType == ServiceTypeEnum.WhiteLabelled)
+                {
+                    if (summaryViewModel?.SelectedUnderPinningServiceId != 0)
+                        serviceDto.UnderPinningServiceId = summaryViewModel?.SelectedUnderPinningServiceId;
+                    else
+                        serviceDto.ManualUnderPinningService = summaryViewModel.ManualUnderPinningService!;
+
+                }
+
+                if (serviceDto.ServiceSupSchemeMapping != null && serviceDto.ServiceSupSchemeMapping.Count > 0)
+                {
+
+
+                    foreach (var serviceSchemeMapping in serviceDto.ServiceSupSchemeMapping)
+                    {
+
+                        ICollection<SchemeGPG44MappingDto>? schemeGPG44Mapping = [];
+                        ICollection<SchemeGPG45MappingDto>? schemeGPG45Mapping = [];
+
+                        //-----Gpg45/Identityprofiles--------//
+                        if (summaryViewModel?.SchemeIdentityProfileMapping != null && summaryViewModel.SchemeIdentityProfileMapping.Count > 0)
+                        {
+                            var schemeIdentityProfileMapping = summaryViewModel.SchemeIdentityProfileMapping.Where(x => x.SchemeId == serviceSchemeMapping.SupplementarySchemeId).FirstOrDefault();
+                            var selectedIdentyProfiles = schemeIdentityProfileMapping?.IdentityProfile.SelectedIdentityProfiles;
+                            if (selectedIdentyProfiles != null)
+                            {
+                                foreach (var identityProfile in selectedIdentyProfiles)
+                                {
+                                    SchemeGPG45MappingDto schemeGPG45MappingDto = new()
+                                    {
+                                        IdentityProfileId = identityProfile.Id
+                                    };
+                                    schemeGPG45Mapping.Add(schemeGPG45MappingDto);
+                                }
+                            }
+                        }
+
+                        //-----Gpg44/auth/protection--------//
+                        if (summaryViewModel?.SchemeQualityLevelMapping != null && summaryViewModel.SchemeQualityLevelMapping.Count > 0)
+                        {
+                            var schemeQualityLevelMapping = summaryViewModel.SchemeQualityLevelMapping.Where(x => x.SchemeId == serviceSchemeMapping.SupplementarySchemeId).FirstOrDefault();
+                            serviceSchemeMapping.HasGpg44Mapping = schemeQualityLevelMapping?.HasGpg44;
+
+                            if (serviceSchemeMapping.HasGpg44Mapping == true)
+                            {
+                                var selectedAuthenticatorQualityLevels = schemeQualityLevelMapping?.QualityLevel.SelectedQualityofAuthenticators;
+                                if (selectedAuthenticatorQualityLevels != null)
+                                {
+                                    foreach (var qualityLevel in selectedAuthenticatorQualityLevels)
+                                    {
+                                        SchemeGPG44MappingDto schemeGPG44MappingDto = new()
+                                        {
+                                            QualityLevelId = qualityLevel.Id
+                                        };
+
+                                        schemeGPG44Mapping.Add(schemeGPG44MappingDto);
+                                    }
+                                }
+
+                                var selectedProtectionQualityLevels = schemeQualityLevelMapping?.QualityLevel.SelectedLevelOfProtections;
+                                if (selectedProtectionQualityLevels != null)
+                                {
+                                    foreach (var qualityLevel in selectedProtectionQualityLevels)
+                                    {
+                                        SchemeGPG44MappingDto schemeGPG44MappingDto = new()
+                                        {
+                                            QualityLevelId = qualityLevel.Id
+                                        };
+                                        schemeGPG44Mapping.Add(schemeGPG44MappingDto);
+                                    }
+                                }
+
+                            }
+                        }
+                        serviceSchemeMapping.SchemeGpg44Mapping = schemeGPG44Mapping;
+                        serviceSchemeMapping.SchemeGpg45Mapping = schemeGPG45Mapping;
+                    }
+                }
+
+
+            }
+        }
+
         #endregion
 
-      
 
- 
+
+
 
         #endregion
     }

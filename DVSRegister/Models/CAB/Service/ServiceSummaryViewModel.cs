@@ -26,6 +26,8 @@ namespace DVSRegister.Models.CAB
 
         [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG44")]
         public bool? HasGPG44 { get; set; }
+        [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG44")]
+        public bool? SchemeHasGPG44 { get; set; }
 
         [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG45")]
         public bool? HasGPG45 { get; set; }
@@ -47,9 +49,14 @@ namespace DVSRegister.Models.CAB
         public DateTime? CreatedDate { get; set; }
         public TFVersionViewModel? TFVersionViewModel { get; set; }
 
+        public int? SelectedUnderPinningServiceId { get; set; }
+
         public ServiceTypeEnum ServiceType { get; set; }
-        public List<SchemeIdentityProfileViewModel>? SchemeIdentityProfileMappingViewModel { get; set; }
-        public List<SchemeQualityLevelViewModel>? SchemeQualityLevelMappingViewModel { get; set; }     
+
+        [Required(ErrorMessage = "Select the registration status")]
+        public bool? IsUnderPinningServicePublished { get; set; }
+        public List<SchemeQualityLevelMappingViewModel>? SchemeQualityLevelMapping { get; set; }
+        public List<SchemeIdentityProfileMappingViewModel>? SchemeIdentityProfileMapping { get; set; }
 
         public ManualUnderPinningServiceDto? ManualUnderPinningService { get; set; }
 
@@ -92,9 +99,7 @@ namespace DVSRegister.Models.CAB
             ConformityIssueDate = null;
             ConformityExpiryDate = null;
             TFVersionViewModel = null;
-
-            SchemeIdentityProfileMappingViewModel = [];
-            SchemeQualityLevelMappingViewModel = [];
+         
             ManualUnderPinningService = null;
         }
     }

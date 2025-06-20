@@ -11,16 +11,12 @@ namespace DVSRegister.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("Service")]
-        public int ServiceId { get; set; }
-        public Service Service { get; set; }
 
         [ForeignKey("IdentityProfile")]
         public int IdentityProfileId { get; set; }
         public IdentityProfile IdentityProfile { get; set; }
-
-        [ForeignKey("SupplementaryScheme")]
-        public int SupplementarySchemeId { get; set; }
-        public SupplementaryScheme SupplementaryScheme { get; set; }
+        [ForeignKey("ServiceSupSchemeMapping")]
+        public int ServiceSupSchemeMappingId { get; set; }
+        public ServiceSupSchemeMapping ServiceSupSchemeMapping { get; set; }
     }
 }

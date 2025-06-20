@@ -24,8 +24,17 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceIdentityProfileMappingDto, ServiceIdentityProfileMapping>();
             CreateMap<ServiceRoleMapping, ServiceRoleMappingDto>();
             CreateMap<ServiceRoleMappingDto, ServiceRoleMapping>();
-            CreateMap<ServiceSupSchemeMapping, ServiceSupSchemeMappingDto>();
-            CreateMap<ServiceSupSchemeMappingDto, ServiceSupSchemeMapping>();
+
+            CreateMap<SchemeGPG44Mapping, SchemeGPG44MappingDto>();
+            CreateMap<SchemeGPG44MappingDto, SchemeGPG44Mapping>();
+
+            CreateMap<SchemeGPG45Mapping, SchemeGPG45MappingDto>();
+            CreateMap<SchemeGPG45MappingDto, SchemeGPG45Mapping>();
+
+            CreateMap<ServiceSupSchemeMapping, ServiceSupSchemeMappingDto>()
+            .ForMember(dest => dest.SchemeGpg44Mapping, opt => opt.MapFrom(src =>src.SchemeGpg44Mapping));
+            CreateMap<ServiceSupSchemeMappingDto, ServiceSupSchemeMapping>()
+            .ForMember(dest => dest.SchemeGpg45Mapping, opt => opt.MapFrom(src => src.SchemeGpg45Mapping));
             CreateMap<ServiceQualityLevelMapping, ServiceQualityLevelMappingDto>();
             CreateMap<ServiceQualityLevelMappingDto, ServiceQualityLevelMapping>();         
           
