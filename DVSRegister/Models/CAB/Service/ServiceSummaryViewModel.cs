@@ -58,7 +58,19 @@ namespace DVSRegister.Models.CAB
         public List<SchemeQualityLevelMappingViewModel>? SchemeQualityLevelMapping { get; set; }
         public List<SchemeIdentityProfileMappingViewModel>? SchemeIdentityProfileMapping { get; set; }
 
-        public ManualUnderPinningServiceDto? ManualUnderPinningService { get; set; }
+        [Required(ErrorMessage = "Enter the service name")]
+        [MaximumLength(160, ErrorMessage = "The service name must be less than 161 characters")]
+        [AcceptedCharacters(@"^[A-Za-z0-9 &@#().:_'-]+$", ErrorMessage = "The service name must contain only letters, numbers and accepted characters")]
+        public string? UnderPinningServiceName { get; set; }
+
+        [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
+        [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
+        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
+        public string? UnderPinningProviderName { get; set; }
+
+        public CabDto? SelectedCab { get; set; }
+
+        public DateTime? UnderPinningServiceExpiryDate { get; set; }
 
 
         public void ResetInpuData()
@@ -100,7 +112,7 @@ namespace DVSRegister.Models.CAB
             ConformityExpiryDate = null;
             TFVersionViewModel = null;
          
-            ManualUnderPinningService = null;
+           
         }
     }
 }

@@ -986,7 +986,16 @@ namespace DVSRegister.Controllers
                     if (summaryViewModel?.SelectedUnderPinningServiceId != 0)
                         serviceDto.UnderPinningServiceId = summaryViewModel?.SelectedUnderPinningServiceId;
                     else
-                        serviceDto.ManualUnderPinningService = summaryViewModel.ManualUnderPinningService!;
+                    {
+                        serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
+                        {
+                            ServiceName = summaryViewModel?.UnderPinningServiceName ?? string.Empty,
+                            ProviderName = summaryViewModel?.UnderPinningProviderName ?? string.Empty,
+                            SelectedCab = summaryViewModel?.SelectedCab,
+                            CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
+                        };
+                    }
+                       
 
                 }
 
