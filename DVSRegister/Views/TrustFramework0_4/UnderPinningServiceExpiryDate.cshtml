@@ -21,7 +21,7 @@
             <div class="govuk-grid-column-two-thirds">
 
                 <h1 class="govuk-heading-xl">
-                    Certificate of conformity expiry date
+                   Underpinning service certificate expiry date 
                 </h1>
                 @if (ViewData.ModelState.ErrorCount >0)
                 {
@@ -57,8 +57,12 @@
                     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
                     @Html.HiddenFor(m => m.RefererURL)
                     <p class="govuk-body">
-                        This must match the information on the certificate of conformity. We do not accept
-                        certificates with an expiry date of more than 2 years 60 days after the date of issue.
+                        This must match the information on the certificate.
+                    </p>
+
+                    <p class="govuk-body">
+                        A certificate issued against the trust framework (version 0.4 gamma) can not
+                        be valid for more than 3 years and 60 days.
                     </p>
 
 
