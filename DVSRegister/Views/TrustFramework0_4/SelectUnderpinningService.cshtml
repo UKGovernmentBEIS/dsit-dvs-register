@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Select the underpinning service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+
+    var published = (bool)(ViewBag.Published ?? false);
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "StatusOfUnderpinningService", "TrustFramework0_4", null, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
+                @if (published)
+                {
+                    <p class="govuk-hint">
+                        You have told us that the underpinning service is published to the register of digital identity
+                        and attributes services.
+                    </p>
+                    <p class="govuk-hint">
+                        Search for the underpinning service the white-labelled service relies on.
+                    </p>
+                }
+                else
+                {
+                    <p class="govuk-hint">
+                        You have told us that the underpinning service is not published on the register of digital
+                        identity and attribute services.
+                    </p>
+                }
+            </div>
+            @using (Html.BeginForm("ListUnderpinningServices", "TrustFramework0_4", FormMethod.Get))
+            {
+                <div class="govuk-grid-column-one-half govuk-!-padding-top-4">
+
+                    @if (published)
+                    {
+                        var searchTextBoxViewModel = new TextBoxViewModel
+                        {
+                            PropertyName = "SearchText",
+                            Label = "Search for a service",
+                            Value = Model?.SearchText ?? string.Empty,
+                            Class = "govuk-input",
+                            Hint = "You can find a service by searching for its name or the service provider's name"
+                        };
+                        @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
+                    }
+                    else
+                    {
+                        var searchTextBoxViewModel = new TextBoxViewModel
+                        {
+                            PropertyName = "SearchText",
+                            Label = "Search for a service",
+                            Value = Model?.SearchText ?? string.Empty,
+                            Class = "govuk-input",
+                            Hint = "Tell us the name of the underpinning service by searching for it, or entering the details manually."
+                        };
+                        @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
+                    }
+                    <div class="govuk-button-group govuk-!-margin-bottom-2">
+                        <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction"
+                                value="search">
+                            Search
+                        </button>
+                    </div>
+                    @if (!published)
+                    {
+                        <p class="govuk-body">
+                            <a href="#" class="govuk-link">Enter underpinning service details manually</a>
+                        </p>
+                    }
+                </div>
+            }
+        </div>
+    </main>
+</div>

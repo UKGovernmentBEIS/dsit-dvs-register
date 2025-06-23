@@ -48,7 +48,7 @@ namespace DVSRegister.Controllers
 
 
         [HttpGet("select-service-type")]
-        public IActionResult SelectSelectServiceType()
+        public IActionResult SelectServiceType()
         {
             //Figma 604
             // ServiceTypeEnum to pupulate radios
@@ -76,20 +76,41 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return View("SelectSelectServiceType");
+                return View("SelectServiceType");
             }
         }
 
-
-
         [HttpGet("status-of-underpinning-service")]
         public IActionResult StatusOfUnderpinningService()
-            => View();
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = GetRefererURL();
+            return View(summaryViewModel);
+        }
+        
+        [HttpPost("status-of-underpinning-service")]
+        public IActionResult StatusOfUnderpinningService(bool? isUnderpinningServicePublished)
+        {
+            
+            if (!isUnderpinningServicePublished.HasValue)
+            {
+                ModelState.AddModelError(nameof(isUnderpinningServicePublished), "Select the registration status");
+                return View(GetServiceSummary());
+            }
+            
+            var summary = GetServiceSummary();
+            summary.IsUnderpinningServicePublished = isUnderpinningServicePublished;
+            HttpContext.Session.Set("ServiceSummary", summary);
 
-        [HttpGet("select-underpinning-or-white-labelled")]
-        public IActionResult UnderpinningChoice()
-             => View();
-
+            return RedirectToAction("SelectUnderpinningService", new { published = isUnderpinningServicePublished });
+        }
+        
+        [HttpGet("select-underpinning-service")]
+        public IActionResult SelectUnderpinningService(bool published)
+        {
+            ViewBag.Published = published;
+            return View();
+        }
 
   
 

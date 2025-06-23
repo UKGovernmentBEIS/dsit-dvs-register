@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 
 @{
     ViewData["Title"] = "White-labelled service";
@@ -6,7 +7,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "UnderpinningChoice", "TrustFramework0_4", null, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "SelectServiceType", "TrustFramework0_4", null, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -22,21 +23,22 @@
                         attributes services.
                     </p>
                 </div>
-                <form asp-action="SubmitUnderpinning" asp-controller="CabTransfer" method="post"
-                      class="govuk-form-group govuk-!-margin-top-7">
+                <form
+                    asp-action="StatusOfUnderpinningService"
+                    class="govuk-form-group govuk-!-margin-top-7"
+                    method="post">
                     <fieldset class="govuk-fieldset">
-                        <legend class="govuk-fieldset__legend govuk-visually-hidden">
+                        <legend class="govuk-visually-hidden">
                             What is the status of the underpinning service?
                         </legend>
                         <div class="govuk-radios" data-module="govuk-radios">
                             <div class="govuk-radios__item">
                                 <input
                                     class="govuk-radios__input"
-                                    id="Underpinning"
-                                    name="SelectedOption"
+                                    id="Published"
+                                    name="isUnderPinningServicePublished"
                                     type="radio"
-                                    value="Published"
-                                    />
+                                    value="true"/>
                                 <label class="govuk-label govuk-radios__label" for="Published">
                                     The underpinning service is published on the register
                                 </label>
@@ -44,27 +46,20 @@
                             <div class="govuk-radios__item">
                                 <input
                                     class="govuk-radios__input"
-                                    id="WhiteLabelled"
-                                    name="SelectedOption"
+                                    id="Certified"
+                                    name="isUnderPinningServicePublished"
                                     type="radio"
-                                    value="Certified"
-                                    />
+                                    value="false"/>
                                 <label class="govuk-label govuk-radios__label" for="Certified">
                                     The underpinning service is certified but not published on the register
                                 </label>
                             </div>
                         </div>
+                        <span asp-validation-for="IsUnderpinningServicePublished" class="govuk-error-message"></span>
                     </fieldset>
-                    <div class="govuk-button-group">
-                        <button type="submit" class="govuk-button govuk-!-margin-top-4" data-module="govuk-button">
-                            Continue
-                        </button>
-                        <a asp-action="SaveAndCompleteLater"
-                           asp-controller="Service"
-                           class="govuk-button govuk-button--secondary">
-                            Save and complete later
-                        </a>
-                    </div>
+                    <button type="submit" class="govuk-button govuk-!-margin-top-4">
+                        Continue
+                    </button>
                 </form>
             </div>
         </div>
