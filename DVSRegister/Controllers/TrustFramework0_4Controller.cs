@@ -1,15 +1,16 @@
-﻿using DVSRegister.BusinessLogic.Models;
-using AutoMapper;
+﻿using AutoMapper;
+using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
+using DVSRegister.Models.CAB.Service;
 using DVSRegister.Models.CabTrustFramework;
 using Microsoft.AspNetCore.Mvc;
-using DVSRegister.CommonUtility.Models;
-using DVSRegister.Models.CAB.Service;
 
 namespace DVSRegister.Controllers
 {
@@ -19,12 +20,13 @@ namespace DVSRegister.Controllers
     /// </summary>
     /// <param name="logger"></param>
     [Route("cab-service/submit-service")]
-    public class TrustFramework0_4Controller(ITrustFrameworkService trustFrameworkService, ICabService cabService, IUserService userService, IMapper mapper, ILogger<TrustFramework0_4Controller> logger) : BaseController(logger)
+    public class TrustFramework0_4Controller(ITrustFrameworkService trustFrameworkService, ICabService cabService, IUserService userService,IBucketService bucketService, IMapper mapper, ILogger<TrustFramework0_4Controller> logger) : BaseController(logger)
     {
         private readonly ILogger<TrustFramework0_4Controller> logger = logger;        
         private readonly ITrustFrameworkService trustFrameworkService = trustFrameworkService;
         private readonly ICabService cabService = cabService;
         private readonly IUserService userService = userService;
+        private readonly IBucketService bucketService = bucketService;
         private readonly IMapper mapper = mapper;
         
 
@@ -105,12 +107,7 @@ namespace DVSRegister.Controllers
             return RedirectToAction("SelectUnderpinningService", new { published = isUnderpinningServicePublished });
         }
         
-        [HttpGet("select-underpinning-service")]
-        public IActionResult SelectUnderpinningService(bool published)
-        {
-            ViewBag.Published = published;
-            return View();
-        }
+        
 
   
 
@@ -167,18 +164,129 @@ namespace DVSRegister.Controllers
                 return View("SelectVersionOfTrustFrameWork", TFVersionViewModel);
             }
         }
-        
+
+        [HttpGet("select-underpinning-service")]
+        public async Task<IActionResult> SelectUnderpinningService(string SearchText, string SearchAction)
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            var published = (bool)summaryViewModel.IsUnderpinningServicePublished;
+
+            var services = new List<ServiceDto>();
+            if (SearchAction == "clearSearch")
+            {
+                ModelState.Clear();
+                SearchText = string.Empty;
+            }
+
+            if(SearchText != null)
+            {
+                services = await trustFrameworkService.GetServices(published, SearchText);
+            }
+            else
+            {
+                SearchText = string.Empty;
+
+            }
+            UnderpinningServiceViewModel underpinningServiceViewModel = new()
+            {
+                InRegister = published,
+                SearchText = SearchText,
+                Services = services
+            };
+            return View(underpinningServiceViewModel);
+        }
+
         [HttpGet("unregistered-underpinning-service")]
-        public IActionResult UnregisteredUnderpinningService()
-            => View();
-        
+        public async Task<IActionResult> UnregisteredUnderpinningService(int serviceId, bool inRegister)
+        {
+            var service = await trustFrameworkService.GetServiceDetails(serviceId);
+            ViewBag.InRegister = inRegister;
+            return View(service);
+        }
+
         [HttpGet("confirmed-unregistered-underpinning-service")]
-        public IActionResult ConfirmedUnregisteredUnderpinningService()
-            => View();
-        
+        public async Task<IActionResult> ConfirmedUnregisteredUnderpinningService(int? serviceId, bool inRegister)
+        {
+            UnderpinningServiceSummaryViewModel serviceSummary;
+            if (serviceId == null)
+            {
+                ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+                serviceSummary = new UnderpinningServiceSummaryViewModel
+                {
+                    SelectedUnderPinningServiceId = summaryViewModel.SelectedUnderPinningServiceId,
+                    IsUnderpinningServicePublished = summaryViewModel.IsUnderpinningServicePublished ?? false,
+                    UnderPinningProviderName = summaryViewModel.UnderPinningProviderName,
+                    UnderPinningServiceName = summaryViewModel.UnderPinningServiceName,
+                    UnderPinningServiceExpiryDate = summaryViewModel.UnderPinningServiceExpiryDate ?? DateTime.MinValue,
+                    SelectedCab = summaryViewModel.SelectedCab
+                };
+            }
+            else
+            {
+                var service = await trustFrameworkService.GetServiceDetails((int)serviceId);
+                serviceSummary = new UnderpinningServiceSummaryViewModel
+                {
+                    SelectedUnderPinningServiceId = serviceId,
+                    IsUnderpinningServicePublished = inRegister,
+                    UnderPinningProviderName = service.Provider.RegisteredName,
+                    UnderPinningServiceName = service.ServiceName,
+                    UnderPinningServiceExpiryDate = service.ConformityExpiryDate,
+                    SelectedCab = service.CabUser?.Cab
+                };
+            }
+            return View(serviceSummary);
+        }
+
+        [HttpPost("confirmed-unregistered-underpinning-service")]
+        public async Task<IActionResult> SaveUnderpinningService(int? serviceId, bool inRegister, string action)
+        {
+            bool fromSummaryPage = false; //just for now, need to check if this is needed
+            bool fromDetailsPage = false;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            if (serviceId != null)
+            {                
+                var service = await trustFrameworkService.GetServiceDetails((int)serviceId);
+                summaryViewModel.SelectedUnderPinningServiceId = serviceId;
+                summaryViewModel.UnderPinningServiceName = service.ServiceName;
+                summaryViewModel.UnderPinningProviderName = service.Provider.RegisteredName;
+                summaryViewModel.UnderPinningServiceExpiryDate = service.ConformityExpiryDate;
+                summaryViewModel.SelectedCab = service.CabUser?.Cab;
+                summaryViewModel.IsUnderpinningServicePublished = inRegister;
+            }
+            if(ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "#", "#");
+            }
+            else
+            {
+                return RedirectToAction("ConfirmedUnregisteredUnderpinningService", new {serviceId, inRegister });
+            }
+        }
+
+
         [HttpGet("edit-underpinning-service-details")]
         public IActionResult EditUnderpinningServiceDetails()
             => View();
+
+        [HttpGet("download-certificate")]
+        public async Task<IActionResult> DownloadCertificate(string key, string filename)
+        {
+            try
+            {
+                byte[]? fileContent = await bucketService.DownloadFileAsync(key);
+
+                if (fileContent == null || fileContent.Length == 0)
+                    throw new InvalidOperationException($"Failed to download certificate: Empty or null content for key.");
+
+                string contentType = "application/octet-stream";
+                return File(fileContent, contentType, filename);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Exception occurred while downloading certificate with key.", ex);
+            }
+        }
 
 
         #region GPG45
@@ -258,6 +366,7 @@ namespace DVSRegister.Controllers
             }
         }
         #endregion
+
         #region GPG44 - input
 
         [HttpGet("scheme/gpg44-input")]

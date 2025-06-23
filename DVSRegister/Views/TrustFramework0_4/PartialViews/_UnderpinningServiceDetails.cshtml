@@ -1,5 +1,8 @@
-﻿@{
-    bool unregistered = (ViewData["Unregistered"] as bool?) ?? false;
+﻿@using DVSRegister.Extensions
+@using DVSRegister.Models.CabTrustFramework
+@model UnderpinningServiceSummaryViewModel
+@{
+    bool confirmed = (ViewData["Confirmed"] as bool?) ?? false;
     bool manual = (ViewData["Manual"] as bool?) ?? false;
 }
 <div class="govuk-grid-column-full govuk-!-padding-0">
@@ -8,11 +11,11 @@
             <h2 class="govuk-summary-card__title">
                 Underpinning Service
             </h2>
-            @if (unregistered)
+            @if (!confirmed)
             {
                 <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
-                        <a class="govuk-link" href="/trust-framework-0.4/confirmed-unregistered-underpinning-service">Confirm</a>
+                        <a class="govuk-link" href="@Url.Action("ConfirmedUnregisteredUnderpinningService", "TrustFramework0_4", new { serviceId = Model.SelectedUnderPinningServiceId, inRegister = false })">Confirm</a>
                     </li>
                 </ul>
             }
@@ -24,7 +27,7 @@
                         Service name
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        Arc
+                        @Model.UnderPinningServiceName
                     </dd>
                     @if (manual)
                     {
@@ -43,7 +46,7 @@
                         Service provider
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        TrustedPoint
+                        @Model.UnderPinningProviderName
                     </dd>
                     @if (manual)
                     {
@@ -62,7 +65,7 @@
                         Conformity Assessment Body of Underpinning service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        ABC
+                        @Model.SelectedCab?.CabName
                     </dd>
                     @if (manual)
                     {
@@ -81,7 +84,7 @@
                         Underpinning service certificate expiry date
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        20 June 2026
+                        @DateTimeExtensions.FormatDateTime(Model.UnderPinningServiceExpiryDate, "dd MMM yyyy")
                     </dd>
                     @if (manual)
                     {

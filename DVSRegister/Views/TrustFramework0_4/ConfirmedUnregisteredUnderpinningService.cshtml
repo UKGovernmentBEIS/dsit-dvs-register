@@ -1,12 +1,21 @@
+@using DVSRegister.Models.CabTrustFramework
+@model UnderpinningServiceSummaryViewModel
 @{
     ViewData["Title"] = "You have selected this underpinning service ";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-
-    ViewData["Unregistered"] = false;
+    ViewData["Confirmed"] = true;
+    ViewData["Manual"] = Model.SelectedUnderPinningServiceId == null;
 }
-
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "PreviousStep", "TrustFramework0_4", null, new { @class = "govuk-back-link" })
+    @if (Model.SelectedUnderPinningServiceId == null)
+    {
+        @Html.ActionLink("Back", "#", "#", null, new { @class = "govuk-back-link" })
+    }
+    else
+    {
+        @Html.ActionLink("Back", "UnregisteredUnderpinningService", "TrustFramework0_4",
+        new { serviceId = Model.SelectedUnderPinningServiceId, inRegister = Model.IsUnderpinningServicePublished }, new { @class = "govuk-back-link" })
+    }    
 
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
@@ -18,18 +27,23 @@
                 <p class="govuk-body govuk-hint govuk-!-padding-bottom-6">
                     Select 'Continue' to provide further details about the white-labelled service.
                 </p>
-                @await Html.PartialAsync("PartialViews/_UnderpinningServiceDetails")
+                @await Html.PartialAsync("PartialViews/_UnderpinningServiceDetails", Model)
 
-                <div class="govuk-button-group">
-                    <button type="submit" class="govuk-button govuk-!-margin-top-4" data-module="govuk-button">
-                        Continue
-                    </button>
-                    <a asp-action="SaveAndCompleteLater"
-                       asp-controller="TrustFramework0_4"
-                       class="govuk-button govuk-button--secondary">
-                        Save and complete later
-                    </a>
-                </div>
+                @using (Html.BeginForm("SaveUnderpinningService", "TrustFramework0_4", FormMethod.Post))
+                {
+                    @Html.Hidden("serviceId", Model.SelectedUnderPinningServiceId)
+                    @Html.Hidden("inRegister", Model.IsUnderpinningServicePublished)
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button" name="action" value="continue">
+                            Continue
+                        </button>
+                        <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">
+                            Save and complete later
+                        </button>
+                    </div>
+                }
+
+                
             </div>
         </div>
     </main>

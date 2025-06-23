@@ -1,10 +1,12 @@
-﻿using DVSRegister.Data.Entities;
+﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace DVSRegister.Data.TrustFramework
 {
-    public class TrustFrameworkRepository:ITrustFrameworkRepository
+    public class TrustFrameworkRepository : ITrustFrameworkRepository
     {
         private readonly DVSRegisterDbContext context;
         private readonly ILogger<TrustFrameworkRepository> logger;
@@ -30,5 +32,54 @@ namespace DVSRegister.Data.TrustFramework
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<List<Service>> GetServices(bool isPublished, string searchText)
+        {
+            var baseQuery = context.Service
+                .Include(s => s.Provider)
+                .Include(s => s.CabUser).ThenInclude(s => s.Cab);
+
+            var groupedQuery = await baseQuery
+                .GroupBy(s => s.ServiceKey)
+                .Select(g => g.OrderByDescending(s => s.ServiceVersion).FirstOrDefault())
+                .ToListAsync();
+
+            IEnumerable<Service> filteredQuery;
+
+            if (isPublished)
+            {
+                filteredQuery = groupedQuery
+                    .Where(s => s.IsInRegister == true);
+            }
+            else
+            {
+                filteredQuery = groupedQuery
+                    .Where(s => s.IsInRegister == true);
+            }
+            searchText = searchText.Trim().ToLower();
+            filteredQuery = filteredQuery
+                .Where(s => s.ServiceName.ToLower().Contains(searchText) ||
+                            s.Provider.RegisteredName.ToLower().Contains(searchText));
+
+            return filteredQuery.ToList();
+        }
+
+        public async Task<Service> GetServiceDetails(int serviceId)
+        {
+            return await context.Service
+                .Include(s => s.Provider)
+                .Include(s => s.CertificateReview)
+                .Include(s => s.PublicInterestCheck)
+                .Include(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SupplementaryScheme)
+                .Include(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SchemeGPG44Mapping).ThenInclude(s => s.QualityLevel)
+                .Include(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SchemeGPG45Mapping).ThenInclude(s => s.IdentityProfile)
+                .Include(s => s.ServiceRoleMapping).ThenInclude(s => s.Role)
+                .Include(s => s.ServiceQualityLevelMapping).ThenInclude(s => s.QualityLevel)
+                .Include(s => s.ServiceIdentityProfileMapping).ThenInclude(s => s.IdentityProfile)
+                .Include(s => s.CabUser).ThenInclude(s => s.Cab)
+                .Include(s => s.TrustFrameworkVersion)
+                .FirstOrDefaultAsync(s => s.Id == serviceId);
+        }
+
     }
 }
