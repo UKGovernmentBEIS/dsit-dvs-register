@@ -29,14 +29,14 @@
                         }
                     }
 
-                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s registered company name</h1>
-                    <p class="govuk-body">The provider's registered company name will be publicly displayed on the register of digital identity and attribute services. This should match the registered name on the certificate of conformity.</p>
+                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s registered name</h1>
+                    <p class="govuk-body">The registered company name will be publicly displayed on the register of digital identity and attribute services. This should match the registered name on the certificate of conformity.</p>
 
                     @{
                         var registeredNameViewmodel = new TextBoxViewModel
                 {
                     PropertyName = "UnderPinningProviderName",
-                    Label = "Registered company name",
+                    Label = "Registered name",
                     Value = Model?.UnderPinningProviderName ?? string.Empty,
                     Class = "govuk-input",
                     HasError = hasError,
