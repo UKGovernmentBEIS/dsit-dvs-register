@@ -1,0 +1,83 @@
+﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@{
+    ViewData["Title"] = "The digital identity and attribute service provider’s name of service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool hasError = false;   
+}
+
+@using (Html.BeginForm("SaveUnderPinningServiceName", "TrustFramework0_4", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+    @Html.HiddenFor(m => m.RefererURL)
+    
+
+<div class="govuk-width-container">
+        <a href="@Model.RefererURL" class="govuk-back-link">
+            Back
+        </a>
+
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                @if (Html.ViewData?.ModelState.ContainsKey("ServiceName") == true)
+                {
+                    var errors = Html.ViewData?.ModelState["ServiceName"]?.Errors;
+                    if (errors != null && errors.Count > 0)
+                    {
+                        hasError = true;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ServiceName", errors))
+                    }
+                }
+
+                <h1 class="govuk-heading-xl form-title">
+                    The digital identity and attribute service provider’s name of service
+                </h1>
+
+                <p class="govuk-body">
+                    This must match the service name on the certificate of conformity. The information you provide will be publicly displayed on the register of digital identity and attribute services.
+                </p>
+
+              
+                    @{
+                        var serviceNameViewmodel = new TextBoxViewModel
+                        {
+                            PropertyName = "ServiceName",
+                            Label = "Name of service",
+                            Value = Model?.ServiceName ?? string.Empty,
+                            Class = "govuk-input",
+                            Hint = "For example, ‘Identity Verification App‘",
+                            HasError = hasError,
+                            ErrorMessage = hasError ? Html.ViewData?.ModelState["ServiceName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                        };
+                    }
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", serviceNameViewmodel)
+
+
+                    @if (Model!= null && Model.IsAmendment)
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Save changes</button>
+                            <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                                Cancel
+                            </a>
+                        </div>
+                    }
+                    else{
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="continue">Continue</button>
+                        <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
+                    </div>
+                    }
+              
+            </div>
+        </div>
+    </main>
+</div>
+}
