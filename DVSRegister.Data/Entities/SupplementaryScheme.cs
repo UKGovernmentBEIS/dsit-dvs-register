@@ -15,7 +15,6 @@ namespace DVSRegister.Data.Entities
         public int TrustFrameworkVersionId { get; set; }
         public TrustFrameworkVersion TrustFrameworkVersion { get; set; }
 
-        public ICollection<SchemeGPG44Mapping>? SchemeGPG44Mapping { get; set; }
-        public ICollection<SchemeGPG45Mapping>? SchemeGPG45Mapping { get; set; }
+    
     }
 }

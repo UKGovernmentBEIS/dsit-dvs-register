@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250620172846_DropSchemeMappingTables")]
+    partial class DropSchemeMappingTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1311,52 +1314,6 @@ namespace DVSRegister.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG44Mapping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("QualityLevelId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ServiceSupSchemeMappingId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QualityLevelId");
-
-                    b.HasIndex("ServiceSupSchemeMappingId");
-
-                    b.ToTable("SchemeGPG44Mapping");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG45Mapping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("IdentityProfileId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ServiceSupSchemeMappingId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdentityProfileId");
-
-                    b.HasIndex("ServiceSupSchemeMappingId");
-
-                    b.ToTable("SchemeGPG45Mapping");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
                 {
                     b.Property<int>("Id")
@@ -1723,9 +1680,6 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool?>("HasGpg44Mapping")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("ServiceId")
                         .HasColumnType("integer");
@@ -2251,44 +2205,6 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("TrustFrameworkVersion");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG44Mapping", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.QualityLevel", "QualityLevel")
-                        .WithMany()
-                        .HasForeignKey("QualityLevelId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.ServiceSupSchemeMapping", "ServiceSupSchemeMapping")
-                        .WithMany("SchemeGpg44Mapping")
-                        .HasForeignKey("ServiceSupSchemeMappingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("QualityLevel");
-
-                    b.Navigation("ServiceSupSchemeMapping");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG45Mapping", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.IdentityProfile", "IdentityProfile")
-                        .WithMany()
-                        .HasForeignKey("IdentityProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.ServiceSupSchemeMapping", "ServiceSupSchemeMapping")
-                        .WithMany("SchemeGpg45Mapping")
-                        .HasForeignKey("ServiceSupSchemeMappingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("IdentityProfile");
-
-                    b.Navigation("ServiceSupSchemeMapping");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.CabUser", "CabUser")
@@ -2602,13 +2518,6 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("ServiceRoleMappingDraft");
 
                     b.Navigation("ServiceSupSchemeMappingDraft");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceSupSchemeMapping", b =>
-                {
-                    b.Navigation("SchemeGpg44Mapping");
-
-                    b.Navigation("SchemeGpg45Mapping");
                 });
 #pragma warning restore 612, 618
         }

@@ -8,7 +8,7 @@
         public int SupplementarySchemeId { get; set; }
         public SupplementarySchemeDto SupplementaryScheme { get; set; }
         public bool? HasGpg44Mapping { get; set; }
-        public ICollection<SchemeGPG44MappingDto> SchemeGpg44Mapping { get; set; }
-        public ICollection<SchemeGPG45MappingDto> SchemeGpg45Mapping { get; set; }
+        public ICollection<SchemeGPG44MappingDto>? SchemeGPG44Mapping { get; set; }
+        public ICollection<SchemeGPG45MappingDto>? SchemeGPG45Mapping { get; set; }
     }
 }
