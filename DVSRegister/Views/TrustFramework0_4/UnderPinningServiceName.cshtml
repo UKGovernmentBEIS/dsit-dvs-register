@@ -36,11 +36,11 @@
                 }
 
                 <h1 class="govuk-heading-xl form-title">
-                    The digital identity and attribute service provider’s name of service
+                    Name of the underpinning service
                 </h1>
 
                 <p class="govuk-body">
-                    This must match the service name on the certificate of conformity. The information you provide will be publicly displayed on the register of digital identity and attribute services.
+                    This must match the name of service on the certificate. The information you provide will be publicly displayed on the register of digital identity and attribute services.
                 </p>
 
               
@@ -48,7 +48,7 @@
                         var serviceNameViewmodel = new TextBoxViewModel
                         {
                             PropertyName = "ServiceName",
-                            Label = "Name of service",
+                            Label = "Name of the underpinning service",
                             Value = Model?.ServiceName ?? string.Empty,
                             Class = "govuk-input",
                             Hint = "For example, ‘Identity Verification App‘",
