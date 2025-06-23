@@ -53,7 +53,7 @@ namespace DVSRegister.Models.CAB
         public ServiceTypeEnum ServiceType { get; set; }
 
         [Required(ErrorMessage = "Select the registration status")]
-        public bool? IsUnderPinningServicePublished { get; set; }
+        public bool? IsUnderpinningServicePublished { get; set; }
         public List<SchemeQualityLevelMappingViewModel>? SchemeQualityLevelMapping { get; set; }
         public List<SchemeIdentityProfileMappingViewModel>? SchemeIdentityProfileMapping { get; set; }
 
