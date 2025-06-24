@@ -407,6 +407,7 @@ namespace DVSRegister.Controllers
             viewModel.IsAmendment = summaryViewModel.IsAmendment;           
             if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
             {
+                summaryViewModel.IsSchemeEditedFromSummary = viewModel.FromSummaryPage;
                 summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
                 summaryViewModel.RefererURL = viewModel.RefererURL;
                 return await HandleSchemeActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage);     
@@ -448,16 +449,14 @@ namespace DVSRegister.Controllers
             summaryViewModel.SupplementarySchemeViewModel.FromSummaryPage = false;
 
             if (ModelState.IsValid)
-            {
+            {              
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
-                {
-                   
+                {                   
                     HttpContext?.Session.Set("SelectedSchemeIds", supplementarySchemeViewModel.SelectedSupplementarySchemeIds);
-                    int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];
-
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage,
-                   "SchemeGPG45","TrustFramework0_4", new { schemeId = firstSchemeId });
+                    int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];                   
+                    return RedirectToAction("SchemeGPG45", "TrustFramework0_4", new { schemeId = firstSchemeId });
+                   
                 }
                 else
                 {
@@ -1031,11 +1030,11 @@ namespace DVSRegister.Controllers
                         if (summaryViewModel?.SchemeQualityLevelMapping != null && summaryViewModel.SchemeQualityLevelMapping.Count > 0)
                         {
                             var schemeQualityLevelMapping = summaryViewModel.SchemeQualityLevelMapping.Where(x => x.SchemeId == serviceSchemeMapping.SupplementarySchemeId).FirstOrDefault();
-                            serviceSchemeMapping.HasGpg44Mapping = schemeQualityLevelMapping?.HasGpg44;
+                            serviceSchemeMapping.HasGpg44Mapping = schemeQualityLevelMapping?.HasGPG44;
 
                             if (serviceSchemeMapping.HasGpg44Mapping == true)
                             {
-                                var selectedAuthenticatorQualityLevels = schemeQualityLevelMapping?.QualityLevel.SelectedQualityofAuthenticators;
+                                var selectedAuthenticatorQualityLevels = schemeQualityLevelMapping?.QualityLevel?.SelectedQualityofAuthenticators;
                                 if (selectedAuthenticatorQualityLevels != null)
                                 {
                                     foreach (var qualityLevel in selectedAuthenticatorQualityLevels)
@@ -1049,7 +1048,7 @@ namespace DVSRegister.Controllers
                                     }
                                 }
 
-                                var selectedProtectionQualityLevels = schemeQualityLevelMapping?.QualityLevel.SelectedLevelOfProtections;
+                                var selectedProtectionQualityLevels = schemeQualityLevelMapping?.QualityLevel?.SelectedLevelOfProtections;
                                 if (selectedProtectionQualityLevels != null)
                                 {
                                     foreach (var qualityLevel in selectedProtectionQualityLevels)

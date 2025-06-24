@@ -334,8 +334,8 @@
 
                         </dd>
                         <dd class="govuk-summary-list__actions">
-                            @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                                     new { @class = "govuk-link", @aria_label = "" })
+                                @Html.ActionLink("Change", "SchemeGPG45", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.Id },
+                                         new { @class = "govuk-link", @aria_label = "Change selected GPG45 options for " + schemeMapping.SchemeName })
                         </dd>
                     </div>
 
@@ -359,8 +359,8 @@
                             }
                         </dd>
                         <dd class="govuk-summary-list__actions">
-                            @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                                     new { @class = "govuk-link", @aria_label = "" })
+                                @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.Id },
+                                         new { @class = "govuk-link", @aria_label = "Change selected GPG 44 options for " + schemeMapping.SchemeName })
                         </dd>
                     </div>
 
@@ -383,8 +383,8 @@
                             }
                         </dd>
                         <dd class="govuk-summary-list__actions">
-                            @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                                     new { @class = "govuk-link", @aria_label = "" })
+                                @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.Id },
+                                         new { @class = "govuk-link", @aria_label = "Change selected GPG 44 options for " + schemeMapping.SchemeName })
                         </dd>
                     </div>
 

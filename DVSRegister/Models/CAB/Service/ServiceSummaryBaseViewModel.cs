@@ -13,5 +13,6 @@ namespace DVSRegister.Models.CAB
         public string? RefererURL { get; set; }
         public int SchemeId { get; set; }
         public string SchemeName { get; set; } = string.Empty;
+        public bool IsSchemeEditedFromSummary { get; set; } 
     }
 }
