@@ -21,15 +21,15 @@
             <div class="govuk-grid-column-two-thirds">
 
                 <h1 class="govuk-heading-xl">
-                    Certificate of conformity expiry date
+                    Underpinning service certificate expiry date
                 </h1>
                 @if (ViewData.ModelState.ErrorCount >0)
                 {
                     hasError = true;
-                    ViewData["Title"] = "Error: " + ViewData["Title"];   
-                    
+                    ViewData["Title"] = "Error: " + ViewData["Title"];
 
-                    @await Html.PartialAsync("~/Views/PartialViews/_DateErrorSummaryView.cshtml", Model)
+
+                @await Html.PartialAsync("~/Views/PartialViews/_DateErrorSummaryView.cshtml", Model)
 
 
                     if ((Html.ViewData.ModelState.ContainsKey("ValidDate") &&   Html?.ViewData?.ModelState["ValidDate"]?.Errors.Count > 0))
@@ -53,13 +53,16 @@
 
                 @using (Html.BeginForm("SaveExpiryDate", "TrustFramework0_4", FormMethod.Post))
                 {
-                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
-                    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
-                    @Html.HiddenFor(m => m.RefererURL)
-                    <p class="govuk-body">
-                        This must match the information on the certificate of conformity. We do not accept
-                        certificates with an expiry date of more than 2 years 60 days after the date of issue.
-                    </p>
+                @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+                @Html.HiddenFor(m => m.RefererURL)
+                <p class="govuk-body">
+                    This must match the information on the certificate.
+                </p>
+                <p class="govuk-body">
+                    A certificate issued against the trust framework (version 0.4 gamma) can not
+                    be valid for more than 3 years and 60 days. 
+                </p>
 
 
                     var conformityExpiryDateViewModel = new DateInputViewModel
@@ -83,27 +86,27 @@
                     YearError =  !hasDateError & hasYearError ? Html?.ViewData?.ModelState["Year"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty
                  };
 
-                    @await Html.PartialAsync("~/Views/PartialViews/_DateView.cshtml", conformityExpiryDateViewModel)
+                @await Html.PartialAsync("~/Views/PartialViews/_DateView.cshtml", conformityExpiryDateViewModel)
 
                     @if (Model != null && Model.IsAmendment)
                     {
-                        <div class="govuk-button-group">
-                            <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Save changes</button>
-                            <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
-                                Cancel
-                            </a>
-                        </div>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Save changes</button>
+                    <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                        Cancel
+                    </a>
+                </div>
                     }
-                    else
-                    {
-                        <div class="govuk-button-group">
-                            <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button" name="action" value="continue">
-                                Continue
-                            </button>
-                            <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
-                        </div>
-                    }
-                
+                else
+                {
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button" name="action" value="continue">
+                        Continue
+                    </button>
+                    <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
+                </div>
+                }
+
                 }
             </div>
         </div>
