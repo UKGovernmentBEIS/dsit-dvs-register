@@ -51,7 +51,7 @@
                     }
                 }
 
-                @using (Html.BeginForm("SaveExpiryDate", "TrustFramework0_4", FormMethod.Post))
+                @using (Html.BeginForm("SaveUnderPinningServiceExpiryDate", "TrustFramework0_4", FormMethod.Post))
                 {
                 @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                 @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
@@ -60,14 +60,14 @@
                     This must match the information on the certificate.
                 </p>
                 <p class="govuk-body">
-                    A certificate issued against the trust framework (version 0.4 gamma) can not
-                    be valid for more than 3 years and 60 days. 
+                    We do not accept certificates with an expiry date of more than 3 years and 60
+                    days after the date of issue.
                 </p>
 
 
-                    var conformityExpiryDateViewModel = new DateInputViewModel
-                {
-                    PropertyName = "ConfirmityExpiryDate",
+                  var conformityExpiryDateViewModel = new DateInputViewModel
+                 {
+                    PropertyName = "UnderPinningServiceExpiryDate",
                     HasError = hasError,
                     ErrorMessage = hasDateError? Html?.ViewData?.ModelState["ValidDate"]?.Errors[0].ErrorMessage ?? string.Empty:string.Empty,
                     FieldsetLegend = "Certificate of conformity expiry date",
@@ -88,15 +88,15 @@
 
                 @await Html.PartialAsync("~/Views/PartialViews/_DateView.cshtml", conformityExpiryDateViewModel)
 
-                    @if (Model != null && Model.IsAmendment)
-                    {
+                @if (Model != null && Model.IsAmendment)
+                {
                 <div class="govuk-button-group">
                     <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Save changes</button>
                     <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
                         Cancel
                     </a>
                 </div>
-                    }
+                 }
                 else
                 {
                 <div class="govuk-button-group">

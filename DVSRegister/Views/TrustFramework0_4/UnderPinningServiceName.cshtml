@@ -23,15 +23,15 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
 
-                @if (Html.ViewData?.ModelState.ContainsKey("ServiceName") == true)
+                    @if (Html.ViewData?.ModelState.ContainsKey("UnderPinningServiceName") == true)
                 {
-                    var errors = Html.ViewData?.ModelState["ServiceName"]?.Errors;
+                        var errors = Html.ViewData?.ModelState["UnderPinningServiceName"]?.Errors;
                     if (errors != null && errors.Count > 0)
                     {
                         hasError = true;
                         ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
-                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ServiceName", errors))
+                                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("UnderPinningServiceName", errors))
                     }
                 }
 
@@ -47,13 +47,13 @@
                     @{
                         var serviceNameViewmodel = new TextBoxViewModel
                         {
-                            PropertyName = "ServiceName",
-                            Label = "Name of service",
+                            PropertyName = "UnderPinningServiceName",
+                            Label = "Name of underpinning service",
                             Value = Model?.ServiceName ?? string.Empty,
                             Class = "govuk-input",
                             Hint = "For example, ‘Identity Verification App‘",
                             HasError = hasError,
-                            ErrorMessage = hasError ? Html.ViewData?.ModelState["ServiceName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                            ErrorMessage = hasError ? Html.ViewData?.ModelState["UnderPinningServiceName"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
                         };
                     }
 

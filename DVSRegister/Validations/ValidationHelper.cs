@@ -83,7 +83,7 @@ public class ValidationHelper
         return date;
     }
 
-    public static DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate)
+    public static DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate, int years = 2 , int days = 60)
     {
         DateTime? date = null;
 
@@ -107,7 +107,7 @@ public class ValidationHelper
             else
             {
                 date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
-                var maxExpiryDate = issueDate.AddYears(2).AddDays(60);
+                var maxExpiryDate = issueDate.AddYears(years).AddDays(days);
                 if (date <= DateTime.Today)
                 {
                     modelstate.AddModelError("ValidDate", Constants.ConformityExpiryPastDateError);
