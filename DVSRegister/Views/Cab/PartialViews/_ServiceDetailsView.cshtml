@@ -485,14 +485,22 @@
                                 }
                                 else
                                 {
-                                    <div>@Constants.NullFieldsDisplay</div>
+                                    hasValue = false;
+                                    @:Incomplete
+                                    
+
                                 }
 
                             </dd>
-                            <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                                         new { @class = "govuk-link", @aria_label = "" })
-                            </dd>
+                            @if(isDraft && hasValue)
+                            {
+                                <dd class="govuk-summary-list__actions">
+                                    @Html.ActionLink("Change", "SchemeGPG45", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.SupplementaryScheme.Id },
+                                             new { @class = "govuk-link", @aria_label = "Change selected GPG45 options for " + schemeMapping.SupplementaryScheme.SchemeName })
+                                </dd>
+                            }
+                           
+                            
                         </div>
 
 
@@ -501,23 +509,39 @@
                                 GPG 44 quality of authentication
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                   @if (schemeMapping.SchemeGPG44Mapping != null && schemeMapping.SchemeGPG44Mapping.Count > 0)
+
+                               
+                                @if (schemeMapping.SchemeGPG44Mapping != null && schemeMapping.SchemeGPG44Mapping.Count > 0)
                                 {
-                                     @foreach (var item in schemeMapping.SchemeGPG44Mapping.Where(x=>x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                    @foreach (var item in schemeMapping.SchemeGPG44Mapping.Where(x=>x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                                     {
-                                            @item.QualityLevel.Level
+                                      @item.QualityLevel.Level
                                         <br>
                                     }
                                 }
                                 else
                                 {
-                                    <div>@Constants.NullFieldsDisplay</div>
+                                    if(schemeMapping.HasGpg44Mapping == false)
+                                    {
+                                        <div>@Constants.NullFieldsDisplay</div>
+                                    }
+                                    else
+                                    {
+                                        hasValue = false;
+                                        @:Incomplete
+                                    }
+                                   
                                 }
                             </dd>
-                            <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                                         new { @class = "govuk-link", @aria_label = "" })
-                            </dd>
+
+                            @if (isDraft && hasValue)
+                            {
+                                <dd class="govuk-summary-list__actions">
+                                    @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.SupplementaryScheme.Id },
+                                             new { @class = "govuk-link", @aria_label = "Change selected GPG 44 options for " + schemeMapping.SupplementaryScheme.SchemeName })
+                                </dd>
+                            }
+                           
                         </div>
 
                         <div class="govuk-summary-list__row">
@@ -535,13 +559,24 @@
                                 }
                                 else
                                 {
-                                    <div>@Constants.NullFieldsDisplay</div>
+                                    if (schemeMapping.HasGpg44Mapping == false)
+                                    {
+                                        <div>@Constants.NullFieldsDisplay</div>
+                                    }
+                                    else
+                                    {
+                                        hasValue = false;
+                                        @:Incomplete
+                                    }
                                 }
                             </dd>
-                            <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                                         new { @class = "govuk-link", @aria_label = "" })
-                            </dd>
+                            @if (isDraft && hasValue)
+                            {
+                                <dd class="govuk-summary-list__actions">
+                                    @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.SupplementaryScheme.Id },
+                                             new { @class = "govuk-link", @aria_label = "Change selected GPG 44 options for " + schemeMapping.SupplementaryScheme.SchemeName })
+                                </dd>
+                            }
                         </div>
 
                     </dl>

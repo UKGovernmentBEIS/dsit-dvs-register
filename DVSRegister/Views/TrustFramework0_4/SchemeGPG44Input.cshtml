@@ -1,4 +1,4 @@
-﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+﻿@model DVSRegister.Models.CAB.Service.SchemeQualityLevelMappingViewModel
 @using DVSRegister.Models.UI.Enums
 @{
     ViewData["Title"] = "Is the service certified against GPG 44";
@@ -23,10 +23,10 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
 
-                    @if (Html.ViewData?.ModelState.ContainsKey("SchemeHasGPG44") == true)
+                    @if (Html.ViewData?.ModelState.ContainsKey("HasGPG44") == true)
                     {
                         hasError = true;
-                        var errors = Html.ViewData?.ModelState["SchemeHasGPG44"]?.Errors;
+                        var errors = Html.ViewData?.ModelState["HasGPG44"]?.Errors;
                         if (errors != null && errors.Count > 0)
                         {
                             hasError = true;
@@ -40,13 +40,13 @@
 
                     @await Html.PartialAsync("~/Views/PartialViews/_TwoRadioButtonGroupView.cshtml", new TwoRadioButtonGroupViewModel
                    {
-                       PropertyName = "SchemeHasGPG44",
-                       Value = Model.SchemeHasGPG44,
+                       PropertyName = "HasGPG44",
+                       Value = Model.HasGPG44,
                        HasError = hasError,
                        FieldSet = Model.SchemeName + ": Is the service certified against GPG 44?",           
                        Heading = HeadingEnum.H1,
                        LegendStyleClass = "govuk-fieldset__legend--xl",
-                       ErrorMessage = hasError ? Html.ViewData?.ModelState["SchemeHasGPG44"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                       ErrorMessage = hasError ? Html.ViewData?.ModelState["HasGPG44"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
                        Label1 = "Yes",
                        Label2 = "No"
                    })

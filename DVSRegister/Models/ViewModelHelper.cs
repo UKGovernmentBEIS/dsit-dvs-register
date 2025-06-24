@@ -1,4 +1,5 @@
 ﻿using DVSRegister.Models.CAB;
+using DVSRegister.Models.CAB.Service;
 
 namespace DVSRegister.Models
 {
@@ -28,13 +29,26 @@ namespace DVSRegister.Models
         public static void ClearGpg45(ServiceSummaryViewModel summaryViewModel)
         {
             if (summaryViewModel.IdentityProfileViewModel != null)
-                summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = [];
+                summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = [];          
         }
 
         public static void ClearSchemes(ServiceSummaryViewModel summaryViewModel)
         {
             if (summaryViewModel.SupplementarySchemeViewModel != null)
                 summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = [];
+            if (summaryViewModel.SchemeIdentityProfileMapping != null)
+                summaryViewModel.SchemeIdentityProfileMapping = [];
+            if (summaryViewModel.SchemeQualityLevelMapping != null)
+                summaryViewModel.SchemeQualityLevelMapping = [];
+        }
+
+        public static void ClearSchemeGpg44(SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel)
+        {
+            if (schemeQualityLevelMappingViewModel != null && schemeQualityLevelMappingViewModel.HasGPG44 == false)
+            {
+                schemeQualityLevelMappingViewModel.QualityLevel = null!;
+            }
+
         }
         #endregion
 

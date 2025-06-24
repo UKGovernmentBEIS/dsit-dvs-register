@@ -169,7 +169,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-
+            summaryViewModel.RefererURL = GetRefererURL();
             var identityProfile = summaryViewModel?.SchemeIdentityProfileMapping?.Where(scheme => scheme.SchemeId == schemeId)?.FirstOrDefault()?.IdentityProfile;
             IdentityProfileViewModel identityProfileViewModel = new()
             {
@@ -227,8 +227,9 @@ namespace DVSRegister.Controllers
 
             if (ModelState.IsValid)
             {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SchemeGPG44Input", "TrustFramework0_4", new { schemeId = identityProfileViewModel.SchemeId });
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);               
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SchemeGPG44Input", "TrustFramework0_4", 
+                new { schemeId = identityProfileViewModel.SchemeId });
             }
             else
             {
@@ -243,16 +244,20 @@ namespace DVSRegister.Controllers
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = GetRefererURL();
-            summaryViewModel.SchemeId = schemeId;
-            summaryViewModel.SchemeName = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Where(scheme => scheme.Id == schemeId)
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();         
+
+            SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = summaryViewModel?.SchemeQualityLevelMapping?.Where(scheme => scheme.SchemeId == schemeId).
+            FirstOrDefault() ?? new();
+            schemeQualityLevelMappingViewModel.RefererURL = GetRefererURL();
+            schemeQualityLevelMappingViewModel.SchemeId = schemeId;
+            schemeQualityLevelMappingViewModel.SchemeName = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Where(scheme => scheme.Id == schemeId)
             .Select(scheme => scheme.SchemeName).FirstOrDefault() ?? string.Empty;
-            return View(summaryViewModel);
+
+            return View(schemeQualityLevelMappingViewModel);
         }
 
         [HttpPost("scheme/gpg44-input")]
-        public async Task<IActionResult> SaveSchemeGPG44Input(ServiceSummaryViewModel viewModel, string action)
+        public async Task<IActionResult> SaveSchemeGPG44Input(SchemeQualityLevelMappingViewModel viewModel, string action)
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             bool fromSummaryPage = viewModel.FromSummaryPage;
@@ -260,10 +265,10 @@ namespace DVSRegister.Controllers
             viewModel.IsAmendment = summaryViewModel.IsAmendment;
             viewModel.FromDetailsPage = false;
             viewModel.FromSummaryPage = false;
-            if (ModelState["SchemeHasGPG44"].Errors.Count == 0)
+            if (ModelState["HasGPG44"].Errors.Count == 0)
             {
                 SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = new();
-                schemeQualityLevelMappingViewModel.HasGpg44 = viewModel.SchemeHasGPG44;
+                schemeQualityLevelMappingViewModel.HasGPG44 = viewModel.HasGPG44;
                 schemeQualityLevelMappingViewModel.SchemeId = viewModel.SchemeId;
 
                 var existingMapping = summaryViewModel?.SchemeQualityLevelMapping?.FirstOrDefault(x => x.SchemeId == viewModel.SchemeId);
@@ -277,10 +282,10 @@ namespace DVSRegister.Controllers
                     summaryViewModel?.SchemeQualityLevelMapping?.Add(schemeQualityLevelMappingViewModel);
                 }
 
-                summaryViewModel.SchemeHasGPG44 = viewModel.SchemeHasGPG44;
-                summaryViewModel.RefererURL = viewModel.RefererURL;
+
+                schemeQualityLevelMappingViewModel.RefererURL = viewModel.RefererURL;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleGpg44Actions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, viewModel.SchemeId);
+                return await HandleGpg44Actions(action, summaryViewModel, schemeQualityLevelMappingViewModel, fromSummaryPage, fromDetailsPage, viewModel.SchemeId);
             }
             else
             {
@@ -305,7 +310,7 @@ namespace DVSRegister.Controllers
                 SchemeName = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Where(scheme => scheme.Id == schemeId)
                 .Select(scheme => scheme.SchemeName).FirstOrDefault() ?? string.Empty,
                 IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = summaryViewModel.RefererURL
+                RefererURL = GetRefererURL()
             };
             var qualityLevel = summaryViewModel?.SchemeQualityLevelMapping?.Where(scheme => scheme.SchemeId == schemeId)?.FirstOrDefault()?.QualityLevel;
 
@@ -359,20 +364,21 @@ namespace DVSRegister.Controllers
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
 
                 bool hasRemainingSchemes = HasRemainingSchemes(qualityLevelViewModel.SchemeId);
-                var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");
+                var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");              
                 if (hasRemainingSchemes)
                 {
                     return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SchemeGPG45", "TrustFramework0_4", new { schemeId = selectedSchemeIds[0] });
                 }
                 else
                 {
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "CertificateUploadPage", "CabService");
+                   
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, summaryViewModel.IsSchemeEditedFromSummary ? "ServiceSummary": "CertificateUploadPage", "CabService");
                 }
 
             }
             else
             {
-                return View("GPG44", qualityLevelViewModel);
+                return View("SchemeGPG44", qualityLevelViewModel);
             }
         }
         #endregion
@@ -384,7 +390,7 @@ namespace DVSRegister.Controllers
             switch (action)
             {
                 case "continue":
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary", "CabService")
                         : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
                         : routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues);
 
@@ -399,12 +405,13 @@ namespace DVSRegister.Controllers
             }
         }
 
-        private async Task<IActionResult> HandleGpg44Actions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage, int schemeId)
+        private async Task<IActionResult> HandleGpg44Actions(string action, ServiceSummaryViewModel summaryViewModel,SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel,
+            bool fromSummaryPage, bool fromDetailsPage, int schemeId)
         {
             switch (action)
             {
                 case "continue":
-                    if (Convert.ToBoolean(summaryViewModel.SchemeHasGPG44))
+                    if (Convert.ToBoolean(schemeQualityLevelMappingViewModel.HasGPG44))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return RedirectToAction("SchemeGPG44", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage, schemeId = schemeId });
@@ -413,30 +420,31 @@ namespace DVSRegister.Controllers
                     {
                         bool hasRemainingSchemes = HasRemainingSchemes(schemeId);
                         var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");
-                        ViewModelHelper.ClearGpg44(summaryViewModel);
+                        ViewModelHelper.ClearSchemeGpg44(schemeQualityLevelMappingViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
-                       : hasRemainingSchemes ? RedirectToAction("SchemeGPG45", new { schemeId = selectedSchemeIds[0] }) : RedirectToAction("CerificateUploadPage", "CabService");
+                        return fromSummaryPage ? RedirectToAction("ServiceSummary","CabService") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
+                       : hasRemainingSchemes ? RedirectToAction("SchemeGPG45", new { schemeId = selectedSchemeIds[0] }) :
+                         summaryViewModel.IsSchemeEditedFromSummary? RedirectToAction("ServiceSummary", "CabService"): RedirectToAction("CertificateUploadPage", "CabService");
                     }
 
                 case "draft":
-                    if (!Convert.ToBoolean(summaryViewModel.SchemeHasGPG44))
+                    if (!Convert.ToBoolean(schemeQualityLevelMappingViewModel.HasGPG44))
                     {
-                        ViewModelHelper.ClearGpg44(summaryViewModel);
+                        ViewModelHelper.ClearSchemeGpg44(schemeQualityLevelMappingViewModel);
                     }
                     HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return await SaveAsDraftAndRedirect(summaryViewModel);
 
                 case "amend":
 
-                    if (Convert.ToBoolean(summaryViewModel.SchemeHasGPG44))
+                    if (Convert.ToBoolean(schemeQualityLevelMappingViewModel.HasGPG44))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("GPG44");
+                        return RedirectToAction("SchemeGPG44");
                     }
                     else
                     {
-                        ViewModelHelper.ClearGpg44(summaryViewModel);
+                        ViewModelHelper.ClearSchemeGpg44(schemeQualityLevelMappingViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
@@ -450,7 +458,7 @@ namespace DVSRegister.Controllers
             switch (action)
             {
                 case "continue":
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary", "CabService")
                         : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
                         : RedirectToAction(nextPage, controller);
 
@@ -499,8 +507,6 @@ namespace DVSRegister.Controllers
         {
 
             var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");
-
-
             if (selectedSchemeIds != null && selectedSchemeIds.Count > 0)
             {
                 selectedSchemeIds.Remove(schemeId);

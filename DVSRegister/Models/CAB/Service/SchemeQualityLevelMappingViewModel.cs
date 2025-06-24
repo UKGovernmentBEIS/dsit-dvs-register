@@ -1,9 +1,13 @@
-﻿namespace DVSRegister.Models.CAB.Service
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DVSRegister.Models.CAB.Service
 {
-    public class SchemeQualityLevelMappingViewModel 
+    public class SchemeQualityLevelMappingViewModel : ServiceSummaryBaseViewModel
     {
         public int SchemeId { get; set; }
-        public bool? HasGpg44 { get; set; }
+
+        [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG44")]
+        public bool? HasGPG44 { get; set; }
         public QualityLevelViewModel QualityLevel { get; set; }
     }
 }
