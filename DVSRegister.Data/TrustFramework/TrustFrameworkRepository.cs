@@ -1,5 +1,4 @@
 ﻿using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -37,6 +36,8 @@ namespace DVSRegister.Data.TrustFramework
         {
             var baseQuery = context.Service
                 .Include(s => s.Provider)
+                .Include(s => s.CertificateReview)
+                .Include(s => s.TrustFrameworkVersion)
                 .Include(s => s.CabUser).ThenInclude(s => s.Cab);
 
             var groupedQuery = await baseQuery
@@ -46,22 +47,29 @@ namespace DVSRegister.Data.TrustFramework
 
             IEnumerable<Service> filteredQuery;
 
+            filteredQuery = groupedQuery
+                .Where(s => s.TrustFrameworkVersion.Version == Constants.TFVersion0_4);
+
             if (isPublished)
             {
-                filteredQuery = groupedQuery
-                    .Where(s => s.IsInRegister == true);
+                filteredQuery = filteredQuery
+                    .Where(s => s.ServiceStatus == ServiceStatusEnum.Published);
             }
             else
             {
-                filteredQuery = groupedQuery
-                    .Where(s => s.IsInRegister == true);
+                filteredQuery = filteredQuery
+                    .Where(s => s.CertificateReview != null &&
+                                s.CertificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved &&
+                                s.ServiceStatus != ServiceStatusEnum.Published);
             }
-            searchText = searchText.Trim().ToLower();
+
+            string trimmedSearchText = searchText.Trim().ToLower();
             filteredQuery = filteredQuery
-                .Where(s => s.ServiceName.ToLower().Contains(searchText) ||
-                            s.Provider.RegisteredName.ToLower().Contains(searchText));
+                .Where(s => s.ServiceName.ToLower().Contains(trimmedSearchText) ||
+                            s.Provider.RegisteredName.ToLower().Contains(trimmedSearchText));
 
             return filteredQuery.ToList();
+
         }
 
         public async Task<Service> GetServiceDetails(int serviceId)
