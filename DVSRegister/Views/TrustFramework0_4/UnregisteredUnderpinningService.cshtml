@@ -1,21 +1,40 @@
+@using DVSRegister.BusinessLogic.Models.CAB
+@using DVSRegister.Models.CabTrustFramework
+@model ServiceDto
 @{
-    ViewData["Title"] = "Service Details: ";
+    ViewData["Title"] = "Service Details:";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-
-    ViewData["Unregistered"] = true;
+    ViewData["Confirmed"] = false;
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "PreviousStep", "TrustFramework0_4", null, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "SelectUnderpinningService", "TrustFramework0_4", new { published = ViewBag.InRegister}, new { @class = "govuk-back-link" })
 
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-                <h1 class="govuk-heading-xl">@ViewData["Title"] Arc</h1>
+                <h1 class="govuk-heading-xl">@ViewData["Title"] @Model.ServiceName</h1>
                 <p class="govuk-body govuk-hint govuk-!-padding-bottom-6">
                     Check that the details for the underpinning service are correct, and select 'Confirm'.
                 </p>
-                @await Html.PartialAsync("PartialViews/_UnderpinningServiceDetails", model: null)
+                @if (ViewBag.InRegister)
+                {
+                    @await Html.PartialAsync("PartialViews/_UnderpinningServiceOnRegister", Model)
+                }
+                else
+                {
+                    UnderpinningServiceSummaryViewModel serviceSummary = new()
+                    {
+                        SelectedUnderPinningServiceId = Model.Id,
+                        IsUnderpinningServicePublished = ViewBag.InRegister,
+                        UnderPinningProviderName = Model.Provider.RegisteredName,
+                        UnderPinningServiceName = Model.ServiceName,
+                        UnderPinningServiceExpiryDate = Model.ConformityExpiryDate,
+                        SelectedCab = Model.CabUser?.Cab
+
+                    };
+                    @await Html.PartialAsync("PartialViews/_UnderpinningServiceDetails", serviceSummary)
+                }
             </div>
         </div>
     </main>

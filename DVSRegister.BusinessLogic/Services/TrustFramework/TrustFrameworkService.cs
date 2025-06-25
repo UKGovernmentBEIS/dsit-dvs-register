@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.Data.CAB;
+using DVSRegister.Data.CabTransfer;
 using DVSRegister.Data.TrustFramework;
 using System;
 
@@ -23,6 +24,20 @@ namespace DVSRegister.BusinessLogic.Services
         {
             var cabs = await trustFrameworkRepository.GetCabs();
             return automapper.Map<List<CabDto>>(cabs);
+        }
+
+        public async Task<List<ServiceDto>> GetServices(bool isPublished, string searchText)
+        {
+            var services = await trustFrameworkRepository.GetServices(isPublished, searchText);
+            var serviceDtos = automapper.Map<List<ServiceDto>>(services);
+
+            return serviceDtos;
+        }
+
+        public async Task<ServiceDto> GetServiceDetails(int serviceId)
+        {
+            var service = await trustFrameworkRepository.GetServiceDetails(serviceId);
+            return automapper.Map<ServiceDto>(service);
         }
     }
 }
