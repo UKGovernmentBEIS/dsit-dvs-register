@@ -1,4 +1,6 @@
-﻿using DVSRegister.CommonUtility.Models;
+﻿using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

@@ -10,6 +10,7 @@ using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Service;
 using DVSRegister.Models.CabTrustFramework;
+using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
@@ -30,84 +31,6 @@ namespace DVSRegister.Controllers
         private readonly IMapper mapper = mapper;
         
 
-        [HttpGet("select-underpinning")]
-        public IActionResult SelectUnderpinning()
-        {
-            return View();
-        }
-
-        [HttpGet("select-cab")]
-        public async Task<IActionResult> SelectCabOfUnderpinningService()
-        {
-            var allCabs = await trustFrameworkService.GetCabs();
-            var AllCabsViewModel = new AllCabsViewModel
-            {
-                Cabs = allCabs
-            };
-
-            return View(AllCabsViewModel);
-        }
-
-
-        [HttpGet("select-service-type")]
-        public IActionResult SelectServiceType()
-        {
-            //Figma 604
-            // ServiceTypeEnum to pupulate radios
-
-            return View();
-        }
-
-        [HttpPost("select-service-type")]
-        public async Task<IActionResult> SaveSelectServiceType(string action)
-        {
-            //to do - set data
-            bool fromSummaryPage = false;
-            bool fromDetailsPage = false;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-
-            if (ModelState.IsValid)
-            {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                //Todo:
-                string nextPage = string.Empty;
-                string controller = string.Empty;
-                //nextPage = GPG45 in cabservice controller for  underpinning or neither
-                //nextpage = StatusOfUnderpinningService in this controller for whitelabelled
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller);
-            }
-            else
-            {
-                return View("SelectServiceType");
-            }
-        }
-
-        [HttpGet("status-of-underpinning-service")]
-        public IActionResult StatusOfUnderpinningService()
-        {
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = GetRefererURL();
-            return View(summaryViewModel);
-        }
-        
-        [HttpPost("status-of-underpinning-service")]
-        public IActionResult StatusOfUnderpinningService(bool? isUnderpinningServicePublished)
-        {
-            
-            if (!isUnderpinningServicePublished.HasValue)
-            {
-                ModelState.AddModelError(nameof(isUnderpinningServicePublished), "Select the registration status");
-                return View(GetServiceSummary());
-            }
-            
-            var summary = GetServiceSummary();
-            summary.IsUnderpinningServicePublished = isUnderpinningServicePublished;
-            HttpContext.Session.Set("ServiceSummary", summary);
-
-            return RedirectToAction("SelectUnderpinningService", new { published = isUnderpinningServicePublished });
-        }
-        
-        
 
   
 
@@ -165,6 +88,76 @@ namespace DVSRegister.Controllers
             }
         }
 
+
+        //--------Service name, service link address, roles, in Cabservice controller -----------------//
+
+        [HttpGet("select-service-type")]
+        public IActionResult SelectServiceType()
+        {
+            //Figma 604
+            // ServiceTypeEnum to pupulate radios
+
+            return View();
+        }
+
+        [HttpPost("select-service-type")]
+        public async Task<IActionResult> SaveSelectServiceType(string action)
+        {
+            //to do - set data
+            bool fromSummaryPage = false;
+            bool fromDetailsPage = false;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+
+            if (ModelState.IsValid)
+            {
+
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                //Todo:
+                string nextPage = string.Empty;
+                string controller = string.Empty;
+                //nextPage = TBD
+                //nextpage = StatusOfUnderpinningService in this controller for whitelabelled
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller);
+            }
+            else
+            {
+                return View("SelectServiceType");
+            }
+        }
+
+        [HttpGet("status-of-underpinning-service")]
+        public IActionResult StatusOfUnderpinningService()
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = GetRefererURL();
+            return View(summaryViewModel);
+        }
+
+        [HttpPost("status-of-underpinning-service")]
+        public IActionResult StatusOfUnderpinningService(bool? isUnderpinningServicePublished)
+        {
+
+            if (!isUnderpinningServicePublished.HasValue)
+            {
+                ModelState.AddModelError(nameof(isUnderpinningServicePublished), "Select the registration status");
+                return View(GetServiceSummary());
+            }
+
+            var summary = GetServiceSummary();
+            summary.IsUnderpinningServicePublished = isUnderpinningServicePublished;
+            HttpContext.Session.Set("ServiceSummary", summary);
+
+            return RedirectToAction("SelectUnderpinningService", new { published = isUnderpinningServicePublished });
+        }
+
+
+        /// <summary>
+        /// Search for services with status published or certificate review 
+        /// passed based on selection in StatusOfUnderpinningService
+        /// </summary>
+        /// <param name="SearchText"></param>
+        /// <param name="SearchAction"></param>
+        /// <returns></returns>
         [HttpGet("select-underpinning-service")]
         public async Task<IActionResult> SelectUnderpinningService(string SearchText, string SearchAction)
         {
@@ -196,48 +189,38 @@ namespace DVSRegister.Controllers
             return View(underpinningServiceViewModel);
         }
 
-        [HttpGet("unregistered-underpinning-service")]
-        public async Task<IActionResult> UnregisteredUnderpinningService(int serviceId, bool inRegister)
+
+        [HttpGet("selected-underpinning-service")]
+      
+        public async Task<IActionResult> SelectedUnderpinningService(int serviceId, bool inRegister)
         {
             var service = await trustFrameworkService.GetServiceDetails(serviceId);
-            ViewBag.InRegister = inRegister;
+            ViewBag.InRegister = inRegister;        
             return View(service);
         }
 
-        [HttpGet("confirmed-unregistered-underpinning-service")]
-        public async Task<IActionResult> ConfirmedUnregisteredUnderpinningService(int? serviceId, bool inRegister)
+
+
+        [HttpGet("confirm-underpinning-service")]     
+        public async Task<IActionResult> ConfirmUnderpinningService(int? serviceId, bool inRegister)
         {
-            UnderpinningServiceSummaryViewModel serviceSummary;
-            if (serviceId == null)
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            if (serviceId != null || serviceId !=0)
             {
-                ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-                serviceSummary = new UnderpinningServiceSummaryViewModel
-                {
-                    SelectedUnderPinningServiceId = summaryViewModel.SelectedUnderPinningServiceId,
-                    IsUnderpinningServicePublished = summaryViewModel.IsUnderpinningServicePublished ?? false,
-                    UnderPinningProviderName = summaryViewModel.UnderPinningProviderName,
-                    UnderPinningServiceName = summaryViewModel.UnderPinningServiceName,
-                    UnderPinningServiceExpiryDate = summaryViewModel.UnderPinningServiceExpiryDate ?? DateTime.MinValue,
-                    SelectedCab = summaryViewModel.SelectedCab
-                };
-            }
-            else
-            {
+
                 var service = await trustFrameworkService.GetServiceDetails((int)serviceId);
-                serviceSummary = new UnderpinningServiceSummaryViewModel
-                {
-                    SelectedUnderPinningServiceId = serviceId,
-                    IsUnderpinningServicePublished = inRegister,
-                    UnderPinningProviderName = service.Provider.RegisteredName,
-                    UnderPinningServiceName = service.ServiceName,
-                    UnderPinningServiceExpiryDate = service.ConformityExpiryDate,
-                    SelectedCab = service.CabUser?.Cab
-                };
+                summaryViewModel.SelectedUnderPinningServiceId = serviceId;
+                summaryViewModel.IsUnderpinningServicePublished = inRegister;
+                summaryViewModel.UnderPinningProviderName = service.Provider.RegisteredName;
+                summaryViewModel.UnderPinningServiceName = service.ServiceName;
+                summaryViewModel.UnderPinningServiceExpiryDate = service.ConformityExpiryDate;
+                summaryViewModel.SelectCabViewModel = new SelectCabViewModel { SelectedCabId = service?.CabUser?.CabId, SelectedCabName = service?.CabUser?.Cab?.CabName };
             }
-            return View(serviceSummary);
+           
+            return View(summaryViewModel);
         }
 
-        [HttpPost("confirmed-unregistered-underpinning-service")]
+        [HttpPost("confirm-underpinning-service")]
         public async Task<IActionResult> SaveUnderpinningService(int? serviceId, bool inRegister, string action)
         {
             bool fromSummaryPage = false; //just for now, need to check if this is needed
@@ -250,7 +233,7 @@ namespace DVSRegister.Controllers
                 summaryViewModel.UnderPinningServiceName = service.ServiceName;
                 summaryViewModel.UnderPinningProviderName = service.Provider.RegisteredName;
                 summaryViewModel.UnderPinningServiceExpiryDate = service.ConformityExpiryDate;
-                summaryViewModel.SelectedCab = service.CabUser?.Cab;
+                summaryViewModel.SelectCabViewModel = new SelectCabViewModel { SelectedCabId = service?.CabUser?.CabId, SelectedCabName = service?.CabUser?.Cab.CabName } ;
                 summaryViewModel.IsUnderpinningServicePublished = inRegister;
             }
             if(ModelState.IsValid)
@@ -260,14 +243,177 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return RedirectToAction("ConfirmedUnregisteredUnderpinningService", new {serviceId, inRegister });
+                return RedirectToAction("ConfirmUnderpinningService", new {serviceId, inRegister });
+            }
+        }
+       
+
+
+        #region Service Name
+        [HttpGet("underpinning-service-name")]
+        public IActionResult UnderPinningServiceName(bool fromSummaryPage, bool fromDetailsPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            serviceSummaryViewModel.RefererURL = GetRefererURL();
+            return View(serviceSummaryViewModel);
+        }
+
+        [HttpPost("underpinning-service-name")]
+        public async Task<IActionResult> SaveUnderPinningServiceName(ServiceSummaryViewModel serviceSummaryViewModel, string action)
+        {
+            bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
+            bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
+            ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+            serviceSummaryViewModel.FromSummaryPage = false;
+            serviceSummaryViewModel.FromDetailsPage = false;
+            serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
+            if (ModelState["UnderPinningServiceName"].Errors.Count == 0)
+            {
+                serviceSummary.UnderPinningServiceName = serviceSummaryViewModel.UnderPinningServiceName;
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "UnderPinningProviderName", "TrustFramework0_4");
+            }
+            else
+            {
+                return View("UnderPinningServiceName", serviceSummaryViewModel);
+            }
+        }
+        #endregion
+
+        #region underpinning provider name
+
+        [HttpGet("underpinning-provider-name")]
+        public IActionResult UnderPinningProviderName(bool fromSummaryPage, bool fromDetailsPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            serviceSummaryViewModel.RefererURL = GetRefererURL();
+            return View(serviceSummaryViewModel);
+        }
+
+        [HttpPost("underpinning-provider-name")]
+        public async Task<IActionResult> SaveUnderPinningProviderName(ServiceSummaryViewModel serviceSummaryViewModel, string action)
+        {
+            bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
+            bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
+            ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+            serviceSummaryViewModel.FromSummaryPage = false;
+            serviceSummaryViewModel.FromDetailsPage = false;
+            serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
+            if (ModelState["UnderPinningProviderName"].Errors.Count == 0)
+            {
+                serviceSummary.UnderPinningProviderName = serviceSummaryViewModel.UnderPinningProviderName;
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "SelectCabOfUnderpinningService", "TrustFramework0_4");
+            }
+            else
+            {
+                return View("UnderPinningProviderName", serviceSummaryViewModel);
+            }
+        }
+        #endregion
+
+
+        #region Select-cab
+
+        [HttpGet("select-cab")]
+        public async Task<IActionResult> SelectCabOfUnderpinningService(bool fromSummaryPage, bool fromDetailsPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;
+            var allCabs = await trustFrameworkService.GetCabs();
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            var selectCabViewModel = serviceSummaryViewModel?.SelectCabViewModel ?? new SelectCabViewModel();
+            selectCabViewModel.Cabs = allCabs;
+            selectCabViewModel.RefererURL = GetRefererURL();
+            return View(selectCabViewModel);
+        }
+
+        [HttpPost("select-cab")]
+        public async Task<IActionResult> SaveSelectedCab(SelectCabViewModel cabsViewModel, string action)
+        {
+            ServiceSummaryViewModel serviceSummary = GetServiceSummary();
+            bool fromSummaryPage = serviceSummary.FromSummaryPage;
+            bool fromDetailsPage = serviceSummary.FromDetailsPage;
+
+            if (cabsViewModel.Cabs == null)
+                cabsViewModel.Cabs = await trustFrameworkService.GetCabs();
+            if (ModelState.IsValid)
+            {
+                string cabName = cabsViewModel.Cabs.Where(x=>x.Id == cabsViewModel.SelectedCabId).Select(x=>x.CabName).First();
+                serviceSummary.SelectCabViewModel = new SelectCabViewModel { SelectedCabId = Convert.ToInt32(cabsViewModel.SelectedCabId),
+                SelectedCabName = cabName
+                };
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "UnderPinningServiceExpiryDate", "TrustFramework0_4");
+            }
+
+            return View("SelectCabOfUnderpinningService", cabsViewModel);
+        }
+        #endregion
+
+        [HttpGet("under-pinning-service-expiry-date")]
+        public IActionResult UnderPinningServiceExpiryDate(bool fromDetailsPage)
+        {
+            ViewBag.fromDetailsPage = fromDetailsPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+
+            DateViewModel dateViewModel = new()
+            {
+                PropertyName = "UnderPinningServiceExpiryDate"
+            };
+
+            if (summaryViewModel.ConformityExpiryDate != null)
+            {
+                dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.UnderPinningServiceExpiryDate);
+            }
+            dateViewModel.RefererURL = GetRefererURL();
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            return View(dateViewModel);
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dateViewModel"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        [HttpPost("under-pinning-service-expiry-date")]
+        public async Task<IActionResult> SaveUnderPinningServiceExpiryDate(DateViewModel dateViewModel, string action)
+        {
+            bool fromDetailsPage = dateViewModel.FromDetailsPage;
+            bool fromSummaryPage = dateViewModel.FromDetailsPage;
+            dateViewModel.FromDetailsPage = false;
+            dateViewModel.PropertyName = "UnderPinningServiceExpiryDate";
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+
+            DateTime? underPinningServiceExpiryDate = ValidationHelper.ValidateCustomExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState);
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            if (ModelState.IsValid)
+            {
+                summaryViewModel.UnderPinningServiceExpiryDate = underPinningServiceExpiryDate;
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "UnderpinningServiceDetailsSummary", "TrustFramework0_4");
+            }
+            else
+            {
+                return View("UnderPinningServiceExpiryDate", dateViewModel);
             }
         }
 
 
-        [HttpGet("edit-underpinning-service-details")]
-        public IActionResult EditUnderpinningServiceDetails()
-            => View();
+        [HttpGet("underpinning-service-details-summary")]
+        public IActionResult UnderpinningServiceDetailsSummary()
+        {        
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();           
+            return View(summaryViewModel);
+        }
+        
+
 
         [HttpGet("download-certificate")]
         public async Task<IActionResult> DownloadCertificate(string key, string filename)

@@ -1,9 +1,7 @@
 ﻿@using DVSRegister.Extensions
-@using DVSRegister.Models.CabTrustFramework
-@model UnderpinningServiceSummaryViewModel
+@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @{
-    bool confirmed = (ViewData["Confirmed"] as bool?) ?? false;
-    bool manual = (ViewData["Manual"] as bool?) ?? false;
+    bool manual = Model?.SelectedUnderPinningServiceId == null;
 }
 <div class="govuk-grid-column-full govuk-!-padding-0">
     <div class="govuk-summary-card">
@@ -11,11 +9,11 @@
             <h2 class="govuk-summary-card__title">
                 Underpinning Service
             </h2>
-            @if (!confirmed)
+            @if (!manual)
             {
                 <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
-                        <a class="govuk-link" href="@Url.Action("ConfirmedUnregisteredUnderpinningService", "TrustFramework0_4", new { serviceId = Model.SelectedUnderPinningServiceId, inRegister = false })">Confirm</a>
+                        <a class="govuk-link" href="@Url.Action("ConfirmUnderpinningService", "TrustFramework0_4", new { serviceId = Model.SelectedUnderPinningServiceId, inRegister = false })">Confirm</a>
                     </li>
                 </ul>
             }
@@ -65,7 +63,7 @@
                         Conformity Assessment Body of Underpinning service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @Model.SelectedCab?.CabName
+                        @Model?.SelectCabViewModel?.SelectedCabName
                     </dd>
                     @if (manual)
                     {

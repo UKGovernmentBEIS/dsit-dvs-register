@@ -990,7 +990,7 @@ namespace DVSRegister.Controllers
                         {
                             ServiceName = summaryViewModel?.UnderPinningServiceName ?? string.Empty,
                             ProviderName = summaryViewModel?.UnderPinningProviderName ?? string.Empty,
-                            SelectedCab = summaryViewModel?.SelectedCab,
+                            SelectedCab = new CabDto { Id = summaryViewModel?.SelectCabViewModel?.SelectedCabId??0 },
                             CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
                         };
                     }

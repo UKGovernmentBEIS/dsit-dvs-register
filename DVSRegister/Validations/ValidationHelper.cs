@@ -83,7 +83,7 @@ public class ValidationHelper
         return date;
     }
 
-    public static DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate)
+    public static DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate, int years = 2, int days = 60)
     {
         DateTime? date = null;
 
@@ -107,7 +107,7 @@ public class ValidationHelper
             else
             {
                 date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
-                var maxExpiryDate = issueDate.AddYears(2).AddDays(60);
+                var maxExpiryDate = issueDate.AddYears(years).AddDays(days);
                 if (date <= DateTime.Today)
                 {
                     modelstate.AddModelError("ValidDate", Constants.ConformityExpiryPastDateError);
@@ -120,6 +120,47 @@ public class ValidationHelper
                 {
                     modelstate.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
                 }
+            }
+
+        }
+        catch (Exception)
+        {
+            modelstate.AddModelError("ValidDate", Constants.ConformityExpiryDateInvalidError);
+
+        }
+        return date;
+    }
+
+    public static DateTime? ValidateCustomExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate)
+    {
+        DateTime? date = null;
+
+        try
+        {
+            if (dateViewModel.Day == null || dateViewModel.Month == null || dateViewModel.Year == null)
+            {
+                if (dateViewModel.Day == null)
+                {
+                    modelstate.AddModelError("Day", Constants.ConformityExpiryDayError);
+                }
+                if (dateViewModel.Month == null)
+                {
+                    modelstate.AddModelError("Month", Constants.ConformityExpiryMonthError);
+                }
+                if (dateViewModel.Year == null)
+                {
+                    modelstate.AddModelError("Year", Constants.ConformityExpiryYearError);
+                }
+            }
+            else
+            {
+                date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
+            
+                if (date <= DateTime.Today)
+                {
+                    modelstate.AddModelError("ValidDate", Constants.ConformityExpiryPastDateError);
+                }
+               
             }
 
         }

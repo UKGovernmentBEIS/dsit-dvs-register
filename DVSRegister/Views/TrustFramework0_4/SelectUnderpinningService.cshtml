@@ -77,7 +77,7 @@
                     @if (!published)
                     {
                         <p class="govuk-body">
-                            <a href="#" class="govuk-link">Enter underpinning service details manually</a>
+                            <a class="govuk-link" href="@Url.Action("UnderPinningServiceName", "TrustFramework0_4")">Enter underpinning service details manually</a>
                         </p>
                     }
                 </div>
@@ -104,7 +104,7 @@
                             @foreach (var item in Model.Services)
                             {
                                 <tr class="govuk-table__row">
-                                    <td class="govuk-table__cell" data-sort-value="@item.ServiceName">@Html.ActionLink(item.ServiceName, "UnregisteredUnderpinningService", "TrustFramework0_4", new { serviceId = item.Id, inRegister = Model.InRegister }, new { @class = "govuk-link" })</td>
+                                   <td class="govuk-table__cell" data-sort-value="@item.ServiceName">@Html.ActionLink(item.ServiceName, "SelectedUnderpinningService", "TrustFramework0_4", new { serviceId = item.Id, inRegister = Model.InRegister }, new { @class = "govuk-link" })</td>
                                     <td class="govuk-table__cell">@item.Provider.RegisteredName</td>
                                     <td class="govuk-table__cell">@item.CabUser.Cab.CabName</td>
                                     <td class="govuk-table__cell">@HtmlExtensions.ToStyledStrongTag(item.ServiceStatus)</td>
