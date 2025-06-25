@@ -28,14 +28,14 @@
 
                     <div class="govuk-tabs__panel" id="pending-submissions">
                         @{
-                            ViewData["TabTitle"] = "Pending transfer requests";
+                            ViewData["TabTitle"] = "Transfer service requests";
                             ViewData["isApproved"] = false;
                         }
                         @await Html.PartialAsync("~/Views/CabTransfer/PartialViews/_TransferRequestsSubmissions.cshtml", Model)
                     </div>
                     <div class="govuk-tabs__panel" id="completed-submissions">
                         @{
-                            ViewData["TabTitle"] = "Approved transfer requests";
+                            ViewData["TabTitle"] = "Approved service transfer requests";
                             ViewData["isApproved"] = true;
                         }
                         @await Html.PartialAsync("~/Views/CabTransfer/PartialViews/_TransferRequestsSubmissions.cshtml", Model)
