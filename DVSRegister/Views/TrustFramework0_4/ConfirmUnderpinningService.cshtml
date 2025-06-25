@@ -1,5 +1,5 @@
-@using DVSRegister.Models.CabTrustFramework
-@model UnderpinningServiceSummaryViewModel
+@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+
 @{
     ViewData["Title"] = "You have selected this underpinning service ";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
@@ -13,7 +13,7 @@
     }
     else
     {
-        @Html.ActionLink("Back", "UnregisteredUnderpinningService", "TrustFramework0_4",
+        @Html.ActionLink("Back", "SelectedUnderpinningService", "TrustFramework0_4",
         new { serviceId = Model.SelectedUnderPinningServiceId, inRegister = Model.IsUnderpinningServicePublished }, new { @class = "govuk-back-link" })
     }    
 

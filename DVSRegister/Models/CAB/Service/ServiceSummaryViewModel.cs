@@ -1,7 +1,7 @@
-﻿using DVSRegister.BusinessLogic.Models;
-using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models.CAB.Service;
+using DVSRegister.Models.CabTrustFramework;
 using DVSRegister.Validations;
 using System.ComponentModel.DataAnnotations;
 
@@ -67,7 +67,7 @@ namespace DVSRegister.Models.CAB
         [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
         public string? UnderPinningProviderName { get; set; }
 
-        public CabDto? SelectedCab { get; set; }
+        public SelectCabViewModel? SelectCabViewModel { get; set; }
 
         public DateTime? UnderPinningServiceExpiryDate { get; set; }
 
