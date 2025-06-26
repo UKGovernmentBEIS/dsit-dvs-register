@@ -28,11 +28,7 @@ namespace DVSRegister.Controllers
         private readonly ICabService cabService = cabService;
         private readonly IUserService userService = userService;
         private readonly IBucketService bucketService = bucketService;
-        private readonly IMapper mapper = mapper;
-        
-
-
-  
+        private readonly IMapper mapper = mapper;     
 
         [HttpGet("tf-version")]
         public async Task<IActionResult> SelectVersionOfTrustFrameWork(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
@@ -73,8 +69,9 @@ namespace DVSRegister.Controllers
             TFVersionViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (TFVersionViewModel.SelectedTFVersionId != null)
             {
-                summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion
-                    .FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);
+                summaryViewModel.TFVersionViewModel = new();
+                summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);
+               
             }
 
             if (ModelState.IsValid)
@@ -109,21 +106,203 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
 
             if (ModelState.IsValid)
-            {
-
+            {               
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 //Todo:
                 string nextPage = string.Empty;
                 string controller = string.Empty;
                 //nextPage = TBD
                 //nextpage = StatusOfUnderpinningService in this controller for whitelabelled
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller);
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ServiceGPG45Input");
             }
             else
             {
                 return View("SelectServiceType");
             }
         }
+
+        #region GPG45 input
+
+        [HttpGet("service/gpg45-input")]
+        public IActionResult ServiceGPG45Input(bool fromSummaryPage, bool fromDetailsPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = GetRefererURL();
+            return View(summaryViewModel);
+        }
+
+        [HttpPost("service/gpg45-input")]
+        public async Task<IActionResult> SaveServiceGPG45Input(ServiceSummaryViewModel viewModel, string action)
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            viewModel.IsAmendment = summaryViewModel.IsAmendment;
+            bool fromSummaryPage = viewModel.FromSummaryPage;
+            bool fromDetailsPage = viewModel.FromDetailsPage;
+            viewModel.FromSummaryPage = false;
+            viewModel.FromDetailsPage = false;
+            if (ModelState["HasGPG45"].Errors.Count == 0)
+            {
+                summaryViewModel.HasGPG45 = viewModel.HasGPG45;
+                summaryViewModel.RefererURL = viewModel.RefererURL;
+                return await HandleGpg45Actions(action, summaryViewModel, fromSummaryPage, fromDetailsPage);
+            }
+            else
+            {
+                return View("ServiceGPG45Input", viewModel);
+            }
+        }
+        #endregion
+
+        #region select GPG45
+
+        [HttpGet("service/gpg45")]
+        public async Task<IActionResult> ServiceGPG45(bool fromSummaryPage, bool fromDetailsPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            IdentityProfileViewModel identityProfileViewModel = new()
+            {
+                IsAmendment = summaryViewModel.IsAmendment,
+                SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList(),
+                AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
+                RefererURL = GetRefererURL()
+            };
+            return View(identityProfileViewModel);
+        }
+
+        /// <summary>
+        /// Save selected values to session
+        /// </summary>
+        /// <param name="identityProfileViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("service/gpg45")]
+        public async Task<IActionResult> SaveServiceGPG45(IdentityProfileViewModel identityProfileViewModel, string action)
+        {
+            bool fromSummaryPage = identityProfileViewModel.FromSummaryPage;
+            bool fromDetailsPage = identityProfileViewModel.FromDetailsPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            identityProfileViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            List<IdentityProfileDto> availableIdentityProfiles = await cabService.GetIdentityProfiles();
+            identityProfileViewModel.AvailableIdentityProfiles = availableIdentityProfiles;
+            identityProfileViewModel.SelectedIdentityProfileIds = identityProfileViewModel.SelectedIdentityProfileIds ?? new List<int>();
+            if (identityProfileViewModel.SelectedIdentityProfileIds.Count > 0)
+                summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = availableIdentityProfiles.Where(c => identityProfileViewModel.SelectedIdentityProfileIds.Contains(c.Id)).ToList();
+            summaryViewModel.IdentityProfileViewModel.FromSummaryPage = false;
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ServiceGPG44Input");
+            }
+            else
+            {
+                return View("ServiceGPG45", identityProfileViewModel);
+            }
+        }
+        #endregion
+
+    
+
+        #region GPG44 - input
+
+        [HttpGet("service/gpg44-input")]
+        public IActionResult ServiceGPG44Input(bool fromSummaryPage, bool fromDetailsPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = GetRefererURL();
+            return View(summaryViewModel);
+        }
+
+        [HttpPost("service/gpg44-input")]
+        public async Task<IActionResult> SaveServiceGPG44Input(ServiceSummaryViewModel viewModel, string action)
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            bool fromSummaryPage = viewModel.FromSummaryPage;
+            bool fromDetailsPage = viewModel.FromDetailsPage;
+            viewModel.IsAmendment = summaryViewModel.IsAmendment;
+            viewModel.FromDetailsPage = false;
+            viewModel.FromSummaryPage = false;
+            if (ModelState["HasGPG44"].Errors.Count == 0)
+            {
+                summaryViewModel.HasGPG44 = viewModel.HasGPG44;
+                summaryViewModel.RefererURL = viewModel.RefererURL;
+                return await HandleGpg44Actions(action, summaryViewModel, fromSummaryPage, fromDetailsPage);
+            }
+            else
+            {
+                return View("ServiceGPG44Input", viewModel);
+            }
+        }
+
+        #endregion
+
+        #region select GPG44
+        [HttpGet("service/gpg44")]
+        public async Task<IActionResult> ServiceGPG44(bool fromSummaryPage, bool fromDetailsPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            QualityLevelViewModel qualityLevelViewModel = new()
+            {
+                IsAmendment = summaryViewModel.IsAmendment,
+                RefererURL = summaryViewModel.RefererURL
+            };
+            var qualityLevels = await cabService.GetQualitylevels();
+            qualityLevelViewModel.AvailableQualityOfAuthenticators = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
+            qualityLevelViewModel.SelectedQualityofAuthenticatorIds = summaryViewModel?.QualityLevelViewModel?.SelectedQualityofAuthenticators?.Select(c => c.Id).ToList();
+
+            qualityLevelViewModel.AvailableLevelOfProtections = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
+            qualityLevelViewModel.SelectedLevelOfProtectionIds = summaryViewModel?.QualityLevelViewModel?.SelectedLevelOfProtections?.Select(c => c.Id).ToList();
+
+            return View(qualityLevelViewModel);
+        }
+
+        /// <summary>
+        /// Save selected values to session
+        /// </summary>
+        /// <param name="qualityLevelViewModel"></param>
+        /// <returns></returns>
+        [HttpPost("service/gpg44")]
+        public async Task<IActionResult> SaveServiceGPG44(QualityLevelViewModel qualityLevelViewModel, string action)
+        {
+
+            bool fromSummaryPage = qualityLevelViewModel.FromSummaryPage;
+            bool fromDetailsPage = qualityLevelViewModel.FromDetailsPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            qualityLevelViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            List<QualityLevelDto> availableQualityLevels = await cabService.GetQualitylevels();
+            qualityLevelViewModel.AvailableQualityOfAuthenticators = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
+
+            qualityLevelViewModel.SelectedQualityofAuthenticatorIds = qualityLevelViewModel.SelectedQualityofAuthenticatorIds ?? [];
+            if (qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Count > 0)
+                summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Contains(c.Id)).ToList();
+
+            qualityLevelViewModel.AvailableLevelOfProtections = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
+
+            qualityLevelViewModel.SelectedLevelOfProtectionIds = qualityLevelViewModel.SelectedLevelOfProtectionIds ?? [];
+            if (qualityLevelViewModel.SelectedLevelOfProtectionIds.Count > 0)
+                summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedLevelOfProtectionIds.Contains(c.Id)).ToList();
+
+
+            summaryViewModel.QualityLevelViewModel.FromSummaryPage = false;
+            if (ModelState.IsValid)
+            {
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "HasSupplementarySchemesInput","CabService");
+            }
+            else
+            {
+                return View("ServiceGPG44", qualityLevelViewModel);
+            }
+        }
+        #endregion
+
+      
 
         [HttpGet("status-of-underpinning-service")]
         public IActionResult StatusOfUnderpinningService()
@@ -149,7 +328,6 @@ namespace DVSRegister.Controllers
 
             return RedirectToAction("SelectUnderpinningService", new { published = isUnderpinningServicePublished });
         }
-
 
         /// <summary>
         /// Search for services with status published or certificate review 
@@ -495,7 +673,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    summaryViewModel?.SchemeIdentityProfileMapping?.Add(schemeIdentityProfileMappingViewModel);
+                   
+                    summaryViewModel.SchemeIdentityProfileMapping.Add(schemeIdentityProfileMappingViewModel);
                 }
 
             }
@@ -561,7 +740,7 @@ namespace DVSRegister.Controllers
 
                 schemeQualityLevelMappingViewModel.RefererURL = viewModel.RefererURL;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleGpg44Actions(action, summaryViewModel, schemeQualityLevelMappingViewModel, fromSummaryPage, fromDetailsPage, viewModel.SchemeId);
+                return await HandleSchemeGpg44Actions(action, summaryViewModel, schemeQualityLevelMappingViewModel, fromSummaryPage, fromDetailsPage, viewModel.SchemeId);
             }
             else
             {
@@ -618,22 +797,16 @@ namespace DVSRegister.Controllers
             List<QualityLevelDto> availableQualityLevels = await cabService.GetQualitylevels();
             qualityLevelViewModel.AvailableQualityOfAuthenticators = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
             qualityLevelViewModel.SelectedQualityofAuthenticatorIds = qualityLevelViewModel.SelectedQualityofAuthenticatorIds ?? [];
-            if (qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Count > 0)
+            qualityLevelViewModel.AvailableLevelOfProtections = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
+            qualityLevelViewModel.SelectedLevelOfProtectionIds = qualityLevelViewModel.SelectedLevelOfProtectionIds ?? [];
+            if (qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Count > 0 && qualityLevelViewModel.SelectedLevelOfProtectionIds.Count > 0)
             {
                 qualityLevelViewModel.SelectedQualityofAuthenticators = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Contains(c.Id)).ToList();
                 qualityLevelViewModel.SelectedLevelOfProtections = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedLevelOfProtectionIds.Contains(c.Id)).ToList();
-                var mapping = summaryViewModel.SchemeQualityLevelMapping?.FirstOrDefault(x => x.SchemeId == qualityLevelViewModel.SchemeId);
+                var mapping = summaryViewModel.SchemeQualityLevelMapping?.Where(x => x.SchemeId == qualityLevelViewModel.SchemeId).FirstOrDefault()??new SchemeQualityLevelMappingViewModel();
                 mapping.QualityLevel = qualityLevelViewModel;
 
             }
-
-
-            qualityLevelViewModel.AvailableLevelOfProtections = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
-            qualityLevelViewModel.SelectedLevelOfProtectionIds = qualityLevelViewModel.SelectedLevelOfProtectionIds ?? [];
-            if (qualityLevelViewModel.SelectedLevelOfProtectionIds.Count > 0)
-                summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedLevelOfProtectionIds.Contains(c.Id)).ToList();
-
-
             summaryViewModel.QualityLevelViewModel.FromSummaryPage = false;
             if (ModelState.IsValid)
             {
@@ -661,27 +834,95 @@ namespace DVSRegister.Controllers
 
 
         #region Private methods
-        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage, string controller = "TrustFramework0_4", object routeValues = null!)
+        
+        private async Task<IActionResult> HandleGpg45Actions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage)
         {
             switch (action)
             {
                 case "continue":
-                    return fromSummaryPage ? RedirectToAction("ServiceSummary", "CabService")
-                        : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
-                        : routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues);
+                    if (Convert.ToBoolean(summaryViewModel.HasGPG45))
+                    {
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("ServiceGPG45", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                    }
+                    else
+                    {
+                        ViewModelHelper.ClearGpg45(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return fromSummaryPage ? RedirectToAction("ServiceSummary","CabService") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
+                       : RedirectToAction("ServiceGPG44Input");
+                    }
 
                 case "draft":
-                    return await SaveAsDraftAndRedirect(serviceSummary);
+                    if (!Convert.ToBoolean(summaryViewModel.HasGPG45))
+                    {
+                        ViewModelHelper.ClearGpg45(summaryViewModel);
+                    }
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return await SaveAsDraftAndRedirect(summaryViewModel);
 
                 case "amend":
-                    return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    if (Convert.ToBoolean(summaryViewModel.HasGPG45))
+                    {
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("ServiceGPG45");
+                    }
+                    else
+                    {
+                        ViewModelHelper.ClearGpg45(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    }
 
                 default:
                     throw new ArgumentException("Invalid action parameter");
             }
         }
+        private async Task<IActionResult> HandleGpg44Actions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage)
+        {
+            switch (action)
+            {
+                case "continue":
+                    if (Convert.ToBoolean(summaryViewModel.HasGPG44))
+                    {
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("ServiceGPG44", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                    }
+                    else
+                    {
+                        ViewModelHelper.ClearGpg44(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
+                       : RedirectToAction("HasSupplementarySchemesInput","CabService");
+                    }
 
-        private async Task<IActionResult> HandleGpg44Actions(string action, ServiceSummaryViewModel summaryViewModel,SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel,
+                case "draft":
+                    if (!Convert.ToBoolean(summaryViewModel.HasGPG44))
+                    {
+                        ViewModelHelper.ClearGpg44(summaryViewModel);
+                    }
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return await SaveAsDraftAndRedirect(summaryViewModel);
+
+                case "amend":
+
+                    if (Convert.ToBoolean(summaryViewModel.HasGPG44))
+                    {
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("ServiceGPG44");
+                    }
+                    else
+                    {
+                        ViewModelHelper.ClearGpg44(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    }
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+        private async Task<IActionResult> HandleSchemeGpg44Actions(string action, ServiceSummaryViewModel summaryViewModel,SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel,
             bool fromSummaryPage, bool fromDetailsPage, int schemeId)
         {
             switch (action)
@@ -729,14 +970,15 @@ namespace DVSRegister.Controllers
                     throw new ArgumentException("Invalid action parameter");
             }
         }
-        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage, string controller = "TrustFramework0_4")
+        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage,
+            string controller = "TrustFramework0_4", object routeValues = null!)
         {
             switch (action)
             {
                 case "continue":
                     return fromSummaryPage ? RedirectToAction("ServiceSummary", "CabService")
-                        : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
-                        : RedirectToAction(nextPage, controller);
+                           : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
+                           : routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues);
 
                 case "draft":
                     return await SaveAsDraftAndRedirect(serviceSummary);

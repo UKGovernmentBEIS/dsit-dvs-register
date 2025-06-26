@@ -96,6 +96,19 @@
 
 
             }
+
+            @if (!string.IsNullOrEmpty(Model.Hint1))
+            {
+                <div id="contact-hint" class="govuk-hint">
+                    @Model.Hint1
+                </div>
+            }
+            @if (!string.IsNullOrEmpty(Model.Hint2))
+            {
+                <div id="contact-hint" class="govuk-hint">
+                    @Model.Hint2
+                </div>
+            }
             @if (!string.IsNullOrEmpty(Model.ParagraphText))
             {
                 <p class="govuk-body">@Model.ParagraphText</p>

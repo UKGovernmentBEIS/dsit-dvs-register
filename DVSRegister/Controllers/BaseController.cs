@@ -1,5 +1,4 @@
-﻿using Amazon.S3.Model.Internal.MarshallTransformations;
-using DVSRegister.BusinessLogic.Models;
+﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
@@ -33,9 +32,7 @@ namespace DVSRegister.Controllers
                 return profileClaim?.Value ?? string.Empty;
             }
         }
-
-        //TODO: set value in session 
-        protected Decimal TFVersionNumber => 0.3m;
+     
 
         protected bool IsValidCabId(int cabId)
         {
@@ -74,7 +71,9 @@ namespace DVSRegister.Controllers
                 RoleViewModel = new RoleViewModel { SelectedRoles = new List<RoleDto>() },
                 TFVersionViewModel = new TFVersionViewModel { SelectedTFVersion = new TrustFrameworkVersionDto() },
                 IdentityProfileViewModel = new IdentityProfileViewModel { SelectedIdentityProfiles = new List<IdentityProfileDto>() },
-                SupplementarySchemeViewModel = new SupplementarySchemeViewModel { SelectedSupplementarySchemes = new List<SupplementarySchemeDto> { } }
+                SupplementarySchemeViewModel = new SupplementarySchemeViewModel { SelectedSupplementarySchemes = new List<SupplementarySchemeDto> { } },
+                SchemeIdentityProfileMapping = [],
+                SchemeQualityLevelMapping = []
             };
             return model;
         }

@@ -191,11 +191,12 @@ namespace DVSRegister.Controllers
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
                 {
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SelectServiceType", "TrustFramework0_4");
                 }
                 else
                 {
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SelectServiceType", "TrustFramework0_4");
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");
+                
                 }
 
             }
