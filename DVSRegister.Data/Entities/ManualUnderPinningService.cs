@@ -11,7 +11,9 @@ namespace DVSRegister.Data.Entities
 
         public string ServiceName { get; set; }
         public string ProviderName { get; set; }
-        public string CABName { get; set; }
+        [ForeignKey("Cab")]
+        public int CabId { get; set; }
+        public Cab Cab { get; set; }
 
         public DateTime? CertificateExpiryDate { get; set; }
 
