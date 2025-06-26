@@ -15,7 +15,8 @@
         </p>
         <ul class="govuk-summary-card__actions">
             <li class="govuk-summary-card__action">
-                <a class="govuk-link" href="@Url.Action("ConfirmUnderpinningService", "TrustFramework0_4", new {serviceId = Model.Id, inRegister = true, isManual = false })">
+                <a class="govuk-link" href="@Url.Action("ConfirmUnderpinningService", "TrustFramework0_4", new {serviceId = Model.Id, inRegister = true, isManual = false,
+                fromSummaryPage = ViewBag.fromSummaryPage, fromDetailsPage = ViewBag.fromDetailsPage})">
                     Confirm
                 </a>
                 </li>
