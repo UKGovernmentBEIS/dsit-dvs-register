@@ -6,6 +6,8 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 
     var published = Model.InRegister;
+    bool fromSummaryPage = ViewBag.fromSummaryPage;
+    bool fromDetailsPage = ViewBag.fromDetailsPage;
 }
 
 <div class="govuk-width-container">
@@ -32,9 +34,10 @@
                     </p>
                 }
             </div>
-            @using (Html.BeginForm("ListUnderpinningServices", "TrustFramework0_4", FormMethod.Get))
+            @using (Html.BeginForm("SelectUnderpinningService", "TrustFramework0_4", FormMethod.Get))
             {
-                @Html.Hidden("published", @Model.InRegister)
+                @Html.Hidden("fromSummaryPage", fromSummaryPage)
+                @Html.Hidden("fromDetailsPage", fromDetailsPage)
                 <div class="govuk-grid-column-one-half govuk-!-padding-top-4">
                     @if (published)
                     {
@@ -104,7 +107,9 @@
                             @foreach (var item in Model.Services)
                             {
                                 <tr class="govuk-table__row">
-                                   <td class="govuk-table__cell" data-sort-value="@item.ServiceName">@Html.ActionLink(item.ServiceName, "SelectedUnderpinningService", "TrustFramework0_4", new { serviceId = item.Id, inRegister = Model.InRegister }, new { @class = "govuk-link" })</td>
+                                   <td class="govuk-table__cell" data-sort-value="@item.ServiceName">@Html.ActionLink(item.ServiceName, "SelectedUnderpinningService", "TrustFramework0_4", new { serviceId = item.Id,
+                                       inRegister = Model.InRegister, fromSummaryPage = ViewBag.fromSummaryPage, fromDetailsPage = ViewBag.fromDetailsPage }, new { @class = "govuk-link" })
+                                   </td>
                                     <td class="govuk-table__cell">@item.Provider.RegisteredName</td>
                                     <td class="govuk-table__cell">@item.CabUser.Cab.CabName</td>
                                     <td class="govuk-table__cell">@HtmlExtensions.ToStyledStrongTag(item.ServiceStatus)</td>

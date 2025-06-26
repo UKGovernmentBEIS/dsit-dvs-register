@@ -1,22 +1,15 @@
+@using DVSRegister.Models.CabTrustFramework
 @model DVSRegister.Models.CAB.ServiceSummaryViewModel
 
 @{
     ViewData["Title"] = "You have selected this underpinning service ";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
     ViewData["Confirmed"] = true;
-    ViewData["Manual"] = Model.SelectedUnderPinningServiceId == null;
+    ViewData["Manual"] = false;
 }
 <div class="govuk-width-container">
-    @if (Model.SelectedUnderPinningServiceId == null)
-    {
-        @Html.ActionLink("Back", "#", "#", null, new { @class = "govuk-back-link" })
-    }
-    else
-    {
-        @Html.ActionLink("Back", "SelectedUnderpinningService", "TrustFramework0_4",
-        new { serviceId = Model.SelectedUnderPinningServiceId, inRegister = Model.IsUnderpinningServicePublished }, new { @class = "govuk-back-link" })
-    }    
-
+    @Html.ActionLink("Back", "SelectedUnderpinningService", "TrustFramework0_4", new { serviceId = Model.SelectedUnderPinningServiceId, inRegister = Model.IsUnderpinningServicePublished,
+    fromSummaryPage = ViewBag.fromSummaryPage, fromDetailsPage = ViewBag.fromDetailsPage }, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
@@ -31,8 +24,16 @@
 
                 @using (Html.BeginForm("SaveUnderpinningService", "TrustFramework0_4", FormMethod.Post))
                 {
-                    @Html.Hidden("serviceId", Model.SelectedUnderPinningServiceId)
-                    @Html.Hidden("inRegister", Model.IsUnderpinningServicePublished)
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+                    @Html.HiddenFor(m => m.RefererURL)
+                    @Html.HiddenFor(m => m.SelectedUnderPinningServiceId)
+                    @Html.HiddenFor(m =>m.UnderPinningServiceName)
+                    @Html.HiddenFor(m => m.UnderPinningProviderName)
+                    @Html.HiddenFor(m=> m.UnderPinningServiceExpiryDate)
+                    @Html.HiddenFor(m => m.SelectCabViewModel.SelectedCabId)
+                    @Html.HiddenFor(m => m.SelectCabViewModel.SelectedCabName)
+
                     <div class="govuk-button-group">
                         <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button" name="action" value="continue">
                             Continue
