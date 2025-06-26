@@ -336,6 +336,7 @@ namespace DVSRegister.Data.CAB
                           && cabTransferRequest.CertificateUploaded == false)
                         {
                             cabTransferRequest.CertificateUploaded = true;
+                            if(existingService.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || existingService.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
                             existingService.ServiceStatus = cabTransferRequest.PreviousServiceStatus;
 
                             var existingProvider = await context.ProviderProfile

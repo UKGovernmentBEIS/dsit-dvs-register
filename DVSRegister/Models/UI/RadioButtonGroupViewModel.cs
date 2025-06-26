@@ -7,6 +7,8 @@ namespace DVSRegister.Models
         public string PropertyName { get; set; }
         public bool? Value { get; set; }
         public string FieldSet { get; set; }
+        public string Hint1 { get; set; }
+        public string Hint2 { get; set; }
         public string ParagraphText { get; set; }
         public HeadingEnum Heading { get; set; }
         public string LegendStyleClass { get; set; }
