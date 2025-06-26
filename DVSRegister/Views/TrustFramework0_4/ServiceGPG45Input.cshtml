@@ -1,7 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @using DVSRegister.Models.UI.Enums
 @{
-    ViewData["Title"] = "Is the service certified against GPG 45 identity profiles?";
+    ViewData["Title"] = "Does the service prove or verify someone’s identity (GPG 45)?";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -10,9 +10,7 @@
 
 
 <div class="govuk-width-container">
-    <a href="@Model.RefererURL" class="govuk-back-link">
-        Back
-    </a>
+    <a href="@Model.RefererURL" class="govuk-back-link">Back</a>
     @using (Html.BeginForm("SaveServiceGPG45Input", "TrustFramework0_4", FormMethod.Post))
     {
         @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
@@ -29,11 +27,9 @@
                         if (errors != null && errors.Count > 0)
                         {
                             hasError = true;
-                            ViewData["Title"] = "Error: " + ViewData["Title"];
                             @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
                                      new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("HasGPG45", errors))
                         }
-
                     }
 
                  
@@ -42,8 +38,8 @@
                     {
                         PropertyName = "HasGPG45",
                         Value = Model.HasGPG45,
-                        FieldSet = "Does the service prove or verify someone’s identity (GPG 45)?.",
-                        Hint1 = "Tell us if the service is used to prove or verify someone's identity and is therefore certified against GPG 45. ",                    
+                        FieldSet = "Does the service prove or verify someone’s identity (GPG 45)?",
+                        Hint1 = "Tell us if the service is used to prove or verify someone's identity and is therefore certified against GPG 45.",                    
                         Hint2 = "This includes verifying an identity in relation to any supplementary codes relevant to this service.",
                         Heading = HeadingEnum.H1,
                         LegendStyleClass = "govuk-fieldset__legend--xl",
