@@ -56,10 +56,26 @@
                     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
                     @Html.HiddenFor(m => m.RefererURL)
+                    @Html.HiddenFor(m => m.IsTfVersion0_4)
                     <p class="govuk-body">
-                        This must match the information on the certificate of conformity. We do not accept
-                        certificates with an expiry date of more than 2 years 60 days after the date of issue.
+                        This must match the information on the certificate of conformity.
                     </p>
+                  
+                        @if(Model.IsTfVersion0_4)
+                        {
+                        <p class="govuk-body">
+                            We do not accept certificates with an expiry date of more than 3 years and 60
+                            days after the date of issue.
+                        </p>
+                        }
+                        else
+                        {
+                        <p class="govuk-body">
+                            We do not accept certificates with an expiry date of more than 2 years 60 days after the date of issue.
+                        </p>
+                        }
+
+                   
 
 
                     var conformityExpiryDateViewModel = new DateInputViewModel

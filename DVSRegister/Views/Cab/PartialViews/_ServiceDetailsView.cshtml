@@ -494,7 +494,7 @@
                             @if(isDraft && hasValue)
                             {
                                 <dd class="govuk-summary-list__actions">
-                                    @Html.ActionLink("Change", "SchemeGPG45", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.SupplementaryScheme.Id },
+                                    @Html.ActionLink("Change", "SchemeGPG45", "TrustFramework0_4", new { fromDetailsPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.SupplementaryScheme.Id },
                                              new { @class = "govuk-link", @aria_label = "Change selected GPG45 options for " + schemeMapping.SupplementaryScheme.SchemeName })
                                 </dd>
                             }
@@ -536,7 +536,7 @@
                             @if (isDraft && hasValue)
                             {
                                 <dd class="govuk-summary-list__actions">
-                                    @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.SupplementaryScheme.Id },
+                                    @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.SupplementaryScheme.Id },
                                              new { @class = "govuk-link", @aria_label = "Change selected GPG 44 options for " + schemeMapping.SupplementaryScheme.SchemeName })
                                 </dd>
                             }
@@ -572,7 +572,7 @@
                             @if (isDraft && hasValue)
                             {
                                 <dd class="govuk-summary-list__actions">
-                                    @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.SupplementaryScheme.Id },
+                                    @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.SupplementaryScheme.Id },
                                              new { @class = "govuk-link", @aria_label = "Change selected GPG 44 options for " + schemeMapping.SupplementaryScheme.SchemeName })
                                 </dd>
                             }
@@ -584,5 +584,121 @@
         }
     }
 
+    @if((Model.UnderPinningServiceId == null || Model.UnderPinningServiceId ==0) && Model.ManualUnderPinningService!= null )
+    {
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    Underpinning service
+                </h2>
+            </div>
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Service name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+
+                            @if (Model.ManualUnderPinningService.ServiceName!= null)
+                            {
+                                @Model.ManualUnderPinningService.ServiceName
+                            }
+                            else
+                            {
+                                hasValue = false;
+                                @:Incomplete
+
+
+                            }
+
+                        </dd>
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                            </dd>
+                        }
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Service provider
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+
+                            @if (Model.ManualUnderPinningService.ProviderName != null)
+                            {
+                                @Model.ManualUnderPinningService.ProviderName
+                            }
+                            else
+                            {
+                                hasValue = false;
+                                @:Incomplete
+                            }
+                        </dd>
+
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                            </dd>
+                        }
+
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            CAB of underpinning service
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ManualUnderPinningService.Cab.CabName != null)
+                            {
+                                @Model.ManualUnderPinningService.Cab.CabName
+                            }
+                            else
+                            {
+                                hasValue = false;
+                                @:Incomplete
+                            }
+                        </dd>
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                            </dd>
+                        }
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Underpinning service certificate expiry date
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ManualUnderPinningService.CertificateExpiryDate != null)
+                            {
+                                @DateTimeExtensions.FormatDateTime(Model.ManualUnderPinningService.CertificateExpiryDate, "dd MMM yyyy")                               
+                            }
+                            else
+                            {
+                                hasValue = false;
+                                @:Incomplete
+                            }
+                        </dd>
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                            </dd>
+                        }
+                    </div>
+
+                </dl>
+            </div>
+        </div>
+    }
+
+    
 
 }
