@@ -1,19 +1,33 @@
+@using System.ComponentModel
+@using DVSRegister.CommonUtility.Models.Enums
+@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     ViewData["Title"] = "Tell us if the service is an underpinning or a white-labelled service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    var id = ViewBag.ProviderProfileId as int?;
+    bool hasError = false;
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ProviderRoles", "TrustFramework0_4", null, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "ProviderRoles", "CabService", new { providerId = id }, new { @class = "govuk-back-link" })
 
-    
+
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
+                @if (Html.ViewData?.ModelState.ContainsKey("ServiceType") == true)
+                {
+                    var errors = Html.ViewData?.ModelState["ServiceType"]?.Errors;
+                    if (errors != null && errors.Count > 0)
+                    {
+                        hasError = true;
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                            new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ServiceType", errors))
+                    }
+                }
                 <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
-
                 <div class="govuk-body">
                     <h2 class="govuk-heading-m">Underpinning and white-label services</h2>
                     <p class="govuk-hint">
@@ -25,47 +39,47 @@
                         another digital identity and attributes service provider.
                     </p>
                 </div>
+                <form asp-controller="TrustFramework0_4" asp-action="SelectServiceType" method="post" class="govuk-!-margin-top-7">
+                    <div class="govuk-form-group@(hasError ? " govuk-form-group--error" : "")">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-visually-hidden">
+                                Tell us if the service is an underpinning or a white-labelled service
+                            </legend>
 
-                <form asp-action="SubmitUnderpinning" asp-controller="TrustFramework0_4" method="post"
-                      class="govuk-form-group govuk-!-margin-top-7">
-                    <fieldset class="govuk-fieldset">
-                        <div class="govuk-radios" data-module="govuk-radios">
-                            <div class="govuk-radios__item">
-                                <input
-                                    class="govuk-radios__input"
-                                    type="radio"
-                                    value="Underpinning"
-                                    id="Underpinning" />
-                                <label class="govuk-label govuk-radios__label" for="Underpinning">
-                                    It is an underpinning service
-                                </label>
-                            </div>
+                            @if (hasError)
+                            {
+                                <p class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
+                                    Select the service type
+                                </p>
+                            }
 
-                            <div class="govuk-radios__item">
-                                <input
-                                    class="govuk-radios__input"
-                                    type="radio"
-                                    value="WhiteLabelled"
-                                    id="WhiteLabelled"/>
-                                <label class="govuk-label govuk-radios__label" for="WhiteLabelled">
-                                    It is a white-labelled service
-                                </label>
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                @foreach (var option in Enum.GetValues(typeof(ServiceTypeEnum)).Cast<ServiceTypeEnum>())
+                                {
+                                    var description = ((DescriptionAttribute?)option
+                                                              .GetType()
+                                                              .GetField(option.ToString())!
+                                                              .GetCustomAttributes(typeof(DescriptionAttribute), false)
+                                                              .FirstOrDefault()
+                                                          )?.Description
+                                                          ?? option.ToString();
+                                    
+                                    <div class="govuk-radios__item">
+                                        <input asp-for="ServiceType"
+                                               class="govuk-radios__input"
+                                               type="radio"
+                                               id="@option"
+                                               value="@((int)option)"/>
+                                        <label class="govuk-label govuk-radios__label" for="@option">@description</label>
+                                    </div>
+                                }
                             </div>
-
-                            <div class="govuk-radios__item">
-                                <input
-                                    class="govuk-radios__input"
-                                    type="radio"
-                                    value="Neither"
-                                    id="Neither"/>
-                                <label class="govuk-label govuk-radios__label" for="Neither">
-                                    Neither
-                                </label>
-                            </div>
-                        </div>
-                    </fieldset>
+                        </fieldset>
+                    </div>
                     <div class="govuk-button-group">
-                        <button type="submit" class="govuk-button govuk-!-margin-top-4" data-module="govuk-button">
+                        <button type="submit" name="submitAction" value="continue"
+                                class="govuk-button govuk-!-margin-top-4" data-module="govuk-button">
                             Continue
                         </button>
                         <a asp-action="SaveAndCompleteLater"

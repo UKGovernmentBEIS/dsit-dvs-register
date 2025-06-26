@@ -5,6 +5,7 @@ using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
@@ -84,42 +85,45 @@ namespace DVSRegister.Controllers
                 return View("SelectVersionOfTrustFrameWork", TFVersionViewModel);
             }
         }
-
-
-        //--------Service name, service link address, roles, in Cabservice controller -----------------//
+        
+        #region Select service type
 
         [HttpGet("select-service-type")]
         public IActionResult SelectServiceType()
-        {
-            //Figma 604
-            // ServiceTypeEnum to pupulate radios
-
-            return View();
+        { 
+            return View(GetServiceSummary());
         }
 
         [HttpPost("select-service-type")]
-        public async Task<IActionResult> SaveSelectServiceType(string action)
+        public async Task<IActionResult> SelectServiceType(ServiceSummaryViewModel serviceSummaryViewModel, string submitAction)
         {
-            //to do - set data
-            bool fromSummaryPage = false;
-            bool fromDetailsPage = false;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            foreach (var key in ModelState.Keys.Where(k => k != nameof(serviceSummaryViewModel.ServiceType)).ToArray()) 
+                ModelState.Remove(key);
+            
+            if (!ModelState.IsValid)
+                return View(serviceSummaryViewModel);
+            
+            HttpContext.Session.Set("ServiceSummary", serviceSummaryViewModel);
 
-            if (ModelState.IsValid)
-            {               
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                //Todo:
-                string nextPage = string.Empty;
-                string controller = string.Empty;
-                //nextPage = TBD
-                //nextpage = StatusOfUnderpinningService in this controller for whitelabelled
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ServiceGPG45Input");
-            }
-            else
+            if (submitAction == "continue")
             {
-                return View("SelectServiceType");
+                switch (serviceSummaryViewModel.ServiceType)
+                {
+                    case ServiceTypeEnum.UnderPinning:
+                        return await HandleActions(submitAction, serviceSummaryViewModel, fromSummaryPage: false, fromDetailsPage: false, nextPage: "ServiceGPG45Input", controller: "TrustFramework0_4");
+                    case ServiceTypeEnum.WhiteLabelled:
+                        return await HandleActions(submitAction, serviceSummaryViewModel, fromSummaryPage: false, fromDetailsPage: false, nextPage: "StatusOfUnderpinningService", controller: "TrustFramework0_4");
+                    case ServiceTypeEnum.Neither:
+                        return await HandleActions(submitAction, serviceSummaryViewModel, fromSummaryPage: false, fromDetailsPage: false, nextPage: "ServiceGPG45Input", controller: "TrustFramework0_4");
+                    default:
+                        ModelState.AddModelError(nameof(serviceSummaryViewModel.ServiceType), "Select the service type");
+                        break;
+                }
             }
+            return View("SelectServiceType");
         }
+        
+        #endregion
 
         #region GPG45 input
 
