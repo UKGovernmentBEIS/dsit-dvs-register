@@ -160,7 +160,8 @@ namespace DVSRegister.Data.CAB
             .ThenInclude(s => s.IdentityProfile)
             .Include(s => s.CabUser).ThenInclude(s => s.Cab)
             .Include(s => s.TrustFrameworkVersion)
-            .Include(s => s.UnderPinningService)
+            .Include(s => s.UnderPinningService).ThenInclude(p=>p.Provider)
+             .Include(s => s.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(p=>p.Cab)
              .Include(s => s.ManualUnderPinningService).ThenInclude(s=>s.Cab)
             .Where(s => s.ServiceKey == serviceKey)
             .ToListAsync();

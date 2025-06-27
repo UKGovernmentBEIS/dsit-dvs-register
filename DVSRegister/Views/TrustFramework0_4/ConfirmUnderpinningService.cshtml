@@ -8,7 +8,7 @@
     ViewData["Manual"] = false;
 }
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "SelectedUnderpinningService", "TrustFramework0_4", new { serviceId = Model.SelectedUnderPinningServiceId, inRegister = Model.IsUnderpinningServicePublished,
+    @Html.ActionLink("Back", "SelectedUnderpinningService", "TrustFramework0_4", new { serviceId = Model.SelectedUnderPinningServiceId, published = Model.IsUnderpinningServicePublished,
     fromSummaryPage = ViewBag.fromSummaryPage, fromDetailsPage = ViewBag.fromDetailsPage }, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
@@ -28,6 +28,7 @@
                     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
                     @Html.HiddenFor(m => m.RefererURL)
                     @Html.HiddenFor(m => m.SelectedUnderPinningServiceId)
+                    @Html.HiddenFor(m => m.SelectedManualUnderPinningServiceId)
                     @Html.HiddenFor(m =>m.UnderPinningServiceName)
                     @Html.HiddenFor(m => m.UnderPinningProviderName)
                     @Html.HiddenFor(m=> m.UnderPinningServiceExpiryDate)

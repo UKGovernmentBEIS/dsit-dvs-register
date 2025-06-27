@@ -1,11 +1,13 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 
 namespace DVSRegister.Models.CabTrustFramework
 {
     public class UnderpinningServiceViewModel
     {
-        public List<ServiceDto> Services { get; set; }
+        public List<ServiceDto> UnderpinningServices { get; set; }
+        public List<ServiceDto> ManualUnderpinningServices { get; set; }
         public string? SearchText { get; set; }
-        public bool InRegister { get; set; }
+        public bool IsPublished { get; set; }
     }
 }

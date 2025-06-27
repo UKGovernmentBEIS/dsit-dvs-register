@@ -34,7 +34,7 @@ namespace DVSRegister.Data.TrustFramework
                 .ToListAsync();
         }
 
-        public async Task<List<Service>> GetServices(bool isPublished, string searchText)
+        public async Task<List<Service>> GetPublishedUnderpinningServices(string searchText)
         {
             var baseQuery = context.Service
                 .Include(s => s.Provider)
@@ -50,20 +50,10 @@ namespace DVSRegister.Data.TrustFramework
             IEnumerable<Service> filteredQuery;
 
             filteredQuery = groupedQuery
-                .Where(s => s.TrustFrameworkVersion.Version == Constants.TFVersion0_4);
+                .Where(s => s.TrustFrameworkVersion.Version == Constants.TFVersion0_4 && s.ServiceType == ServiceTypeEnum.UnderPinning 
+                 && s.ServiceStatus == ServiceStatusEnum.Published);
 
-            if (isPublished)
-            {
-                filteredQuery = filteredQuery
-                    .Where(s => s.ServiceStatus == ServiceStatusEnum.Published);
-            }
-            else
-            {
-                filteredQuery = filteredQuery
-                    .Where(s => s.CertificateReview != null &&
-                                s.CertificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved &&
-                                s.ServiceStatus != ServiceStatusEnum.Published);
-            }
+           
 
             string trimmedSearchText = searchText.Trim().ToLower();
             filteredQuery = filteredQuery
@@ -74,12 +64,33 @@ namespace DVSRegister.Data.TrustFramework
 
         }
 
+
+        public async Task<List<Service>> GetServicesWithManualUnderinningService(string searchText)
+        {
+            var trimmedSearchText = searchText.Trim().ToLower();
+            //select manually entered under pinning services for a white labelled type
+            var manualUnderPinningServices = await context.Service.Include(s => s.ManualUnderPinningService)
+            .ThenInclude(s => s.Cab).Include(s => s.CertificateReview)
+            .Where(x => x.ServiceType == ServiceTypeEnum.WhiteLabelled
+                            && x.ManualUnderPinningServiceId != null
+                            && x.ManualUnderPinningServiceId > 0
+                            && x.CertificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved
+                            && (string.IsNullOrEmpty(trimmedSearchText) ||
+                                x.ManualUnderPinningService.ServiceName.ToLower().Contains(trimmedSearchText) ||
+                                x.Provider.RegisteredName.ToLower().Contains(trimmedSearchText))). AsNoTracking().ToListAsync();
+
+
+          return manualUnderPinningServices;
+
+        }
+
         public async Task<Service> GetServiceDetails(int serviceId)
         {
             return await context.Service
                 .Include(s => s.Provider)
                 .Include(s => s.CertificateReview)
                 .Include(s => s.PublicInterestCheck)
+                 .Include(s => s.ManualUnderPinningService).ThenInclude(s=>s.Cab)
                 .Include(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SupplementaryScheme)
                 .Include(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SchemeGPG44Mapping).ThenInclude(s => s.QualityLevel)
                 .Include(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SchemeGPG45Mapping).ThenInclude(s => s.IdentityProfile)
@@ -87,7 +98,7 @@ namespace DVSRegister.Data.TrustFramework
                 .Include(s => s.ServiceQualityLevelMapping).ThenInclude(s => s.QualityLevel)
                 .Include(s => s.ServiceIdentityProfileMapping).ThenInclude(s => s.IdentityProfile)
                 .Include(s => s.CabUser).ThenInclude(s => s.Cab)
-                .Include(s => s.TrustFrameworkVersion)
+                .Include(s => s.TrustFrameworkVersion).AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == serviceId);
         }
 

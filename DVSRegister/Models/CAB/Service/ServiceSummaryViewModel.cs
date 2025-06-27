@@ -50,6 +50,9 @@ namespace DVSRegister.Models.CAB
 
         public int? SelectedUnderPinningServiceId { get; set; }
 
+        public int? SelectedManualUnderPinningServiceId { get; set; }
+      
+
         [RequiredEnumValue(ErrorMessage = "Select the service type")]
         public ServiceTypeEnum ServiceType { get; set; }
 

@@ -9,7 +9,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "SelectUnderpinningService", "TrustFramework0_4", new { published = ViewBag.InRegister}, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "SelectUnderpinningService", "TrustFramework0_4", new { published = ViewBag.published }, new { @class = "govuk-back-link" })
 
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
@@ -18,22 +18,22 @@
                 <p class="govuk-body govuk-hint govuk-!-padding-bottom-6">
                     Check that the details for the underpinning service are correct, and select 'Confirm'.
                 </p>
-                @if (ViewBag.InRegister)
+                @if (ViewBag.published)
                 {
                     @await Html.PartialAsync("PartialViews/_UnderpinningServiceOnRegister", Model)
                 }
                 else
                 {
-                    ServiceSummaryViewModel serviceSummary = new()
+                ServiceSummaryViewModel serviceSummary = new()
                 {
-                    SelectedUnderPinningServiceId = Model.Id,
-                    IsUnderpinningServicePublished = ViewBag.InRegister,
-                    UnderPinningProviderName = Model.Provider.RegisteredName,
-                    UnderPinningServiceName = Model.ServiceName,
-                    UnderPinningServiceExpiryDate = Model.ConformityExpiryDate,
-                    SelectCabViewModel = new SelectCabViewModel { SelectedCabId = Model?.CabUser?.CabId, SelectedCabName = Model?.CabUser?.Cab?.CabName }
+                    ServiceId = Model.Id,
+                    SelectedManualUnderPinningServiceId = Model.ManualUnderPinningService.Id,
+                    UnderPinningProviderName = Model.ManualUnderPinningService.ProviderName,
+                    UnderPinningServiceName = Model.ManualUnderPinningService.ServiceName,
+                    UnderPinningServiceExpiryDate = Model.ManualUnderPinningService.CertificateExpiryDate,
+                    SelectCabViewModel = new SelectCabViewModel { SelectedCabId = Model.ManualUnderPinningService.CabId, SelectedCabName = Model.ManualUnderPinningService.Cab.CabName}
 
-                    };
+                 };
                    
                     @await Html.PartialAsync("PartialViews/_UnderpinningServiceDetails", serviceSummary)
                 }
