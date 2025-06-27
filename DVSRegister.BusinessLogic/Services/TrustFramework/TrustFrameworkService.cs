@@ -26,9 +26,17 @@ namespace DVSRegister.BusinessLogic.Services
             return automapper.Map<List<CabDto>>(cabs);
         }
 
-        public async Task<List<ServiceDto>> GetServices(bool isPublished, string searchText)
+        public async Task<List<ServiceDto>> GetPublishedUnderpinningServices(string searchText)
         {
-            var services = await trustFrameworkRepository.GetServices(isPublished, searchText);
+            var services = await trustFrameworkRepository.GetPublishedUnderpinningServices(searchText);
+            var serviceDtos = automapper.Map<List<ServiceDto>>(services);
+
+            return serviceDtos;
+        }
+
+        public async Task<List<ServiceDto>> GetServicesWithManualUnderinningService(string searchText)
+        {
+            var services = await trustFrameworkRepository.GetServicesWithManualUnderinningService(searchText);
             var serviceDtos = automapper.Map<List<ServiceDto>>(services);
 
             return serviceDtos;

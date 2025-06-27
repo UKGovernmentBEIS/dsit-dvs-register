@@ -365,6 +365,7 @@ namespace DVSRegister.Controllers
             var published = (bool)summaryViewModel.IsUnderpinningServicePublished;
 
             var services = new List<ServiceDto>();
+            var manualServices = new List<ServiceDto>();
             if (SearchAction == "clearSearch")
             {
                 ModelState.Clear();
@@ -373,7 +374,15 @@ namespace DVSRegister.Controllers
 
             if(SearchText != null)
             {
-                services = await trustFrameworkService.GetServices(published, SearchText);
+                if(published)
+                {
+                    services = await trustFrameworkService.GetPublishedUnderpinningServices(SearchText);
+                }
+                else
+                {
+                    manualServices = await trustFrameworkService.GetServicesWithManualUnderinningService(SearchText);
+                }
+                
             }
             else
             {
@@ -382,9 +391,10 @@ namespace DVSRegister.Controllers
             }
             UnderpinningServiceViewModel underpinningServiceViewModel = new()
             {
-                InRegister = published,
+                IsPublished = published,
                 SearchText = SearchText,
-                Services = services
+                UnderpinningServices = services,
+                ManualUnderpinningServices = manualServices
             };
             return View(underpinningServiceViewModel);
         }
@@ -392,10 +402,11 @@ namespace DVSRegister.Controllers
 
         [HttpGet("selected-underpinning-service")]
       
-        public async Task<IActionResult> SelectedUnderpinningService(int serviceId, bool inRegister, bool fromSummaryPage, bool fromDetailsPage)
+        public async Task<IActionResult> SelectedUnderpinningService(int serviceId, bool published, bool fromSummaryPage, bool fromDetailsPage)
         {
+            //service details with manual service details
             var service = await trustFrameworkService.GetServiceDetails(serviceId);
-            ViewBag.InRegister = inRegister;
+            ViewBag.published = published;
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             return View(service);
@@ -404,22 +415,41 @@ namespace DVSRegister.Controllers
 
 
         [HttpGet("confirm-underpinning-service")]     
-        public async Task<IActionResult> ConfirmUnderpinningService(int serviceId, bool inRegister, bool fromSummaryPage, bool fromDetailsPage)
+        public async Task<IActionResult> ConfirmUnderpinningService(int serviceId, bool published, bool fromSummaryPage, bool fromDetailsPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
-            var service = await trustFrameworkService.GetServiceDetails(serviceId);
-
-            ServiceSummaryViewModel serviceSummary = new()
+            var service = await trustFrameworkService.GetServiceDetails(serviceId);  //service details with manual service details
+            ServiceSummaryViewModel serviceSummary;
+            if (published)
             {
-                SelectedUnderPinningServiceId = service.Id,
-                IsUnderpinningServicePublished = ViewBag.InRegister,
-                UnderPinningProviderName = service.Provider.RegisteredName,
-                UnderPinningServiceName = service.ServiceName,
-                UnderPinningServiceExpiryDate = service.ConformityExpiryDate,
-                SelectCabViewModel = new SelectCabViewModel { SelectedCabId = service?.CabUser?.CabId, SelectedCabName = service?.CabUser?.Cab?.CabName }
+                 serviceSummary = new()
+                {
+                    SelectedUnderPinningServiceId = service.Id,
+                    IsUnderpinningServicePublished = published,
+                    UnderPinningProviderName = service.Provider.RegisteredName,
+                    UnderPinningServiceName = service.ServiceName,
+                    UnderPinningServiceExpiryDate = service.ConformityExpiryDate,
+                    SelectCabViewModel = new SelectCabViewModel { SelectedCabId = service?.CabUser?.CabId, SelectedCabName = service?.CabUser?.Cab?.CabName }
 
-            };
+                };
+
+            }
+            else
+            {
+                serviceSummary = new()
+                {
+                    SelectedManualUnderPinningServiceId = service.ManualUnderPinningService.Id,
+                    IsUnderpinningServicePublished = published,
+                    UnderPinningProviderName = service.ManualUnderPinningService.ProviderName,
+                    UnderPinningServiceName = service.ManualUnderPinningService.ServiceName,
+                    UnderPinningServiceExpiryDate = service.ManualUnderPinningService.CertificateExpiryDate,
+                    SelectCabViewModel = new SelectCabViewModel { SelectedCabId = service?.ManualUnderPinningService?.CabId, SelectedCabName = service?.ManualUnderPinningService?.Cab?.CabName }
+
+                };
+
+            }
+           
             return View(serviceSummary);
         }
 
@@ -430,6 +460,7 @@ namespace DVSRegister.Controllers
             bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
             bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
 
+            serviceSummary.SelectedManualUnderPinningServiceId = serviceSummaryViewModel.SelectedManualUnderPinningServiceId;
             serviceSummary.SelectedUnderPinningServiceId = serviceSummaryViewModel.SelectedUnderPinningServiceId;
             serviceSummary.UnderPinningServiceName = serviceSummaryViewModel.UnderPinningServiceName;
             serviceSummary.UnderPinningProviderName = serviceSummaryViewModel.UnderPinningProviderName;

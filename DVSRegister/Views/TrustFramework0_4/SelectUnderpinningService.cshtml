@@ -5,7 +5,7 @@
     ViewData["Title"] = "Select the underpinning service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 
-    var published = Model.InRegister;
+    var published = Model.IsPublished;
     bool fromSummaryPage = ViewBag.fromSummaryPage;
     bool fromDetailsPage = ViewBag.fromDetailsPage;
 }
@@ -101,15 +101,23 @@
                         </tr>
                     </thead>
 
+                    @if(published)
+                    {
                     <tbody class="govuk-table__body">
-                        @if (Model?.Services != null && Model.Services.Count > 0)
+                        @if (Model?.UnderpinningServices != null && Model.UnderpinningServices.Count > 0)
                         {
-                            @foreach (var item in Model.Services)
+                            @foreach (var item in Model.UnderpinningServices)
                             {
                                 <tr class="govuk-table__row">
-                                   <td class="govuk-table__cell" data-sort-value="@item.ServiceName">@Html.ActionLink(item.ServiceName, "SelectedUnderpinningService", "TrustFramework0_4", new { serviceId = item.Id,
-                                       inRegister = Model.InRegister, fromSummaryPage = ViewBag.fromSummaryPage, fromDetailsPage = ViewBag.fromDetailsPage }, new { @class = "govuk-link" })
-                                   </td>
+                                    <td class="govuk-table__cell" data-sort-value="@item.ServiceName">
+                                        @Html.ActionLink(item.ServiceName, "SelectedUnderpinningService", "TrustFramework0_4", new
+                                            {
+                                                serviceId = item.Id,
+                                                published = published,
+                                                fromSummaryPage = ViewBag.fromSummaryPage,
+                                                fromDetailsPage = ViewBag.fromDetailsPage
+                                            }, new { @class = "govuk-link" })
+                                    </td>
                                     <td class="govuk-table__cell">@item.Provider.RegisteredName</td>
                                     <td class="govuk-table__cell">@item.CabUser.Cab.CabName</td>
                                     <td class="govuk-table__cell">@HtmlExtensions.ToStyledStrongTag(item.ServiceStatus)</td>
@@ -124,7 +132,42 @@
                                 </td>
                             </tr>
                         }
-                    </tbody>
+                                </tbody>
+                            }
+                            else
+                            {
+                                <tbody class="govuk-table__body">
+                                    @if (Model?.ManualUnderpinningServices != null && Model.ManualUnderpinningServices.Count > 0)
+                                    {
+                                        @foreach (var item in Model.ManualUnderpinningServices)
+                                        {
+                                            <tr class="govuk-table__row">
+                                                <td class="govuk-table__cell" data-sort-value="@item.ManualUnderPinningService.ServiceName">
+                                                    @Html.ActionLink(item.ManualUnderPinningService.ServiceName, "SelectedUnderpinningService", "TrustFramework0_4", new
+                                                        {
+                                                            serviceId = item.Id,
+                                                            published = published,
+                                                            fromSummaryPage = ViewBag.fromSummaryPage,
+                                                            fromDetailsPage = ViewBag.fromDetailsPage
+                                                        }, new { @class = "govuk-link" })
+                                                </td>
+                                                <td class="govuk-table__cell">@item.ManualUnderPinningService.ProviderName</td>
+                                                <td class="govuk-table__cell">@item.ManualUnderPinningService.Cab.CabName</td>
+                                                <td class="govuk-table__cell">@HtmlExtensions.ToStyledStrongTag(item.ServiceStatus)</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr class="govuk-table__row">
+                                            <td class="govuk-table__cell" colspan="4">
+                                                <p class="govuk-body"><b>Your search did not match any services or service providers.</b> </p>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            }
+                  
                 </table>                    
                 }
                 </div>

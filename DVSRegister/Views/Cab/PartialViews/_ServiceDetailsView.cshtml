@@ -584,7 +584,7 @@
         }
     }
 
-    @if((Model.UnderPinningServiceId == null || Model.UnderPinningServiceId ==0) && Model.ManualUnderPinningService!= null )
+    @if(Model.UnderPinningService == null  && Model.ManualUnderPinningService!= null )
     {
         <div class="govuk-summary-card">
             <div class="govuk-summary-card__title-wrapper">
@@ -699,6 +699,92 @@
         </div>
     }
 
-    
+    else if( Model.ManualUnderPinningService == null && Model.UnderPinningService !=null )
+    {
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    Underpinning service
+                </h2>
+            </div>
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Service name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+
+                            @if (Model.UnderPinningService.ServiceName != null)
+                            {
+                                @Model.UnderPinningService.ServiceName
+                            }
+                            else
+                            {
+                                hasValue = false;
+                                @:Incomplete
+
+
+                            }
+
+                        </dd>
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                            </dd>
+                        }
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Service provider
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+
+                            @if (Model.UnderPinningService.Provider.RegisteredName!=null)
+                            {
+                                @Model.UnderPinningService.Provider.RegisteredName
+                            }
+                           
+                        </dd>
+
+                        
+
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            CAB of underpinning service
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.UnderPinningService.CabUser.Cab.CabName != null)
+                            {
+                                @Model.UnderPinningService.CabUser.Cab.CabName
+                            }
+                           
+                        </dd>
+                       
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Underpinning service certificate expiry date
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.UnderPinningService.ConformityExpiryDate != null)
+                            {
+                                @DateTimeExtensions.FormatDateTime(Model.UnderPinningService.ConformityExpiryDate, "dd MMM yyyy")
+                            }
+                           
+                        </dd>
+                       
+                    </div>
+
+                </dl>
+            </div>
+        </div>
+    }
 
 }

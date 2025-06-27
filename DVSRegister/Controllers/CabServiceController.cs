@@ -995,17 +995,25 @@ namespace DVSRegister.Controllers
 
                 if (serviceDto.ServiceType == ServiceTypeEnum.WhiteLabelled)
                 {
-                    if (summaryViewModel?.SelectedUnderPinningServiceId != null && summaryViewModel?.SelectedUnderPinningServiceId>0)
+                    if (summaryViewModel?.SelectedUnderPinningServiceId != null && summaryViewModel?.SelectedUnderPinningServiceId>0 && summaryViewModel.IsUnderpinningServicePublished == true)
                         serviceDto.UnderPinningServiceId = summaryViewModel?.SelectedUnderPinningServiceId;
                     else
                     {
-                        serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
+                        if(summaryViewModel?.SelectedManualUnderPinningServiceId!=null && summaryViewModel?.SelectedManualUnderPinningServiceId >0)
                         {
-                            ServiceName = summaryViewModel?.UnderPinningServiceName ?? string.Empty,
-                            ProviderName = summaryViewModel?.UnderPinningProviderName ?? string.Empty,
-                            CabId =  summaryViewModel?.SelectCabViewModel?.SelectedCabId ?? 0,
-                            CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
-                        };
+                            serviceDto.ManualUnderPinningServiceId = summaryViewModel?.SelectedManualUnderPinningServiceId;
+                        }
+                        else
+                        {
+                            serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
+                            {
+                                ServiceName = summaryViewModel?.UnderPinningServiceName ?? string.Empty,
+                                ProviderName = summaryViewModel?.UnderPinningProviderName ?? string.Empty,
+                                CabId = summaryViewModel?.SelectCabViewModel?.SelectedCabId ?? 0,
+                                CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
+                            };
+                        }
+                       
                     }
                        
 
