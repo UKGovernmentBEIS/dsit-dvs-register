@@ -26,8 +26,8 @@
                     @Model?.TFVersionViewModel?.SelectedTFVersion?.TrustFrameworkName
                 </dd>
                 <dd class="govuk-summary-list__actions">
-                    @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                             new { @class = "govuk-link", @aria_label = "" })
+                    @Html.ActionLink("Change", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model?.ProviderProfileId },
+                             new { @class = "govuk-link", @aria_label = "Change selected tf version" })
                 </dd>
             </div>
 
@@ -477,5 +477,95 @@
 
     }
 
+    @if(Model.ServiceType == DVSRegister.CommonUtility.Models.Enums.ServiceTypeEnum.WhiteLabelled)
+    {        
+    
+
+    bool isManualUnderPinningService = (Model.SelectedManualUnderPinningServiceId != null && Model.SelectedManualUnderPinningServiceId > 0) 
+    && (Model.SelectedUnderPinningServiceId == null || Model.SelectedUnderPinningServiceId == 0);
+
+   
+    bool isPublisedUnderPinningService = (Model.SelectedUnderPinningServiceId != null && Model.SelectedUnderPinningServiceId > 0)
+   && (Model.SelectedManualUnderPinningServiceId == null || Model.SelectedManualUnderPinningServiceId == 0);
+
+    <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">
+                Underpinning service
+            </h2>
+        </div>
+        <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+
+                        @Model.UnderPinningServiceName
+
+                    </dd>
+                    @if (isManualUnderPinningService)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                        </dd>
+                    }
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service provider
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+
+                        @Model.UnderPinningProviderName
+                    </dd>
+
+                    @if (isManualUnderPinningService)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                        </dd>
+                    }
+
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        CAB of underpinning service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model?.SelectCabViewModel?.SelectedCabName
+                    </dd>
+                    @if (isManualUnderPinningService)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                        </dd>
+                    }
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Underpinning service certificate expiry date
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @DateTimeExtensions.FormatDateTime(Model?.UnderPinningServiceExpiryDate, "dd MMM yyyy")
+                    </dd>
+                    @if (isManualUnderPinningService)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                            @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                        </dd>
+                    }
+                </div>
+
+            </dl>
+        </div>
+    </div>
+
+    }
 
 }

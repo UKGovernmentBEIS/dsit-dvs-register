@@ -55,6 +55,22 @@ namespace DVSRegister.Models
             }
 
         }
+
+        public static void ClearTFVersion0_4Fields(ServiceSummaryViewModel summaryViewModel)
+        {
+            summaryViewModel.ServiceType = null;
+            summaryViewModel.SelectedManualUnderPinningServiceId = null;
+            summaryViewModel.SelectedUnderPinningServiceId = null;
+            summaryViewModel.IsUnderpinningServicePublished =null;
+            summaryViewModel.SchemeQualityLevelMapping = [];
+            summaryViewModel.SchemeIdentityProfileMapping = [];
+            summaryViewModel.UnderPinningServiceName=null;
+            summaryViewModel.UnderPinningProviderName=null;
+            summaryViewModel.SelectCabViewModel=null;
+            summaryViewModel.UnderPinningServiceExpiryDate = null;
+
+
+        }
         #endregion
 
 

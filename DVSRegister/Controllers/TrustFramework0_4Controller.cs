@@ -32,7 +32,7 @@ namespace DVSRegister.Controllers
         private readonly IMapper mapper = mapper;     
 
         [HttpGet("tf-version")]
-        public async Task<IActionResult> SelectVersionOfTrustFrameWork(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
+        public async Task<IActionResult> SelectVersionOfTrustFrameWork(int providerProfileId, bool fromSummaryPage,  bool fromDetailsPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
@@ -45,15 +45,12 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             TFVersionViewModel TFVersionViewModel = new()
             {
-                SelectedTFVersionId = summaryViewModel?.TFVersionViewModel?.SelectedTFVersionId,
+                SelectedTFVersionId = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Id,
                 AvailableVersions = await trustFrameworkService.GetTrustFrameworkVersions(),
                 IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = referralUrl
-            };
-
-            summaryViewModel.ProviderProfileId = providerProfileId;
-            summaryViewModel.RefererURL = referralUrl;
-            HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                RefererURL = referralUrl,
+                
+            }; 
 
             return View(TFVersionViewModel);
         }
@@ -68,14 +65,22 @@ namespace DVSRegister.Controllers
             TFVersionViewModel.AvailableVersions = availableVersion;
             TFVersionViewModel.SelectedTFVersionId = TFVersionViewModel.SelectedTFVersionId ?? null;
             TFVersionViewModel.IsAmendment = summaryViewModel.IsAmendment;
+
+            TrustFrameworkVersionDto previousSelection = new();
             if (TFVersionViewModel.SelectedTFVersionId != null)
             {
-                summaryViewModel.TFVersionViewModel = new();
-                summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);
+                previousSelection = summaryViewModel.TFVersionViewModel.SelectedTFVersion;
+                summaryViewModel.TFVersionViewModel = new();              
+                summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);// current selection
             }
             if (ModelState.IsValid)
             {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);                
+                if (previousSelection?.Version == Constants.TFVersion0_4 && summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_3)
+                {
+                    ViewModelHelper.ClearTFVersion0_4Fields(summaryViewModel); // clear extra fields value changed from 0.4 to 0.3
+                }
+                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                
                 return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
             }
             else

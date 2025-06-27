@@ -54,7 +54,7 @@ namespace DVSRegister.Models.CAB
         public int? SelectedManualUnderPinningServiceId { get; set; }
 
         [RequiredEnumValue(ErrorMessage = "Select the service type")]
-        public ServiceTypeEnum ServiceType { get; set; }
+        public ServiceTypeEnum? ServiceType { get; set; }
 
         [Required(ErrorMessage = "Select the registration status")]
         public bool? IsUnderpinningServicePublished { get; set; }
