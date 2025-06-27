@@ -42,6 +42,7 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
             serviceSummaryViewModel.CabId = cabUserDto.CabId;
             serviceSummaryViewModel.CabUserId = cabUserDto.Id;
+            serviceSummaryViewModel.ProviderProfileId = providerProfileId;
             HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
             return View();            
 
@@ -450,7 +451,7 @@ namespace DVSRegister.Controllers
             summaryViewModel.SupplementarySchemeViewModel.FromSummaryPage = false;
 
             if (ModelState.IsValid)
-            {              
+            {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
                 {                   
