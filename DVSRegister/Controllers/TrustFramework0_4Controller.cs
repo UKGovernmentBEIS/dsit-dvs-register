@@ -791,22 +791,25 @@ namespace DVSRegister.Controllers
             if (ModelState["HasGPG44"].Errors.Count == 0)
             {
                 SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = new();
-                schemeQualityLevelMappingViewModel.HasGPG44 = viewModel.HasGPG44;
-                schemeQualityLevelMappingViewModel.SchemeId = viewModel.SchemeId;
 
                 var existingMapping = summaryViewModel?.SchemeQualityLevelMapping?.FirstOrDefault(x => x.SchemeId == viewModel.SchemeId);
                 if (existingMapping != null)
                 {
                     int index = summaryViewModel.SchemeQualityLevelMapping.IndexOf(existingMapping);
-                    summaryViewModel.SchemeQualityLevelMapping[index] = schemeQualityLevelMappingViewModel;
+                    schemeQualityLevelMappingViewModel = viewModel;
+                    summaryViewModel.SchemeQualityLevelMapping[index].HasGPG44 = viewModel.HasGPG44;
                 }
                 else
                 {
+                  
+                    schemeQualityLevelMappingViewModel.HasGPG44 = viewModel.HasGPG44;
+                    schemeQualityLevelMappingViewModel.SchemeId = viewModel.SchemeId;
+                    schemeQualityLevelMappingViewModel.RefererURL = viewModel.RefererURL;
                     summaryViewModel?.SchemeQualityLevelMapping?.Add(schemeQualityLevelMappingViewModel);
                 }
 
 
-                schemeQualityLevelMappingViewModel.RefererURL = viewModel.RefererURL;
+               
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 return await HandleSchemeGpg44Actions(action, summaryViewModel, schemeQualityLevelMappingViewModel, fromSummaryPage, fromDetailsPage, viewModel.SchemeId);
             }
@@ -871,7 +874,7 @@ namespace DVSRegister.Controllers
             {
                 qualityLevelViewModel.SelectedQualityofAuthenticators = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Contains(c.Id)).ToList();
                 qualityLevelViewModel.SelectedLevelOfProtections = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedLevelOfProtectionIds.Contains(c.Id)).ToList();
-                var mapping = summaryViewModel.SchemeQualityLevelMapping?.Where(x => x.SchemeId == qualityLevelViewModel.SchemeId).FirstOrDefault()??new SchemeQualityLevelMappingViewModel();
+                var mapping = summaryViewModel.SchemeQualityLevelMapping?.Where(x => x.SchemeId == qualityLevelViewModel.SchemeId).FirstOrDefault()??new SchemeQualityLevelMappingViewModel();                
                 mapping.QualityLevel = qualityLevelViewModel;
 
             }
@@ -1005,7 +1008,7 @@ namespace DVSRegister.Controllers
                     {
                         bool hasRemainingSchemes = HasRemainingSchemes(schemeId);
                         var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");
-                        ViewModelHelper.ClearSchemeGpg44(schemeQualityLevelMappingViewModel);
+                        ViewModelHelper.ClearSchemeGpg44(summaryViewModel,schemeId);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return fromSummaryPage ? RedirectToAction("ServiceSummary","CabService") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
                        : hasRemainingSchemes ? RedirectToAction("SchemeGPG45", new { schemeId = selectedSchemeIds[0] }) :
@@ -1015,7 +1018,7 @@ namespace DVSRegister.Controllers
                 case "draft":
                     if (!Convert.ToBoolean(schemeQualityLevelMappingViewModel.HasGPG44))
                     {
-                        ViewModelHelper.ClearSchemeGpg44(schemeQualityLevelMappingViewModel);
+                        ViewModelHelper.ClearSchemeGpg44(summaryViewModel, schemeId);
                     }
                     HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return await SaveAsDraftAndRedirect(summaryViewModel);
@@ -1029,7 +1032,7 @@ namespace DVSRegister.Controllers
                     }
                     else
                     {
-                        ViewModelHelper.ClearSchemeGpg44(schemeQualityLevelMappingViewModel);
+                        ViewModelHelper.ClearSchemeGpg44(summaryViewModel, schemeId);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }

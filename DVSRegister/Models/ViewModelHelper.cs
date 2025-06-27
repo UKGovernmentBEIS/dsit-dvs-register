@@ -42,11 +42,16 @@ namespace DVSRegister.Models
                 summaryViewModel.SchemeQualityLevelMapping = [];
         }
 
-        public static void ClearSchemeGpg44(SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel)
+        public static void ClearSchemeGpg44(ServiceSummaryViewModel summaryViewModel, int shcemeId)
         {
-            if (schemeQualityLevelMappingViewModel != null && schemeQualityLevelMappingViewModel.HasGPG44 == false)
+            if (summaryViewModel.SchemeQualityLevelMapping != null && summaryViewModel.SchemeQualityLevelMapping.Count>0)
             {
-                schemeQualityLevelMappingViewModel.QualityLevel = null!;
+                var schemeQualityLevelMapping = summaryViewModel.SchemeQualityLevelMapping.Where(x => x.SchemeId == shcemeId).FirstOrDefault();
+                if(schemeQualityLevelMapping!=null && schemeQualityLevelMapping.HasGPG44 == false)
+                {
+                    schemeQualityLevelMapping.QualityLevel.SelectedQualityofAuthenticators = [];
+                    schemeQualityLevelMapping.QualityLevel.SelectedLevelOfProtections = [];
+                }
             }
 
         }
