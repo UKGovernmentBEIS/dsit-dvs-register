@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace DVSRegister.Controllers
 {
-    //[ValidCognitoToken]
+    [ValidCognitoToken]
     public class BaseController : Controller
     {
         private readonly ILogger<BaseController> _logger;
