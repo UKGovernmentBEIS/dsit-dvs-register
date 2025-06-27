@@ -794,6 +794,9 @@ namespace DVSRegister.Controllers
             GenericResponse genericResponse = new();
             serviceSummary.ServiceStatus = ServiceStatusEnum.SavedAsDraft;
             ServiceDto serviceDto = _mapper.Map<ServiceDto>(serviceSummary);
+
+            MapTFVersion0_4Fields(serviceSummary, serviceDto);
+
             if (!IsValidCabId(serviceSummary.CabId))
                 return HandleInvalidCabId(serviceSummary.CabId);
 
@@ -1081,7 +1084,6 @@ namespace DVSRegister.Controllers
                                         schemeGPG44Mapping.Add(schemeGPG44MappingDto);
                                     }
                                 }
-
                             }
                         }
                         serviceSchemeMapping.SchemeGPG44Mapping = schemeGPG44Mapping;

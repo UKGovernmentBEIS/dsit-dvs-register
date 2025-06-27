@@ -4,6 +4,7 @@ using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
+using DVSRegister.Models.CabTrustFramework;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -104,6 +105,11 @@ namespace DVSRegister.Controllers
             {
                 SelectedSupplementarySchemes = []
             };
+            SelectCabViewModel selectCabViewModel = new()
+            {
+                SelectedCabId = null,
+                SelectedCabName = null
+            };
 
             if (serviceDto.TrustFrameworkVersion != null)
             {
@@ -145,6 +151,12 @@ namespace DVSRegister.Controllers
                 supplementarySchemeViewModel.SelectedSupplementarySchemes = serviceDto.ServiceSupSchemeMapping.Select(mapping => mapping.SupplementaryScheme).ToList();
             }
 
+            if (serviceDto.ManualUnderPinningService.Cab != null)
+            {
+                selectCabViewModel.SelectedCabId = serviceDto.ManualUnderPinningService.Cab.Id;
+                selectCabViewModel.SelectedCabName = serviceDto.ManualUnderPinningService.Cab.CabName;
+            }
+
 
             ServiceSummaryViewModel serviceSummary = new()
             {
@@ -155,7 +167,14 @@ namespace DVSRegister.Controllers
                 RoleViewModel = roleViewModel,
                 IdentityProfileViewModel = identityProfileViewModel,
                 QualityLevelViewModel = qualityLevelViewModel,
+                SelectCabViewModel = selectCabViewModel,
                 HasSupplementarySchemes = serviceDto.HasSupplementarySchemes,
+                ServiceType = serviceDto?.ServiceType ?? 0,
+                IsUnderpinningServicePublished = serviceDto.IsUnderPinningServicePublished,
+                ManualUnderPinningServiceId = serviceDto.ManualUnderPinningServiceId,
+                UnderPinningServiceName = serviceDto.ManualUnderPinningService.ServiceName,
+                UnderPinningProviderName = serviceDto.ManualUnderPinningService.ProviderName,
+                UnderPinningServiceExpiryDate = serviceDto.ManualUnderPinningService.CertificateExpiryDate,
                 HasGPG44 = serviceDto.HasGPG44,
                 HasGPG45 = serviceDto.HasGPG45,
                 SupplementarySchemeViewModel = supplementarySchemeViewModel,

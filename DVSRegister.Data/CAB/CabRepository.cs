@@ -486,7 +486,6 @@ namespace DVSRegister.Data.CAB
                     genericResponse.Success = true;
 
                 }
-
             }
             catch (Exception ex)
             {
@@ -578,6 +577,10 @@ namespace DVSRegister.Data.CAB
 
             existingService.ServiceQualityLevelMapping = service.ServiceQualityLevelMapping;
             existingService.HasSupplementarySchemes = service.HasSupplementarySchemes;
+            existingService.ServiceType = service.ServiceType;
+            existingService.IsUnderPinningServicePublished = service.IsUnderPinningServicePublished;
+            existingService.UnderPinningServiceId = service.UnderPinningServiceId;
+            existingService.ManualUnderPinningService = service.ManualUnderPinningService;
             existingService.HasGPG44 = service.HasGPG44;
             existingService.HasGPG45 = service.HasGPG45;
             if (existingService.ServiceSupSchemeMapping != null & existingService.ServiceSupSchemeMapping?.Count > 0)

@@ -72,9 +72,7 @@ namespace DVSRegister.Controllers
             {
                 summaryViewModel.TFVersionViewModel = new();
                 summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);
-               
             }
-
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);                
