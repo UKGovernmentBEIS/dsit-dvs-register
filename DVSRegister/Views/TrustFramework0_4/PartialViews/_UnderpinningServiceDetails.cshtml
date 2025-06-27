@@ -10,7 +10,7 @@
             <h2 class="govuk-summary-card__title">
                 Underpinning Service
             </h2>
-            @if (!confirmed)
+            @if (!confirmed && !manual)
             {
                 <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
@@ -32,12 +32,8 @@
                     @if (manual)
                     {
                         <dd class="govuk-summary-list__actions">
-                            <a asp-action="EditUnderpinningServiceName"
-                               asp-controller="TrustFramework0_4"
-                               asp-route-serviceId="#"
-                               class="govuk-link">
-                                Change <span class="govuk-visually-hidden">service name</span>
-                            </a>
+                            @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4",
+                            new { fromUnderPinningServiceSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change underpinning service name" })
                         </dd>
                     }
                 </div>
@@ -51,12 +47,8 @@
                     @if (manual)
                     {
                         <dd class="govuk-summary-list__actions">
-                            <a asp-action="EditUnderpinningServiceProvider"
-                               asp-controller="TrustFramework0_4"
-                               asp-route-serviceId="#"
-                               class="govuk-link">
-                                Change <span class="govuk-visually-hidden">service provider</span>
-                            </a>
+                            @Html.ActionLink("Change", "UnderPinningProviderName", "TrustFramework0_4",
+                                     new { fromUnderPinningServiceSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change underpinning provider name" })
                         </dd>
                     }
                 </div>
@@ -70,12 +62,8 @@
                     @if (manual)
                     {
                         <dd class="govuk-summary-list__actions">
-                            <a asp-action="EditUnderpinningServiceCAB"
-                               asp-controller="TrustFramework0_4"
-                               asp-route-serviceId="#"
-                               class="govuk-link">
-                                Change <span class="govuk-visually-hidden">conformity assessment body of underpinning service</span>
-                            </a>
+                            @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4",
+                            new { fromUnderPinningServiceSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change underpinning service cab name" })
                         </dd>
                     }
                 </div>
@@ -89,12 +77,8 @@
                     @if (manual)
                     {
                         <dd class="govuk-summary-list__actions">
-                            <a asp-action="EditUnderpinningServiceCertificateExpiryDate"
-                               asp-controller="TrustFramework0_4"
-                               asp-route-serviceId="#"
-                               class="govuk-link">
-                                Change <span class="govuk-visually-hidden">underpinning service certificate expiry date</span>
-                            </a>
+                            @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4",
+                            new { fromUnderPinningServiceSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change underpinning service certificate expiry date" })
                         </dd>
                     }
                 </div>

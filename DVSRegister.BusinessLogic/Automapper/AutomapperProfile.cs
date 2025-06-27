@@ -152,6 +152,8 @@ namespace DVSRegister.BusinessLogic
 
             CreateMap<TrustFrameworkVersion, TrustFrameworkVersionDto>();
             CreateMap<TrustFrameworkVersionDto, TrustFrameworkVersion>();
+            CreateMap<ManualUnderPinningService, ManualUnderPinningServiceDto>();
+            CreateMap<ManualUnderPinningServiceDto, ManualUnderPinningService>();
         }
     }
 }

@@ -28,7 +28,7 @@ public class ValidationHelper
     }
 
 
-    public static DateTime? ValidateIssueDate(DateViewModel dateViewModel, DateTime? expiryDate, bool fromSummaryPage, ModelStateDictionary modelstate)
+    public static DateTime? ValidateIssueDate(DateViewModel dateViewModel, DateTime? expiryDate, bool fromSummaryPage, ModelStateDictionary modelstate, bool isTFVersion0_4 = false)
     {
         DateTime? date = null;
         DateTime minDate = new DateTime(1900, 1, 1);
@@ -69,7 +69,7 @@ public class ValidationHelper
                     minIssueDate = expiryDate.Value.AddYears(-2).AddDays(-60);
                     if (date < minIssueDate)
                     {
-                        modelstate.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
+                        modelstate.AddModelError("ValidDate", isTFVersion0_4 ? Constants.ConformityMaxExpiryDateErrorTF0_4: Constants.ConformityMaxExpiryDateError);
                     }
                 }
 
@@ -83,7 +83,7 @@ public class ValidationHelper
         return date;
     }
 
-    public static DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate, int years = 2, int days = 60)
+    public static DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate,bool isTFVersion0_4 = false, int years = 2, int days = 60)
     {
         DateTime? date = null;
 
@@ -118,7 +118,7 @@ public class ValidationHelper
                 }
                 else if (date > maxExpiryDate)
                 {
-                    modelstate.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
+                    modelstate.AddModelError("ValidDate", isTFVersion0_4? Constants.ConformityMaxExpiryDateErrorTF0_4: Constants.ConformityMaxExpiryDateError);
                 }
             }
 

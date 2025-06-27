@@ -11,6 +11,7 @@
 {
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+    @Html.HiddenFor(m => m.FromUnderPinningServiceSummaryPage, new { @Value = ViewBag.fromUnderPinningServiceSummaryPage })
     @Html.HiddenFor(m => m.RefererURL)
 
 
@@ -49,7 +50,7 @@
                         {
                             PropertyName = "UnderPinningServiceName",
                             Label = "Name of underpinning service",
-                            Value = Model?.ServiceName ?? string.Empty,
+                            Value = Model?.UnderPinningServiceName ?? string.Empty,
                             Class = "govuk-input",
                             Hint = "For example, ‘Identity Verification App‘",
                             HasError = hasError,

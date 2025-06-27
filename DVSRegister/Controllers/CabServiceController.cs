@@ -680,6 +680,10 @@ namespace DVSRegister.Controllers
             {
                 dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
             }
+            if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+            {
+                dateViewModel.IsTfVersion0_4 = true;
+            }
             dateViewModel.RefererURL = GetRefererURL();
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
@@ -698,8 +702,17 @@ namespace DVSRegister.Controllers
             dateViewModel.FromDetailsPage = false;
             dateViewModel.PropertyName = "ConfirmityExpiryDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-
-            DateTime? conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate),ModelState);
+            DateTime? conformityExpiryDate;
+            if (dateViewModel.IsTfVersion0_4)
+            {
+                conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState, dateViewModel. IsTfVersion0_4, years: 3, days: 59);                
+            }
+               
+            else
+            {
+                conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState);
+            }
+              
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
@@ -728,9 +741,8 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveServiceSummary()
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
-            summaryViewModel.ServiceType = ServiceTypeEnum.UnderPinning;
-            ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
+            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;           
+           ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
             
             MapTFVersion0_4Fields(summaryViewModel, serviceDto);
 
@@ -983,7 +995,7 @@ namespace DVSRegister.Controllers
 
                 if (serviceDto.ServiceType == ServiceTypeEnum.WhiteLabelled)
                 {
-                    if (summaryViewModel?.SelectedUnderPinningServiceId != 0)
+                    if (summaryViewModel?.SelectedUnderPinningServiceId != null && summaryViewModel?.SelectedUnderPinningServiceId>0)
                         serviceDto.UnderPinningServiceId = summaryViewModel?.SelectedUnderPinningServiceId;
                     else
                     {
@@ -991,7 +1003,7 @@ namespace DVSRegister.Controllers
                         {
                             ServiceName = summaryViewModel?.UnderPinningServiceName ?? string.Empty,
                             ProviderName = summaryViewModel?.UnderPinningProviderName ?? string.Empty,
-                            SelectedCab = new CabDto { Id = summaryViewModel?.SelectCabViewModel?.SelectedCabId??0 },
+                            CabId =  summaryViewModel?.SelectCabViewModel?.SelectedCabId ?? 0,
                             CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
                         };
                     }
