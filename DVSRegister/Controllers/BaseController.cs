@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace DVSRegister.Controllers
 {
-    [ValidCognitoToken]
+    //[ValidCognitoToken]
     public class BaseController : Controller
     {
         private readonly ILogger<BaseController> _logger;
@@ -33,7 +33,7 @@ namespace DVSRegister.Controllers
                 return profileClaim?.Value ?? string.Empty;
             }
         }
-     
+
 
         protected bool IsValidCabId(int cabId)
         {
@@ -151,7 +151,7 @@ namespace DVSRegister.Controllers
                 supplementarySchemeViewModel.SelectedSupplementarySchemes = serviceDto.ServiceSupSchemeMapping.Select(mapping => mapping.SupplementaryScheme).ToList();
             }
 
-            if (serviceDto.ManualUnderPinningService.Cab != null)
+            if (serviceDto?.ManualUnderPinningService?.Cab != null)
             {
                 selectCabViewModel.SelectedCabId = serviceDto.ManualUnderPinningService.Cab.Id;
                 selectCabViewModel.SelectedCabName = serviceDto.ManualUnderPinningService.Cab.CabName;
@@ -170,11 +170,14 @@ namespace DVSRegister.Controllers
                 SelectCabViewModel = selectCabViewModel,
                 HasSupplementarySchemes = serviceDto.HasSupplementarySchemes,
                 ServiceType = serviceDto?.ServiceType ?? 0,
-                IsUnderpinningServicePublished = serviceDto.IsUnderPinningServicePublished,
-                ManualUnderPinningServiceId = serviceDto.ManualUnderPinningServiceId,
-                UnderPinningServiceName = serviceDto.ManualUnderPinningService.ServiceName,
-                UnderPinningProviderName = serviceDto.ManualUnderPinningService.ProviderName,
-                UnderPinningServiceExpiryDate = serviceDto.ManualUnderPinningService.CertificateExpiryDate,
+                IsUnderpinningServicePublished = serviceDto?.IsUnderPinningServicePublished,
+                SelectedManualUnderPinningServiceId = serviceDto?.ManualUnderPinningServiceId,//non published manual
+                SelectedUnderPinningServiceId = serviceDto?.UnderPinningServiceId,// published
+
+                UnderPinningServiceName = serviceDto?.UnderPinningServiceId == null? serviceDto?.ManualUnderPinningService?.ServiceName : serviceDto?.UnderPinningService?.ServiceName,
+                UnderPinningProviderName = serviceDto?.UnderPinningServiceId == null ? serviceDto?.ManualUnderPinningService?.ProviderName: serviceDto?.UnderPinningService.Provider?.RegisteredName,
+                UnderPinningServiceExpiryDate = serviceDto?.UnderPinningServiceId == null ? serviceDto?.ManualUnderPinningService?.CertificateExpiryDate: serviceDto?.UnderPinningService.ConformityExpiryDate,
+
                 HasGPG44 = serviceDto.HasGPG44,
                 HasGPG45 = serviceDto.HasGPG45,
                 SupplementarySchemeViewModel = supplementarySchemeViewModel,

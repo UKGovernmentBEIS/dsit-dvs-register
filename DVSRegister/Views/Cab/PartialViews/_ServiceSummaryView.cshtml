@@ -126,7 +126,7 @@
                         @Helper.GetEnumDescription(@Model.ServiceType)
                     </dd>
                     <dd class="govuk-summary-list__actions">
-                        @Html.ActionLink("Change", "#", "#", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
+                        @Html.ActionLink("Change", "SelectServiceType", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
                                  new { @class = "govuk-link", @aria_label = "" })
                     </dd>
                 </div>

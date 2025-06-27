@@ -71,6 +71,24 @@ namespace DVSRegister.Models
 
 
         }
+        public static void ClearUnderPinningServiceFields(ServiceSummaryViewModel summaryViewModel)
+        {
+            if(summaryViewModel.ServiceType == CommonUtility.Models.Enums.ServiceTypeEnum.UnderPinning 
+                || summaryViewModel.ServiceType == CommonUtility.Models.Enums.ServiceTypeEnum.Neither)
+            {
+                summaryViewModel.SelectedManualUnderPinningServiceId = null;
+                summaryViewModel.SelectedUnderPinningServiceId = null;
+                summaryViewModel.IsUnderpinningServicePublished = null;            
+                summaryViewModel.UnderPinningServiceName = null;
+                summaryViewModel.UnderPinningProviderName = null;
+                summaryViewModel.SelectCabViewModel = null;
+                summaryViewModel.UnderPinningServiceExpiryDate = null;
+            }
+           
+          
+
+
+        }
         #endregion
 
 

@@ -110,19 +110,31 @@ namespace DVSRegister.Controllers
             if (ModelState["ServiceType"].Errors.Count == 0)
             {
                 ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+                ServiceTypeEnum? previousServiceType = serviceSummaryViewModel.ServiceType;
                 serviceSummaryViewModel.ServiceType = viewModel.ServiceType;
-                bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
-                bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
+                bool fromSummaryPage = viewModel.FromSummaryPage;
+                bool fromDetailsPage = viewModel.FromDetailsPage;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
                 string nextPage = string.Empty;
 
                 if (viewModel.ServiceType == ServiceTypeEnum.UnderPinning || viewModel.ServiceType == ServiceTypeEnum.Neither)
                 {
+                    if(previousServiceType == ServiceTypeEnum.WhiteLabelled)
+                    {
+                        ViewModelHelper.ClearUnderPinningServiceFields(serviceSummaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
+                    }
                     nextPage = "ServiceGPG45Input";
                 }
                 else if (viewModel.ServiceType == ServiceTypeEnum.WhiteLabelled)
                 {
+                    if (previousServiceType == ServiceTypeEnum.UnderPinning || previousServiceType == ServiceTypeEnum.Neither)
+                    {
+                        fromSummaryPage = false; // need to eneter underpinning service details
+                        
+                    }
                     nextPage = "StatusOfUnderpinningService";
+
                 }
                 else
                     throw new InvalidDataException("Invalid service type");

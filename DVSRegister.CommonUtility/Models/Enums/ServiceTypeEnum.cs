@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using DVSAdmin.CommonUtility.Models.Enums;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace DVSRegister.CommonUtility.Models.Enums
 {
@@ -12,5 +14,16 @@ namespace DVSRegister.CommonUtility.Models.Enums
         WhiteLabelled = 2,
         [Description("Neither")]
         Neither = 3
+    }
+
+
+    public static class ServiceTypeEnumExtensions
+    {
+        public static string GetDescription(this ServiceTypeEnum value)
+        {
+            FieldInfo field = value.GetType().GetField(value.ToString());
+            DescriptionAttribute attribute = field.GetCustomAttribute<DescriptionAttribute>();
+            return attribute == null ? value.ToString() : attribute.Description;
+        }
     }
 }
