@@ -69,7 +69,7 @@ namespace DVSRegister.Controllers
             TrustFrameworkVersionDto previousSelection = new();
             if (TFVersionViewModel.SelectedTFVersionId != null)
             {
-                previousSelection = summaryViewModel.TFVersionViewModel.SelectedTFVersion;
+                previousSelection = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion;
                 summaryViewModel.TFVersionViewModel = new();              
                 summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);// current selection
             }
@@ -1092,6 +1092,7 @@ namespace DVSRegister.Controllers
             GenericResponse genericResponse = new();
             serviceSummary.ServiceStatus = ServiceStatusEnum.SavedAsDraft;
             ServiceDto serviceDto = mapper.Map<ServiceDto>(serviceSummary);
+            ViewModelHelper.MapTFVersion0_4Fields(serviceSummary, serviceDto);
             if (!IsValidCabId(serviceSummary.CabId))
                 return HandleInvalidCabId(serviceSummary.CabId);
 

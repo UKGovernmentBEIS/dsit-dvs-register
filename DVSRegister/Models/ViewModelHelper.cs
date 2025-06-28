@@ -1,5 +1,9 @@
-﻿using DVSRegister.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Models;
+using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Service;
+using DVSRegister.CommonUtility;
 
 namespace DVSRegister.Models
 {
@@ -100,6 +104,111 @@ namespace DVSRegister.Models
                 summaryViewModel.UnderPinningProviderName = null;
                 summaryViewModel.SelectCabViewModel = null;
                 summaryViewModel.UnderPinningServiceExpiryDate = null;
+            }
+        }
+
+        public static void MapTFVersion0_4Fields(ServiceSummaryViewModel summaryViewModel, ServiceDto serviceDto)
+        {
+            if (summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_4)
+            {
+                serviceDto.ServiceType = summaryViewModel?.ServiceType;
+
+                if (serviceDto.ServiceType == ServiceTypeEnum.WhiteLabelled)
+                {
+                    if (summaryViewModel?.SelectedUnderPinningServiceId != null && summaryViewModel?.SelectedUnderPinningServiceId > 0 && summaryViewModel.IsUnderpinningServicePublished == true)
+                        serviceDto.UnderPinningServiceId = summaryViewModel?.SelectedUnderPinningServiceId;
+                    else
+                    {
+                        if (summaryViewModel?.SelectedManualUnderPinningServiceId != null && summaryViewModel?.SelectedManualUnderPinningServiceId > 0)
+                        {
+                            serviceDto.ManualUnderPinningServiceId = summaryViewModel?.SelectedManualUnderPinningServiceId;
+                        }
+                        else
+                        {
+                            serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
+                            {
+                                ServiceName = summaryViewModel?.UnderPinningServiceName ?? string.Empty,
+                                ProviderName = summaryViewModel?.UnderPinningProviderName ?? string.Empty,
+                                CabId = summaryViewModel?.SelectCabViewModel?.SelectedCabId ?? 0,
+                                CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
+                            };
+                        }
+
+                    }
+
+
+                }
+
+                if (serviceDto.ServiceSupSchemeMapping != null && serviceDto.ServiceSupSchemeMapping.Count > 0)
+                {
+
+
+                    foreach (var serviceSchemeMapping in serviceDto.ServiceSupSchemeMapping)
+                    {
+
+                        ICollection<SchemeGPG44MappingDto>? schemeGPG44Mapping = [];
+                        ICollection<SchemeGPG45MappingDto>? schemeGPG45Mapping = [];
+
+                        //-----Gpg45/Identityprofiles--------//
+                        if (summaryViewModel?.SchemeIdentityProfileMapping != null && summaryViewModel.SchemeIdentityProfileMapping.Count > 0)
+                        {
+                            var schemeIdentityProfileMapping = summaryViewModel.SchemeIdentityProfileMapping.Where(x => x.SchemeId == serviceSchemeMapping.SupplementarySchemeId).FirstOrDefault();
+                            var selectedIdentyProfiles = schemeIdentityProfileMapping?.IdentityProfile.SelectedIdentityProfiles;
+                            if (selectedIdentyProfiles != null)
+                            {
+                                foreach (var identityProfile in selectedIdentyProfiles)
+                                {
+                                    SchemeGPG45MappingDto schemeGPG45MappingDto = new()
+                                    {
+                                        IdentityProfileId = identityProfile.Id
+                                    };
+                                    schemeGPG45Mapping.Add(schemeGPG45MappingDto);
+                                }
+                            }
+                        }
+
+                        //-----Gpg44/auth/protection--------//
+                        if (summaryViewModel?.SchemeQualityLevelMapping != null && summaryViewModel.SchemeQualityLevelMapping.Count > 0)
+                        {
+                            var schemeQualityLevelMapping = summaryViewModel.SchemeQualityLevelMapping.Where(x => x.SchemeId == serviceSchemeMapping.SupplementarySchemeId).FirstOrDefault();
+                            serviceSchemeMapping.HasGpg44Mapping = schemeQualityLevelMapping?.HasGPG44;
+
+                            if (serviceSchemeMapping.HasGpg44Mapping == true)
+                            {
+                                var selectedAuthenticatorQualityLevels = schemeQualityLevelMapping?.QualityLevel?.SelectedQualityofAuthenticators;
+                                if (selectedAuthenticatorQualityLevels != null)
+                                {
+                                    foreach (var qualityLevel in selectedAuthenticatorQualityLevels)
+                                    {
+                                        SchemeGPG44MappingDto schemeGPG44MappingDto = new()
+                                        {
+                                            QualityLevelId = qualityLevel.Id
+                                        };
+
+                                        schemeGPG44Mapping.Add(schemeGPG44MappingDto);
+                                    }
+                                }
+
+                                var selectedProtectionQualityLevels = schemeQualityLevelMapping?.QualityLevel?.SelectedLevelOfProtections;
+                                if (selectedProtectionQualityLevels != null)
+                                {
+                                    foreach (var qualityLevel in selectedProtectionQualityLevels)
+                                    {
+                                        SchemeGPG44MappingDto schemeGPG44MappingDto = new()
+                                        {
+                                            QualityLevelId = qualityLevel.Id
+                                        };
+                                        schemeGPG44Mapping.Add(schemeGPG44MappingDto);
+                                    }
+                                }
+                            }
+                        }
+                        serviceSchemeMapping.SchemeGPG44Mapping = schemeGPG44Mapping;
+                        serviceSchemeMapping.SchemeGPG45Mapping = schemeGPG45Mapping;
+                    }
+                }
+
+
             }
         }
         #endregion

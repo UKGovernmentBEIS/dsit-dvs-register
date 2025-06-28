@@ -113,7 +113,35 @@ namespace DVSRegister.Controllers
                     return RedirectToAction("UnderPinningServiceExpiryDate", "TrustFramework0_4");
                 }
 
-                // ADD GPG HERE
+                else if (serviceSummary.HasGPG45 == null)
+                {
+                    return RedirectToAction("ServiceGPG45Input", "TrustFramework0_4");
+                }
+                else if (serviceSummary.HasGPG45 == true && serviceSummary.IdentityProfileViewModel.SelectedIdentityProfiles.Count == 0)
+                {
+                    return RedirectToAction("ServiceGPG45", "TrustFramework0_4");
+                }
+
+                else if (serviceSummary.HasGPG44 == null)
+                {
+                    return RedirectToAction("ServiceGPG44Input", "TrustFramework0_4");
+                }
+                else if (serviceSummary.HasGPG44 == true && (serviceSummary.QualityLevelViewModel.SelectedQualityofAuthenticators.Count == 0 ||
+                    serviceSummary.QualityLevelViewModel.SelectedLevelOfProtections.Count == 0))
+                {
+                    return RedirectToAction("ServiceGPG44", "TrustFramework0_4");
+                }
+
+
+                else if (serviceSummary.HasSupplementarySchemes == null)
+                {
+                    return RedirectToAction("HasSupplementarySchemesInput", "CabService");
+                }
+                else if (serviceSummary.HasSupplementarySchemes == true && serviceSummary.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count == 0)
+                {
+                    return RedirectToAction("SupplementarySchemes", "CabService");
+                }
+
 
                 else if (serviceSummary.FileName == null)
                 {
