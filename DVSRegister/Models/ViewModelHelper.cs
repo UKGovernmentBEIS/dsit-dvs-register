@@ -49,8 +49,12 @@ namespace DVSRegister.Models
                 var schemeQualityLevelMapping = summaryViewModel.SchemeQualityLevelMapping.Where(x => x.SchemeId == shcemeId).FirstOrDefault();
                 if(schemeQualityLevelMapping!=null && schemeQualityLevelMapping.HasGPG44 == false)
                 {
-                    schemeQualityLevelMapping.QualityLevel.SelectedQualityofAuthenticators = [];
-                    schemeQualityLevelMapping.QualityLevel.SelectedLevelOfProtections = [];
+                    if(schemeQualityLevelMapping.QualityLevel!=null)
+                    {
+                        schemeQualityLevelMapping.QualityLevel.SelectedQualityofAuthenticators = [];
+                        schemeQualityLevelMapping.QualityLevel.SelectedLevelOfProtections = [];
+                    }
+                   
                 }
             }
 
@@ -84,10 +88,19 @@ namespace DVSRegister.Models
                 summaryViewModel.SelectCabViewModel = null;
                 summaryViewModel.UnderPinningServiceExpiryDate = null;
             }
-           
-          
+        }
 
-
+        public static void ClearUnderPinningServiceFieldsBeforeManualEntry(ServiceSummaryViewModel summaryViewModel)
+        {
+            if (summaryViewModel.ServiceType == CommonUtility.Models.Enums.ServiceTypeEnum.WhiteLabelled)
+            {
+                summaryViewModel.SelectedManualUnderPinningServiceId = null;
+                summaryViewModel.SelectedUnderPinningServiceId = null;      
+                summaryViewModel.UnderPinningServiceName = null;
+                summaryViewModel.UnderPinningProviderName = null;
+                summaryViewModel.SelectCabViewModel = null;
+                summaryViewModel.UnderPinningServiceExpiryDate = null;
+            }
         }
         #endregion
 

@@ -6,8 +6,7 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 
     var published = Model.IsPublished;
-    bool fromSummaryPage = ViewBag.fromSummaryPage;
-    bool fromDetailsPage = ViewBag.fromDetailsPage;
+    
 }
 
 <div class="govuk-width-container">
@@ -36,8 +35,9 @@
             </div>
             @using (Html.BeginForm("SelectUnderpinningService", "TrustFramework0_4", FormMethod.Get))
             {
-                @Html.Hidden("fromSummaryPage", fromSummaryPage)
-                @Html.Hidden("fromDetailsPage", fromDetailsPage)
+                @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+                @Html.HiddenFor(m => m.RefererURL)
                 <div class="govuk-grid-column-one-half govuk-!-padding-top-4">
                     @if (published)
                     {
@@ -80,7 +80,7 @@
                     @if (!published)
                     {
                         <p class="govuk-body">
-                            <a class="govuk-link" href="@Url.Action("UnderPinningServiceName", "TrustFramework0_4")">Enter underpinning service details manually</a>
+                            <a class="govuk-link" href="@Url.Action("UnderPinningServiceName", "TrustFramework0_4", new {manualEntryFirstTimeLoad = true})">Enter underpinning service details manually</a>
                         </p>
                     }
                 </div>
@@ -114,8 +114,8 @@
                                             {
                                                 serviceId = item.Id,
                                                 published = published,
-                                                fromSummaryPage = ViewBag.fromSummaryPage,
-                                                fromDetailsPage = ViewBag.fromDetailsPage
+                                                fromSummaryPage = ViewBag.FromSummaryPage,
+                                                            fromDetailsPage = ViewBag.FromDetailsPage
                                             }, new { @class = "govuk-link" })
                                     </td>
                                     <td class="govuk-table__cell">@item.Provider.RegisteredName</td>

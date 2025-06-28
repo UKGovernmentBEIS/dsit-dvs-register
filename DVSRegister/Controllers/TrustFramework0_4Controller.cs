@@ -374,9 +374,10 @@ namespace DVSRegister.Controllers
         [HttpGet("select-underpinning-service")]
         public async Task<IActionResult> SelectUnderpinningService(string SearchText, string SearchAction, bool fromSummaryPage, bool fromDetailsPage)
         {
-            ViewBag.fromSummaryPage = fromDetailsPage;
+            ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+        
             var published = (bool)summaryViewModel.IsUnderpinningServicePublished;
 
             var services = new List<ServiceDto>();
@@ -498,12 +499,18 @@ namespace DVSRegister.Controllers
 
         #region Service Name
         [HttpGet("underpinning-service-name")]
-        public IActionResult UnderPinningServiceName(bool fromSummaryPage, bool fromDetailsPage, bool fromUnderPinningServiceSummaryPage)
+        public IActionResult UnderPinningServiceName(bool fromSummaryPage, bool fromDetailsPage, bool fromUnderPinningServiceSummaryPage, bool manualEntryFirstTimeLoad)
         {
+
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ViewBag.fromUnderPinningServiceSummaryPage = fromUnderPinningServiceSummaryPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            if (manualEntryFirstTimeLoad)
+            {
+                ViewModelHelper.ClearUnderPinningServiceFieldsBeforeManualEntry(serviceSummaryViewModel);
+                HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
+            }
             serviceSummaryViewModel.RefererURL = GetRefererURL();
             return View(serviceSummaryViewModel);
         }
