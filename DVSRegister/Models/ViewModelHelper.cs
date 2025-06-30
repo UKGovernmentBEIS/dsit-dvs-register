@@ -121,18 +121,17 @@ namespace DVSRegister.Models
                     {
                         if (summaryViewModel?.SelectedManualUnderPinningServiceId != null && summaryViewModel?.SelectedManualUnderPinningServiceId > 0)
                         {
-                            serviceDto.ManualUnderPinningServiceId = summaryViewModel?.SelectedManualUnderPinningServiceId;
+                            serviceDto.ManualUnderPinningServiceId = summaryViewModel?.SelectedManualUnderPinningServiceId;                          
+
                         }
-                        else
+                       
+                        serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
                         {
-                            serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
-                            {
-                                ServiceName = summaryViewModel?.UnderPinningServiceName ?? string.Empty,
-                                ProviderName = summaryViewModel?.UnderPinningProviderName ?? string.Empty,
-                                CabId = summaryViewModel?.SelectCabViewModel?.SelectedCabId ?? 0,
-                                CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
-                            };
-                        }
+                            ServiceName = summaryViewModel?.UnderPinningServiceName,
+                            ProviderName = summaryViewModel?.UnderPinningProviderName,
+                            CabId = summaryViewModel?.SelectCabViewModel?.SelectedCabId,
+                            CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
+                        };
 
                     }
 

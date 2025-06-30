@@ -452,18 +452,28 @@ namespace DVSRegister.Controllers
 
             if (ModelState.IsValid)
             {
+                string nextPage;
+                string controller;
+                object routeValues = null;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
                 {                   
                     HttpContext?.Session.Set("SelectedSchemeIds", supplementarySchemeViewModel.SelectedSupplementarySchemeIds);
-                        int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];
-                        return RedirectToAction("SchemeGPG45", "TrustFramework0_4", new { schemeId = firstSchemeId });
+                    int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];
+                    nextPage = "SchemeGPG45";
+                    controller = "TrustFramework0_4";
+                    routeValues= new { schemeId = firstSchemeId };
 
-                    }
+                       
+
+                }
                 else
                 {
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "CertificateUploadPage");
+                    nextPage = "CertificateUploadPage";
+                    controller = "CabService";
+                   
                 }
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller, routeValues!);
             }
             else
             {

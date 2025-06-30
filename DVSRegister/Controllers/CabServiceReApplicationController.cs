@@ -65,8 +65,19 @@ namespace DVSRegister.Controllers
         {
             if (serviceSummary.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
             {
-                bool isPublished = serviceSummary.IsUnderpinningServicePublished.GetValueOrDefault();
+                bool isPublished = serviceSummary.IsUnderpinningServicePublished != null && serviceSummary.IsUnderpinningServicePublished == true;
                 bool isSelected = serviceSummary.SelectedUnderPinningServiceId != null;
+
+                bool hasIdentityProfileSchemeMappings = serviceSummary.HasSupplementarySchemes == true 
+                    && serviceSummary?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Count > 0
+                    && serviceSummary.SchemeIdentityProfileMapping != null && serviceSummary.SchemeIdentityProfileMapping.Count >0;
+
+
+                List<int> schemeIdsToCheck = serviceSummary?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(scheme => scheme.Id).ToList()??[];
+                bool allSchemeIdentityProfilesPresent = schemeIdsToCheck.All(id => serviceSummary.SchemeIdentityProfileMapping.Any(mapping => mapping.SchemeId == id));
+
+                 bool allSchemeQualityLevelsPresent = schemeIdsToCheck.All(id => serviceSummary.SchemeQualityLevelMapping.Any(mapping => mapping.SchemeId == id));
+
 
                 if (string.IsNullOrEmpty(serviceSummary.ServiceName))
                 {
@@ -92,23 +103,23 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("StatusOfUnderpinningService", "TrustFramework0_4");
                 }
-                else if (isPublished && !isSelected)
+                else if (serviceSummary.ServiceType == ServiceTypeEnum.WhiteLabelled && isPublished && !isSelected)
                 {
                     return RedirectToAction("SelectUnderpinningService", "TrustFramework0_4");
                 }
-                else if (!isPublished && string.IsNullOrEmpty(serviceSummary.UnderPinningServiceName))
+                else if (serviceSummary.ServiceType == ServiceTypeEnum.WhiteLabelled && !isPublished && string.IsNullOrEmpty(serviceSummary.UnderPinningServiceName))
                 {
                     return RedirectToAction("SelectUnderpinningService", "TrustFramework0_4");
                 }
-                else if (!isPublished && string.IsNullOrEmpty(serviceSummary.UnderPinningProviderName))
+                else if (serviceSummary.ServiceType == ServiceTypeEnum.WhiteLabelled && !isPublished && string.IsNullOrEmpty(serviceSummary.UnderPinningProviderName))
                 {
                     return RedirectToAction("UnderPinningProviderName", "TrustFramework0_4");
                 }
-                else if (!isPublished && serviceSummary.SelectCabViewModel == null)
+                else if (serviceSummary.ServiceType == ServiceTypeEnum.WhiteLabelled && !isPublished && serviceSummary.SelectCabViewModel.SelectedCabId == null)
                 {
-                    return RedirectToAction("SelectCab", "TrustFramework0_4");
+                    return RedirectToAction("SelectCabOfUnderpinningService", "TrustFramework0_4");
                 }
-                else if (!isPublished && serviceSummary.UnderPinningServiceExpiryDate == null)
+                else if (serviceSummary.ServiceType == ServiceTypeEnum.WhiteLabelled && !isPublished && serviceSummary.UnderPinningServiceExpiryDate == null)
                 {
                     return RedirectToAction("UnderPinningServiceExpiryDate", "TrustFramework0_4");
                 }
@@ -141,6 +152,14 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("SupplementarySchemes", "CabService");
                 }
+                else if (!hasIdentityProfileSchemeMappings || !allSchemeIdentityProfilesPresent || !allSchemeQualityLevelsPresent )
+                {
+                    int firstSchemeId = serviceSummary.SupplementarySchemeViewModel.SelectedSupplementarySchemes[0].Id;
+                    return RedirectToAction("SchemeGPG45", "TrustFramework0_4", new { schemeId = firstSchemeId });
+
+
+                }
+
 
 
                 else if (serviceSummary.FileName == null)

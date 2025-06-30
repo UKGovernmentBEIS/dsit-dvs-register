@@ -392,10 +392,19 @@ namespace DVSRegister.Controllers
             {
                 if(published)
                 {
+                    // Fetch only services of type underpinning and status published
+                    //IsUnderpinningServicePublished // true
+                    //SelectedUnderPinningServiceId // not null
+                   // SelectedManualUnderPinningServiceId //null
                     services = await trustFrameworkService.GetPublishedUnderpinningServices(SearchText);
                 }
                 else
                 {
+                    //Fetch only manually saved underpinning services with certificate review passed status
+                    // Fetch only services of type underpinning and status published
+                    //IsUnderpinningServicePublished // false
+                    //SelectedUnderPinningServiceId //  null
+                    // SelectedManualUnderPinningServiceId //not null
                     manualServices = await trustFrameworkService.GetServicesWithManualUnderinningService(SearchText);
                 }
                 
@@ -603,7 +612,7 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 string cabName = cabsViewModel.Cabs.Where(x=>x.Id == cabsViewModel.SelectedCabId).Select(x=>x.CabName).First();
-                serviceSummary.SelectCabViewModel = new SelectCabViewModel { SelectedCabId = Convert.ToInt32(cabsViewModel.SelectedCabId),
+                serviceSummary.SelectCabViewModel = new SelectCabViewModel { SelectedCabId = cabsViewModel.SelectedCabId ,
                 SelectedCabName = cabName
                 };
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
@@ -766,7 +775,7 @@ namespace DVSRegister.Controllers
                 else
                 {
                    
-                    summaryViewModel.SchemeIdentityProfileMapping.Add(schemeIdentityProfileMappingViewModel);
+                    summaryViewModel?.SchemeIdentityProfileMapping?.Add(schemeIdentityProfileMappingViewModel);
                 }
 
             }

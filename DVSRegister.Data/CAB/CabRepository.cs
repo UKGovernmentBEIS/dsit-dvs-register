@@ -233,7 +233,8 @@ namespace DVSRegister.Data.CAB
             {
                 
                 var existingService = await context.Service.Include(x=>x.ServiceRoleMapping).Include(x=>x.ServiceIdentityProfileMapping)
-                .Include(x=>x.ServiceQualityLevelMapping).Include(x=>x.ServiceSupSchemeMapping)              
+                .Include(x=>x.ServiceQualityLevelMapping).Include(x=>x.ServiceSupSchemeMapping)
+                .Include(x => x.ManualUnderPinningService)
                  .Where(x=> x.ServiceKey > 0 && x.ServiceKey == service.ServiceKey && service.IsCurrent == true).FirstOrDefaultAsync();                
                 if(existingService != null && existingService.Id>0)
                 {
@@ -309,6 +310,7 @@ namespace DVSRegister.Data.CAB
             {
                 var existingService = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)
                .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)
+               .Include(x=>x.ManualUnderPinningService)
                .Where(x => x.ServiceKey == service.ServiceKey && x.IsCurrent == true).FirstOrDefaultAsync();
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
@@ -387,6 +389,7 @@ namespace DVSRegister.Data.CAB
             {
                 var existingService = await context.Service.Include(x => x.CertificateReview).Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)
                .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)
+               .Include(x => x.ManualUnderPinningService)
                .Where(x => x.Id == service.Id && x.IsCurrent == true).FirstOrDefaultAsync();
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
@@ -584,24 +587,47 @@ namespace DVSRegister.Data.CAB
             if(service.ServiceType == ServiceTypeEnum.WhiteLabelled)
             {
                 existingService.IsUnderPinningServicePublished = service.IsUnderPinningServicePublished;
-                existingService.UnderPinningServiceId = (service.ManualUnderPinningServiceId == null || service.ManualUnderPinningServiceId == 0)? service.UnderPinningServiceId:null;
-                existingService.ManualUnderPinningServiceId = (service.UnderPinningServiceId == null || service.UnderPinningServiceId == 0) ? service.ManualUnderPinningServiceId:null;
 
-                if((service.UnderPinningServiceId == null || service.UnderPinningServiceId == 0) && 
-                    (service.ManualUnderPinningServiceId == null || service.ManualUnderPinningServiceId == 0))
+                if ((service.ManualUnderPinningServiceId == null || service.ManualUnderPinningServiceId == 0) &&
+                   service.UnderPinningServiceId != null && service.UnderPinningServiceId > 0) // publised underpinning service selected
                 {
-                    //insert only if there are no selected services
-                    existingService.ManualUnderPinningService = service.ManualUnderPinningService;
+                    existingService.UnderPinningServiceId = service.UnderPinningServiceId;
                 }
-                  
-            }
-           
 
+                if( Convert.ToBoolean(service.IsUnderPinningServicePublished) == false)
+                {
+                    if ((service.ManualUnderPinningServiceId == null || service.ManualUnderPinningServiceId == 0) &&
+                  service.UnderPinningServiceId == null && service.UnderPinningServiceId == 0 && service.ManualUnderPinningService != null)
+                    {
+                        existingService.ManualUnderPinningService = service.ManualUnderPinningService; // insert as new manaul under pinning service
+                    }
+
+                    else if ((service.UnderPinningServiceId == null || service.UnderPinningServiceId == 0) &&
+                         service.ManualUnderPinningServiceId != null || service.ManualUnderPinningServiceId != 0 && Convert.ToBoolean(service.IsUnderPinningServicePublished) == false)// a manual under pinning service updated
+                    {
+                        existingService.ManualUnderPinningServiceId = service.ManualUnderPinningServiceId;
+                        if (existingService.ManualUnderPinningService != null && service.ManualUnderPinningService!=null)
+                        // if there is an already existing manual service mapping update it
+                        {
+                            existingService.ManualUnderPinningService.ServiceName = service.ManualUnderPinningService.ServiceName;
+                            existingService.ManualUnderPinningService.ProviderName = service.ManualUnderPinningService.ProviderName;
+                            existingService.ManualUnderPinningService.CabId = service.ManualUnderPinningService.CabId;
+                            existingService.ManualUnderPinningService.CertificateExpiryDate = service.ManualUnderPinningService.CertificateExpiryDate;
+                        }
+
+                    }
+                } 
+            }
 
             existingService.HasGPG44 = service.HasGPG44;
             existingService.HasGPG45 = service.HasGPG45;
             if (existingService.ServiceSupSchemeMapping != null & existingService.ServiceSupSchemeMapping?.Count > 0)
-                context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
+            {
+                context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);               
+
+            }
+               
+
             existingService.ServiceSupSchemeMapping = service.ServiceSupSchemeMapping;
             existingService.FileLink = service.FileLink;
             existingService.FileName = service.FileName;
