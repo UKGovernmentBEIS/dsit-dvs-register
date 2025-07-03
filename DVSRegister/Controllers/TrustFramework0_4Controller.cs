@@ -346,17 +346,15 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> StatusOfUnderpinningService(ServiceSummaryViewModel serviceSummaryViewModel, string action)
         {
             ServiceSummaryViewModel serviceSummary = GetServiceSummary();
-            bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
-            bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
-            serviceSummaryViewModel.FromSummaryPage = false;
-            serviceSummaryViewModel.FromDetailsPage = false;
+            serviceSummary.FromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
+            serviceSummary.FromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
             serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
 
             if (ModelState["IsUnderpinningServicePublished"].Errors.Count == 0)
             {
                 serviceSummary.IsUnderpinningServicePublished = serviceSummaryViewModel.IsUnderpinningServicePublished;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, false, "SelectUnderpinningService");
+                return await HandleActions(action, serviceSummary, false, false, false, "SelectUnderpinningService");
             }
             else
             {
@@ -372,12 +370,12 @@ namespace DVSRegister.Controllers
         /// <param name="SearchAction"></param>
         /// <returns></returns>
         [HttpGet("select-underpinning-service")]
-        public async Task<IActionResult> SelectUnderpinningService(string SearchText, string SearchAction, bool fromSummaryPage, bool fromDetailsPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
-            ViewBag.fromDetailsPage = fromDetailsPage;
+        public async Task<IActionResult> SelectUnderpinningService(string SearchText, string SearchAction)
+        {            
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-        
+            ViewBag.fromSummaryPage = summaryViewModel.FromSummaryPage;
+            ViewBag.fromDetailsPage = summaryViewModel.FromDetailsPage;
+
             var published = (bool)summaryViewModel.IsUnderpinningServicePublished;
 
             var services = new List<ServiceDto>();

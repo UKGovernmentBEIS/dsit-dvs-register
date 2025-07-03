@@ -189,6 +189,11 @@ namespace DVSRegister.Controllers
                 selectCabViewModel.SelectedCabId = serviceDto.ManualUnderPinningService.Cab.Id;
                 selectCabViewModel.SelectedCabName = serviceDto.ManualUnderPinningService.Cab.CabName;
             }
+            else if (serviceDto?.UnderPinningService != null)
+            {
+                selectCabViewModel.SelectedCabId = serviceDto.UnderPinningService.CabUser.Cab.Id;
+                selectCabViewModel.SelectedCabName = serviceDto.UnderPinningService.CabUser.Cab.CabName;
+            }
 
 
             ServiceSummaryViewModel serviceSummary = new()

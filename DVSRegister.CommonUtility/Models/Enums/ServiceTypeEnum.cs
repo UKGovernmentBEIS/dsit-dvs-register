@@ -25,5 +25,20 @@ namespace DVSRegister.CommonUtility.Models.Enums
             DescriptionAttribute attribute = field.GetCustomAttribute<DescriptionAttribute>();
             return attribute == null ? value.ToString() : attribute.Description;
         }
+
+        public static string GetDisplayValue(this ServiceTypeEnum? value)
+        {
+            switch (value)
+            {
+                case ServiceTypeEnum.UnderPinning:
+                    return "Underpinning service";
+                case ServiceTypeEnum.WhiteLabelled:
+                    return "White-labelled service";
+                case ServiceTypeEnum.Neither:
+                    return "Neither";
+                default:
+                    return "Incomplete";
+            }
+        }
     }
 }

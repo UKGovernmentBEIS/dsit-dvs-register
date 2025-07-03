@@ -1,5 +1,4 @@
-﻿using DVSRegister.CommonUtility;
-using DVSRegister.CommonUtility.Models;
+﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -582,31 +581,38 @@ namespace DVSRegister.Data.CAB
             existingService.ServiceQualityLevelMapping = service.ServiceQualityLevelMapping;
             existingService.HasSupplementarySchemes = service.HasSupplementarySchemes;
 
-            
+
             existingService.ServiceType = service.ServiceType;
-            if(service.ServiceType == ServiceTypeEnum.WhiteLabelled)
+            if (service.ServiceType == ServiceTypeEnum.WhiteLabelled)
             {
                 existingService.IsUnderPinningServicePublished = service.IsUnderPinningServicePublished;
 
-                if ((service.ManualUnderPinningServiceId == null || service.ManualUnderPinningServiceId == 0) &&
-                   service.UnderPinningServiceId != null && service.UnderPinningServiceId > 0) // publised underpinning service selected
+                if (service.IsUnderPinningServicePublished == true) // publised underpinning service selected
                 {
                     existingService.UnderPinningServiceId = service.UnderPinningServiceId;
+
+                    if (existingService.ManualUnderPinningServiceId != null)
+                    {
+                        var manualServiceToRemove = context.ManualUnderPinningService
+                       .FirstOrDefault(s => s.Id == existingService.ManualUnderPinningServiceId);
+                        context.ManualUnderPinningService.Remove(manualServiceToRemove);
+                        existingService.ManualUnderPinningServiceId = null;
+                    }
                 }
 
-                if( Convert.ToBoolean(service.IsUnderPinningServicePublished) == false)
+                if (service.IsUnderPinningServicePublished == false )
                 {
+                    existingService.UnderPinningServiceId = null;
                     if ((service.ManualUnderPinningServiceId == null || service.ManualUnderPinningServiceId == 0) &&
-                  service.UnderPinningServiceId == null && service.UnderPinningServiceId == 0 && service.ManualUnderPinningService != null)
+                         service.ManualUnderPinningService != null)
                     {
                         existingService.ManualUnderPinningService = service.ManualUnderPinningService; // insert as new manaul under pinning service
                     }
 
-                    else if ((service.UnderPinningServiceId == null || service.UnderPinningServiceId == 0) &&
-                         service.ManualUnderPinningServiceId != null || service.ManualUnderPinningServiceId != 0 && Convert.ToBoolean(service.IsUnderPinningServicePublished) == false)// a manual under pinning service updated
+                    else if (service.ManualUnderPinningServiceId != null || service.ManualUnderPinningServiceId != 0)// a manual under pinning service updated
                     {
                         existingService.ManualUnderPinningServiceId = service.ManualUnderPinningServiceId;
-                        if (existingService.ManualUnderPinningService != null && service.ManualUnderPinningService!=null)
+                        if (existingService.ManualUnderPinningService != null && service.ManualUnderPinningService != null)
                         // if there is an already existing manual service mapping update it
                         {
                             existingService.ManualUnderPinningService.ServiceName = service.ManualUnderPinningService.ServiceName;
@@ -616,17 +622,28 @@ namespace DVSRegister.Data.CAB
                         }
 
                     }
-                } 
+                }
             }
+            else
+            {
+                existingService.UnderPinningServiceId = null;
+                existingService.IsUnderPinningServicePublished = null;
 
+                if (existingService.ManualUnderPinningServiceId != null)
+                {
+                    var manualServiceToRemove = context.ManualUnderPinningService
+                        .FirstOrDefault(s => s.Id == existingService.ManualUnderPinningServiceId);
+                    context.ManualUnderPinningService.Remove(manualServiceToRemove);
+                    existingService.ManualUnderPinningServiceId = null;
+                }
+            }
             existingService.HasGPG44 = service.HasGPG44;
             existingService.HasGPG45 = service.HasGPG45;
             if (existingService.ServiceSupSchemeMapping != null & existingService.ServiceSupSchemeMapping?.Count > 0)
             {
-                context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);               
+                context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
 
             }
-               
 
             existingService.ServiceSupSchemeMapping = service.ServiceSupSchemeMapping;
             existingService.FileLink = service.FileLink;
@@ -637,7 +654,9 @@ namespace DVSRegister.Data.CAB
             existingService.ServiceStatus = service.ServiceStatus;
             existingService.ModifiedTime = DateTime.UtcNow;
         }
-        
+
+
+
         // For event logs, need to attach each item to context
         private void AttachListToDbContext(Service service)
         {

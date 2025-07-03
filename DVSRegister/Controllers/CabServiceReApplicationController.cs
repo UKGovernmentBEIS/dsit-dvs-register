@@ -68,16 +68,16 @@ namespace DVSRegister.Controllers
                 bool isPublished = serviceSummary.IsUnderpinningServicePublished != null && serviceSummary.IsUnderpinningServicePublished == true;
                 bool isSelected = serviceSummary.SelectedUnderPinningServiceId != null;
 
-                bool hasIdentityProfileSchemeMappings = serviceSummary.HasSupplementarySchemes == true 
-                    && serviceSummary?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Count > 0
-                    && serviceSummary.SchemeIdentityProfileMapping != null && serviceSummary.SchemeIdentityProfileMapping.Count >0;
+                bool hasIdentityProfileSchemeMappings = serviceSummary.HasSupplementarySchemes == true
+                && serviceSummary?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Count > 0
+                && serviceSummary.SchemeIdentityProfileMapping?.Count > 0;
 
+                List<int> schemeIdsToCheck = serviceSummary?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(scheme => scheme.Id).ToList() ?? new List<int>();
 
-                List<int> schemeIdsToCheck = serviceSummary?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(scheme => scheme.Id).ToList()??[];
                 bool allSchemeIdentityProfilesPresent = schemeIdsToCheck.All(id => serviceSummary.SchemeIdentityProfileMapping.Any(mapping => mapping.SchemeId == id));
 
-                 bool allSchemeQualityLevelsPresent = schemeIdsToCheck.All(id => serviceSummary.SchemeQualityLevelMapping.Any(mapping => mapping.SchemeId == id));
-
+                bool allSchemeQualityLevelsPresent = schemeIdsToCheck.All(id => serviceSummary.SchemeQualityLevelMapping.Any(mapping => mapping.SchemeId == id &&
+                     (mapping.HasGPG44.GetValueOrDefault() ? mapping.QualityLevel.SelectedLevelOfProtections.Count > 0 : mapping.QualityLevel.SelectedLevelOfProtections.Count == 0)));
 
                 if (string.IsNullOrEmpty(serviceSummary.ServiceName))
                 {
@@ -142,8 +142,6 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("ServiceGPG44", "TrustFramework0_4");
                 }
-
-
                 else if (serviceSummary.HasSupplementarySchemes == null)
                 {
                     return RedirectToAction("HasSupplementarySchemesInput", "CabService");
@@ -152,16 +150,29 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("SupplementarySchemes", "CabService");
                 }
-                else if (!hasIdentityProfileSchemeMappings || !allSchemeIdentityProfilesPresent || !allSchemeQualityLevelsPresent )
+                else if ((!hasIdentityProfileSchemeMappings || !allSchemeIdentityProfilesPresent || !allSchemeQualityLevelsPresent) && serviceSummary.HasSupplementarySchemes == true)
                 {
-                    int firstSchemeId = serviceSummary.SupplementarySchemeViewModel.SelectedSupplementarySchemes[0].Id;
-                    return RedirectToAction("SchemeGPG45", "TrustFramework0_4", new { schemeId = firstSchemeId });
+                    foreach (var scheme in serviceSummary.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
+                    {
+                        var identityProfile = serviceSummary.SchemeIdentityProfileMapping.Where(s => s.SchemeId == scheme.Id).FirstOrDefault();
+                        var qualityLevel = serviceSummary.SchemeQualityLevelMapping.Where(s => s.SchemeId == scheme.Id).FirstOrDefault();
 
-
+                        if (identityProfile == null || identityProfile.IdentityProfile == null)
+                        {
+                            return RedirectToAction("SchemeGPG45", "TrustFramework0_4", new { schemeId = scheme.Id });
+                        }
+                        else if (qualityLevel == null)
+                        {
+                            return RedirectToAction("SchemeGPG44Input", "TrustFramework0_4", new { schemeId = scheme.Id });
+                        }
+                        else if (qualityLevel != null && qualityLevel.HasGPG44 == true && 
+                            (qualityLevel.QualityLevel.SelectedLevelOfProtections.Count == 0 || qualityLevel.QualityLevel.SelectedQualityofAuthenticators.Count == 0))
+                        {
+                            return RedirectToAction("SchemeGPG44", "TrustFramework0_4", new { schemeId = scheme.Id });
+                        }
+                    }
+                    return RedirectToAction("SchemeGPG45", "TrustFramework0_4", new { schemeId = serviceSummary.SupplementarySchemeViewModel.SelectedSupplementarySchemeIds[0] });
                 }
-
-
-
                 else if (serviceSummary.FileName == null)
                 {
                     return RedirectToAction("CertificateUploadPage", "CabService");

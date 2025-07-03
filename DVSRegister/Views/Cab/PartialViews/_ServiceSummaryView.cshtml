@@ -2,6 +2,7 @@
 @using DVSRegister.CommonUtility
 @using DVSRegister.CommonUtility.Models;
 @using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.CommonUtility.Models.Enums
 @using DVSRegister.Extensions
 
 @{
@@ -123,7 +124,7 @@
                         Underpinning or white-labelled service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @Helper.GetEnumDescription(@Model.ServiceType)
+                        @ServiceTypeEnumExtensions.GetDisplayValue(Model.ServiceType)
                     </dd>
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "SelectServiceType", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
@@ -139,19 +140,62 @@
                         GPG 45 identity profiles
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model?.IdentityProfileViewModel?.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
+                    @if (Model?.IdentityProfileViewModel?.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
+                    {
+                        var confidenceGroups = new Dictionary<string, List<IdentityProfileDto>>()
                         {
-                            @foreach (var item in Model.IdentityProfileViewModel.SelectedIdentityProfiles)
+                            { "Low", new List<IdentityProfileDto>() },
+                            { "Medium", new List<IdentityProfileDto>() },
+                            { "High", new List<IdentityProfileDto>() },
+                            { "Very High", new List<IdentityProfileDto>() }
+                        };
+
+                        foreach (var profile in Model.IdentityProfileViewModel.SelectedIdentityProfiles)
+                        {
+                            var firstChar = profile.IdentityProfileName.Substring(0, 1).ToUpper();
+                            switch (firstChar)
                             {
-                                @item.IdentityProfileName
-                                <br>
+                                case "L":
+                                    confidenceGroups["Low"].Add(profile);
+                                    break;
+                                case "M":
+                                    confidenceGroups["Medium"].Add(profile);
+                                    break;
+                                case "H":
+                                    confidenceGroups["High"].Add(profile);
+                                    break;
+                                case "V":
+                                    confidenceGroups["Very High"].Add(profile);
+                                    break;
                             }
                         }
-                        else
+                        var nonEmptyGroupCount = confidenceGroups.Count(g => g.Value.Count > 0);
+                        var profilesShownCount = 0;
+                        foreach (var group in confidenceGroups)
                         {
-                            <div>@Constants.NullFieldsDisplay</div>
+                            if (group.Value.Count > 0)
+                            {
+                                <strong>@group.Key</strong>
+                                <br>
+                                foreach (var item in group.Value.OrderBy(c => c.IdentityProfileName))
+                                {
+                                    @item.IdentityProfileName
+                                    <br>
+                                }
+                                profilesShownCount++;
+                                if (profilesShownCount != nonEmptyGroupCount)
+                                {
+                                 <br>
+                                }
+                             }
                         }
-                    </dd>
+                    }
+                    else
+                    {
+                        <div>@Constants.NullFieldsDisplay</div>
+                    }
+                </dd>
+
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromSummaryPage = true },
                                  new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
@@ -483,31 +527,16 @@
       @*   if the service is entered manually , go to specific page *@
     bool isManualUnderPinningService = (Model.SelectedManualUnderPinningServiceId == null || Model.SelectedManualUnderPinningServiceId == 0) 
     && (Model.SelectedUnderPinningServiceId == null || Model.SelectedUnderPinningServiceId == 0);
-
-        @*   if the published service is selected, go to search page *@
-    bool isPublisedUnderPinningService = (Model.SelectedUnderPinningServiceId != null && Model.SelectedUnderPinningServiceId > 0)
-   && (Model.SelectedManualUnderPinningServiceId == null || Model.SelectedManualUnderPinningServiceId == 0);
-
-        @*   if the manual certificate reviewed selected  go to search*@
-        bool isManualCertifiedSelected = (Model.SelectedManualUnderPinningServiceId != null && Model.SelectedManualUnderPinningServiceId > 0)
-       && (Model.SelectedUnderPinningServiceId != null || Model.SelectedUnderPinningServiceId != 0);
-
     <div class="govuk-summary-card">
         <div class="govuk-summary-card__title-wrapper">
             <h2 class="govuk-summary-card__title">
                 Underpinning service
             </h2>
-
-                @if (isPublisedUnderPinningService || isManualCertifiedSelected)
-                {
-                      <ul class="govuk-summary-card__actions">
+                <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
-                        @Html.ActionLink("Change", "SelectUnderpinningService", "TrustFramework0_4", new { fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                        @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
                     </li>
-                  
                 </ul>
-                }
-              
         </div>
         <div class="govuk-summary-card__content">
             <dl class="govuk-summary-list">
@@ -564,7 +593,7 @@
 
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
-                        Underpinning service certificate expiry date
+                        Underpinning service <br /> certificate expiry date
                     </dt>
                     <dd class="govuk-summary-list__value">
                         @DateTimeExtensions.FormatDateTime(Model?.UnderPinningServiceExpiryDate, "dd MMM yyyy")
