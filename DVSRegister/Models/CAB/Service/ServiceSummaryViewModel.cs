@@ -49,9 +49,8 @@ namespace DVSRegister.Models.CAB
         public TFVersionViewModel? TFVersionViewModel { get; set; }
 
         public int? SelectedUnderPinningServiceId { get; set; }
-
-
         public int? SelectedManualUnderPinningServiceId { get; set; }
+        public bool? IsManualInDb { get; set; }
 
         [RequiredEnumValue(ErrorMessage = "Select the service type")]
         public ServiceTypeEnum? ServiceType { get; set; }

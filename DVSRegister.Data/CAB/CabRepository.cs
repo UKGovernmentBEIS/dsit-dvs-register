@@ -111,8 +111,12 @@ namespace DVSRegister.Data.CAB
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
+            .Include(p => p.TrustFrameworkVersion)
              .Include(p => p.CertificateReview)
-            .Include(p => p.ServiceRoleMapping)
+             .Include(p => p.UnderPinningService).
+             ThenInclude(p => p.Provider)
+             .Include(p => p.ManualUnderPinningService)
+            .Include(p => p.ServiceRoleMapping)            
             .ThenInclude(s => s.Role);
 
 
@@ -166,7 +170,10 @@ namespace DVSRegister.Data.CAB
             .Where(s => s.ServiceKey == serviceKey)
             .ToListAsync();
         }
-
+        public async Task<bool> IsManualInDb(int manualServiceId)
+        {
+            return await context.Service.Where(s => s.ManualUnderPinningServiceId == manualServiceId).CountAsync() > 1;
+        }
         public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
         {
             ProviderProfile provider = new();
@@ -593,10 +600,16 @@ namespace DVSRegister.Data.CAB
 
                     if (existingService.ManualUnderPinningServiceId != null)
                     {
-                        var manualServiceToRemove = context.ManualUnderPinningService
-                       .FirstOrDefault(s => s.Id == existingService.ManualUnderPinningServiceId);
-                        context.ManualUnderPinningService.Remove(manualServiceToRemove);
-                        existingService.ManualUnderPinningServiceId = null;
+                        if (context.Service.Where(s => s.ManualUnderPinningServiceId == existingService.ManualUnderPinningServiceId).Count() > 1)
+                        {
+                            existingService.ManualUnderPinningServiceId = null;
+                        }
+                        else
+                        {
+                            var manualServiceToRemove = context.ManualUnderPinningService
+                                .FirstOrDefault(s => s.Id == existingService.ManualUnderPinningServiceId);
+                            context.ManualUnderPinningService.Remove(manualServiceToRemove);
+                        }
                     }
                 }
 
@@ -631,10 +644,16 @@ namespace DVSRegister.Data.CAB
 
                 if (existingService.ManualUnderPinningServiceId != null)
                 {
-                    var manualServiceToRemove = context.ManualUnderPinningService
-                        .FirstOrDefault(s => s.Id == existingService.ManualUnderPinningServiceId);
-                    context.ManualUnderPinningService.Remove(manualServiceToRemove);
-                    existingService.ManualUnderPinningServiceId = null;
+                    if (context.Service.Where(s => s.ManualUnderPinningServiceId == existingService.ManualUnderPinningServiceId).Count() > 1)
+                    {
+                        existingService.ManualUnderPinningServiceId = null;
+                    }
+                    else
+                    {
+                        var manualServiceToRemove = context.ManualUnderPinningService
+                            .FirstOrDefault(s => s.Id == existingService.ManualUnderPinningServiceId);
+                        context.ManualUnderPinningService.Remove(manualServiceToRemove);
+                    }
                 }
             }
             existingService.HasGPG44 = service.HasGPG44;

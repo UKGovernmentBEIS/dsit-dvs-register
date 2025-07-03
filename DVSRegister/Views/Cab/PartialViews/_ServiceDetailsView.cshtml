@@ -628,7 +628,7 @@
                             }
 
                         </dd>
-                        @if (isDraft && hasValue)
+                        @if (isDraft && hasValue && !Model.IsManualInDb.GetValueOrDefault())
                         {
                             <dd class="govuk-summary-list__actions">
                                 @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
@@ -653,7 +653,7 @@
                             }
                         </dd>
 
-                        @if (isDraft && hasValue)
+                        @if (isDraft && hasValue && !Model.IsManualInDb.GetValueOrDefault())
                         {
                             <dd class="govuk-summary-list__actions">
                                 @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
@@ -677,7 +677,7 @@
                                 @:Incomplete
                             }
                         </dd>
-                        @if (isDraft && hasValue)
+                        @if (isDraft && hasValue && !Model.IsManualInDb.GetValueOrDefault())
                         {
                             <dd class="govuk-summary-list__actions">
                                 @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
@@ -700,7 +700,7 @@
                                 @:Incomplete
                             }
                         </dd>
-                        @if (isDraft && hasValue)
+                        @if (isDraft && hasValue && !Model.IsManualInDb.GetValueOrDefault())
                         {
                             <dd class="govuk-summary-list__actions">
                                 @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })

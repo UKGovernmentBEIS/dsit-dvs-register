@@ -77,7 +77,7 @@ namespace DVSRegister.Controllers
                 bool allSchemeIdentityProfilesPresent = schemeIdsToCheck.All(id => serviceSummary.SchemeIdentityProfileMapping.Any(mapping => mapping.SchemeId == id));
 
                 bool allSchemeQualityLevelsPresent = schemeIdsToCheck.All(id => serviceSummary.SchemeQualityLevelMapping.Any(mapping => mapping.SchemeId == id &&
-                     (mapping.HasGPG44.GetValueOrDefault() ? mapping?.QualityLevel?.SelectedLevelOfProtections?.Count > 0 : mapping?.QualityLevel?.SelectedLevelOfProtections?.Count == 0)));
+                     (mapping.HasGPG44.GetValueOrDefault() ? mapping?.QualityLevel?.SelectedLevelOfProtections?.Count > 0 : true)));
 
                 if (string.IsNullOrEmpty(serviceSummary.ServiceName))
                 {
