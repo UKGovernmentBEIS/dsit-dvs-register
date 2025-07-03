@@ -9,10 +9,10 @@ namespace DVSRegister.Data.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public string ServiceName { get; set; }
-        public string ProviderName { get; set; }
+        public string? ServiceName { get; set; }
+        public string? ProviderName { get; set; }
         [ForeignKey("Cab")]
-        public int CabId { get; set; }
+        public int? CabId { get; set; }
         public Cab Cab { get; set; }
 
         public DateTime? CertificateExpiryDate { get; set; }

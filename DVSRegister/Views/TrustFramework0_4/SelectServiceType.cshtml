@@ -11,7 +11,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ProviderRoles", "CabService", new { providerId = id }, new { @class = "govuk-back-link" })
+    <a href="@Model.RefererURL" class="govuk-back-link">Back</a>
 
 
     <main id="main-content" class="govuk-main-wrapper" role="main">
@@ -40,7 +40,10 @@
                     </p>
                 </div>
                 @using (Html.BeginForm("SaveServiceType", "TrustFramework0_4", FormMethod.Post))
-                {               
+                {
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+                    @Html.HiddenFor(m => m.RefererURL)
                     <div class="govuk-form-group@(hasError ? " govuk-form-group--error" : "")">
                         <fieldset class="govuk-fieldset">
                             <legend class="govuk-fieldset__legend govuk-visually-hidden">
@@ -50,21 +53,21 @@
                             
 
                             <div class="govuk-radios" data-module="govuk-radios">
-                                @foreach (var option in Enum.GetValues(typeof(ServiceTypeEnum)).Cast<ServiceTypeEnum>())
-                                {
-                                    var description = ((DescriptionAttribute?)option.GetType().GetField(option.ToString())!
-                                    .GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault())?.Description?? option.ToString();
-                                    
-                                    <div class="govuk-radios__item">
-                                        <input asp-for="@Model.ServiceType"
-                                               class="govuk-radios__input"
-                                               type="radio"
-                                               id="@option"
-                                               value="@((int)option)"/>
+                                @{
 
-                                     
-                                        <label class="govuk-label govuk-radios__label" for="@option">@description</label>
-                                    </div>
+                                    var serviceTypes = Enum.GetValues(typeof(ServiceTypeEnum)).Cast<ServiceTypeEnum>().ToList();
+                                    for (int i = 0; i < serviceTypes.Count; i++)
+                                    {
+                                        var serviceType = serviceTypes[i];
+                                        var radioId = i == 1 ? "servicetype" : "servicetype" + +(int)i;
+                                        var description = serviceType.GetDescription();
+                                        bool isChecked = Model.ServiceType == serviceType;
+
+                                        <div class="govuk-radios__item">
+                                            @Html.RadioButton("ServiceType", serviceType, isChecked, new { @id = radioId, @class = "govuk-radios__input" })
+                                            <label class="govuk-label govuk-radios__label" for="@radioId">@description</label>
+                                        </div>
+                                    }
                                 }
                             </div>
                         </fieldset>

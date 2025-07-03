@@ -1,8 +1,9 @@
 ﻿@using DVSRegister.CommonUtility
 @using DVSRegister.CommonUtility.Models
+@using DVSRegister.CommonUtility.Models.Enums
 @using DVSRegister.Extensions
 @using DVSRegister.BusinessLogic.Models.CAB
-@model DVSRegister.BusinessLogic.Models.CAB.ServiceDto
+@model ServiceDto
 
 @{
     bool isDraft = Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft ? true : false;
@@ -28,7 +29,7 @@
 <div class="govuk-summary-card @(Model.IsCurrent || Model.ServiceVersion == 1 ? "govuk-!-margin-0" : "govuk-!-margin-bottom-8")">
         <div class="govuk-summary-card__title-wrapper">
         <p class="govuk-summary-card__title">
-            Service details: @Model.ServiceName
+            Submission date (GMT): @DateTimeExtensions.FormatDateTime(Model.CreatedTime)
         </p>
             @if (isDraft)
             {
@@ -101,16 +102,6 @@
                         </dd>
                     </div>
                 }            
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Submitted date (GMT)
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-
-                    @DateTimeExtensions.FormatDateTime(@Model.CreatedTime)
-                    </dd>
-                </div>
-
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Status
@@ -199,6 +190,24 @@
 
                 </div>
 
+                @if(is0_4GammaVersion)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Underpinning or white-labelled service
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @ServiceTypeEnumExtensions.GetDisplayValue(Model.ServiceType)
+                        </dd>
+                        @if (isDraft && hasValue)
+                        {
+                            <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "SelectServiceType", "TrustFramework0_4", new { fromDetailsPage = true },
+                                         new { @class = "govuk-link", @aria_label = "Change the type of service" })
+                            </dd>
+                        }
+                    </div>
+                }
                 @if (Model.HasGPG44 == false)
                 {
                     <div class="govuk-summary-list__row">
@@ -458,6 +467,7 @@
    {
         @foreach (var schemeMapping in Model.ServiceSupSchemeMapping)
         {
+            hasValue = true;
            <hr class="govuk-section-break govuk-section-break--m">
             <div class="govuk-summary-card">
                 <div class="govuk-summary-card__title-wrapper">
@@ -586,11 +596,17 @@
 
     @if(Model.UnderPinningService == null  && Model.ManualUnderPinningService!= null )
     {
+        hasValue = true;
         <div class="govuk-summary-card">
             <div class="govuk-summary-card__title-wrapper">
                 <h2 class="govuk-summary-card__title">
                     Underpinning service
                 </h2>
+                <ul class="govuk-summary-card__actions">
+                    <li class="govuk-summary-card__action">
+                        @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                    </li>
+                </ul>
             </div>
             <div class="govuk-summary-card__content">
                 <dl class="govuk-summary-list">
@@ -601,23 +617,21 @@
                         </dt>
                         <dd class="govuk-summary-list__value">
 
-                            @if (Model.ManualUnderPinningService.ServiceName!= null)
+                            @if (Model?.ManualUnderPinningService?.ServiceName!= null)
                             {
-                                @Model.ManualUnderPinningService.ServiceName
+                                @Model?.ManualUnderPinningService?.ServiceName
                             }
                             else
                             {
                                 hasValue = false;
                                 @:Incomplete
-
-
                             }
 
                         </dd>
-                        @if (isDraft && hasValue)
+                        @if (isDraft && hasValue && !Model.IsManualInDb.GetValueOrDefault())
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                                @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
                             </dd>
                         }
                     </div>
@@ -628,7 +642,7 @@
                         </dt>
                         <dd class="govuk-summary-list__value">
 
-                            @if (Model.ManualUnderPinningService.ProviderName != null)
+                            @if (Model?.ManualUnderPinningService?.ProviderName != null)
                             {
                                 @Model.ManualUnderPinningService.ProviderName
                             }
@@ -639,10 +653,10 @@
                             }
                         </dd>
 
-                        @if (isDraft && hasValue)
+                        @if (isDraft && hasValue && !Model.IsManualInDb.GetValueOrDefault())
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
                             </dd>
                         }
 
@@ -653,7 +667,7 @@
                             CAB of underpinning service
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ManualUnderPinningService.Cab.CabName != null)
+                            @if (Model.ManualUnderPinningService?.Cab?.CabName != null)
                             {
                                 @Model.ManualUnderPinningService.Cab.CabName
                             }
@@ -663,22 +677,22 @@
                                 @:Incomplete
                             }
                         </dd>
-                        @if (isDraft && hasValue)
+                        @if (isDraft && hasValue && !Model.IsManualInDb.GetValueOrDefault())
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
                             </dd>
                         }
                     </div>
 
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            Underpinning service certificate expiry date
+                            Underpinning service <br /> certificate expiry date
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ManualUnderPinningService.CertificateExpiryDate != null)
+                            @if (Model?.ManualUnderPinningService?.CertificateExpiryDate != null)
                             {
-                                @DateTimeExtensions.FormatDateTime(Model.ManualUnderPinningService.CertificateExpiryDate, "dd MMM yyyy")                               
+                                @DateTimeExtensions.FormatDateTime(Model.ManualUnderPinningService.CertificateExpiryDate, "dd MMM yyyy")
                             }
                             else
                             {
@@ -686,10 +700,10 @@
                                 @:Incomplete
                             }
                         </dd>
-                        @if (isDraft && hasValue)
+                        @if (isDraft && hasValue && !Model.IsManualInDb.GetValueOrDefault())
                         {
                             <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
                             </dd>
                         }
                     </div>
@@ -701,12 +715,18 @@
 
     else if( Model.ManualUnderPinningService == null && Model.UnderPinningService !=null )
     {
+        hasValue = true;
         <div class="govuk-summary-card">
-            <div class="govuk-summary-card__title-wrapper">
-                <h2 class="govuk-summary-card__title">
-                    Underpinning service
-                </h2>
-            </div>
+           <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">
+                Underpinning service
+            </h2>
+                <ul class="govuk-summary-card__actions">
+                    <li class="govuk-summary-card__action">
+                        @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                    </li>
+                </ul>
+        </div>
             <div class="govuk-summary-card__content">
                 <dl class="govuk-summary-list">
 
@@ -716,7 +736,7 @@
                         </dt>
                         <dd class="govuk-summary-list__value">
 
-                            @if (Model.UnderPinningService.ServiceName != null)
+                            @if (Model?.UnderPinningService?.ServiceName != null)
                             {
                                 @Model.UnderPinningService.ServiceName
                             }
@@ -724,17 +744,8 @@
                             {
                                 hasValue = false;
                                 @:Incomplete
-
-
                             }
-
                         </dd>
-                        @if (isDraft && hasValue)
-                        {
-                            <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "#", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
-                            </dd>
-                        }
                     </div>
 
                     <div class="govuk-summary-list__row">
@@ -743,14 +754,12 @@
                         </dt>
                         <dd class="govuk-summary-list__value">
 
-                            @if (Model.UnderPinningService.Provider.RegisteredName!=null)
+                            @if (Model?.UnderPinningService?.Provider?.RegisteredName!=null)
                             {
                                 @Model.UnderPinningService.Provider.RegisteredName
                             }
                            
-                        </dd>
-
-                        
+                        </dd>                     
 
                     </div>
 
@@ -759,7 +768,7 @@
                             CAB of underpinning service
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.UnderPinningService.CabUser.Cab.CabName != null)
+                            @if (Model?.UnderPinningService?.CabUser?.Cab?.CabName != null)
                             {
                                 @Model.UnderPinningService.CabUser.Cab.CabName
                             }
@@ -770,10 +779,10 @@
 
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            Underpinning service certificate expiry date
+                            Underpinning service <br /> certificate expiry date
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.UnderPinningService.ConformityExpiryDate != null)
+                            @if (Model?.UnderPinningService?.ConformityExpiryDate != null)
                             {
                                 @DateTimeExtensions.FormatDateTime(Model.UnderPinningService.ConformityExpiryDate, "dd MMM yyyy")
                             }

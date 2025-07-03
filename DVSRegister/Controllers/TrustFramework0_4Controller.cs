@@ -32,7 +32,7 @@ namespace DVSRegister.Controllers
         private readonly IMapper mapper = mapper;     
 
         [HttpGet("tf-version")]
-        public async Task<IActionResult> SelectVersionOfTrustFrameWork(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
+        public async Task<IActionResult> SelectVersionOfTrustFrameWork(int providerProfileId, bool fromSummaryPage,  bool fromDetailsPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
@@ -45,15 +45,12 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             TFVersionViewModel TFVersionViewModel = new()
             {
-                SelectedTFVersionId = summaryViewModel?.TFVersionViewModel?.SelectedTFVersionId,
+                SelectedTFVersionId = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Id,
                 AvailableVersions = await trustFrameworkService.GetTrustFrameworkVersions(),
                 IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = referralUrl
-            };
-
-            summaryViewModel.ProviderProfileId = providerProfileId;
-            summaryViewModel.RefererURL = referralUrl;
-            HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                RefererURL = referralUrl,
+                
+            }; 
 
             return View(TFVersionViewModel);
         }
@@ -67,17 +64,25 @@ namespace DVSRegister.Controllers
             List<TrustFrameworkVersionDto> availableVersion = await trustFrameworkService.GetTrustFrameworkVersions();
             TFVersionViewModel.AvailableVersions = availableVersion;
             TFVersionViewModel.SelectedTFVersionId = TFVersionViewModel.SelectedTFVersionId ?? null;
+            TFVersionViewModel.FromSummaryPage = false;
+            TFVersionViewModel.FromDetailsPage = false;
             TFVersionViewModel.IsAmendment = summaryViewModel.IsAmendment;
+
+            TrustFrameworkVersionDto previousSelection = new();
             if (TFVersionViewModel.SelectedTFVersionId != null)
             {
-                summaryViewModel.TFVersionViewModel = new();
-                summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);
-               
+                previousSelection = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion;
+                summaryViewModel.TFVersionViewModel = new();              
+                summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);// current selection
             }
-
             if (ModelState.IsValid)
             {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);                
+                if (previousSelection?.Version == Constants.TFVersion0_4 && summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_3)
+                {
+                    ViewModelHelper.ClearTFVersion0_4Fields(summaryViewModel); // clear extra fields value changed from 0.4 to 0.3
+                }
+                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                
                 return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
             }
             else
@@ -86,9 +91,7 @@ namespace DVSRegister.Controllers
             }
         }
 
-        #region Select service type
-
-      
+        #region Select service type     
 
 
         [HttpGet("select-service-type")]
@@ -106,25 +109,44 @@ namespace DVSRegister.Controllers
         {
             if (ModelState["ServiceType"].Errors.Count == 0)
             {
-                ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-                serviceSummaryViewModel.ServiceType = viewModel.ServiceType;
-                bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
-                bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
-                HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
+                ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+                ServiceTypeEnum? previousServiceType = summaryViewModel.ServiceType;
+                summaryViewModel.ServiceType = viewModel.ServiceType;
+                bool fromSummaryPage = viewModel.FromSummaryPage;
+                bool fromDetailsPage = viewModel.FromDetailsPage;
+                viewModel.FromSummaryPage = false;
+                viewModel.FromDetailsPage = false;
+                viewModel.IsAmendment = summaryViewModel.IsAmendment;
+
+
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 string nextPage = string.Empty;
 
                 if (viewModel.ServiceType == ServiceTypeEnum.UnderPinning || viewModel.ServiceType == ServiceTypeEnum.Neither)
                 {
+                    if(previousServiceType == ServiceTypeEnum.WhiteLabelled)
+                    {
+                        ViewModelHelper.ClearUnderPinningServiceFields(summaryViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    }
                     nextPage = "ServiceGPG45Input";
                 }
                 else if (viewModel.ServiceType == ServiceTypeEnum.WhiteLabelled)
                 {
+                    if (previousServiceType == ServiceTypeEnum.UnderPinning || previousServiceType == ServiceTypeEnum.Neither)
+                    {
+                        summaryViewModel.FromSummaryPage = fromSummaryPage;
+                        fromSummaryPage = false;                        
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);// need to eneter underpinning service details
+
+                    }
                     nextPage = "StatusOfUnderpinningService";
+
                 }
                 else
                     throw new InvalidDataException("Invalid service type");
 
-                return await HandleActions(action, serviceSummaryViewModel, fromSummaryPage, fromDetailsPage, false, nextPage);
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, nextPage);
 
             }
             else
@@ -149,12 +171,12 @@ namespace DVSRegister.Controllers
         [HttpPost("service/gpg45-input")]
         public async Task<IActionResult> SaveServiceGPG45Input(ServiceSummaryViewModel viewModel, string action)
         {
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            viewModel.IsAmendment = summaryViewModel.IsAmendment;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();            
             bool fromSummaryPage = viewModel.FromSummaryPage;
             bool fromDetailsPage = viewModel.FromDetailsPage;
             viewModel.FromSummaryPage = false;
             viewModel.FromDetailsPage = false;
+            viewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState["HasGPG45"].Errors.Count == 0)
             {
                 summaryViewModel.HasGPG45 = viewModel.HasGPG45;
@@ -196,11 +218,11 @@ namespace DVSRegister.Controllers
         {
             bool fromSummaryPage = identityProfileViewModel.FromSummaryPage;
             bool fromDetailsPage = identityProfileViewModel.FromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            identityProfileViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();            
             List<IdentityProfileDto> availableIdentityProfiles = await cabService.GetIdentityProfiles();
             identityProfileViewModel.AvailableIdentityProfiles = availableIdentityProfiles;
             identityProfileViewModel.SelectedIdentityProfileIds = identityProfileViewModel.SelectedIdentityProfileIds ?? new List<int>();
+            identityProfileViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (identityProfileViewModel.SelectedIdentityProfileIds.Count > 0)
                 summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = availableIdentityProfiles.Where(c => identityProfileViewModel.SelectedIdentityProfileIds.Contains(c.Id)).ToList();
             summaryViewModel.IdentityProfileViewModel.FromSummaryPage = false;
@@ -286,12 +308,11 @@ namespace DVSRegister.Controllers
 
             bool fromSummaryPage = qualityLevelViewModel.FromSummaryPage;
             bool fromDetailsPage = qualityLevelViewModel.FromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            qualityLevelViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();            
             List<QualityLevelDto> availableQualityLevels = await cabService.GetQualitylevels();
             qualityLevelViewModel.AvailableQualityOfAuthenticators = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
-
             qualityLevelViewModel.SelectedQualityofAuthenticatorIds = qualityLevelViewModel.SelectedQualityofAuthenticatorIds ?? [];
+            qualityLevelViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Count > 0)
                 summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Contains(c.Id)).ToList();
 
@@ -331,17 +352,15 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> StatusOfUnderpinningService(ServiceSummaryViewModel serviceSummaryViewModel, string action)
         {
             ServiceSummaryViewModel serviceSummary = GetServiceSummary();
-            bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
-            bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
-            serviceSummaryViewModel.FromSummaryPage = false;
-            serviceSummaryViewModel.FromDetailsPage = false;
+            serviceSummary.FromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
+            serviceSummary.FromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
             serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
 
             if (ModelState["IsUnderpinningServicePublished"].Errors.Count == 0)
             {
                 serviceSummary.IsUnderpinningServicePublished = serviceSummaryViewModel.IsUnderpinningServicePublished;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, false, "SelectUnderpinningService");
+                return await HandleActions(action, serviceSummary, false, false, false, "SelectUnderpinningService");
             }
             else
             {
@@ -357,11 +376,12 @@ namespace DVSRegister.Controllers
         /// <param name="SearchAction"></param>
         /// <returns></returns>
         [HttpGet("select-underpinning-service")]
-        public async Task<IActionResult> SelectUnderpinningService(string SearchText, string SearchAction, bool fromSummaryPage, bool fromDetailsPage)
-        {
-            ViewBag.fromSummaryPage = fromDetailsPage;
-            ViewBag.fromDetailsPage = fromDetailsPage;
+        public async Task<IActionResult> SelectUnderpinningService(string SearchText, string SearchAction)
+        {            
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            ViewBag.fromSummaryPage = summaryViewModel.FromSummaryPage;
+            ViewBag.fromDetailsPage = summaryViewModel.FromDetailsPage;
+
             var published = (bool)summaryViewModel.IsUnderpinningServicePublished;
 
             var services = new List<ServiceDto>();
@@ -376,10 +396,19 @@ namespace DVSRegister.Controllers
             {
                 if(published)
                 {
+                    // Fetch only services of type underpinning and status published
+                    //IsUnderpinningServicePublished // true
+                    //SelectedUnderPinningServiceId // not null
+                   // SelectedManualUnderPinningServiceId //null
                     services = await trustFrameworkService.GetPublishedUnderpinningServices(SearchText);
                 }
                 else
                 {
+                    //Fetch only manually saved underpinning services with certificate review passed status
+                    // Fetch only services of type underpinning and status published
+                    //IsUnderpinningServicePublished // false
+                    //SelectedUnderPinningServiceId //  null
+                    // SelectedManualUnderPinningServiceId //not null
                     manualServices = await trustFrameworkService.GetServicesWithManualUnderinningService(SearchText);
                 }
                 
@@ -394,7 +423,8 @@ namespace DVSRegister.Controllers
                 IsPublished = published,
                 SearchText = SearchText,
                 UnderpinningServices = services,
-                ManualUnderpinningServices = manualServices
+                ManualUnderpinningServices = manualServices,
+                IsAmendment = summaryViewModel.IsAmendment
             };
             return View(underpinningServiceViewModel);
         }
@@ -417,6 +447,7 @@ namespace DVSRegister.Controllers
         [HttpGet("confirm-underpinning-service")]     
         public async Task<IActionResult> ConfirmUnderpinningService(int serviceId, bool published, bool fromSummaryPage, bool fromDetailsPage)
         {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             var service = await trustFrameworkService.GetServiceDetails(serviceId);  //service details with manual service details
@@ -430,9 +461,10 @@ namespace DVSRegister.Controllers
                     UnderPinningProviderName = service.Provider.RegisteredName,
                     UnderPinningServiceName = service.ServiceName,
                     UnderPinningServiceExpiryDate = service.ConformityExpiryDate,
-                    SelectCabViewModel = new SelectCabViewModel { SelectedCabId = service?.CabUser?.CabId, SelectedCabName = service?.CabUser?.Cab?.CabName }
+                    SelectCabViewModel = new SelectCabViewModel { SelectedCabId = service?.CabUser?.CabId, SelectedCabName = service?.CabUser?.Cab?.CabName},
+                    IsAmendment = summaryViewModel.IsAmendment
 
-                };
+                 };
 
             }
             else
@@ -444,8 +476,8 @@ namespace DVSRegister.Controllers
                     UnderPinningProviderName = service.ManualUnderPinningService.ProviderName,
                     UnderPinningServiceName = service.ManualUnderPinningService.ServiceName,
                     UnderPinningServiceExpiryDate = service.ManualUnderPinningService.CertificateExpiryDate,
-                    SelectCabViewModel = new SelectCabViewModel { SelectedCabId = service?.ManualUnderPinningService?.CabId, SelectedCabName = service?.ManualUnderPinningService?.Cab?.CabName }
-
+                    SelectCabViewModel = new SelectCabViewModel { SelectedCabId = service?.ManualUnderPinningService?.CabId, SelectedCabName = service?.ManualUnderPinningService?.Cab?.CabName},
+                    IsAmendment = summaryViewModel.IsAmendment
                 };
 
             }
@@ -460,6 +492,10 @@ namespace DVSRegister.Controllers
             bool fromSummaryPage = serviceSummaryViewModel.FromSummaryPage;
             bool fromDetailsPage = serviceSummaryViewModel.FromDetailsPage;
 
+            serviceSummaryViewModel.FromSummaryPage = false;
+            serviceSummaryViewModel.FromDetailsPage = false;
+            serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
+
             serviceSummary.SelectedManualUnderPinningServiceId = serviceSummaryViewModel.SelectedManualUnderPinningServiceId;
             serviceSummary.SelectedUnderPinningServiceId = serviceSummaryViewModel.SelectedUnderPinningServiceId;
             serviceSummary.UnderPinningServiceName = serviceSummaryViewModel.UnderPinningServiceName;
@@ -467,6 +503,7 @@ namespace DVSRegister.Controllers
             serviceSummary.UnderPinningServiceExpiryDate = serviceSummaryViewModel.UnderPinningServiceExpiryDate;
             serviceSummary.SelectCabViewModel = new SelectCabViewModel { SelectedCabId = serviceSummaryViewModel?.SelectCabViewModel?.SelectedCabId,
                 SelectedCabName = serviceSummaryViewModel?.SelectCabViewModel?.SelectedCabName};
+            serviceSummary.IsManualInDb = false;
 
             if(ModelState["SelectedUnderPinningServiceId"].Errors.Count == 0 && ModelState["UnderPinningServiceName"].Errors.Count == 0)
             {
@@ -483,13 +520,19 @@ namespace DVSRegister.Controllers
 
         #region Service Name
         [HttpGet("underpinning-service-name")]
-        public IActionResult UnderPinningServiceName(bool fromSummaryPage, bool fromDetailsPage, bool fromUnderPinningServiceSummaryPage)
+        public IActionResult UnderPinningServiceName(bool fromSummaryPage, bool fromDetailsPage, bool fromUnderPinningServiceSummaryPage, bool manualEntryFirstTimeLoad)
         {
+
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ViewBag.fromUnderPinningServiceSummaryPage = fromUnderPinningServiceSummaryPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
+            if (manualEntryFirstTimeLoad)
+            {
+                ViewModelHelper.ClearUnderPinningServiceFieldsBeforeManualEntry(serviceSummaryViewModel);
+                HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);            }
             serviceSummaryViewModel.RefererURL = GetRefererURL();
+            
             return View(serviceSummaryViewModel);
         }
 
@@ -506,6 +549,7 @@ namespace DVSRegister.Controllers
             if (ModelState["UnderPinningServiceName"].Errors.Count == 0)
             {
                 serviceSummary.UnderPinningServiceName = serviceSummaryViewModel.UnderPinningServiceName;
+                serviceSummary.IsManualInDb = false;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
                 return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderPinningProviderName", "TrustFramework0_4");
             }
@@ -576,12 +620,17 @@ namespace DVSRegister.Controllers
             bool fromSummaryPage = cabsViewModel.FromSummaryPage;
             bool fromDetailsPage = cabsViewModel.FromDetailsPage;
             bool fromUnderPinningServiceSummaryPage = cabsViewModel.FromUnderPinningServiceSummaryPage;
+            cabsViewModel.FromSummaryPage = false;
+            cabsViewModel.FromDetailsPage = false;
+            cabsViewModel.IsAmendment = serviceSummary.IsAmendment;
+
+
             if (cabsViewModel.Cabs == null)
                 cabsViewModel.Cabs = await trustFrameworkService.GetCabs();
             if (ModelState.IsValid)
             {
                 string cabName = cabsViewModel.Cabs.Where(x=>x.Id == cabsViewModel.SelectedCabId).Select(x=>x.CabName).First();
-                serviceSummary.SelectCabViewModel = new SelectCabViewModel { SelectedCabId = Convert.ToInt32(cabsViewModel.SelectedCabId),
+                serviceSummary.SelectCabViewModel = new SelectCabViewModel { SelectedCabId = cabsViewModel.SelectedCabId ,
                 SelectedCabName = cabName
                 };
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
@@ -624,12 +673,14 @@ namespace DVSRegister.Controllers
         [HttpPost("under-pinning-service-expiry-date")]
         public async Task<IActionResult> SaveUnderPinningServiceExpiryDate(DateViewModel dateViewModel, string action)
         {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             bool fromSummaryPage = dateViewModel.FromSummaryPage;
             bool fromDetailsPage = dateViewModel.FromDetailsPage;
             bool fromUnderPinningServiceSummaryPage = dateViewModel.FromUnderPinningServiceSummaryPage;
             dateViewModel.FromDetailsPage = false;
-            dateViewModel.PropertyName = "UnderPinningServiceExpiryDate";
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            dateViewModel.FromSummaryPage = false;
+            dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            dateViewModel.PropertyName = "UnderPinningServiceExpiryDate";            
 
             DateTime? underPinningServiceExpiryDate = ValidationHelper.ValidateCustomExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState);
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
@@ -744,7 +795,7 @@ namespace DVSRegister.Controllers
                 else
                 {
                    
-                    summaryViewModel.SchemeIdentityProfileMapping.Add(schemeIdentityProfileMappingViewModel);
+                    summaryViewModel?.SchemeIdentityProfileMapping?.Add(schemeIdentityProfileMappingViewModel);
                 }
 
             }
@@ -793,22 +844,25 @@ namespace DVSRegister.Controllers
             if (ModelState["HasGPG44"].Errors.Count == 0)
             {
                 SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = new();
-                schemeQualityLevelMappingViewModel.HasGPG44 = viewModel.HasGPG44;
-                schemeQualityLevelMappingViewModel.SchemeId = viewModel.SchemeId;
 
                 var existingMapping = summaryViewModel?.SchemeQualityLevelMapping?.FirstOrDefault(x => x.SchemeId == viewModel.SchemeId);
                 if (existingMapping != null)
                 {
                     int index = summaryViewModel.SchemeQualityLevelMapping.IndexOf(existingMapping);
-                    summaryViewModel.SchemeQualityLevelMapping[index] = schemeQualityLevelMappingViewModel;
+                    schemeQualityLevelMappingViewModel = viewModel;
+                    summaryViewModel.SchemeQualityLevelMapping[index].HasGPG44 = viewModel.HasGPG44;
                 }
                 else
                 {
+                  
+                    schemeQualityLevelMappingViewModel.HasGPG44 = viewModel.HasGPG44;
+                    schemeQualityLevelMappingViewModel.SchemeId = viewModel.SchemeId;
+                    schemeQualityLevelMappingViewModel.RefererURL = viewModel.RefererURL;
                     summaryViewModel?.SchemeQualityLevelMapping?.Add(schemeQualityLevelMappingViewModel);
                 }
 
 
-                schemeQualityLevelMappingViewModel.RefererURL = viewModel.RefererURL;
+               
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 return await HandleSchemeGpg44Actions(action, summaryViewModel, schemeQualityLevelMappingViewModel, fromSummaryPage, fromDetailsPage, viewModel.SchemeId);
             }
@@ -873,7 +927,7 @@ namespace DVSRegister.Controllers
             {
                 qualityLevelViewModel.SelectedQualityofAuthenticators = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Contains(c.Id)).ToList();
                 qualityLevelViewModel.SelectedLevelOfProtections = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedLevelOfProtectionIds.Contains(c.Id)).ToList();
-                var mapping = summaryViewModel.SchemeQualityLevelMapping?.Where(x => x.SchemeId == qualityLevelViewModel.SchemeId).FirstOrDefault()??new SchemeQualityLevelMappingViewModel();
+                var mapping = summaryViewModel.SchemeQualityLevelMapping?.Where(x => x.SchemeId == qualityLevelViewModel.SchemeId).FirstOrDefault()??new SchemeQualityLevelMappingViewModel();                
                 mapping.QualityLevel = qualityLevelViewModel;
 
             }
@@ -1007,7 +1061,7 @@ namespace DVSRegister.Controllers
                     {
                         bool hasRemainingSchemes = HasRemainingSchemes(schemeId);
                         var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");
-                        ViewModelHelper.ClearSchemeGpg44(schemeQualityLevelMappingViewModel);
+                        ViewModelHelper.ClearSchemeGpg44(summaryViewModel,schemeId);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return fromSummaryPage ? RedirectToAction("ServiceSummary","CabService") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
                        : hasRemainingSchemes ? RedirectToAction("SchemeGPG45", new { schemeId = selectedSchemeIds[0] }) :
@@ -1017,7 +1071,7 @@ namespace DVSRegister.Controllers
                 case "draft":
                     if (!Convert.ToBoolean(schemeQualityLevelMappingViewModel.HasGPG44))
                     {
-                        ViewModelHelper.ClearSchemeGpg44(schemeQualityLevelMappingViewModel);
+                        ViewModelHelper.ClearSchemeGpg44(summaryViewModel, schemeId);
                     }
                     HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     return await SaveAsDraftAndRedirect(summaryViewModel);
@@ -1031,7 +1085,7 @@ namespace DVSRegister.Controllers
                     }
                     else
                     {
-                        ViewModelHelper.ClearSchemeGpg44(schemeQualityLevelMappingViewModel);
+                        ViewModelHelper.ClearSchemeGpg44(summaryViewModel, schemeId);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                         return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
@@ -1067,6 +1121,7 @@ namespace DVSRegister.Controllers
             GenericResponse genericResponse = new();
             serviceSummary.ServiceStatus = ServiceStatusEnum.SavedAsDraft;
             ServiceDto serviceDto = mapper.Map<ServiceDto>(serviceSummary);
+            ViewModelHelper.MapTFVersion0_4Fields(serviceSummary, serviceDto);
             if (!IsValidCabId(serviceSummary.CabId))
                 return HandleInvalidCabId(serviceSummary.CabId);
 
@@ -1117,10 +1172,5 @@ namespace DVSRegister.Controllers
         }
 
         #endregion
-
-
-
-
-
     }
 }

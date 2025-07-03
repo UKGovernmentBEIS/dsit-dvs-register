@@ -111,8 +111,12 @@ namespace DVSRegister.Data.CAB
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
+            .Include(p => p.TrustFrameworkVersion)
              .Include(p => p.CertificateReview)
-            .Include(p => p.ServiceRoleMapping)
+             .Include(p => p.UnderPinningService).
+             ThenInclude(p => p.Provider)
+             .Include(p => p.ManualUnderPinningService)
+            .Include(p => p.ServiceRoleMapping)            
             .ThenInclude(s => s.Role);
 
 
@@ -166,7 +170,10 @@ namespace DVSRegister.Data.CAB
             .Where(s => s.ServiceKey == serviceKey)
             .ToListAsync();
         }
-
+        public async Task<bool> IsManualInDb(int manualServiceId)
+        {
+            return await context.Service.Where(s => s.ManualUnderPinningServiceId == manualServiceId).CountAsync() > 1;
+        }
         public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
         {
             ProviderProfile provider = new();
@@ -232,7 +239,8 @@ namespace DVSRegister.Data.CAB
             {
                 
                 var existingService = await context.Service.Include(x=>x.ServiceRoleMapping).Include(x=>x.ServiceIdentityProfileMapping)
-                .Include(x=>x.ServiceQualityLevelMapping).Include(x=>x.ServiceSupSchemeMapping)              
+                .Include(x=>x.ServiceQualityLevelMapping).Include(x=>x.ServiceSupSchemeMapping)
+                .Include(x => x.ManualUnderPinningService)
                  .Where(x=> x.ServiceKey > 0 && x.ServiceKey == service.ServiceKey && service.IsCurrent == true).FirstOrDefaultAsync();                
                 if(existingService != null && existingService.Id>0)
                 {
@@ -308,6 +316,7 @@ namespace DVSRegister.Data.CAB
             {
                 var existingService = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)
                .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)
+               .Include(x=>x.ManualUnderPinningService)
                .Where(x => x.ServiceKey == service.ServiceKey && x.IsCurrent == true).FirstOrDefaultAsync();
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
@@ -386,6 +395,7 @@ namespace DVSRegister.Data.CAB
             {
                 var existingService = await context.Service.Include(x => x.CertificateReview).Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)
                .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)
+               .Include(x => x.ManualUnderPinningService)
                .Where(x => x.Id == service.Id && x.IsCurrent == true).FirstOrDefaultAsync();
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
@@ -486,7 +496,6 @@ namespace DVSRegister.Data.CAB
                     genericResponse.Success = true;
 
                 }
-
             }
             catch (Exception ex)
             {
@@ -578,10 +587,83 @@ namespace DVSRegister.Data.CAB
 
             existingService.ServiceQualityLevelMapping = service.ServiceQualityLevelMapping;
             existingService.HasSupplementarySchemes = service.HasSupplementarySchemes;
+
+
+            existingService.ServiceType = service.ServiceType;
+            if (service.ServiceType == ServiceTypeEnum.WhiteLabelled)
+            {
+                existingService.IsUnderPinningServicePublished = service.IsUnderPinningServicePublished;
+
+                if (service.IsUnderPinningServicePublished == true) // publised underpinning service selected
+                {
+                    existingService.UnderPinningServiceId = service.UnderPinningServiceId;
+
+                    if (existingService.ManualUnderPinningServiceId != null)
+                    {
+                        if (context.Service.Where(s => s.ManualUnderPinningServiceId == existingService.ManualUnderPinningServiceId).Count() > 1)
+                        {
+                            existingService.ManualUnderPinningServiceId = null;
+                        }
+                        else
+                        {
+                            var manualServiceToRemove = context.ManualUnderPinningService
+                                .FirstOrDefault(s => s.Id == existingService.ManualUnderPinningServiceId);
+                            context.ManualUnderPinningService.Remove(manualServiceToRemove);
+                        }
+                    }
+                }
+
+                if (service.IsUnderPinningServicePublished == false )
+                {
+                    existingService.UnderPinningServiceId = null;
+                    if ((service.ManualUnderPinningServiceId == null || service.ManualUnderPinningServiceId == 0) &&
+                         service.ManualUnderPinningService != null)
+                    {
+                        existingService.ManualUnderPinningService = service.ManualUnderPinningService; // insert as new manaul under pinning service
+                    }
+
+                    else if (service.ManualUnderPinningServiceId != null || service.ManualUnderPinningServiceId != 0)// a manual under pinning service updated
+                    {
+                        existingService.ManualUnderPinningServiceId = service.ManualUnderPinningServiceId;
+                        if (existingService.ManualUnderPinningService != null && service.ManualUnderPinningService != null)
+                        // if there is an already existing manual service mapping update it
+                        {
+                            existingService.ManualUnderPinningService.ServiceName = service.ManualUnderPinningService.ServiceName;
+                            existingService.ManualUnderPinningService.ProviderName = service.ManualUnderPinningService.ProviderName;
+                            existingService.ManualUnderPinningService.CabId = service.ManualUnderPinningService.CabId;
+                            existingService.ManualUnderPinningService.CertificateExpiryDate = service.ManualUnderPinningService.CertificateExpiryDate;
+                        }
+
+                    }
+                }
+            }
+            else
+            {
+                existingService.UnderPinningServiceId = null;
+                existingService.IsUnderPinningServicePublished = null;
+
+                if (existingService.ManualUnderPinningServiceId != null)
+                {
+                    if (context.Service.Where(s => s.ManualUnderPinningServiceId == existingService.ManualUnderPinningServiceId).Count() > 1)
+                    {
+                        existingService.ManualUnderPinningServiceId = null;
+                    }
+                    else
+                    {
+                        var manualServiceToRemove = context.ManualUnderPinningService
+                            .FirstOrDefault(s => s.Id == existingService.ManualUnderPinningServiceId);
+                        context.ManualUnderPinningService.Remove(manualServiceToRemove);
+                    }
+                }
+            }
             existingService.HasGPG44 = service.HasGPG44;
             existingService.HasGPG45 = service.HasGPG45;
             if (existingService.ServiceSupSchemeMapping != null & existingService.ServiceSupSchemeMapping?.Count > 0)
+            {
                 context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
+
+            }
+
             existingService.ServiceSupSchemeMapping = service.ServiceSupSchemeMapping;
             existingService.FileLink = service.FileLink;
             existingService.FileName = service.FileName;
@@ -591,7 +673,9 @@ namespace DVSRegister.Data.CAB
             existingService.ServiceStatus = service.ServiceStatus;
             existingService.ModifiedTime = DateTime.UtcNow;
         }
-        
+
+
+
         // For event logs, need to attach each item to context
         private void AttachListToDbContext(Service service)
         {

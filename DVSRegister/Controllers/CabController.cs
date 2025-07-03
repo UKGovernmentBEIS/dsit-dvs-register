@@ -116,6 +116,11 @@ namespace DVSRegister.Controllers
             serviceVersions.CurrentServiceVersion = currentServiceVersion;
             serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
 
+            if (currentServiceVersion.ManualUnderPinningServiceId != null)
+            {
+                currentServiceVersion.IsManualInDb = await cabService.IsManualInDb((int)currentServiceVersion.ManualUnderPinningServiceId);
+            }
+
             if (serviceVersions.ServiceHistoryVersions.Any())
             {
                 serviceVersions.CurrentServiceVersion.EnableResubmission = (currentServiceVersion.ServiceStatus == ServiceStatusEnum.Published || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed) ||
