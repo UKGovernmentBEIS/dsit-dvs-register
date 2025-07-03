@@ -77,7 +77,7 @@ namespace DVSRegister.Controllers
                 bool allSchemeIdentityProfilesPresent = schemeIdsToCheck.All(id => serviceSummary.SchemeIdentityProfileMapping.Any(mapping => mapping.SchemeId == id));
 
                 bool allSchemeQualityLevelsPresent = schemeIdsToCheck.All(id => serviceSummary.SchemeQualityLevelMapping.Any(mapping => mapping.SchemeId == id &&
-                     (mapping.HasGPG44.GetValueOrDefault() ? mapping.QualityLevel.SelectedLevelOfProtections.Count > 0 : mapping.QualityLevel.SelectedLevelOfProtections.Count == 0)));
+                     (mapping.HasGPG44.GetValueOrDefault() ? mapping?.QualityLevel?.SelectedLevelOfProtections?.Count > 0 : mapping?.QualityLevel?.SelectedLevelOfProtections?.Count == 0)));
 
                 if (string.IsNullOrEmpty(serviceSummary.ServiceName))
                 {
@@ -161,17 +161,17 @@ namespace DVSRegister.Controllers
                         {
                             return RedirectToAction("SchemeGPG45", "TrustFramework0_4", new { schemeId = scheme.Id });
                         }
-                        else if (qualityLevel == null)
+                        else if (qualityLevel == null || qualityLevel.QualityLevel == null)
                         {
                             return RedirectToAction("SchemeGPG44Input", "TrustFramework0_4", new { schemeId = scheme.Id });
                         }
                         else if (qualityLevel != null && qualityLevel.HasGPG44 == true && 
-                            (qualityLevel.QualityLevel.SelectedLevelOfProtections.Count == 0 || qualityLevel.QualityLevel.SelectedQualityofAuthenticators.Count == 0))
+                            (qualityLevel?.QualityLevel?.SelectedLevelOfProtections?.Count == 0 || qualityLevel?.QualityLevel?.SelectedQualityofAuthenticators?.Count == 0))
                         {
                             return RedirectToAction("SchemeGPG44", "TrustFramework0_4", new { schemeId = scheme.Id });
                         }
                     }
-                    return RedirectToAction("SchemeGPG45", "TrustFramework0_4", new { schemeId = serviceSummary.SupplementarySchemeViewModel.SelectedSupplementarySchemeIds[0] });
+                    return RedirectToAction("SchemeGPG45", "TrustFramework0_4", new { schemeId = schemeIdsToCheck[0] });
                 }
                 else if (serviceSummary.FileName == null)
                 {

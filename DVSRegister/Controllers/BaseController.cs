@@ -154,7 +154,8 @@ namespace DVSRegister.Controllers
                 supplementarySchemeViewModel.SelectedSupplementarySchemes = serviceDto.ServiceSupSchemeMapping.Select(mapping => mapping.SupplementaryScheme).ToList();
                 HttpContext?.Session.Set("SelectedSchemeIds", supplementarySchemeViewModel.SelectedSupplementarySchemes.Select(scheme => scheme.Id).ToList());
                 foreach (var item in serviceDto.ServiceSupSchemeMapping)
-                {
+                {                    
+                    
                     if(item.SchemeGPG45Mapping != null && item.SchemeGPG45Mapping.Count>0)
                     {
                         SchemeIdentityProfileMappingViewModel schemeIdentityProfileMappingViewModel = new();
@@ -167,19 +168,22 @@ namespace DVSRegister.Controllers
                         schemeIdentityProfileMappingViewModelList.Add(schemeIdentityProfileMappingViewModel);
                     }
 
-                    if (item.SchemeGPG44Mapping != null && item.SchemeGPG44Mapping.Count > 0)
+                    if (item.HasGpg44Mapping != null)
                     {
                         SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = new();
-                        schemeQualityLevelMappingViewModel.SchemeId = item.SupplementarySchemeId;
                         schemeQualityLevelMappingViewModel.HasGPG44 = item.HasGpg44Mapping;
-                        schemeQualityLevelMappingViewModel.QualityLevel = new QualityLevelViewModel
-                        {
-                            SelectedQualityofAuthenticators = item.SchemeGPG44Mapping.Select(mapping => mapping.QualityLevel).Where(x=>x.QualityType== QualityTypeEnum.Authentication).ToList(),
-                            SelectedLevelOfProtections = item.SchemeGPG44Mapping.Select(mapping => mapping.QualityLevel).Where(x => x.QualityType == QualityTypeEnum.Protection).ToList(),
-                        };
-
+                        schemeQualityLevelMappingViewModel.SchemeId = item.SupplementarySchemeId;
+                        if (item.SchemeGPG44Mapping != null && item.SchemeGPG44Mapping.Count > 0)
+                        {                           
+                                                     
+                            schemeQualityLevelMappingViewModel.QualityLevel = new QualityLevelViewModel
+                            {
+                                SelectedQualityofAuthenticators = item.SchemeGPG44Mapping.Select(mapping => mapping.QualityLevel).Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList(),
+                                SelectedLevelOfProtections = item.SchemeGPG44Mapping.Select(mapping => mapping.QualityLevel).Where(x => x.QualityType == QualityTypeEnum.Protection).ToList(),
+                            };                           
+                        }
                         schemeQualityLevelMappingViewModelList.Add(schemeQualityLevelMappingViewModel);
-                    }
+                    }                   
 
                 }
             }
