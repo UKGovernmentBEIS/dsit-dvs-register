@@ -170,7 +170,7 @@ namespace DVSRegister.Data.CAB
             .Where(s => s.ServiceKey == serviceKey)
             .ToListAsync();
         }
-        public async Task<bool> IsManualInDb(int manualServiceId)
+        public async Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId)
         {
             return await context.Service.Where(s => s.ManualUnderPinningServiceId == manualServiceId).CountAsync() > 1;
         }

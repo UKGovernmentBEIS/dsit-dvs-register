@@ -503,7 +503,7 @@ namespace DVSRegister.Controllers
             serviceSummary.UnderPinningServiceExpiryDate = serviceSummaryViewModel.UnderPinningServiceExpiryDate;
             serviceSummary.SelectCabViewModel = new SelectCabViewModel { SelectedCabId = serviceSummaryViewModel?.SelectCabViewModel?.SelectedCabId,
                 SelectedCabName = serviceSummaryViewModel?.SelectCabViewModel?.SelectedCabName};
-            serviceSummary.IsManualInDb = false;
+            serviceSummary.IsManualServiceLinkedToMultipleServices = false;
 
             if(ModelState["SelectedUnderPinningServiceId"].Errors.Count == 0 && ModelState["UnderPinningServiceName"].Errors.Count == 0)
             {
@@ -549,7 +549,7 @@ namespace DVSRegister.Controllers
             if (ModelState["UnderPinningServiceName"].Errors.Count == 0)
             {
                 serviceSummary.UnderPinningServiceName = serviceSummaryViewModel.UnderPinningServiceName;
-                serviceSummary.IsManualInDb = false;
+                serviceSummary.IsManualServiceLinkedToMultipleServices = false;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
                 return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderPinningProviderName", "TrustFramework0_4");
             }

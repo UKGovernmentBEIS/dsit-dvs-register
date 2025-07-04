@@ -85,9 +85,9 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             var serviceList = await cabRepository.GetServiceList(serviceKey, cabId);
             return automapper.Map<List<ServiceDto>>(serviceList); 
         }
-        public async Task<bool> IsManualInDb(int manualServiceId)
+        public async Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId)
         {
-            return await cabRepository.IsManualInDb(manualServiceId);
+            return await cabRepository.IsManualServiceLinkedToMultipleServices(manualServiceId);
         }
 
         public async Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId)

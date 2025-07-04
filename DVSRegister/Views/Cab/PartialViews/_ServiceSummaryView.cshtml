@@ -525,7 +525,7 @@
     {        
     
       @*   if the service is entered manually , go to specific page *@
-    bool isManualUnderPinningService = Model.IsManualInDb.GetValueOrDefault() && (Model.SelectedManualUnderPinningServiceId == null || Model.SelectedManualUnderPinningServiceId == 0) 
+        bool isManualUnderPinningService = Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault() && (Model.SelectedManualUnderPinningServiceId == null || Model.SelectedManualUnderPinningServiceId == 0)
     && (Model.SelectedUnderPinningServiceId == null || Model.SelectedUnderPinningServiceId == 0);
     <div class="govuk-summary-card">
         <div class="govuk-summary-card__title-wrapper">

@@ -118,7 +118,7 @@ namespace DVSRegister.Controllers
 
             if (currentServiceVersion.ManualUnderPinningServiceId != null)
             {
-                currentServiceVersion.IsManualInDb = await cabService.IsManualInDb((int)currentServiceVersion.ManualUnderPinningServiceId);
+                currentServiceVersion.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)currentServiceVersion.ManualUnderPinningServiceId);
             }
 
             if (serviceVersions.ServiceHistoryVersions.Any())

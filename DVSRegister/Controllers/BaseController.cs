@@ -214,7 +214,7 @@ namespace DVSRegister.Controllers
                 ServiceType = serviceDto?.ServiceType ?? 0,
                 IsUnderpinningServicePublished = serviceDto?.IsUnderPinningServicePublished,
                 SelectedManualUnderPinningServiceId = serviceDto?.ManualUnderPinningServiceId,//non published manual
-                IsManualInDb = serviceDto?.IsManualInDb,
+                IsManualServiceLinkedToMultipleServices = serviceDto?.IsManualServiceLinkedToMultipleServices, // non published manual selected from list
                 SelectedUnderPinningServiceId = serviceDto?.UnderPinningServiceId,// published
 
                 UnderPinningServiceName = serviceDto?.UnderPinningServiceId == null? serviceDto?.ManualUnderPinningService?.ServiceName : serviceDto?.UnderPinningService?.ServiceName,
