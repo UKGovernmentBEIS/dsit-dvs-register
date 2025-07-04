@@ -13,7 +13,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<ProviderProfileDto> GetProvider(int providerId, int cabId);
         public Task<ServiceDto> GetServiceDetails(int serviceId, int cabId);
         public Task<List<ServiceDto>> GetServiceList(int serviceId, int cabId);
-        public Task<bool> IsManualInDb(int manualServiceId);
+        public Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId);
         public Task<List<QualityLevelDto>> GetQualitylevels();
         public Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId);
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto);
