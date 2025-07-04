@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
@@ -28,7 +29,7 @@ namespace DVSRegister.Controllers
         }
         
         [HttpGet("before-new-certificate")]
-        public async Task<IActionResult> BeforeYouSubmitNewCertificate(int serviceKey, int providerProfileId)
+        public async Task<IActionResult> BeforeYouSubmitNewCertificate(int serviceKey, int providerProfileId, int currentServiceId)
         {
 
             ViewBag.ServiceKey = serviceKey;
@@ -42,14 +43,15 @@ namespace DVSRegister.Controllers
             bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
             if (isValid)
             {
+               
+                ServiceDto serviceDto = await cabService.GetServiceDetails(currentServiceId,CabId);
+                SetServiceDataToSession(CabId, serviceDto);
                 ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
                 serviceSummary.IsResubmission = true;                 
                 serviceSummary.CabId = cabUserDto.CabId;
                 serviceSummary.CabUserId = cabUserDto.Id;
                 serviceSummary.ServiceKey = serviceKey;
-                serviceSummary.ProviderProfileId = providerProfileId;
-                if (!serviceSummary.IsDraft)
-                    serviceSummary.ResetInpuData(); // clear current input data from session for resubmission if it is not a draft version
+                serviceSummary.ProviderProfileId = providerProfileId;            
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
                 return View();
             }
