@@ -135,8 +135,7 @@ namespace DVSRegister.Controllers
                 || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed;
 
             }
-
-            SetServiceDataToSession(CabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
+          
             return View(serviceVersions);
         }
 

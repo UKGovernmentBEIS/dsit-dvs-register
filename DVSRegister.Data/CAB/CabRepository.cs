@@ -131,6 +131,11 @@ namespace DVSRegister.Data.CAB
             {
                 queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
                     .ThenInclude(ssm => ssm.SupplementaryScheme);
+
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                    .ThenInclude(ssm => ssm.SchemeGPG44Mapping).ThenInclude(ssm=>ssm.QualityLevel);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping).ThenInclude(ssm => ssm.IdentityProfile);
             }
 
             if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
