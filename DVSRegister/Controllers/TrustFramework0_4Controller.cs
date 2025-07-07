@@ -146,7 +146,7 @@ namespace DVSRegister.Controllers
                 else
                     throw new InvalidDataException("Invalid service type");
 
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, nextPage);
+                return await HandleServiceTypeActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage);
 
             }
             else
@@ -360,7 +360,7 @@ namespace DVSRegister.Controllers
             {
                 serviceSummary.IsUnderpinningServicePublished = serviceSummaryViewModel.IsUnderpinningServicePublished;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleActions(action, serviceSummary, false, false, false, "SelectUnderpinningService");
+                return await HandleUnderpinningStatusActions(action, serviceSummary, "SelectUnderpinningService");
             }
             else
             {
@@ -551,7 +551,7 @@ namespace DVSRegister.Controllers
                 serviceSummary.UnderPinningServiceName = serviceSummaryViewModel.UnderPinningServiceName;
                 serviceSummary.IsManualServiceLinkedToMultipleServices = false;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderPinningProviderName", "TrustFramework0_4");
+                return await HandleManualUnderpinningActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderPinningProviderName", "TrustFramework0_4");
             }
             else
             {
@@ -587,7 +587,7 @@ namespace DVSRegister.Controllers
             {
                 serviceSummary.UnderPinningProviderName = serviceSummaryViewModel.UnderPinningProviderName;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "SelectCabOfUnderpinningService", "TrustFramework0_4");
+                return await HandleManualUnderpinningActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "SelectCabOfUnderpinningService", "TrustFramework0_4");
             }
             else
             {
@@ -688,7 +688,7 @@ namespace DVSRegister.Controllers
             {
                 summaryViewModel.UnderPinningServiceExpiryDate = underPinningServiceExpiryDate;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderpinningServiceDetailsSummary", "TrustFramework0_4");
+                return await HandleManualUnderpinningActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderpinningServiceDetailsSummary", "TrustFramework0_4");
             }
             else
             {
@@ -793,17 +793,15 @@ namespace DVSRegister.Controllers
                     summaryViewModel.SchemeIdentityProfileMapping[index] = schemeIdentityProfileMappingViewModel;
                 }
                 else
-                {
-                   
+                {                   
                     summaryViewModel?.SchemeIdentityProfileMapping?.Add(schemeIdentityProfileMappingViewModel);
                 }
-
             }
 
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);               
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage,false, "SchemeGPG44Input", "TrustFramework0_4", 
+                return await HandleSupSchemeActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage,false, "SchemeGPG44Input", "TrustFramework0_4", 
                 new { schemeId = identityProfileViewModel.SchemeId });
             }
             else
@@ -828,6 +826,7 @@ namespace DVSRegister.Controllers
             schemeQualityLevelMappingViewModel.SchemeId = schemeId;
             schemeQualityLevelMappingViewModel.SchemeName = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Where(scheme => scheme.Id == schemeId)
             .Select(scheme => scheme.SchemeName).FirstOrDefault() ?? string.Empty;
+            schemeQualityLevelMappingViewModel.IsAmendment = summaryViewModel.IsAmendment;
 
             return View(schemeQualityLevelMappingViewModel);
         }
@@ -853,16 +852,12 @@ namespace DVSRegister.Controllers
                     summaryViewModel.SchemeQualityLevelMapping[index].HasGPG44 = viewModel.HasGPG44;
                 }
                 else
-                {
-                  
+                {                  
                     schemeQualityLevelMappingViewModel.HasGPG44 = viewModel.HasGPG44;
                     schemeQualityLevelMappingViewModel.SchemeId = viewModel.SchemeId;
                     schemeQualityLevelMappingViewModel.RefererURL = viewModel.RefererURL;
                     summaryViewModel?.SchemeQualityLevelMapping?.Add(schemeQualityLevelMappingViewModel);
-                }
-
-
-               
+                }               
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 return await HandleSchemeGpg44Actions(action, summaryViewModel, schemeQualityLevelMappingViewModel, fromSummaryPage, fromDetailsPage, viewModel.SchemeId);
             }
@@ -940,7 +935,7 @@ namespace DVSRegister.Controllers
                 var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");              
                 if (hasRemainingSchemes)
                 {
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage,false, "SchemeGPG45", "TrustFramework0_4", new { schemeId = selectedSchemeIds[0] });
+                    return await HandleSupSchemeActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage,false, "SchemeGPG45", "TrustFramework0_4", new { schemeId = selectedSchemeIds[0] });
                 }
                 else
                 {
@@ -1081,7 +1076,7 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(schemeQualityLevelMappingViewModel.HasGPG44))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("SchemeGPG44");
+                        return RedirectToAction("SchemeGPG44", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage, schemeId = schemeId });
                     }
                     else
                     {
@@ -1116,6 +1111,99 @@ namespace DVSRegister.Controllers
                     throw new ArgumentException("Invalid action parameter");
             }
         }
+
+        private async Task<IActionResult> HandleServiceTypeActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage,
+            string controller = "TrustFramework0_4")
+        {
+            switch (action)
+            {
+                case "continue":
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary", "CabService")
+                           : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
+                           : RedirectToAction(nextPage, controller);
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(serviceSummary);
+
+                case "amend":
+                    if (serviceSummary.ServiceType == ServiceTypeEnum.WhiteLabelled)
+                    {
+                        return RedirectToAction(nextPage, controller);
+                    }
+                    else
+                    {
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");                    }                    
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
+        private async Task<IActionResult> HandleUnderpinningStatusActions(string action, ServiceSummaryViewModel serviceSummary, string nextPage, string controller = "TrustFramework0_4")
+        {
+            switch (action)
+            {
+                case "continue":
+                    return RedirectToAction(nextPage, controller);
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(serviceSummary);
+
+                case "amend":
+                    return RedirectToAction(nextPage, controller);
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
+        private async Task<IActionResult> HandleManualUnderpinningActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, bool fromUnderPinningServiceSummaryPage, string nextPage,
+            string controller = "TrustFramework0_4", object routeValues = null!)
+        {
+            switch (action)
+            {
+                case "continue":
+                    return fromUnderPinningServiceSummaryPage ? RedirectToAction("UnderpinningServiceDetailsSummary", "TrustFramework0_4")
+                           : fromSummaryPage ? RedirectToAction("ServiceSummary", "CabService")
+                           : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
+                           : routeValues == null ? RedirectToAction(nextPage, controller)
+                           : RedirectToAction(nextPage, controller, routeValues);
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(serviceSummary);
+
+                case "amend":
+                    return routeValues == null ? RedirectToAction(nextPage, controller)
+                           : RedirectToAction(nextPage, controller, routeValues);
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
+        private async Task<IActionResult> HandleSupSchemeActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, bool fromUnderPinningServiceSummaryPage, string nextPage,
+            string controller = "TrustFramework0_4", object routeValues = null!)
+        {
+            switch (action)
+            {
+                case "continue":
+                    return fromUnderPinningServiceSummaryPage ? RedirectToAction("UnderpinningServiceDetailsSummary", "TrustFramework0_4")
+                           : fromSummaryPage ? RedirectToAction("ServiceSummary", "CabService")
+                           : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
+                           : routeValues == null ? RedirectToAction(nextPage, controller)
+                           : RedirectToAction(nextPage, controller, routeValues);
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(serviceSummary);
+
+                case "amend":
+                    return routeValues == null ? RedirectToAction(nextPage, controller)
+                           : RedirectToAction(nextPage, controller, routeValues);
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
         private async Task<IActionResult> SaveAsDraftAndRedirect(ServiceSummaryViewModel serviceSummary)
         {
             GenericResponse genericResponse = new();
