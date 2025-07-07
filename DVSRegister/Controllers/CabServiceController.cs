@@ -461,10 +461,7 @@ namespace DVSRegister.Controllers
                     int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];
                     nextPage = "SchemeGPG45";
                     controller = "TrustFramework0_4";
-                    routeValues= new { schemeId = firstSchemeId };
-
-                       
-
+                    routeValues= new { schemeId = firstSchemeId };                 
                 }
                 else
                 {
@@ -472,7 +469,7 @@ namespace DVSRegister.Controllers
                     controller = "CabService";
                    
                 }
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller, routeValues!);
+                return await HandleSchemeSelectionActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller, routeValues!);
             }
             else
             {
@@ -862,10 +859,7 @@ namespace DVSRegister.Controllers
                 default:
                     throw new ArgumentException("Invalid action parameter");
             }
-        }
-        
-
-       
+        }      
 
         private async Task<IActionResult> HandleGpg44Actions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage)
         {
@@ -1000,7 +994,28 @@ namespace DVSRegister.Controllers
             }
         }
 
-      
+        private async Task<IActionResult> HandleSchemeSelectionActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage,
+            string nextPage, string controller = "CabService", object routeValues = null!)
+        {
+            switch (action)
+            {
+                case "continue":
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
+                        : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
+                        : routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues);
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(serviceSummary);
+
+                case "amend":
+                    return RedirectToAction(nextPage, controller, routeValues);
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
+
 
         #endregion
 

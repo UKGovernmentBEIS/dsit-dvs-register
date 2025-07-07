@@ -18,11 +18,13 @@ namespace DVSRegister.Controllers
         private readonly ILogger<CabServiceReApplicationController> _logger = logger;
 
         [HttpGet("resume-submission")]
-        public  IActionResult ResumeSubmission()
+        public async Task<IActionResult> ResumeSubmission(int serviceId)
         {
             if(!IsValidCabId(CabId))
                 return HandleInvalidCabId(CabId);
-            
+
+            ServiceDto serviceDto = await cabService.GetServiceDetails(serviceId, CabId);
+            SetServiceDataToSession(CabId, serviceDto);
             ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
             return RedirectToNextEmptyField(serviceSummary);
             
