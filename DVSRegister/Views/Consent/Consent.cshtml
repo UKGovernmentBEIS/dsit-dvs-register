@@ -1,4 +1,5 @@
-﻿@model ConsentViewModel
+﻿@using DVSRegister.CommonUtility.Models.Enums;
+@model ConsentViewModel
 @{
     ViewData["Title"] = "You are about to agree to publish your service on the register";
     Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
@@ -59,6 +60,27 @@
                     <h2 class="govuk-heading-m">@Model.Service.ServiceName </h2>
 
                     @await Html.PartialAsync("~/Views/Consent/PartialViews/_ServiceDetailsView.cshtml", Model.Service)
+
+
+                    @if (@Model.Service.ServiceSupSchemeMapping != null && @Model.Service.ServiceSupSchemeMapping.Count > 0)
+                    {
+                        if ((@Model.Service.ServiceSupSchemeMapping.Any(mapping => mapping.SchemeGPG44Mapping != null && mapping.SchemeGPG44Mapping.Count > 0))
+                        || (@Model.Service.ServiceSupSchemeMapping.Any(mapping => mapping.SchemeGPG45Mapping != null && mapping.SchemeGPG45Mapping.Count > 0)))
+                        {
+
+                            <h3 class="govuk-heading-m">Supplementary codes</h3>
+
+                            @await Html.PartialAsync("~/Views/PartialViews/_SchemeMappingView.cshtml", Model.Service)
+
+                        }
+                    }
+
+                    @if (Model.Service.ServiceType == ServiceTypeEnum.WhiteLabelled)
+                    {
+
+                        @await Html.PartialAsync("~/Views/PartialViews/_UnderpinningServiceDetailsView.cshtml", Model.Service)
+
+                    }
 
                     <hr class="govuk-section-break govuk-section-break--m">              
 
