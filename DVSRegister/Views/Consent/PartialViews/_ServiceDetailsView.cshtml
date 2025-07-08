@@ -50,10 +50,26 @@
     </div>
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
+            Trust framework version
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.TrustFrameworkVersion.TrustFrameworkName
+        </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
             Name of service
         </dt>
         <dd class="govuk-summary-list__value">
             @Model.ServiceName
+        </dd>
+    </div>
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            URL link to the service
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @Model.WebSiteAddress
         </dd>
     </div>
     <div class="govuk-summary-list__row">
@@ -67,6 +83,38 @@
             }
         </dd>
     </div>
+
+    @if (Model.TrustFrameworkVersion.Version == Constants.TFVersion0_4)
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Underpinning or white-labelled service
+            </dt>
+            <dd class="govuk-summary-list__value">
+                @ViewModelHelper.GetServiceType(Model.ServiceType)
+            </dd>
+        </div>
+    }
+
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            GPG 45 identity profiles
+        </dt>
+        <dd class="govuk-summary-list__value">
+            @if (Model.ServiceIdentityProfileMapping != null && Model.ServiceIdentityProfileMapping.Any())
+            {
+                @foreach (var item in Model.ServiceIdentityProfileMapping)
+                {
+                    <div>@item.IdentityProfile.IdentityProfileName</div>
+                }
+            }
+            else
+            {
+                <div>@Constants.NullFieldsDisplay</div>
+            }
+        </dd>
+    </div>
+
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
             GPG 44 quality of authenticator
@@ -105,24 +153,7 @@
         </dd>
     </div>
 
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            GPG 45 identity profiles
-        </dt>
-        <dd class="govuk-summary-list__value">
-            @if (Model.ServiceIdentityProfileMapping != null && Model.ServiceIdentityProfileMapping.Any())
-            {
-                @foreach (var item in Model.ServiceIdentityProfileMapping)
-                {
-                    <div>@item.IdentityProfile.IdentityProfileName</div>
-                }
-            }
-            else
-            {
-                <div>@Constants.NullFieldsDisplay</div>
-            }
-        </dd>
-    </div>
+
 
     <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">

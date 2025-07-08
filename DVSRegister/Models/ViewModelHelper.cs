@@ -212,7 +212,13 @@ namespace DVSRegister.Models
         }
         #endregion
 
+        public static string GetServiceType(ServiceTypeEnum? input)
+        {
+            if (input == ServiceTypeEnum.UnderPinning) return "Underpinning";
+            else if (input == ServiceTypeEnum.WhiteLabelled) return "White-labelled";
+            else return "Neither";
 
+        }
 
 
     }
