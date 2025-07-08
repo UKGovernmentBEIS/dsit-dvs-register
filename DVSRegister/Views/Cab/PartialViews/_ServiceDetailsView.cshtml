@@ -35,7 +35,7 @@
             {
                 <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
-                        <a class="govuk-link" href="@Url.Action("ResumeSubmission", "CabServiceReApplication", new { serviceId = Model.Id})">Resume submission<span class="govuk-visually-hidden"> of @Model.ServiceName</span></a>
+                        <a class="govuk-link" href="@Url.Action("ResumeSubmission", "CabServiceReApplication", null)">Resume submission<span class="govuk-visually-hidden"> of @Model.ServiceName</span></a>
                     </li>
 
                 </ul>
@@ -72,15 +72,8 @@
                         Name of service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model.ServiceName != null)
-                        {
-                            @Model.ServiceName
-                        }
-                        else
-                        {
-                            hasValue = false;
-                            @:Incomplete
-                        }
+                        @{ hasValue = !String.IsNullOrEmpty(Model.ServiceName); }
+                        @( hasValue ? Model.ServiceName : "Incomplete")
                     </dd>
                     @if (isDraft && hasValue)
                     {
@@ -207,6 +200,66 @@
                             </dd>
                         }
                     </div>
+
+                    @if (Model.HasGPG45 == false)
+                    {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG 45 identity profiles
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @Constants.NullFieldsDisplay
+                            </dd>
+                            @if (isDraft && hasValue)
+                            {
+                                <dd class="govuk-summary-list__actions">
+                                    @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
+                                             new { @class = "govuk-link", @aria_label = "Change whether certified against GPG45" })
+                                </dd>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG 45 identity profiles
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
+                                {
+                                    var groupedProfiles = Model.ServiceIdentityProfileMapping
+                                    .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
+                                    .ToDictionary(group => group.Key, group => group.ToList())
+                                    .OrderBy(g => g.Key);
+
+                                    foreach (var group in groupedProfiles)
+                                    {  
+                                        <strong>@group.Key</strong>
+                                        <br>                        
+                                        foreach (var item in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
+                                        {
+                                            @item.IdentityProfile.IdentityProfileName
+                                            <br>
+                                        }
+                                        <br>                                            
+                                    }
+                                }
+                                else
+                                {
+                                    hasValue = false;
+                                    @:Incomplete
+                                }
+                            </dd>
+                            @if (isDraft && hasValue)
+                            {
+                                <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
+                                             new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
+                                </dd>
+                            }
+                        </div>
+                    }
                 }
                 @if (Model.HasGPG44 == false)
                 {
@@ -228,7 +281,6 @@
                 }
                 else
                 {
-
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             GPG 44 quality of authenticator
@@ -284,52 +336,55 @@
                     </div>
 
                 }
-                @if (Model.HasGPG45 == false)
+                @if (!is0_4GammaVersion)
                 {
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            GPG 45 identity profiles
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @Constants.NullFieldsDisplay
-                        </dd>
-                        @if (isDraft && hasValue)
-                        {
-                            <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
-                                         new { @class = "govuk-link", @aria_label = "Change whether certified against GPG45" })
+                    @if (Model.HasGPG45 == false)
+                    {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG 45 identity profiles
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @Constants.NullFieldsDisplay
                             </dd>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            GPG 45 identity profiles
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
+                            @if (isDraft && hasValue)
                             {
-                                @foreach (var item in Model.ServiceIdentityProfileMapping)
+                                <dd class="govuk-summary-list__actions">
+                                    @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
+                                             new { @class = "govuk-link", @aria_label = "Change whether certified against GPG45" })
+                                </dd>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                GPG 45 identity profiles
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
                                 {
-                                    @item.IdentityProfile.IdentityProfileName <br />
+                                    @foreach (var item in Model.ServiceIdentityProfileMapping)
+                                    {
+                                        @item.IdentityProfile.IdentityProfileName <br />
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                hasValue = false;
-                                @:Incomplete
-                            }
-                        </dd>
-                        @if (isDraft && hasValue)
-                        {
-                            <dd class="govuk-summary-list__actions">
-                            @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
-                                         new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
+                                else
+                                {
+                                    hasValue = false;
+                                    @:Incomplete
+                                }
                             </dd>
-                        }
-                    </div>
+                            @if (isDraft && hasValue)
+                            {
+                                <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
+                                             new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
+                                </dd>
+                            }
+                        </div>                        
+                    }
                 }
 
                 @if (Model?.HasSupplementarySchemes == false)
@@ -604,7 +659,10 @@
                 </h2>
                 <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
-                        @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                        @if(isDraft)
+                        {
+                            @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                        }                        
                     </li>
                 </ul>
             </div>
@@ -723,7 +781,10 @@
             </h2>
                 <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
-                        @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                        @if (isDraft)
+                        {
+                            @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                        }                        
                     </li>
                 </ul>
         </div>

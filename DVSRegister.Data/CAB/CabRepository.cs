@@ -116,6 +116,7 @@ namespace DVSRegister.Data.CAB
              .Include(p => p.UnderPinningService).
              ThenInclude(p => p.Provider)
              .Include(p => p.ManualUnderPinningService)
+             .ThenInclude(ms => ms.Cab)
             .Include(p => p.ServiceRoleMapping)            
             .ThenInclude(s => s.Role);
 
@@ -575,6 +576,7 @@ namespace DVSRegister.Data.CAB
 
         private void UpdateExistingServiceRecord(Service service, Service? existingService)
         {
+            existingService.TrustFrameworkVersionId = service.TrustFrameworkVersionId;
             existingService.ServiceName = service.ServiceName;
             existingService.WebSiteAddress = service.WebSiteAddress;
             existingService.CompanyAddress = service.CompanyAddress;
@@ -589,8 +591,8 @@ namespace DVSRegister.Data.CAB
 
             if (existingService.ServiceQualityLevelMapping != null & existingService.ServiceQualityLevelMapping?.Count > 0)
                 context.ServiceQualityLevelMapping.RemoveRange(existingService.ServiceQualityLevelMapping);
-
             existingService.ServiceQualityLevelMapping = service.ServiceQualityLevelMapping;
+
             existingService.HasSupplementarySchemes = service.HasSupplementarySchemes;
 
 
@@ -629,6 +631,15 @@ namespace DVSRegister.Data.CAB
 
                     else if (service.ManualUnderPinningServiceId != null || service.ManualUnderPinningServiceId != 0)// a manual under pinning service updated
                     {
+                        if (service.ManualUnderPinningServiceId != existingService.ManualUnderPinningServiceId)
+                        {
+                            if (context.Service.Where(s => s.ManualUnderPinningServiceId == existingService.ManualUnderPinningServiceId).Count() <= 1)
+                            {
+                                var manualServiceToRemove = context.ManualUnderPinningService
+                                    .FirstOrDefault(s => s.Id == existingService.ManualUnderPinningServiceId);
+                                context.ManualUnderPinningService.Remove(manualServiceToRemove);
+                            }
+                        }
                         existingService.ManualUnderPinningServiceId = service.ManualUnderPinningServiceId;
                         if (existingService.ManualUnderPinningService != null && service.ManualUnderPinningService != null)
                         // if there is an already existing manual service mapping update it
