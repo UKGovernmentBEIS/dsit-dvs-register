@@ -461,15 +461,17 @@ namespace DVSRegister.Controllers
                     int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];
                     nextPage = "SchemeGPG45";
                     controller = "TrustFramework0_4";
-                    routeValues= new { schemeId = firstSchemeId };                 
+                    routeValues= new { schemeId = firstSchemeId };
+                    return await HandleSchemeSelectionActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller, routeValues!);
                 }
                 else
                 {
                     nextPage = "CertificateUploadPage";
                     controller = "CabService";
-                   
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller, routeValues!);
+
                 }
-                return await HandleSchemeSelectionActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller, routeValues!);
+                
             }
             else
             {

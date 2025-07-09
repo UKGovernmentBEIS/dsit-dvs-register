@@ -42,26 +42,16 @@ namespace DVSRegister.Data.TrustFramework
                 .Include(s => s.TrustFrameworkVersion)
                 .Include(s => s.CabUser).ThenInclude(s => s.Cab);
 
-            var groupedQuery = await baseQuery
-                .GroupBy(s => s.ServiceKey)
-                .Select(g => g.OrderByDescending(s => s.ServiceVersion).FirstOrDefault())
-                .ToListAsync();
-
-            IEnumerable<Service> filteredQuery;
-
-            filteredQuery = groupedQuery
+            var filteredQuery = baseQuery
                 .Where(s => s.TrustFrameworkVersion.Version == Constants.TFVersion0_4 && s.ServiceType == ServiceTypeEnum.UnderPinning 
-                 && s.ServiceStatus == ServiceStatusEnum.Published);
-
-           
+                 && s.ServiceStatus == ServiceStatusEnum.Published);           
 
             string trimmedSearchText = searchText.Trim().ToLower();
             filteredQuery = filteredQuery
                 .Where(s => s.ServiceName.ToLower().Contains(trimmedSearchText) ||
                             s.Provider.RegisteredName.ToLower().Contains(trimmedSearchText));
 
-            return filteredQuery.ToList();
-
+            return await filteredQuery.AsNoTracking().ToListAsync();
         }
 
 
@@ -78,10 +68,7 @@ namespace DVSRegister.Data.TrustFramework
                             && (string.IsNullOrEmpty(trimmedSearchText) ||
                                 x.ManualUnderPinningService.ServiceName.ToLower().Contains(trimmedSearchText) ||
                                 x.Provider.RegisteredName.ToLower().Contains(trimmedSearchText))). AsNoTracking().ToListAsync();
-
-
           return manualUnderPinningServices;
-
         }
 
         public async Task<Service> GetServiceDetails(int serviceId)

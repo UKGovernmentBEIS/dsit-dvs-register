@@ -135,6 +135,10 @@ namespace DVSRegister.Controllers
                 || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed;
 
             }
+            if (currentServiceVersion?.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+            {
+                SetServiceDataToSession(CabId, currentServiceVersion);
+            }
           
             return View(serviceVersions);
         }

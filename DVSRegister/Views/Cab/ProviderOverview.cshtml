@@ -90,7 +90,7 @@
 
                             <div class="govuk-summary-card__title-wrapper">
                                 <h2 class="govuk-summary-card__title">
-                                    Service details: @item?.ServiceName
+                                Service details: @(!String.IsNullOrEmpty(item?.ServiceName) ? item?.ServiceName : "Incomplete")
                                 </h2>
                                 <ul class="govuk-summary-card__actions">
 
