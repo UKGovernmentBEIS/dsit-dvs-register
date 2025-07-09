@@ -142,52 +142,21 @@
                     <dd class="govuk-summary-list__value">
                     @if (Model?.IdentityProfileViewModel?.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
                     {
-                        var confidenceGroups = new Dictionary<string, List<IdentityProfileDto>>()
-                        {
-                            { "Low", new List<IdentityProfileDto>() },
-                            { "Medium", new List<IdentityProfileDto>() },
-                            { "High", new List<IdentityProfileDto>() },
-                            { "Very High", new List<IdentityProfileDto>() }
-                        };
+                            var groupedProfiles = Model.IdentityProfileViewModel.SelectedIdentityProfiles
+                            .GroupBy(profile => profile.IdentityProfileType)
+                            .ToDictionary(group => group.Key, group => group.ToList())
+                            .OrderBy(g => g.Key);
 
-                        foreach (var profile in Model.IdentityProfileViewModel.SelectedIdentityProfiles)
-                        {
-                            var firstChar = profile.IdentityProfileName.Substring(0, 1).ToUpper();
-                            switch (firstChar)
+                        foreach (var group in groupedProfiles)
+                        {  
+                            <strong>@group.Key</strong>
+                            <br>                        
+                            foreach (var item in group.Value.OrderBy(c => c.IdentityProfileName))
                             {
-                                case "L":
-                                    confidenceGroups["Low"].Add(profile);
-                                    break;
-                                case "M":
-                                    confidenceGroups["Medium"].Add(profile);
-                                    break;
-                                case "H":
-                                    confidenceGroups["High"].Add(profile);
-                                    break;
-                                case "V":
-                                    confidenceGroups["Very High"].Add(profile);
-                                    break;
-                            }
-                        }
-                        var nonEmptyGroupCount = confidenceGroups.Count(g => g.Value.Count > 0);
-                        var profilesShownCount = 0;
-                        foreach (var group in confidenceGroups)
-                        {
-                            if (group.Value.Count > 0)
-                            {
-                                <strong>@group.Key</strong>
+                                @item.IdentityProfileName
                                 <br>
-                                foreach (var item in group.Value.OrderBy(c => c.IdentityProfileName))
-                                {
-                                    @item.IdentityProfileName
-                                    <br>
-                                }
-                                profilesShownCount++;
-                                if (profilesShownCount != nonEmptyGroupCount)
-                                {
-                                 <br>
-                                }
-                             }
+                            }
+                            <br>                          
                         }
                     }
                     else
