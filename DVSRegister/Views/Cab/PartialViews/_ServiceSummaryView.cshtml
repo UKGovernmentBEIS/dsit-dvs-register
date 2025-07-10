@@ -140,36 +140,36 @@
                         GPG 45 identity profiles
                     </dt>
                     <dd class="govuk-summary-list__value">
-                    @if (Model?.IdentityProfileViewModel?.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
-                    {
+                        @if (Model?.IdentityProfileViewModel?.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
+                        {
                             var groupedProfiles = Model.IdentityProfileViewModel.SelectedIdentityProfiles
                             .GroupBy(profile => profile.IdentityProfileType)
-                            .ToDictionary(group => group.Key, group => group.ToList())
                             .OrderBy(g => g.Key);
 
-                        foreach (var group in groupedProfiles)
-                        {  
-                            <strong>@group.Key</strong>
-                            <br>                        
-                            foreach (var item in group.Value.OrderBy(c => c.IdentityProfileName))
+                            foreach(var group in groupedProfiles)
                             {
-                                @item.IdentityProfileName
+                                <strong>@group.Key</strong>
+                                <br>
+                                foreach (var item in group.OrderBy(c => c.IdentityProfileName))
+                                {
+                                    @item.IdentityProfileName
+                                    <br>
+                                }
                                 <br>
                             }
-                            <br>                          
                         }
-                    }
-                    else
-                    {
-                        <div>@Constants.NullFieldsDisplay</div>
-                    }
-                </dd>
+                        else
+                        {
+                            <div>@Constants.NullFieldsDisplay</div>
+                        }
+                    </dd>
 
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromSummaryPage = true },
-                                 new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
-                    </dd>
-                </div>
+                        new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
+                </dd>
+            </div>
+
 
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -416,9 +416,19 @@
 
                             @if (identityProfilesMappings != null && identityProfilesMappings.Count > 0)
                             {
-                                @foreach (var item in identityProfilesMappings)
+                                var groupedProfiles = identityProfilesMappings
+                                .GroupBy(profile => profile.IdentityProfileType)
+                                .OrderBy(g => g.Key);
+
+                                foreach (var group in groupedProfiles)
                                 {
-                                    @item.IdentityProfileName
+                                    <strong>@group.Key</strong>
+                                    <br>
+                                    foreach (var item in group.OrderBy(c => c.IdentityProfileName))
+                                    {
+                                        @item.IdentityProfileName
+                                                            <br>
+                                    }
                                     <br>
                                 }
                             }
@@ -493,10 +503,10 @@
     @if(Model.ServiceType == DVSRegister.CommonUtility.Models.Enums.ServiceTypeEnum.WhiteLabelled)
     {        
     
-      @*   if the service is entered manually , go to specific page *@
-        bool isManualUnderPinningService = Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault() && (Model.SelectedManualUnderPinningServiceId == null || Model.SelectedManualUnderPinningServiceId == 0)
-    && (Model.SelectedUnderPinningServiceId == null || Model.SelectedUnderPinningServiceId == 0);
-    <div class="govuk-summary-card">
+        @*   if the service is entered manually , go to specific page *@
+        bool isManualUnderPinningService = (Model.SelectedManualUnderPinningServiceId == null) && (Model.SelectedUnderPinningServiceId == null);
+        bool isFieldEditable = Model.SelectedManualUnderPinningServiceId != null && !Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault();
+        <div class="govuk-summary-card">
         <div class="govuk-summary-card__title-wrapper">
             <h2 class="govuk-summary-card__title">
                 Underpinning service
@@ -519,7 +529,7 @@
                         @Model.UnderPinningServiceName
 
                     </dd>
-                    @if (isManualUnderPinningService)
+                        @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
                                 @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4", new { fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
@@ -536,7 +546,7 @@
                         @Model.UnderPinningProviderName
                     </dd>
 
-                    @if (isManualUnderPinningService)
+                        @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
                                 @Html.ActionLink("Change", "UnderPinningProviderName", "TrustFramework0_4", new { fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
@@ -552,7 +562,7 @@
                     <dd class="govuk-summary-list__value">
                         @Model?.SelectCabViewModel?.SelectedCabName
                     </dd>
-                    @if (isManualUnderPinningService)
+                        @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
                                 @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
@@ -567,7 +577,7 @@
                     <dd class="govuk-summary-list__value">
                         @DateTimeExtensions.FormatDateTime(Model?.UnderPinningServiceExpiryDate, "dd MMM yyyy")
                     </dd>
-                    @if (isManualUnderPinningService)
+                        @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
                                 @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })

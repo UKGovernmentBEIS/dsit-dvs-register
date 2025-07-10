@@ -115,6 +115,8 @@ namespace DVSRegister.Data.CAB
              .Include(p => p.CertificateReview)
              .Include(p => p.UnderPinningService).
              ThenInclude(p => p.Provider)
+             .Include(p => p.UnderPinningService)
+             .ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
              .Include(p => p.ManualUnderPinningService)
              .ThenInclude(ms => ms.Cab)
             .Include(p => p.ServiceRoleMapping)            

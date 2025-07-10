@@ -85,6 +85,8 @@ namespace DVSRegister.Controllers
                 {                   
                     summaryViewModel.HasSupplementarySchemes = false;
                     ViewModelHelper.ClearSchemes(summaryViewModel);
+                    summaryViewModel.FromSummaryPage = fromSummaryPage;
+                    summaryViewModel.FromDetailsPage = fromDetailsPage;
                 }
                     HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 
@@ -94,7 +96,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return await HandleAmendActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "SelectServiceType");
+                    return await HandleAmendActions(action, summaryViewModel, false, fromDetailsPage, false, "SelectServiceType");
                 }                    
             }
             else
@@ -153,7 +155,7 @@ namespace DVSRegister.Controllers
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);// need to eneter underpinning service details
                     }
                     nextPage = "StatusOfUnderpinningService";
-                    return await HandleAmendActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, nextPage);
+                    return await HandleAmendActions(action, summaryViewModel, false, fromDetailsPage, false, nextPage);
                 }
                 else
                     throw new InvalidDataException("Invalid service type");
@@ -515,7 +517,7 @@ namespace DVSRegister.Controllers
             serviceSummary.UnderPinningServiceExpiryDate = serviceSummaryViewModel.UnderPinningServiceExpiryDate;
             serviceSummary.SelectCabViewModel = new SelectCabViewModel { SelectedCabId = serviceSummaryViewModel?.SelectCabViewModel?.SelectedCabId,
                 SelectedCabName = serviceSummaryViewModel?.SelectCabViewModel?.SelectedCabName};
-            serviceSummary.IsManualServiceLinkedToMultipleServices = false;
+            serviceSummary.IsManualServiceLinkedToMultipleServices = true;
 
             if(ModelState["SelectedUnderPinningServiceId"].Errors.Count == 0 && ModelState["UnderPinningServiceName"].Errors.Count == 0)
             {
@@ -563,7 +565,7 @@ namespace DVSRegister.Controllers
                 serviceSummary.UnderPinningServiceName = serviceSummaryViewModel.UnderPinningServiceName;
                 serviceSummary.IsManualServiceLinkedToMultipleServices = false;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleAmendActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderPinningProviderName");
+                return await HandleAmendActions(action, serviceSummary, false, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderPinningProviderName");
             }
             else
             {
@@ -599,7 +601,7 @@ namespace DVSRegister.Controllers
             {
                 serviceSummary.UnderPinningProviderName = serviceSummaryViewModel.UnderPinningProviderName;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleAmendActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "SelectCabOfUnderpinningService");
+                return await HandleAmendActions(action, serviceSummary, false, fromDetailsPage, fromUnderPinningServiceSummaryPage, "SelectCabOfUnderpinningService");
             }
             else
             {
@@ -646,7 +648,7 @@ namespace DVSRegister.Controllers
                 SelectedCabName = cabName
                 };
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleAmendActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderPinningServiceExpiryDate");
+                return await HandleAmendActions(action, serviceSummary, false, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderPinningServiceExpiryDate");
             }
 
             return View("SelectCabOfUnderpinningService", cabsViewModel);
@@ -700,7 +702,7 @@ namespace DVSRegister.Controllers
             {
                 summaryViewModel.UnderPinningServiceExpiryDate = underPinningServiceExpiryDate;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleAmendActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderpinningServiceDetailsSummary");
+                return await HandleAmendActions(action, summaryViewModel, false, fromDetailsPage, fromUnderPinningServiceSummaryPage, "UnderpinningServiceDetailsSummary");
             }
             else
             {
@@ -720,7 +722,7 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> UnderpinningServiceDetailsSummary(string action)
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            return await HandleActions(action, summaryViewModel, false, false, false, "ServiceGPG45Input", "TrustFramework0_4");
+            return await HandleActions(action, summaryViewModel, summaryViewModel.FromSummaryPage, summaryViewModel.FromDetailsPage, false, "ServiceGPG45Input", "TrustFramework0_4");
         }
 
 
