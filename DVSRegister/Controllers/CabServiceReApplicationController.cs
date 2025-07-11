@@ -153,16 +153,20 @@ namespace DVSRegister.Controllers
                 }
                 else if ((!hasIdentityProfileSchemeMappings || !allSchemeIdentityProfilesPresent || !allSchemeQualityLevelsPresent) && serviceSummary.HasSupplementarySchemes == true)
                 {
-                    foreach (var scheme in serviceSummary.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
+                    var selectedSchemeIds = serviceSummary?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(scheme => scheme.Id).ToList();
+                    foreach (var scheme in serviceSummary?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes)
                     {
+                        selectedSchemeIds.Remove(scheme.Id);
+                        HttpContext?.Session.Set("SelectedSchemeIds", selectedSchemeIds);
+
                         var identityProfile = serviceSummary.SchemeIdentityProfileMapping.Where(s => s.SchemeId == scheme.Id).FirstOrDefault();
                         var qualityLevel = serviceSummary.SchemeQualityLevelMapping.Where(s => s.SchemeId == scheme.Id).FirstOrDefault();
 
-                        if (identityProfile == null || identityProfile.IdentityProfile == null)
+                        if (identityProfile == null)
                         {
                             return RedirectToAction("SchemeGPG45", "TrustFramework0_4", new { schemeId = scheme.Id });
                         }
-                        else if (qualityLevel == null || qualityLevel.QualityLevel == null)
+                        else if (qualityLevel == null)
                         {
                             return RedirectToAction("SchemeGPG44Input", "TrustFramework0_4", new { schemeId = scheme.Id });
                         }

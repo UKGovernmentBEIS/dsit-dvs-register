@@ -234,7 +234,7 @@
                                     .OrderBy(g => g.Key);
 
                                     foreach (var group in groupedProfiles)
-                                    {  
+                                    {
                                         <strong>@group.Key</strong>
                                         <br>                        
                                         foreach (var item in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
@@ -242,7 +242,7 @@
                                             @item.IdentityProfile.IdentityProfileName
                                             <br>
                                         }
-                                        <br>                                            
+                                        <br>                                           
                                     }
                                 }
                                 else
@@ -541,11 +541,22 @@
 
                                 @if (schemeMapping.SchemeGPG45Mapping != null && schemeMapping.SchemeGPG45Mapping .Count > 0)
                                 {
-                                    @foreach (var item in schemeMapping.SchemeGPG45Mapping)
-                                    {
-                                        @item.IdentityProfile.IdentityProfileName
-                                        <br>
-                                    }
+                                    var groupedProfiles = schemeMapping.SchemeGPG45Mapping
+                                        .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
+                                        .ToDictionary(group => group.Key, group => group.ToList())
+                                        .OrderBy(g => g.Key);
+
+                                        foreach (var group in groupedProfiles)
+                                        {
+                                            <strong>@group.Key</strong>
+                                            <br>
+                                            foreach (var identity in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
+                                            {
+                                                @identity.IdentityProfile.IdentityProfileName
+                                                <br>
+                                            }
+                                            <br>
+                                        }
                                 }
                                 else
                                 {

@@ -462,7 +462,7 @@ namespace DVSRegister.Controllers
                     nextPage = "SchemeGPG45";
                     controller = "TrustFramework0_4";
                     routeValues= new { schemeId = firstSchemeId };
-                    return await HandleSchemeSelectionActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller, routeValues!);
+                    return await HandleSchemeSelectionActions(action, summaryViewModel, false, fromDetailsPage, nextPage, controller, routeValues!);
                 }
                 else
                 {
