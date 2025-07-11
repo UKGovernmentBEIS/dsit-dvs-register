@@ -88,6 +88,7 @@ namespace DVSRegister.Data.CAB
             ProviderProfile provider = new();
             provider = await context.ProviderProfile.Include(p=>p.Services).ThenInclude(p=>p.CertificateReview)
             .Include(p => p.Services).ThenInclude(p => p.PublicInterestCheck)
+            .Include(p => p.ServiceDraftMapping)
             .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
              .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId)).ThenInclude(p => p.CabTransferRequest).ThenInclude(p => p.RequestManagement)
             .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
@@ -182,6 +183,12 @@ namespace DVSRegister.Data.CAB
         {
             return await context.Service.Where(s => s.ManualUnderPinningServiceId == manualServiceId).CountAsync() > 1;
         }
+
+        public async Task<ServiceStatusEnum> GetPreviousServiceStatus(int serviceId)
+        {
+            return await context.ServiceDraft.Where(s => s.ServiceId == serviceId).Select(s => s.PreviousServiceStatus).FirstOrDefaultAsync();
+        }
+
         public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
         {
             ProviderProfile provider = new();
