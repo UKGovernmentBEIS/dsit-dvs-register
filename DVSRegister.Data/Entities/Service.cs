@@ -53,7 +53,7 @@ namespace DVSRegister.Data.Entities
         public string? RemovalReasonByCab { get; set; }
         public DateTime? RemovalRequestTime { get; set; }
         public DateTime? RemovedTime { get; set; }
-        public ServiceDraft ServiceDraft { get; set; }
+       
         public DateTime? ResubmissionTime { get; set; }
         public TokenStatusEnum RemovalTokenStatus { get; set; }
         public TokenStatusEnum EditServiceTokenStatus { get; set; }

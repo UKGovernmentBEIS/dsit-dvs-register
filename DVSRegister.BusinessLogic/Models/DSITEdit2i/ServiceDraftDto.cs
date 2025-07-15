@@ -1,6 +1,7 @@
 ﻿
 
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Models.DSITEdit2i;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Entities;
 
@@ -32,6 +33,12 @@ namespace DVSRegister.BusinessLogic.Models
         public ICollection<ServiceQualityLevelMappingDraftDto> ServiceQualityLevelMappingDraft { get; set; } = new List<ServiceQualityLevelMappingDraftDto>();
         public ICollection<ServiceIdentityProfileMappingDraftDto> ServiceIdentityProfileMappingDraft { get; set; } = new List<ServiceIdentityProfileMappingDraftDto>();
         public ICollection<ServiceSupSchemeMappingDraftDto> ServiceSupSchemeMappingDraft { get; set; } = new List<ServiceSupSchemeMappingDraftDto>();
+        public bool? IsUnderpinningServicePublished { get; set; }
+        public int? UnderPinningServiceId { get; set; }
+        public ServiceDto UnderPinningService { get; set; }
+        public int? ManualUnderPinningServiceId { get; set; }
 
+
+        public ManualUnderPinningServiceDraftDto ManualUnderPinningService { get; set; }
     }
 }

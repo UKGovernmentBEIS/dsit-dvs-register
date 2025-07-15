@@ -60,6 +60,11 @@ namespace DVSRegister.Data
         public DbSet<SchemeGPG44Mapping> SchemeGPG44Mapping { get; set; }
         public DbSet<SchemeGPG45Mapping> SchemeGPG45Mapping { get; set; }
         public DbSet<ManualUnderPinningService> ManualUnderPinningService { get; set; }
+
+        public DbSet<SchemeGPG45MappingDraft> SchemeGPG45MappingDraft { get; set; }
+        public DbSet<SchemeGPG44MappingDraft> SchemeGPG44MappingDraft { get; set; }
+        public DbSet<ManualUnderPinningServiceDraft> ManualUnderPinningServiceDraft { get; set; }
+
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
             if (actorId !=null)
