@@ -9,6 +9,7 @@
     bool isDraft = Model.ServiceStatus == ServiceStatusEnum.SavedAsDraft ? true : false;
     bool hasValue = true;
     bool is0_4GammaVersion = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
+    bool isEdit = Model.ServiceStatus == ServiceStatusEnum.UpdatesRequested ? true : false;
 
     var notificationBanner = new NotificationBannerViewModel
     {
@@ -100,7 +101,7 @@
                         Status
                     </dt>
                     <dd class="govuk-summary-list__value">
-                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview, Model.PublicInterestCheck, Model.ServiceStatus)
+                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview, Model.PublicInterestCheck, Model.ServiceStatus, isEdit ? Model?.serviceDraft?.PreviousServiceStatus : null)
                     </dd>
                 </div>
 

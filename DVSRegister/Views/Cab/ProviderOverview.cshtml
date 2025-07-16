@@ -80,7 +80,7 @@
 
                     foreach (var item in orderedServices)
                     {
-
+                        var previousStatus = item.serviceDraft != null ? item.serviceDraft.PreviousServiceStatus : 0;
                         var latestCabTransferRequest = item?.CabTransferRequest?.OrderByDescending(c => c.Id).FirstOrDefault();
                         certificateUploadRequired = latestCabTransferRequest != null && latestCabTransferRequest.RequestManagement != null
                         && latestCabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
@@ -168,7 +168,7 @@
                                             Status
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @HtmlExtensions.GetStyledStatusTag(item.CertificateReview,item.PublicInterestCheck, item.ServiceStatus)
+                                            @HtmlExtensions.GetStyledStatusTag(item.CertificateReview,item.PublicInterestCheck, item.ServiceStatus, previousStatus)
                                         </dd>
                                     </div>
                                 </dl>

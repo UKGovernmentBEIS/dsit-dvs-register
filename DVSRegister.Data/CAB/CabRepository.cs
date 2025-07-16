@@ -88,6 +88,7 @@ namespace DVSRegister.Data.CAB
             ProviderProfile provider = new();
             provider = await context.ProviderProfile.Include(p=>p.Services).ThenInclude(p=>p.CertificateReview)
             .Include(p => p.Services).ThenInclude(p => p.PublicInterestCheck)
+            .Include(p => p.Services).ThenInclude(p => p.ServiceDraft)
             .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
              .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId)).ThenInclude(p => p.CabTransferRequest).ThenInclude(p => p.RequestManagement)
             .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
@@ -175,6 +176,7 @@ namespace DVSRegister.Data.CAB
             .Include(s => s.UnderPinningService).ThenInclude(p=>p.Provider)
              .Include(s => s.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(p=>p.Cab)
              .Include(s => s.ManualUnderPinningService).ThenInclude(s=>s.Cab)
+             .Include(s => s.ServiceDraft).AsNoTracking()
             .Where(s => s.ServiceKey == serviceKey)
             .ToListAsync();
         }
@@ -182,6 +184,7 @@ namespace DVSRegister.Data.CAB
         {
             return await context.Service.Where(s => s.ManualUnderPinningServiceId == manualServiceId).CountAsync() > 1;
         }
+
         public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
         {
             ProviderProfile provider = new();

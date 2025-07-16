@@ -60,6 +60,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public bool? IsManualServiceLinkedToMultipleServices { get; set; }
 
         public bool? IsUnderPinningServicePublished { get; set; }
+        public ServiceDraftDto? serviceDraft { get; set; }
 
     }
 }

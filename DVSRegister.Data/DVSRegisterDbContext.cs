@@ -132,6 +132,27 @@ namespace DVSRegister.Data
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             Console.WriteLine(environment);
 
+
+            modelBuilder.Entity<ServiceDraft>(b =>
+            {
+                b.HasOne(sd => sd.Service)
+                .WithOne(s => s.ServiceDraft)
+                .HasForeignKey<ServiceDraft>(sd => sd.ServiceId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+
+                b.HasOne(sd => sd.User)
+                .WithMany()
+                .HasForeignKey(sd => sd.RequestedUserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+
+                b.Navigation("Service");
+                b.Navigation("User");
+            });
+
+
+
             modelBuilder.Entity<TrustmarkNumber>()
             .Property(t => t.TrustMarkNumber)
             .HasComputedColumnSql("LPAD(\"CompanyId\"::VARCHAR(4), 4, '0') || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", stored: true);
