@@ -153,7 +153,7 @@
                                                 </td>
                                                 <td class="govuk-table__cell">@item.ManualUnderPinningService.ProviderName</td>
                                                 <td class="govuk-table__cell">@item.ManualUnderPinningService.Cab.CabName</td>
-                                                <td class="govuk-table__cell">@HtmlExtensions.ToStyledStrongTag(item.ServiceStatus)</td>
+                                                <td class="govuk-table__cell">@HtmlExtensions.GetStyledStatusTag(item.CertificateReview, item.PublicInterestCheck, item.ServiceStatus, item?.serviceDraft?.PreviousServiceStatus)</td>
                                             </tr>
                                         }
                                     }
