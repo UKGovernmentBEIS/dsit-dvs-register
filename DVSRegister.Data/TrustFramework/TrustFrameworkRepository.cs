@@ -58,18 +58,27 @@ namespace DVSRegister.Data.TrustFramework
         public async Task<List<Service>> GetServicesWithManualUnderinningService(string searchText)
         {
             var trimmedSearchText = searchText.Trim().ToLower();
-            //select manually entered under pinning services for a white labelled type
-            var manualUnderPinningServices = await context.Service.Include(s => s.ManualUnderPinningService)
-            .ThenInclude(s => s.Cab).Include(s => s.CertificateReview)
-            .Where(x => x.ServiceType == ServiceTypeEnum.WhiteLabelled
+            // select manually entered under pinning services for a white labelled type
+            var manualUnderPinningServices = await context.Service
+                .Include(s => s.ManualUnderPinningService).ThenInclude(s => s.Cab)
+                .Include(s => s.CertificateReview)
+                .Include(s => s.PublicInterestCheck)
+                .Include(s => s.ServiceDraft)
+                .Where(x => x.ServiceType == ServiceTypeEnum.WhiteLabelled
                             && x.ManualUnderPinningServiceId != null
                             && x.ManualUnderPinningServiceId > 0
                             && x.CertificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved
                             && (string.IsNullOrEmpty(trimmedSearchText) ||
                                 x.ManualUnderPinningService.ServiceName.ToLower().Contains(trimmedSearchText) ||
-                                x.Provider.RegisteredName.ToLower().Contains(trimmedSearchText))). AsNoTracking().ToListAsync();
-          return manualUnderPinningServices;
+                                x.Provider.RegisteredName.ToLower().Contains(trimmedSearchText)))
+                .AsNoTracking()
+                .GroupBy(x => x.ManualUnderPinningServiceId) 
+                .Select(g => g.FirstOrDefault())
+                .ToListAsync();
+
+            return manualUnderPinningServices;
         }
+
 
         public async Task<Service> GetServiceDetails(int serviceId)
         {

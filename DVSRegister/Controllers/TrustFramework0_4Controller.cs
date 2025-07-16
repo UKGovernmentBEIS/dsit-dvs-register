@@ -83,21 +83,15 @@ namespace DVSRegister.Controllers
                 }
                 else if (previousSelection?.Version == Constants.TFVersion0_3 && summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_4)
                 {                   
-                    summaryViewModel.HasSupplementarySchemes = false;
+                    summaryViewModel.HasSupplementarySchemes = null;
                     ViewModelHelper.ClearSchemes(summaryViewModel);
                     summaryViewModel.FromSummaryPage = fromSummaryPage;
                     summaryViewModel.FromDetailsPage = fromDetailsPage;
-                }
                     HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                
-                if(summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_3)
-                {
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
-                }
-                else
-                {
                     return await HandleAmendActions(action, summaryViewModel, false, fromDetailsPage, false, "SelectServiceType");
-                }                    
+                }
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");                    
             }
             else
             {
@@ -131,10 +125,7 @@ namespace DVSRegister.Controllers
                 viewModel.FromSummaryPage = false;
                 viewModel.FromDetailsPage = false;
                 viewModel.IsAmendment = summaryViewModel.IsAmendment;
-
-
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                string nextPage = string.Empty;
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);              
 
                 if (viewModel.ServiceType == ServiceTypeEnum.UnderPinning || viewModel.ServiceType == ServiceTypeEnum.Neither)
                 {
@@ -143,8 +134,11 @@ namespace DVSRegister.Controllers
                         ViewModelHelper.ClearUnderPinningServiceFields(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     }
-                    nextPage = "ServiceGPG45Input";
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, nextPage);
+                    if (fromSummaryPage && summaryViewModel.HasSupplementarySchemes == null)
+                    {
+                        return await HandleActions(action, summaryViewModel, false, fromDetailsPage, false, "HasSupplementarySchemesInput", "CabService");
+                    }
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceGPG45Input");
                 }
                 else if (viewModel.ServiceType == ServiceTypeEnum.WhiteLabelled)
                 {
@@ -154,8 +148,7 @@ namespace DVSRegister.Controllers
                         fromSummaryPage = false;                        
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);// need to eneter underpinning service details
                     }
-                    nextPage = "StatusOfUnderpinningService";
-                    return await HandleAmendActions(action, summaryViewModel, false, fromDetailsPage, false, nextPage);
+                    return await HandleAmendActions(action, summaryViewModel, false, fromDetailsPage, false, "StatusOfUnderpinningService");
                 }
                 else
                     throw new InvalidDataException("Invalid service type");
@@ -522,6 +515,10 @@ namespace DVSRegister.Controllers
             if(ModelState["SelectedUnderPinningServiceId"].Errors.Count == 0 && ModelState["UnderPinningServiceName"].Errors.Count == 0)
             {
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+                if (fromSummaryPage && serviceSummary.HasSupplementarySchemes == null)
+                {
+                    return await HandleActions(action, serviceSummary, false, fromDetailsPage, false, "HasSupplementarySchemesInput", "CabService");
+                }
                 return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, false, "ServiceGPG45Input");
             }
             else
@@ -722,6 +719,10 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> UnderpinningServiceDetailsSummary(string action)
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            if (summaryViewModel.FromSummaryPage && summaryViewModel.HasSupplementarySchemes == null)
+            {
+                return await HandleActions(action, summaryViewModel, false, summaryViewModel.FromDetailsPage, false, "HasSupplementarySchemesInput", "CabService");
+            }
             return await HandleActions(action, summaryViewModel, summaryViewModel.FromSummaryPage, summaryViewModel.FromDetailsPage, false, "ServiceGPG45Input", "TrustFramework0_4");
         }
 
