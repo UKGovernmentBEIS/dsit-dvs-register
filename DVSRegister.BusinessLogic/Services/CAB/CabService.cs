@@ -90,11 +90,6 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return await cabRepository.IsManualServiceLinkedToMultipleServices(manualServiceId);
         }
 
-        public async Task<ServiceStatusEnum> GetPreviousServiceStatus(int serviceId)
-        {
-            return await cabRepository.GetPreviousServiceStatus(serviceId);
-        }
-
         public async Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId)
         {
             var service = await cabRepository.GetServiceDetailsWithProvider(serviceId, cabId);

@@ -101,7 +101,7 @@
                         Status
                     </dt>
                     <dd class="govuk-summary-list__value">
-                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview, Model.PublicInterestCheck, Model.ServiceStatus, isEdit ? Model.PreviousStatus : null)
+                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview, Model.PublicInterestCheck, Model.ServiceStatus, isEdit ? Model?.serviceDraft?.PreviousServiceStatus : null)
                     </dd>
                 </div>
 

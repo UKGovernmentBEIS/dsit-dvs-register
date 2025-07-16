@@ -80,8 +80,7 @@
 
                     foreach (var item in orderedServices)
                     {
-                        var previousStatus = item.ServiceStatus == ServiceStatusEnum.UpdatesRequested ? Model.ServiceDraftMapping.Where(s => s.ServiceId == item.Id).Select(s => s.PreviousServiceStatus).FirstOrDefault() : 0;
-               
+                        var previousStatus = item.serviceDraft != null ? item.serviceDraft.PreviousServiceStatus : 0;
                         var latestCabTransferRequest = item?.CabTransferRequest?.OrderByDescending(c => c.Id).FirstOrDefault();
                         certificateUploadRequired = latestCabTransferRequest != null && latestCabTransferRequest.RequestManagement != null
                         && latestCabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer

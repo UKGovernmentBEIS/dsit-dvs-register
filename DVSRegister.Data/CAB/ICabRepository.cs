@@ -15,7 +15,6 @@ namespace DVSRegister.Data.CAB
         public Task<Service> GetServiceDetails(int serviceId, int cabId);
         public Task<List<Service>> GetServiceList(int serviceKey, int cabId);
         public Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId);
-        public Task<ServiceStatusEnum> GetPreviousServiceStatus(int serviceId);
         public Task<List<QualityLevel>> QualityLevels();
         public Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId);
         public Task<Service> GetServiceDetailsWithProvider(int serviceId, int cabId);

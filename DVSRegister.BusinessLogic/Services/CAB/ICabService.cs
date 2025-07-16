@@ -14,7 +14,6 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<ServiceDto> GetServiceDetails(int serviceId, int cabId);
         public Task<List<ServiceDto>> GetServiceList(int serviceId, int cabId);
         public Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId);
-        public Task<ServiceStatusEnum> GetPreviousServiceStatus (int serviceId);
         public Task<List<QualityLevelDto>> GetQualitylevels();
         public Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId);
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto);

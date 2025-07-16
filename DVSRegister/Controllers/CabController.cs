@@ -120,10 +120,6 @@ namespace DVSRegister.Controllers
             {
                 currentServiceVersion.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)currentServiceVersion.ManualUnderPinningServiceId);
             }
-            if (currentServiceVersion.ServiceStatus == ServiceStatusEnum.UpdatesRequested)
-            {
-                currentServiceVersion.PreviousStatus = await cabService.GetPreviousServiceStatus(currentServiceVersion.Id);
-            }
 
             if (serviceVersions.ServiceHistoryVersions.Any())
             {

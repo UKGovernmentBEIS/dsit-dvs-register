@@ -31,7 +31,6 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public CabUserDto CabUser { get; set; }      
         public int TrustMarkNumber { get; set; }
         public ServiceStatusEnum ServiceStatus { get; set; }
-        public ServiceStatusEnum? PreviousStatus { get; set; }
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
@@ -61,6 +60,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public bool? IsManualServiceLinkedToMultipleServices { get; set; }
 
         public bool? IsUnderPinningServicePublished { get; set; }
+        public ServiceDraftDto? serviceDraft { get; set; }
 
     }
 }
