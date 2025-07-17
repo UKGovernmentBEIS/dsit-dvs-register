@@ -371,8 +371,7 @@ namespace DVSRegister.Data.Repositories
                                   
                                 }
 
-
-                                if (item.SchemeGPG44MappingDraft != null && item.SchemeGPG44MappingDraft.Count > 0)
+                               if (item.SchemeGPG44MappingDraft != null && item.SchemeGPG44MappingDraft.Count > 0)
                                 {
                                     newMappingInstance.HasGpg44Mapping = true;
                                     foreach (var qualityLevelMapping in item.SchemeGPG44MappingDraft)
@@ -380,6 +379,11 @@ namespace DVSRegister.Data.Repositories
                                         newMappingInstance.SchemeGPG44Mapping.Add(new SchemeGPG44Mapping { QualityLevelId = qualityLevelMapping.QualityLevelId });
                                     }
 
+                                }
+                               else  if (item.HasGpg44Mapping != null && item.HasGpg44Mapping == false)
+                                {
+                                    newMappingInstance.HasGpg44Mapping = false;
+                                    newMappingInstance.SchemeGPG44Mapping = [];
                                 }
                                 else
                                 {
@@ -395,11 +399,7 @@ namespace DVSRegister.Data.Repositories
                                     
                                 }
 
-                                if (item.HasGpg44Mapping != null && item.HasGpg44Mapping == false)
-                                {
-                                    newMappingInstance.HasGpg44Mapping = false;
-                                    newMappingInstance.SchemeGPG44Mapping = [];
-                                }
+                              
                             }
                             context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
                             existingService.ServiceSupSchemeMapping = newServiceSupSchemeMapping;
@@ -434,9 +434,19 @@ namespace DVSRegister.Data.Repositories
                                 var existingGpg44SchemeMapping = context?.ServiceSupSchemeMapping.Include(x => x.SchemeGPG44Mapping)
                               .Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId && x.ServiceId == existingService.Id).FirstOrDefault();
 
-                                context.SchemeGPG44Mapping.RemoveRange(existingGpg44SchemeMapping.SchemeGPG44Mapping);
-                                foreach (var qualityLevelMapping in item.SchemeGPG44MappingDraft)
+                                if(existingGpg44SchemeMapping?.SchemeGPG44Mapping!=null && existingGpg44SchemeMapping?.SchemeGPG44Mapping.Count>0)
                                 {
+                                    context.SchemeGPG44Mapping.RemoveRange(existingGpg44SchemeMapping.SchemeGPG44Mapping);
+                                }
+                                else
+                                {
+                                    existingGpg44SchemeMapping.HasGpg44Mapping = true;
+                                   
+                                }
+                              
+                                foreach (var qualityLevelMapping in item.SchemeGPG44MappingDraft)
+
+                                { 
                                     existingGpg44SchemeMapping.SchemeGPG44Mapping.Add(new SchemeGPG44Mapping { QualityLevelId = qualityLevelMapping.QualityLevelId });
                                 }
 
@@ -445,7 +455,7 @@ namespace DVSRegister.Data.Repositories
                             {
                                 var existingGpg44SchemeMapping = context?.ServiceSupSchemeMapping.Include(x => x.SchemeGPG44Mapping)
                              .Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId && x.ServiceId == existingService.Id).FirstOrDefault();
-
+                                existingGpg44SchemeMapping.HasGpg44Mapping = false;
                                 context.SchemeGPG44Mapping.RemoveRange(existingGpg44SchemeMapping.SchemeGPG44Mapping);
                             }
 
