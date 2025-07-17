@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Models.DSITEdit2i;
 using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.Data.Entities;
 
@@ -111,6 +112,11 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ProviderDraftToken, ProviderDraftTokenDto>();
             CreateMap<ProviderDraftTokenDto, ProviderDraftToken>();
 
+            CreateMap<SchemeGPG45MappingDraft, SchemeGPG45MappingDraftDto>();
+            CreateMap<SchemeGPG45MappingDraftDto, SchemeGPG45MappingDraft>().ForMember(x => x.IdentityProfile, opt => opt.Ignore());
+
+            CreateMap<SchemeGPG44MappingDraft, SchemeGPG44MappingDraftDto>();
+            CreateMap<SchemeGPG44MappingDraftDto, SchemeGPG44MappingDraft>().ForMember(x => x.QualityLevel, opt => opt.Ignore());
 
             CreateMap<ServiceIdentityProfileMappingDraft, ServiceIdentityProfileMappingDraftDto>();
             CreateMap<ServiceIdentityProfileMappingDraftDto, ServiceIdentityProfileMappingDraft>().ForMember(x => x.IdentityProfile, opt => opt.Ignore());
@@ -118,7 +124,9 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceRoleMappingDraftDto, ServiceRoleMappingDraft>().ForMember(x => x.Role, opt => opt.Ignore());
 
 
-            CreateMap<ServiceSupSchemeMappingDraft, ServiceSupSchemeMappingDraftDto>();
+            CreateMap<ServiceSupSchemeMappingDraft, ServiceSupSchemeMappingDraftDto>()
+           .ForMember(dest => dest.SchemeGPG44MappingDraft, opt => opt.MapFrom(src => src.SchemeGPG44MappingDraft))
+            .ForMember(dest => dest.SchemeGPG45MappingDraft, opt => opt.MapFrom(src => src.SchemeGPG45MappingDraft));
             CreateMap<ServiceSupSchemeMappingDraftDto, ServiceSupSchemeMappingDraft>().ForMember(x => x.SupplementaryScheme, opt => opt.Ignore());
             CreateMap<ServiceQualityLevelMappingDraft, ServiceQualityLevelMappingDraftDto>();
             CreateMap<ServiceQualityLevelMappingDraftDto, ServiceQualityLevelMappingDraft>().ForMember(x => x.QualityLevel, opt => opt.Ignore());
@@ -154,6 +162,9 @@ namespace DVSRegister.BusinessLogic
             CreateMap<TrustFrameworkVersionDto, TrustFrameworkVersion>();
             CreateMap<ManualUnderPinningService, ManualUnderPinningServiceDto>();
             CreateMap<ManualUnderPinningServiceDto, ManualUnderPinningService>();
+
+            CreateMap<ManualUnderPinningServiceDraft, ManualUnderPinningServiceDraftDto>();
+            CreateMap<ManualUnderPinningServiceDraftDto, ManualUnderPinningServiceDraft>();
         }
     }
 }
