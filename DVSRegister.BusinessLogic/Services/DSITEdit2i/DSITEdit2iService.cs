@@ -278,50 +278,75 @@ namespace DVSRegister.BusinessLogic.Services
                 foreach (var schemeMapping in previousData.ServiceSupSchemeMapping)
                 {
                     var previousSchemeMapping = previousData.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == schemeMapping.SupplementarySchemeId).FirstOrDefault();
-                    if (schemeMapping.SchemeGPG45Mapping != null && schemeMapping.SchemeGPG45Mapping.Count > 0)
+                    var currentMappingDraft = currentData.ServiceSupSchemeMappingDraft.Where(mapping => mapping.SupplementarySchemeId == schemeMapping.SupplementarySchemeId).FirstOrDefault();
+
+                    if (previousSchemeMapping != null)
                     {
+                        var previousSchemeGpg45Mappings = previousSchemeMapping?.SchemeGPG45Mapping?.Select(x => x.IdentityProfile.IdentityProfileName)?.ToList();
 
-                        var schemeGpg45Mappings = previousSchemeMapping?.SchemeGPG45Mapping?.Select(x => x.IdentityProfile.IdentityProfileName)?.ToList();
-                        previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG45IdentityProfiles, schemeGpg45Mappings ?? [@Constants.NullFieldsDisplay]);
+                        if (currentMappingDraft == null)//removed m scheme
+                        {
+                            previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG45IdentityProfiles,
+                            previousSchemeGpg45Mappings != null && previousSchemeGpg45Mappings.Count > 0 ? previousSchemeGpg45Mappings : [@Constants.NullFieldsDisplay]);
 
-                        var schemeMappingDraft = currentData.ServiceSupSchemeMappingDraft
-                        .Where(mapping => mapping.SupplementarySchemeId == schemeMapping.SupplementarySchemeId).FirstOrDefault();
+                            currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG45IdentityProfiles, [@Constants.NullFieldsDisplay]);
+                        }
+                        else if (currentMappingDraft != null && currentMappingDraft.SchemeGPG45MappingDraft != null && currentMappingDraft.SchemeGPG45MappingDraft.Count > 0) //modified scheme
+                        {
+                            previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG45IdentityProfiles,
+                            previousSchemeGpg45Mappings != null && previousSchemeGpg45Mappings.Count > 0 ? previousSchemeGpg45Mappings : [@Constants.NullFieldsDisplay]);
 
-                        var currentSchemeGpg45Mappings = schemeMappingDraft?.SchemeGPG45MappingDraft?.Select(x => x.IdentityProfile.IdentityProfileName).ToList();
+                            var currentSchemeGpg45Mappings = currentMappingDraft?.SchemeGPG45MappingDraft?.Select(x => x.IdentityProfile.IdentityProfileName).ToList();
+                            currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG45IdentityProfiles, currentSchemeGpg45Mappings);
+                        }
 
-                        currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG45IdentityProfiles, currentSchemeGpg45Mappings ?? [@Constants.NullFieldsDisplay]);
 
+                        var previousSchemeGpg44AuthenticationMappings = previousSchemeMapping?.SchemeGPG44Mapping?.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication).Select(x => x.QualityLevel.Level)?.ToList();
+                        var previousSchemeGpg44ProtectionMappings = previousSchemeMapping?.SchemeGPG44Mapping?.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection).Select(x => x.QualityLevel.Level)?.ToList();
+
+
+
+
+
+                        if (currentMappingDraft == null)//removed m scheme
+                        {
+                            previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Protection,
+                            previousSchemeGpg45Mappings != null && previousSchemeGpg45Mappings.Count > 0 ? previousSchemeGpg44ProtectionMappings : [@Constants.NullFieldsDisplay]);
+
+                            previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Authentication,
+                            previousSchemeGpg45Mappings != null && previousSchemeGpg45Mappings.Count > 0 ? previousSchemeGpg44AuthenticationMappings : [@Constants.NullFieldsDisplay]);
+
+                            currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Protection, [@Constants.NullFieldsDisplay]);
+                            currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Authentication, [@Constants.NullFieldsDisplay]);
+                        }
+                        else if (currentMappingDraft != null && currentMappingDraft.SchemeGPG45MappingDraft != null && currentMappingDraft.SchemeGPG45MappingDraft.Count > 0 || currentMappingDraft.HasGpg44Mapping == false) //modified scheme
+                        {
+                            var currentSchemeGpg44Protection = currentMappingDraft?.SchemeGPG44MappingDraft?
+                           .Where(m => m.QualityLevel.QualityType == QualityTypeEnum.Protection).Select(x => x.QualityLevel.Level).ToList();
+
+                            var currentSchemeGpg44Authentication = currentMappingDraft?.SchemeGPG44MappingDraft?
+                            .Where(m => m.QualityLevel.QualityType == QualityTypeEnum.Authentication).Select(x => x.QualityLevel.Level).ToList();
+
+
+                            previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Protection,
+                            previousSchemeGpg45Mappings != null && previousSchemeGpg45Mappings.Count > 0 ? previousSchemeGpg44ProtectionMappings : [@Constants.NullFieldsDisplay]);
+
+                            previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Authentication,
+                            previousSchemeGpg45Mappings != null && previousSchemeGpg45Mappings.Count > 0 ? previousSchemeGpg44AuthenticationMappings : [@Constants.NullFieldsDisplay]);
+
+
+                            currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Protection,
+                            currentSchemeGpg44Protection != null && currentSchemeGpg44Protection.Count > 0 ? currentSchemeGpg44Protection
+                            : [@Constants.NullFieldsDisplay]);
+
+                            currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Authentication,
+                            currentSchemeGpg44Protection != null && currentSchemeGpg44Authentication.Count > 0 ? currentSchemeGpg44Authentication
+                            : [@Constants.NullFieldsDisplay]);
+                        }
 
                     }
 
-                    if (schemeMapping?.SchemeGPG44Mapping != null && schemeMapping?.SchemeGPG44Mapping.Count > 0 || schemeMapping?.HasGpg44Mapping == false)
-                    {
-
-                        var schemeGpg44ProtectionMappings = previousSchemeMapping?.SchemeGPG44Mapping?.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection)?.Select(x => x.QualityLevel.Level)?.ToList();
-                        previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Protection, schemeGpg44ProtectionMappings ?? [@Constants.NullFieldsDisplay]);
-
-                        var schemeGpg44AuthenticationMappings = previousSchemeMapping?.SchemeGPG44Mapping?.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication)?.Select(x => x.QualityLevel.Level)?.ToList();
-                        previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Authentication, schemeGpg44AuthenticationMappings ?? [@Constants.NullFieldsDisplay]);
-
-
-                        var schemeMappingDraft = currentData.ServiceSupSchemeMappingDraft
-                      .Where(mapping => mapping.SupplementarySchemeId == schemeMapping.SupplementarySchemeId).FirstOrDefault();
-
-                        var currentSchemeGpg44Protection = schemeMappingDraft?.SchemeGPG44MappingDraft?
-                        .Where(m => m.QualityLevel.QualityType == QualityTypeEnum.Protection).Select(x => x.QualityLevel.Level).ToList();
-
-                        var currentSchemeGpg44Authentication = schemeMappingDraft?.SchemeGPG44MappingDraft?
-                        .Where(m => m.QualityLevel.QualityType == QualityTypeEnum.Authentication).Select(x => x.QualityLevel.Level).ToList();
-
-                        currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Protection, currentSchemeGpg44Protection ?? [@Constants.NullFieldsDisplay]);
-                        currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Authentication, currentSchemeGpg44Authentication ?? [@Constants.NullFieldsDisplay]);
-
-                    }
-                    else
-                    {
-                        previousDataDictionary.Add(schemeMapping?.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Protection, [@Constants.NullFieldsDisplay]);
-                        previousDataDictionary.Add(schemeMapping?.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Authentication, [@Constants.NullFieldsDisplay]);
-                    }
+                   
                 }
 
             }
