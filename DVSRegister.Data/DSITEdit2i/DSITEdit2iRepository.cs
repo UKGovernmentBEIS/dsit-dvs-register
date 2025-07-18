@@ -174,9 +174,9 @@ namespace DVSRegister.Data.Repositories
 
 
             return await context.ServiceDraftToken.Include(p => p.ServiceDraft).ThenInclude(p => p.Provider).AsNoTracking()
-                .Include(p => p.ServiceDraft).ThenInclude(p => p.User).AsNoTracking()
-                .Include(p => p.ServiceDraft).ThenInclude(p => p.ManualUnderPinningServiceDraft).AsNoTracking()
-              .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceRoleMappingDraft).ThenInclude(s => s.Role).AsNoTracking()
+            .Include(p => p.ServiceDraft).ThenInclude(p => p.User).AsNoTracking()
+            .Include(p => p.ServiceDraft).ThenInclude(p => p.ManualUnderPinningServiceDraft).ThenInclude(s=>s.Cab).AsNoTracking()
+            .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceRoleMappingDraft).ThenInclude(s => s.Role).AsNoTracking()
              .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceQualityLevelMappingDraft).ThenInclude(s => s.QualityLevel).AsNoTracking()
              .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceIdentityProfileMappingDraft).ThenInclude(s => s.IdentityProfile).AsNoTracking()
              .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceSupSchemeMappingDraft).ThenInclude(s => s.SupplementaryScheme).AsNoTracking()
@@ -270,9 +270,7 @@ namespace DVSRegister.Data.Repositories
                   
 
                     existingService.ModifiedTime = DateTime.UtcNow;
-                    existingService.ServiceStatus = ServiceStatusEnum.ReadyToPublish;
-                    if (existingService.Provider.ProviderStatus == ProviderStatusEnum.Published)
-                        existingService.Provider.ProviderStatus = ProviderStatusEnum.ReadyToPublish;
+                    existingService.ServiceStatus = ServiceStatusEnum.ReadyToPublish;                   
                     existingService.Provider.ModifiedTime = DateTime.UtcNow;
                     existingService.EditServiceTokenStatus = TokenStatusEnum.RequestCompleted;
                     existingService.IsInRegister = false;

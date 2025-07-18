@@ -270,8 +270,6 @@ namespace DVSRegister.BusinessLogic.Services
         private static void GetServiceKeyValueForSchemeMappingsTFV0_4(ServiceDraftDto currentData, ServiceDto previousData, Dictionary<string, List<string>> currentDataDictionary, Dictionary<string, List<string>> previousDataDictionary)
         {
 
-
-
             if (currentData.ServiceSupSchemeMappingDraft.Count > 0 && currentData.ServiceSupSchemeMappingDraft.Count < previousData?.ServiceSupSchemeMapping?.Count)
             {
 
@@ -284,7 +282,7 @@ namespace DVSRegister.BusinessLogic.Services
                     {
                         var previousSchemeGpg45Mappings = previousSchemeMapping?.SchemeGPG45Mapping?.Select(x => x.IdentityProfile.IdentityProfileName)?.ToList();
 
-                        if (currentMappingDraft == null)//removed m scheme
+                        if (currentMappingDraft == null)//removed  scheme
                         {
                             previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG45IdentityProfiles,
                             previousSchemeGpg45Mappings != null && previousSchemeGpg45Mappings.Count > 0 ? previousSchemeGpg45Mappings : [@Constants.NullFieldsDisplay]);
@@ -307,8 +305,7 @@ namespace DVSRegister.BusinessLogic.Services
 
 
 
-
-                        if (currentMappingDraft == null)//removed m scheme
+                        if (currentMappingDraft == null)//removed  scheme
                         {
                             previousDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Protection,
                             previousSchemeGpg45Mappings != null && previousSchemeGpg45Mappings.Count > 0 ? previousSchemeGpg44ProtectionMappings : [@Constants.NullFieldsDisplay]);
@@ -319,7 +316,8 @@ namespace DVSRegister.BusinessLogic.Services
                             currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Protection, [@Constants.NullFieldsDisplay]);
                             currentDataDictionary.Add(schemeMapping.SupplementaryScheme.SchemeName + ":" + Constants.GPG44Authentication, [@Constants.NullFieldsDisplay]);
                         }
-                        else if (currentMappingDraft != null && currentMappingDraft.SchemeGPG45MappingDraft != null && currentMappingDraft.SchemeGPG45MappingDraft.Count > 0 || currentMappingDraft.HasGpg44Mapping == false) //modified scheme
+                        else if (currentMappingDraft != null && currentMappingDraft.SchemeGPG45MappingDraft != null && currentMappingDraft.SchemeGPG45MappingDraft.Count > 0
+                            || currentMappingDraft.HasGpg44Mapping == false) //modified scheme
                         {
                             var currentSchemeGpg44Protection = currentMappingDraft?.SchemeGPG44MappingDraft?
                            .Where(m => m.QualityLevel.QualityType == QualityTypeEnum.Protection).Select(x => x.QualityLevel.Level).ToList();
@@ -346,7 +344,7 @@ namespace DVSRegister.BusinessLogic.Services
 
                     }
 
-                   
+
                 }
 
             }
@@ -355,14 +353,15 @@ namespace DVSRegister.BusinessLogic.Services
             {
                 foreach (var schemeMappingDraft in currentData.ServiceSupSchemeMappingDraft)
                 {
+                    var previousSchemeMapping = previousData.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == schemeMappingDraft.SupplementarySchemeId).FirstOrDefault();
 
                     if (schemeMappingDraft.SchemeGPG45MappingDraft != null && schemeMappingDraft.SchemeGPG45MappingDraft.Count > 0)
                     {
-                        var previousSchemeMappingDraft = previousData.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == schemeMappingDraft.SupplementarySchemeId).FirstOrDefault();
 
-                        if (previousSchemeMappingDraft != null)
+
+                        if (previousSchemeMapping != null)
                         {
-                            var schemeGpg45Mappings = previousSchemeMappingDraft.SchemeGPG45Mapping.Select(x => x.IdentityProfile.IdentityProfileName).ToList();
+                            var schemeGpg45Mappings = previousSchemeMapping.SchemeGPG45Mapping.Select(x => x.IdentityProfile.IdentityProfileName).ToList();
                             previousDataDictionary.Add(schemeMappingDraft.SupplementaryScheme.SchemeName + ":" + Constants.GPG45IdentityProfiles, schemeGpg45Mappings);
                         }
                         else
@@ -378,21 +377,22 @@ namespace DVSRegister.BusinessLogic.Services
                         else
                         {
                             currentDataDictionary.Add(schemeMappingDraft.SupplementaryScheme.SchemeName + ":" + Constants.GPG45IdentityProfiles, [@Constants.NullFieldsDisplay]);
-                            currentDataDictionary.Add(schemeMappingDraft.SupplementaryScheme.SchemeName + ":" + Constants.GPG45IdentityProfiles, [@Constants.NullFieldsDisplay]);
+
                         }
                     }
 
 
-                    if (schemeMappingDraft.SchemeGPG44MappingDraft != null && schemeMappingDraft.SchemeGPG44MappingDraft.Count > 0 || schemeMappingDraft.HasGpg44Mapping == false)
+                    if (schemeMappingDraft.SchemeGPG44MappingDraft != null && schemeMappingDraft.SchemeGPG44MappingDraft.Count > 0
+                        || (schemeMappingDraft.HasGpg44Mapping != previousSchemeMapping?.HasGpg44Mapping))
                     {
 
-                        var previousSchemeMappingDraft = previousData.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == schemeMappingDraft.SupplementarySchemeId).FirstOrDefault();
-                        if (previousSchemeMappingDraft != null)
+
+                        if (previousSchemeMapping != null)
                         {
-                            var previousSchemeGpg44Protection = previousSchemeMappingDraft.SchemeGPG44Mapping?
+                            var previousSchemeGpg44Protection = previousSchemeMapping.SchemeGPG44Mapping?
                           .Where(m => m.QualityLevel.QualityType == QualityTypeEnum.Protection).Select(x => x.QualityLevel.Level).ToList();
 
-                            var previousSchemeGpg44Authentication = previousSchemeMappingDraft.SchemeGPG44Mapping?
+                            var previousSchemeGpg44Authentication = previousSchemeMapping.SchemeGPG44Mapping?
                              .Where(m => m.QualityLevel.QualityType == QualityTypeEnum.Authentication).Select(x => x.QualityLevel.Level).ToList();
 
 
@@ -437,6 +437,7 @@ namespace DVSRegister.BusinessLogic.Services
 
 
                         }
+
                     }
                 }
             }
@@ -447,8 +448,6 @@ namespace DVSRegister.BusinessLogic.Services
             // previous selected service: published under pinning
             if (previousData.IsUnderPinningServicePublished == true && previousData.UnderPinningServiceId != null)
             {
-
-
 
 
                 if (currentData.IsUnderpinningServicePublished == true && currentData.UnderPinningServiceId != null && currentData.UnderPinningServiceId != previousData.UnderPinningServiceId) //current data is selected from list of manual services 
@@ -547,7 +546,7 @@ namespace DVSRegister.BusinessLogic.Services
             }
             if (currentData.ManualUnderPinningServiceDraft.CabId != currentSelectedManualService.CabId)
             {
-                currentDataDictionary.Add(Constants.CabOfUnderpinningService, [currentData.ManualUnderPinningServiceDraft.SelectedCabName]);
+                currentDataDictionary.Add(Constants.CabOfUnderpinningService, [currentData.ManualUnderPinningServiceDraft.Cab.CabName]);
             }
             else
             {
