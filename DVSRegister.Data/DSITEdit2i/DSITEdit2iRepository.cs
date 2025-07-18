@@ -253,6 +253,7 @@ namespace DVSRegister.Data.Repositories
                  .Include(s => s.ManualUnderPinningServiceDraft)
                  .Include(s => s.ServiceSupSchemeMappingDraft).ThenInclude(x=>x.SchemeGPG44MappingDraft)
                  .Include(s => s.ServiceSupSchemeMappingDraft).ThenInclude(x => x.SchemeGPG45MappingDraft)
+                 .Include(s=>s.ManualUnderPinningServiceDraft)
                  .FirstOrDefaultAsync(p => p.Id == serviceDraftId);
 
 
@@ -465,8 +466,59 @@ namespace DVSRegister.Data.Repositories
 
                   
                     }
-                  
+
                     //-----------------------------------------------------------------------------//
+
+
+
+
+                    //-----------underpinning service-----------------------------------------------------------------------//
+
+                    if (existingDraftService.UnderPinninngServiceEditType != null)
+                    {
+                        if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.PublishedToPublished)
+                        {
+                            existingService.UnderPinningServiceId = existingDraftService.UnderPinningServiceId;
+                        }
+                        else if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.PublishedToSelectOrChangeManual)
+                        {
+                            existingService.UnderPinningServiceId = null;
+                            existingService.IsUnderPinningServicePublished = false;
+                            existingService.ManualUnderPinningServiceId = existingDraftService.ManualUnderPinningServiceId;
+
+
+                            if (existingDraftService.ManualUnderPinningServiceDraft != null)
+                            {
+                                await UpdateManualUnderpinningService(existingDraftService);
+                            }
+                        }
+                        else if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.PublishedToEnterManual)
+                        {
+                            existingService.UnderPinningServiceId = null;
+                            existingService.IsUnderPinningServicePublished = false;
+                            CreateAndAssignManualUnderPinningServiceInstance(existingService, existingDraftService);
+                        }
+                        else if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.ManualToPublished)
+                        {
+                            existingService.ManualUnderPinningServiceId = null;
+                            existingService.IsUnderPinningServicePublished = true;
+                            existingService.UnderPinningServiceId = existingDraftService.UnderPinningServiceId;
+                        }
+                        else if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.ManualToSelectOrChangeManual)
+                        {
+                            existingService.ManualUnderPinningServiceId = existingDraftService.ManualUnderPinningServiceId;
+                            existingService.IsUnderPinningServicePublished = false;
+
+                            await UpdateManualUnderpinningService(existingDraftService);
+
+                        }
+                        else if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.ManualToEnterManual)
+                        {
+                            CreateAndAssignManualUnderPinningServiceInstance(existingService, existingDraftService);
+                        }
+                    }
+
+                    //----------------------------------------------------------------------------------//
                     context.Remove(existingDraftService);
 
                     await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.ServiceEdit2i, "DSIT");
@@ -489,6 +541,37 @@ namespace DVSRegister.Data.Repositories
             return genericResponse;
         }
 
+        private async Task UpdateManualUnderpinningService(ServiceDraft? existingDraftService)
+        {
+            if (existingDraftService.ManualUnderPinningServiceDraft != null)
+            {
+                var manualUnderPinningService = await context.ManualUnderPinningService.FirstOrDefaultAsync(x => x.Id == existingDraftService.ManualUnderPinningServiceId);
+
+                if (manualUnderPinningService.ServiceName != existingDraftService.ManualUnderPinningServiceDraft.ServiceName)
+                    manualUnderPinningService.ServiceName = existingDraftService.ManualUnderPinningServiceDraft.ServiceName;
+
+                if (manualUnderPinningService.ProviderName != existingDraftService.ManualUnderPinningServiceDraft.ProviderName)
+                    manualUnderPinningService.ProviderName = existingDraftService.ManualUnderPinningServiceDraft.ProviderName;
+
+                if (manualUnderPinningService.CabId != existingDraftService.ManualUnderPinningServiceDraft.CabId)
+                    manualUnderPinningService.CabId = existingDraftService.ManualUnderPinningServiceDraft.CabId;
+
+                if (manualUnderPinningService.CertificateExpiryDate != existingDraftService.ManualUnderPinningServiceDraft.CertificateExpiryDate)
+                    manualUnderPinningService.CertificateExpiryDate = existingDraftService.ManualUnderPinningServiceDraft.CertificateExpiryDate;
+
+                context.Remove(existingDraftService.ManualUnderPinningServiceDraft);
+            }
+        }
+
+        private void CreateAndAssignManualUnderPinningServiceInstance(Service? existingService, ServiceDraft? existingDraftService)
+        {
+            existingService.ManualUnderPinningService = new();
+            existingService.ManualUnderPinningService.ServiceName = existingDraftService.ManualUnderPinningServiceDraft.ServiceName;
+            existingService.ManualUnderPinningService.ProviderName = existingDraftService.ManualUnderPinningServiceDraft.ProviderName;
+            existingService.ManualUnderPinningService.CabId = existingDraftService.ManualUnderPinningServiceDraft.CabId;
+            existingService.ManualUnderPinningService.CertificateExpiryDate = existingDraftService.ManualUnderPinningServiceDraft.CertificateExpiryDate;
+            context.Remove(existingDraftService.ManualUnderPinningServiceDraft);
+        }
 
         public async Task<bool> RemoveServiceDraftToken(string token, string tokenId)
         {
