@@ -272,7 +272,7 @@ namespace DVSRegister.BusinessLogic.Services
 
 
 
-            if (currentData.ServiceSupSchemeMappingDraft.Count < previousData?.ServiceSupSchemeMapping?.Count)
+            if (currentData.ServiceSupSchemeMappingDraft.Count > 0 && currentData.ServiceSupSchemeMappingDraft.Count < previousData?.ServiceSupSchemeMapping?.Count)
             {
 
                 foreach (var schemeMapping in previousData.ServiceSupSchemeMapping)

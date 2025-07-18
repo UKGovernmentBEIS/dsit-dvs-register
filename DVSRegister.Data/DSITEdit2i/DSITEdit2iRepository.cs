@@ -1,4 +1,5 @@
-﻿using DVSRegister.CommonUtility.Models;
+﻿using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -233,6 +234,7 @@ namespace DVSRegister.Data.Repositories
             try
             {
                 var existingService = await context.Service.Include(p=>p.Provider)
+                .Include(p => p.TrustFrameworkVersion)
                  .Include(s => s.ServiceRoleMapping)
                  .Include(s => s.ServiceQualityLevelMapping)
                  .Include(s => s.ServiceIdentityProfileMapping)
@@ -336,8 +338,6 @@ namespace DVSRegister.Data.Repositories
                     //--------------------------Scheme-------------------------------------------//
 
 
-                   if (existingDraftService.ServiceSupSchemeMappingDraft.Count != existingService.ServiceSupSchemeMapping.Count)
-                    {
                         if (existingDraftService.ServiceSupSchemeMappingDraft?.Count > 0)
                         {                         
 
@@ -347,60 +347,12 @@ namespace DVSRegister.Data.Repositories
 
                                 newServiceSupSchemeMapping.Add(new ServiceSupSchemeMapping { SupplementarySchemeId = item.SupplementarySchemeId, ServiceId = existingService.Id });
 
+                            if (existingService.TrustFrameworkVersion.Version == Constants.TFVersion0_4)
+                            {
+                                MapTFVersion0_4Methods(existingService, newServiceSupSchemeMapping, item);
+                            }
+                                
 
-                                var newMappingInstance = newServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId).FirstOrDefault();
-
-                                newMappingInstance.SchemeGPG45Mapping = [];
-                                newMappingInstance.SchemeGPG44Mapping = [];
-                                if (item.SchemeGPG45MappingDraft != null && item.SchemeGPG45MappingDraft.Count > 0)
-                                {
-                                    foreach (var identityProfileMapping in item.SchemeGPG45MappingDraft)
-                                    {
-                                        newMappingInstance.SchemeGPG45Mapping.Add(new SchemeGPG45Mapping { IdentityProfileId = identityProfileMapping.IdentityProfileId });
-                                    }
-
-                                }
-                                else
-                                {
-                                    var existingSchemeIdentityProfileMapping = existingService.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId)
-                                    .SelectMany(x => x.SchemeGPG45Mapping).ToList();
-                                    foreach(var schemeProfile in existingSchemeIdentityProfileMapping)
-                                    {
-                                        newMappingInstance.SchemeGPG45Mapping .Add(new SchemeGPG45Mapping { IdentityProfileId = schemeProfile.IdentityProfileId });
-                                    }
-
-                                  
-                                }
-
-                               if (item.SchemeGPG44MappingDraft != null && item.SchemeGPG44MappingDraft.Count > 0)
-                                {
-                                    newMappingInstance.HasGpg44Mapping = true;
-                                    foreach (var qualityLevelMapping in item.SchemeGPG44MappingDraft)
-                                    {
-                                        newMappingInstance.SchemeGPG44Mapping.Add(new SchemeGPG44Mapping { QualityLevelId = qualityLevelMapping.QualityLevelId });
-                                    }
-
-                                }
-                               else  if (item.HasGpg44Mapping != null && item.HasGpg44Mapping == false)
-                                {
-                                    newMappingInstance.HasGpg44Mapping = false;
-                                    newMappingInstance.SchemeGPG44Mapping = [];
-                                }
-                                else
-                                {
-                                    newMappingInstance.HasGpg44Mapping = true;
-                                    var existingQualityLevelMapping = existingService.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId)
-                                    .SelectMany(x => x.SchemeGPG44Mapping).ToList();
-                                    foreach (var schemeQuality in existingQualityLevelMapping)
-                                    {
-                                        newMappingInstance.SchemeGPG44Mapping.Add(new SchemeGPG44Mapping { QualityLevelId = schemeQuality.QualityLevelId });
-
-                                    }
-
-                                    
-                                }
-
-                              
                             }
                             context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
                             existingService.ServiceSupSchemeMapping = newServiceSupSchemeMapping;
@@ -413,68 +365,15 @@ namespace DVSRegister.Data.Repositories
                             context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
                             existingService.HasSupplementarySchemes = false;
                         }
-                    }
-                    else
-                    {
-                        foreach (var item in existingDraftService.ServiceSupSchemeMappingDraft)
-                        {
-                            if (item.SchemeGPG45MappingDraft != null && item.SchemeGPG45MappingDraft.Count > 0)
-                            {
-                                var existingGpg45SchemeMapping = context?.ServiceSupSchemeMapping.Include(x => x.SchemeGPG45Mapping)
-                               .Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId && x.ServiceId == existingService.Id).FirstOrDefault();
-
-                                context.SchemeGPG45Mapping.RemoveRange(existingGpg45SchemeMapping.SchemeGPG45Mapping);
-                                foreach (var identityProfileMapping in item.SchemeGPG45MappingDraft)
-                                {
-                                    existingGpg45SchemeMapping.SchemeGPG45Mapping.Add(new SchemeGPG45Mapping { IdentityProfileId = identityProfileMapping.IdentityProfileId });
-                                }
-                            }
-
-                            if (item.SchemeGPG44MappingDraft != null && item.SchemeGPG44MappingDraft.Count > 0)
-                            {
-                                var existingGpg44SchemeMapping = context?.ServiceSupSchemeMapping.Include(x => x.SchemeGPG44Mapping)
-                              .Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId && x.ServiceId == existingService.Id).FirstOrDefault();
-
-                                if(existingGpg44SchemeMapping?.SchemeGPG44Mapping!=null && existingGpg44SchemeMapping?.SchemeGPG44Mapping.Count>0)
-                                {
-                                    context.SchemeGPG44Mapping.RemoveRange(existingGpg44SchemeMapping.SchemeGPG44Mapping);
-                                }
-                                else
-                                {
-                                    existingGpg44SchemeMapping.HasGpg44Mapping = true;
-                                   
-                                }
-                              
-                                foreach (var qualityLevelMapping in item.SchemeGPG44MappingDraft)
-
-                                { 
-                                    existingGpg44SchemeMapping.SchemeGPG44Mapping.Add(new SchemeGPG44Mapping { QualityLevelId = qualityLevelMapping.QualityLevelId });
-                                }
-
-                            }
-                            else if (item.HasGpg44Mapping != null && item.HasGpg44Mapping == false)
-                            {
-                                var existingGpg44SchemeMapping = context?.ServiceSupSchemeMapping.Include(x => x.SchemeGPG44Mapping)
-                             .Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId && x.ServiceId == existingService.Id).FirstOrDefault();
-                                existingGpg44SchemeMapping.HasGpg44Mapping = false;
-                                context.SchemeGPG44Mapping.RemoveRange(existingGpg44SchemeMapping.SchemeGPG44Mapping);
-                            }
-
-                          
-
-                        }
-
                   
-                    }
-
-                    //-----------------------------------------------------------------------------//
+                                         
 
 
 
 
                     //-----------underpinning service-----------------------------------------------------------------------//
 
-                    if (existingDraftService.UnderPinninngServiceEditType != null)
+                    if (existingService.TrustFrameworkVersion.Version == Constants.TFVersion0_4 &&  existingDraftService.UnderPinninngServiceEditType != null)
                     {
                         if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.PublishedToPublished)
                         {
@@ -539,6 +438,63 @@ namespace DVSRegister.Data.Repositories
                 logger.LogError(ex.Message);
             }
             return genericResponse;
+        }
+
+        private static void MapTFVersion0_4Methods(Service? existingService, ICollection<ServiceSupSchemeMapping> newServiceSupSchemeMapping, ServiceSupSchemeMappingDraft item)
+        {
+            var newMappingInstance = newServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId).FirstOrDefault();
+
+            newMappingInstance.SchemeGPG45Mapping = [];
+            newMappingInstance.SchemeGPG44Mapping = [];
+            if (item.SchemeGPG45MappingDraft != null && item.SchemeGPG45MappingDraft.Count > 0)
+            {
+                foreach (var identityProfileMapping in item.SchemeGPG45MappingDraft)
+                {
+                    newMappingInstance.SchemeGPG45Mapping.Add(new SchemeGPG45Mapping { IdentityProfileId = identityProfileMapping.IdentityProfileId });
+                }
+
+            }
+            else
+            {
+                var existingSchemeIdentityProfileMapping = existingService.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId)
+                .SelectMany(x => x.SchemeGPG45Mapping).ToList();
+                foreach (var schemeProfile in existingSchemeIdentityProfileMapping)
+                {
+                    newMappingInstance.SchemeGPG45Mapping.Add(new SchemeGPG45Mapping { IdentityProfileId = schemeProfile.IdentityProfileId });
+                }
+
+
+            }
+
+            if (item.SchemeGPG44MappingDraft != null && item.SchemeGPG44MappingDraft.Count > 0 && item.HasGpg44Mapping ==true)
+            {
+                newMappingInstance.HasGpg44Mapping = true;
+                foreach (var qualityLevelMapping in item.SchemeGPG44MappingDraft)
+                {
+                    newMappingInstance.SchemeGPG44Mapping.Add(new SchemeGPG44Mapping { QualityLevelId = qualityLevelMapping.QualityLevelId });
+                }
+
+            }
+            else if (item.HasGpg44Mapping != null && item.HasGpg44Mapping == false)
+            {
+                newMappingInstance.HasGpg44Mapping = false;
+                newMappingInstance.SchemeGPG44Mapping = [];
+            }
+            else
+            {
+                var existingSchemMapping = existingService.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId).FirstOrDefault();
+                var existingQualityLevelMapping = existingService.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId)
+                .SelectMany(x => x.SchemeGPG44Mapping).ToList();
+
+                newMappingInstance.HasGpg44Mapping = existingSchemMapping.HasGpg44Mapping;
+                foreach (var schemeQuality in existingQualityLevelMapping)
+                {
+                    newMappingInstance.SchemeGPG44Mapping.Add(new SchemeGPG44Mapping { QualityLevelId = schemeQuality.QualityLevelId });
+
+                }
+
+
+            }
         }
 
         private async Task UpdateManualUnderpinningService(ServiceDraft? existingDraftService)
