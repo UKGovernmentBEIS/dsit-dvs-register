@@ -34,6 +34,17 @@
         public const string RegisteredNameExistsError = "The registered name you have entered already exists";
         public const decimal TFVersion0_4 = 0.4m;
         public const decimal TFVersion0_3 = 0.3m;
+        public const string GPG44Authentication = "GPG 44 quality of authentication";
+        public const string GPG44Protection = "GPG 44 level of protection";
+        public const string GPG45IdentityProfiles = "GPG 45 identity profiles";
+        public const string SupplementaryCodes = "Supplementary Codes";
+        public const string RegisteredAddress = "Registered address";
+        public const string ServiceName = "Service name";
+        public const string Roles = "Roles certified against";
+        public const string UnderpinningServiceName = "Underpinning service name";
+        public const string UnderpinningProviderName = "Underpinning service provider registered name";
+        public const string CabOfUnderpinningService = "CAB of underpinning service";
+        public const string UnderpiningExpiryDate = "Underpinning service certificate expiry date";
 
 
     }

@@ -15,5 +15,8 @@ namespace DVSRegister.Data.Repositories
         public Task<GenericResponse> CancelServiceUpdates(int serviceId, int serviceDraftId);
         public  Task<Service> GetService(int serviceId);
         public Task<ProviderProfile> GetProvider(int providerProfileId);
+        public Task<Service> GetUnderpinningServiceDetails(int serviceId);
+        public Task<ManualUnderPinningService> GetManualUnderPinningServiceDetails(int serviceId);
+        public Task<Service> GetPreviousServiceDetails(int serviceId);
     }
 }

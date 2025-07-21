@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.JWT;
@@ -137,7 +138,9 @@ namespace DVSRegister.Controllers
             ServiceReviewViewModel serviceReviewViewModel = new();
             TokenDetails tokenDetails = await jwtService.ValidateToken(token, "DSIT");
             ServiceDraftTokenDto serviceDraftTokenDto = await dSITEdit2IService.GetServiceChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
-                        
+
+            ServiceDto previousData = await dSITEdit2IService.GetPreviousServiceDetails(serviceDraftTokenDto.ServiceDraft.ServiceId);
+            serviceDraftTokenDto.ServiceDraft.Service = previousData;
             var invalidRequestResult = await HandleInvalidServiceUpdateRequest(tokenDetails, serviceDraftTokenDto);
             if (invalidRequestResult != null)
             {
@@ -148,7 +151,7 @@ namespace DVSRegister.Controllers
                 serviceReviewViewModel.token = tokenDetails.Token;
                 serviceReviewViewModel.CurrentServiceData = serviceDraftTokenDto.ServiceDraft;
                 serviceReviewViewModel.PreviousServiceData = serviceDraftTokenDto.ServiceDraft.Service;
-                var (previous, current) = dSITEdit2IService.GetServiceKeyValue(serviceDraftTokenDto.ServiceDraft, serviceDraftTokenDto.ServiceDraft.Service);
+                var (previous, current) = await dSITEdit2IService.GetServiceKeyValue(serviceDraftTokenDto.ServiceDraft, serviceDraftTokenDto.ServiceDraft.Service);
                 serviceReviewViewModel.PreviousDataKeyValuePair = previous;
                 serviceReviewViewModel.CurrentDataKeyValuePair = current;
                 return View(serviceReviewViewModel);
@@ -164,7 +167,8 @@ namespace DVSRegister.Controllers
            
             TokenDetails tokenDetails = await jwtService.ValidateToken(serviceReviewViewModel.token, "DSIT");
             ServiceDraftTokenDto serviceDraftTokenDto = await dSITEdit2IService.GetServiceChangesByToken(tokenDetails.Token, tokenDetails.TokenId);
-
+            ServiceDto previousData = await dSITEdit2IService.GetPreviousServiceDetails(serviceDraftTokenDto.ServiceDraft.ServiceId);
+            serviceDraftTokenDto.ServiceDraft.Service = previousData;
             var invalidRequestResult = await HandleInvalidServiceUpdateRequest(tokenDetails, serviceDraftTokenDto);
             if (invalidRequestResult != null)
             {

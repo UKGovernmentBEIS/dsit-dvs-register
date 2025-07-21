@@ -1,5 +1,6 @@
-﻿using DVSRegister.CommonUtility.Models.Enums;
+﻿using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -170,26 +171,54 @@ namespace DVSRegister.Data.Repositories
 
         public async Task<ServiceDraftToken> GetServiceDraftToken(string token, string tokenId)
         {
-            return await context.ServiceDraftToken.Include(p => p.ServiceDraft).ThenInclude(p => p.Provider)
-               .Include(p => p.ServiceDraft).ThenInclude(p => p.Service)
-              .Include(p => p.ServiceDraft).ThenInclude(p => p.User)
-             .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceRoleMapping).ThenInclude(s=>s.Role)
-             .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceQualityLevelMapping).ThenInclude(s => s.QualityLevel)
-             .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceIdentityProfileMapping).ThenInclude(s => s.IdentityProfile)
-             .Include(p => p.ServiceDraft).ThenInclude(p => p.Service).ThenInclude(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SupplementaryScheme)
 
 
-              .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceRoleMappingDraft).ThenInclude(s => s.Role)
-             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceQualityLevelMappingDraft).ThenInclude(s => s.QualityLevel)
-             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceIdentityProfileMappingDraft).ThenInclude(s => s.IdentityProfile)
-             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceSupSchemeMappingDraft).ThenInclude(s => s.SupplementaryScheme)   
+            return await context.ServiceDraftToken.Include(p => p.ServiceDraft).ThenInclude(p => p.Provider).AsNoTracking()
+            .Include(p => p.ServiceDraft).ThenInclude(p => p.User).AsNoTracking()
+            .Include(p => p.ServiceDraft).ThenInclude(p => p.ManualUnderPinningServiceDraft).ThenInclude(s=>s.Cab).AsNoTracking()
+            .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceRoleMappingDraft).ThenInclude(s => s.Role).AsNoTracking()
+             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceQualityLevelMappingDraft).ThenInclude(s => s.QualityLevel).AsNoTracking()
+             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceIdentityProfileMappingDraft).ThenInclude(s => s.IdentityProfile).AsNoTracking()
+             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceSupSchemeMappingDraft).ThenInclude(s => s.SupplementaryScheme).AsNoTracking()
+             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceSupSchemeMappingDraft).ThenInclude(s => s.SchemeGPG44MappingDraft).ThenInclude(s => s.QualityLevel).AsNoTracking()
+             .Include(p => p.ServiceDraft).ThenInclude(s => s.ServiceSupSchemeMappingDraft).ThenInclude(s => s.SchemeGPG45MappingDraft).ThenInclude(s => s.IdentityProfile).AsNoTracking()
 
-           .AsNoTracking().FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ServiceDraftToken();
+           .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ServiceDraftToken();
+        }
+
+        public async Task<Service> GetPreviousServiceDetails(int serviceId)
+        {
+            return await context.Service.Include(p => p.Provider).AsNoTracking()
+            .Include(s => s.TrustFrameworkVersion)
+            .Include(s => s.UnderPinningService)
+            .Include(s => s.ManualUnderPinningService)
+            .Include(s => s.ServiceRoleMapping).ThenInclude(s => s.Role).AsNoTracking()
+            .Include(s => s.ServiceQualityLevelMapping).ThenInclude(s => s.QualityLevel).AsNoTracking()
+            .Include(s => s.ServiceIdentityProfileMapping).ThenInclude(s => s.IdentityProfile).AsNoTracking()
+            .Include(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SupplementaryScheme).AsNoTracking()
+            .Include(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SchemeGPG44Mapping).ThenInclude(s => s.QualityLevel).AsNoTracking()
+            .Include(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SchemeGPG45Mapping).ThenInclude(s => s.IdentityProfile).AsNoTracking()
+
+            .FirstOrDefaultAsync(e => e.Id == serviceId) ?? new Service();
         }
 
         public async Task<Service> GetService(int serviceId)
         {
             return await context.Service. AsNoTracking().FirstOrDefaultAsync(e => e.Id ==serviceId) ?? new Service();
+        }
+
+
+        public async Task<Service> GetUnderpinningServiceDetails(int serviceId)
+        {
+            return await context.Service
+            .Include(s => s.CabUser).ThenInclude(s => s.Cab).AsNoTracking()
+            .Include(s => s.Provider).AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == serviceId);
+        }
+
+        public async Task<ManualUnderPinningService> GetManualUnderPinningServiceDetails(int serviceId)
+        {
+            return await context.ManualUnderPinningService.Include(m => m.Cab).FirstOrDefaultAsync(s => s.Id == serviceId);
         }
 
         public async Task<ProviderProfile> GetProvider(int providerProfileId)
@@ -205,10 +234,16 @@ namespace DVSRegister.Data.Repositories
             try
             {
                 var existingService = await context.Service.Include(p=>p.Provider)
+                .Include(p => p.TrustFrameworkVersion)
                  .Include(s => s.ServiceRoleMapping)
                  .Include(s => s.ServiceQualityLevelMapping)
                  .Include(s => s.ServiceIdentityProfileMapping)
-                 .Include(s => s.ServiceSupSchemeMapping).FirstOrDefaultAsync(p => p.Id == serviceId);
+                 .Include(s=>s.UnderPinningService)
+                 .Include(s => s.ManualUnderPinningService)
+                 .Include(s => s.ServiceSupSchemeMapping)
+                  .Include(s => s.ServiceSupSchemeMapping).ThenInclude(x=>x.SchemeGPG44Mapping)
+                  .Include(s => s.ServiceSupSchemeMapping).ThenInclude(x => x.SchemeGPG45Mapping)
+                 .FirstOrDefaultAsync(p => p.Id == serviceId);
 
 
 
@@ -217,6 +252,10 @@ namespace DVSRegister.Data.Repositories
                  .Include(s => s.ServiceQualityLevelMappingDraft)
                  .Include(s => s.ServiceIdentityProfileMappingDraft)
                  .Include(s => s.ServiceSupSchemeMappingDraft)
+                 .Include(s => s.ManualUnderPinningServiceDraft)
+                 .Include(s => s.ServiceSupSchemeMappingDraft).ThenInclude(x=>x.SchemeGPG44MappingDraft)
+                 .Include(s => s.ServiceSupSchemeMappingDraft).ThenInclude(x => x.SchemeGPG45MappingDraft)
+                 .Include(s=>s.ManualUnderPinningServiceDraft)
                  .FirstOrDefaultAsync(p => p.Id == serviceDraftId);
 
 
@@ -228,11 +267,10 @@ namespace DVSRegister.Data.Repositories
                     ICollection<ServiceQualityLevelMapping> newServiceQualityLevelMapping = [];
                     ICollection<ServiceIdentityProfileMapping> newServiceIdentityProfileMapping = [];
                     ICollection<ServiceSupSchemeMapping> newServiceSupSchemeMapping = [];
+                  
 
                     existingService.ModifiedTime = DateTime.UtcNow;
-                    existingService.ServiceStatus = ServiceStatusEnum.ReadyToPublish;
-                    if (existingService.Provider.ProviderStatus == ProviderStatusEnum.Published)
-                        existingService.Provider.ProviderStatus = ProviderStatusEnum.ReadyToPublish;
+                    existingService.ServiceStatus = ServiceStatusEnum.ReadyToPublish;                   
                     existingService.Provider.ModifiedTime = DateTime.UtcNow;
                     existingService.EditServiceTokenStatus = TokenStatusEnum.RequestCompleted;
                     existingService.IsInRegister = false;
@@ -296,24 +334,88 @@ namespace DVSRegister.Data.Repositories
                         existingService.HasGPG45 = false;
                     }
                     //--------------------------Scheme-------------------------------------------//
-                    if (existingDraftService.ServiceSupSchemeMappingDraft?.Count > 0)
-                    {
-                        foreach (var item in existingDraftService.ServiceSupSchemeMappingDraft)
-                        {
-                            newServiceSupSchemeMapping.Add(new ServiceSupSchemeMapping { SupplementarySchemeId = item.SupplementarySchemeId, ServiceId = existingService.Id });
+
+
+                        if (existingDraftService.ServiceSupSchemeMappingDraft?.Count > 0)
+                        {                         
+
+                            foreach (var item in existingDraftService.ServiceSupSchemeMappingDraft)
+                            {
+                                var existingSchemeMapping = existingService?.ServiceSupSchemeMapping?.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId).FirstOrDefault();
+
+                                newServiceSupSchemeMapping.Add(new ServiceSupSchemeMapping { SupplementarySchemeId = item.SupplementarySchemeId, ServiceId = existingService.Id });
+
+                            if (existingService.TrustFrameworkVersion.Version == Constants.TFVersion0_4)
+                            {
+                                MapTFVersion0_4Methods(existingService, newServiceSupSchemeMapping, item);
+                            }
+                                
+
+                            }
+                            context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
+                            existingService.ServiceSupSchemeMapping = newServiceSupSchemeMapping;
+                            existingService.HasSupplementarySchemes = true;
+
                         }
 
-                        context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
-                        existingService.ServiceSupSchemeMapping = newServiceSupSchemeMapping;
-                        existingService.HasSupplementarySchemes = true;
+                        else if (existingDraftService.HasSupplementarySchemes != null && existingDraftService.HasSupplementarySchemes == false)
+                        {
+                            context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
+                            existingService.HasSupplementarySchemes = false;
+                        }
+                  
+                                         
 
-                    }
-                    else if (existingDraftService.HasSupplementarySchemes != null && existingDraftService.HasSupplementarySchemes == false)
+
+
+
+                    //-----------underpinning service-----------------------------------------------------------------------//
+
+                    if (existingService.TrustFrameworkVersion.Version == Constants.TFVersion0_4 &&  existingDraftService.UnderPinninngServiceEditType != null)
                     {
-                        context.ServiceSupSchemeMapping.RemoveRange(existingService.ServiceSupSchemeMapping);
-                        existingService.HasSupplementarySchemes = false;
+                        if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.PublishedToPublished)
+                        {
+                            existingService.UnderPinningServiceId = existingDraftService.UnderPinningServiceId;
+                        }
+                        else if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.PublishedToSelectOrChangeManual)
+                        {
+                            existingService.UnderPinningServiceId = null;
+                            existingService.IsUnderPinningServicePublished = false;
+                            existingService.ManualUnderPinningServiceId = existingDraftService.ManualUnderPinningServiceId;
+
+
+                            if (existingDraftService.ManualUnderPinningServiceDraft != null)
+                            {
+                                await UpdateManualUnderpinningService(existingDraftService);
+                            }
+                        }
+                        else if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.PublishedToEnterManual)
+                        {
+                            existingService.UnderPinningServiceId = null;
+                            existingService.IsUnderPinningServicePublished = false;
+                            CreateAndAssignManualUnderPinningServiceInstance(existingService, existingDraftService);
+                        }
+                        else if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.ManualToPublished)
+                        {
+                            existingService.ManualUnderPinningServiceId = null;
+                            existingService.IsUnderPinningServicePublished = true;
+                            existingService.UnderPinningServiceId = existingDraftService.UnderPinningServiceId;
+                        }
+                        else if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.ManualToSelectOrChangeManual)
+                        {
+                            existingService.ManualUnderPinningServiceId = existingDraftService.ManualUnderPinningServiceId;
+                            existingService.IsUnderPinningServicePublished = false;
+
+                            await UpdateManualUnderpinningService(existingDraftService);
+
+                        }
+                        else if (existingDraftService.UnderPinninngServiceEditType == UnderPinninngServiceEditEnum.ManualToEnterManual)
+                        {
+                            CreateAndAssignManualUnderPinningServiceInstance(existingService, existingDraftService);
+                        }
                     }
-                    //-----------------------------------------------------------------------------//
+
+                    //----------------------------------------------------------------------------------//
                     context.Remove(existingDraftService);
 
                     await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.ServiceEdit2i, "DSIT");
@@ -336,6 +438,94 @@ namespace DVSRegister.Data.Repositories
             return genericResponse;
         }
 
+        private static void MapTFVersion0_4Methods(Service? existingService, ICollection<ServiceSupSchemeMapping> newServiceSupSchemeMapping, ServiceSupSchemeMappingDraft item)
+        {
+            var newMappingInstance = newServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId).FirstOrDefault();
+
+            newMappingInstance.SchemeGPG45Mapping = [];
+            newMappingInstance.SchemeGPG44Mapping = [];
+            if (item.SchemeGPG45MappingDraft != null && item.SchemeGPG45MappingDraft.Count > 0)
+            {
+                foreach (var identityProfileMapping in item.SchemeGPG45MappingDraft)
+                {
+                    newMappingInstance.SchemeGPG45Mapping.Add(new SchemeGPG45Mapping { IdentityProfileId = identityProfileMapping.IdentityProfileId });
+                }
+
+            }
+            else
+            {
+                var existingSchemeIdentityProfileMapping = existingService.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId)
+                .SelectMany(x => x.SchemeGPG45Mapping).ToList();
+                foreach (var schemeProfile in existingSchemeIdentityProfileMapping)
+                {
+                    newMappingInstance.SchemeGPG45Mapping.Add(new SchemeGPG45Mapping { IdentityProfileId = schemeProfile.IdentityProfileId });
+                }
+
+
+            }
+
+            if (item.SchemeGPG44MappingDraft != null && item.SchemeGPG44MappingDraft.Count > 0 && item.HasGpg44Mapping ==true)
+            {
+                newMappingInstance.HasGpg44Mapping = true;
+                foreach (var qualityLevelMapping in item.SchemeGPG44MappingDraft)
+                {
+                    newMappingInstance.SchemeGPG44Mapping.Add(new SchemeGPG44Mapping { QualityLevelId = qualityLevelMapping.QualityLevelId });
+                }
+
+            }
+            else if (item.HasGpg44Mapping != null && item.HasGpg44Mapping == false)
+            {
+                newMappingInstance.HasGpg44Mapping = false;
+                newMappingInstance.SchemeGPG44Mapping = [];
+            }
+            else
+            {
+                var existingSchemMapping = existingService.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId).FirstOrDefault();
+                var existingQualityLevelMapping = existingService.ServiceSupSchemeMapping.Where(x => x.SupplementarySchemeId == item.SupplementarySchemeId)
+                .SelectMany(x => x.SchemeGPG44Mapping).ToList();
+
+                newMappingInstance.HasGpg44Mapping = existingSchemMapping.HasGpg44Mapping;
+                foreach (var schemeQuality in existingQualityLevelMapping)
+                {
+                    newMappingInstance.SchemeGPG44Mapping.Add(new SchemeGPG44Mapping { QualityLevelId = schemeQuality.QualityLevelId });
+
+                }
+
+
+            }
+        }
+
+        private async Task UpdateManualUnderpinningService(ServiceDraft? existingDraftService)
+        {
+            if (existingDraftService.ManualUnderPinningServiceDraft != null)
+            {
+                var manualUnderPinningService = await context.ManualUnderPinningService.FirstOrDefaultAsync(x => x.Id == existingDraftService.ManualUnderPinningServiceId);
+
+                if (manualUnderPinningService.ServiceName != existingDraftService.ManualUnderPinningServiceDraft.ServiceName)
+                    manualUnderPinningService.ServiceName = existingDraftService.ManualUnderPinningServiceDraft.ServiceName;
+
+                if (manualUnderPinningService.ProviderName != existingDraftService.ManualUnderPinningServiceDraft.ProviderName)
+                    manualUnderPinningService.ProviderName = existingDraftService.ManualUnderPinningServiceDraft.ProviderName;
+
+                if (manualUnderPinningService.CabId != existingDraftService.ManualUnderPinningServiceDraft.CabId)
+                    manualUnderPinningService.CabId = existingDraftService.ManualUnderPinningServiceDraft.CabId;
+
+                if (manualUnderPinningService.CertificateExpiryDate != existingDraftService.ManualUnderPinningServiceDraft.CertificateExpiryDate)
+                    manualUnderPinningService.CertificateExpiryDate = existingDraftService.ManualUnderPinningServiceDraft.CertificateExpiryDate;
+
+                context.Remove(existingDraftService.ManualUnderPinningServiceDraft);
+            }
+        }
+
+        private void CreateAndAssignManualUnderPinningServiceInstance(Service? existingService, ServiceDraft? existingDraftService)
+        {
+            existingService.ManualUnderPinningService = new();
+            existingService.ManualUnderPinningService.ServiceName = existingDraftService.ManualUnderPinningServiceDraft.ServiceName;
+            existingService.ManualUnderPinningService.ProviderName = existingDraftService.ManualUnderPinningServiceDraft.ProviderName;
+            existingService.ManualUnderPinningService.CabId = existingDraftService.ManualUnderPinningServiceDraft.CabId;
+            existingService.ManualUnderPinningService.CertificateExpiryDate = existingDraftService.ManualUnderPinningServiceDraft.CertificateExpiryDate;
+            context.Remove(existingDraftService.ManualUnderPinningServiceDraft);
+        }
 
         public async Task<bool> RemoveServiceDraftToken(string token, string tokenId)
         {
