@@ -19,12 +19,12 @@
 
     @if (bannerState == BannerState.ShowBanner)
     {
-        <div class="govuk-cookie-banner" data-nosnippet role="region" aria-label="Cookies on the @serviceName">
+        <div class="govuk-cookie-banner" data-nosnippet role="region" aria-label="Cookies on @serviceName">
             <div class="govuk-cookie-banner__message govuk-width-container">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-two-thirds">
                         <h2 class="govuk-cookie-banner__heading govuk-heading-m">
-                            Cookies on the  @serviceName
+                            Cookies on @serviceName
                         </h2>
                         <div class="govuk-cookie-banner__content">
                             <p class="govuk-body">We use some essential cookies to make this service work.</p>
@@ -33,8 +33,12 @@
                     </div>
                 </div>
                 <div class="govuk-button-group">
-                    <button class="govuk-button" name="consent" value="accept" type="submit">Accept analytics cookies</button>
-                    <button class="govuk-button" name="consent" value="reject" type="submit">Reject analytics cookies</button>
+                    <button type="submit" name="consent" value="accept" class="govuk-button" data-module="govuk-button">
+                        Accept analytics cookies
+                    </button>
+                    <button type="submit" name="consent" value="reject" class="govuk-button" data-module="govuk-button">
+                        Reject analytics cookies
+                    </button>
                     <a class="govuk-link" href="@Url.Action(nameof(CookieController.CookieSettings_Get), "Cookie")">View cookies</a>
                 </div>
             </div>

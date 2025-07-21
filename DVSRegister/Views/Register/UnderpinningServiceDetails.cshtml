@@ -10,13 +10,14 @@
 }
 
 <div class="govuk-width-container">
-@Html.ActionLink("Back", "ProviderDetails", "Register", new { providerId = ViewBag.PreviousProviderId }, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "ProviderDetails", "Register", new { providerId = ViewBag.PreviousProviderId }, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
                     @Model.Provider.RegisteredName
-                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.ModifiedTime) (GMT)</span>
+                    <span
+                        class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.ModifiedTime) (GMT)</span>
                 </h1>
                 @if (!string.IsNullOrEmpty(Model.Provider.TradingName))
                 {
@@ -72,20 +73,21 @@
                             @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
                             {
                                 var groupedProfiles = Model.ServiceIdentityProfileMapping
-                                .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
-                                .ToDictionary(group => group.Key, group => group.ToList())
-                                .OrderBy(g => g.Key);
+                                    .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
+                                    .ToDictionary(group => group.Key, group => group.ToList())
+                                    .OrderBy(g => g.Key);
                                 foreach (var group in groupedProfiles)
                                 {
                                     <strong>@group.Key</strong>
-                            
+
                                     <br>
                                     foreach (var item in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
                                     {
                                         @item.IdentityProfile.IdentityProfileName
-                            
+
                                         <br>
                                     }
+
                                     <br>
                                 }
                             }
@@ -156,14 +158,19 @@
                 <h3 class="govuk-heading-m">Explore the topic</h3>
                 <ul class="govuk-list">
                     <li>
-                        <a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role type</a>
+                        <a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers"
+                           class="govuk-link">Role type</a>
                     </li>
                     <li>
-                        <a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a>
+                        <a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles"
+                           class="govuk-link">Identity profiles</a>
                     </li>
                     <li>
-                        <a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary codes</a>
+                        <a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt"
+                           class="govuk-link">Supplementary codes</a>
                     </li>
                 </ul>
             </div>
         </div>
+    </main>
+</div>
