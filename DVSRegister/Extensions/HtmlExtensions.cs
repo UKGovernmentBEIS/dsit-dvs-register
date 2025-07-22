@@ -28,8 +28,7 @@ namespace DVSRegister.Extensions
                     return "govuk-tag govuk-tag--blue";
 
                 case ServiceStatusEnum.Published:
-                case CertificateReviewEnum.Approved:
-                case ServiceStatusEnum.ReadyToPublish:
+                case CertificateReviewEnum.Approved:              
                 case ServiceStatusEnum.PublishedUnderReassign:
                 case PublicInterestCheckEnum.PublicInterestCheckPassed:
                     return "govuk-tag govuk-tag--green";
@@ -48,6 +47,7 @@ namespace DVSRegister.Extensions
                 case ServiceStatusEnum.AwaitingRemovalConfirmation:
                 case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
                 case CertificateReviewEnum.InReview:
+                case ServiceStatusEnum.ReadyToPublish:
                     return "govuk-tag govuk-tag--yellow";
 
                 default:
@@ -82,11 +82,17 @@ namespace DVSRegister.Extensions
             // Check for publicInterestCheck whilst service is not ready to publish
             else if (publicInterestCheck != null && (serviceStatus < ServiceStatusEnum.ReadyToPublish || serviceStatus == ServiceStatusEnum.Resubmitted))
             {
-                if (publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PublicInterestCheckFailed)
+                if ( publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckFailed
+                     || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckPassed
+                    || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.SentBackBySecondReviewer
+                     || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.InPrimaryReview)
                 {
-                    return HtmlExtensions.ToStyledStrongTag(publicInterestCheck.PublicInterestCheckStatus);
+                    return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
                 }
-                return HtmlExtensions.ToStyledStrongTag(PublicInterestCheckEnum.PublicInterestCheckPassed);
+                else
+                {
+                    return HtmlExtensions.ToStyledStrongTag(publicInterestCheck.PublicInterestCheckStatus); // passed or failed
+                }
             }
             // Check if it is being edited and display the status before updates
             else if (previousServiceStatus > 0 && serviceStatus == ServiceStatusEnum.UpdatesRequested)

@@ -14,9 +14,7 @@ namespace DVSRegister.CommonUtility.Models.Enums
         [Description("Primary check passed")]
         PrimaryCheckPassed = 3,
         [Description("Sent back by second reviewer")]
-        SentBackBySecondReviewer = 4,
-        [Description("Primary check skipped")]
-        PrimaryCheckSkipped = 5,
+        SentBackBySecondReviewer = 4,       
         [Description("Public interest check failed")]
         PublicInterestCheckFailed = 6,
         [Description("Public interest check passed")]
