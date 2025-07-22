@@ -788,8 +788,8 @@ namespace DVSRegister.Controllers
         {         
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.Email = UserEmail;
-            //await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail, providerName, serviceName);
-            //await emailSender.SendCertificateInfoSubmittedToDSIT();
+            await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail, providerName, serviceName);
+            await emailSender.SendCertificateInfoSubmittedToDSIT();
             return View();
 
         }

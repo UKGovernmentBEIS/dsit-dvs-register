@@ -76,6 +76,13 @@ namespace DVSRegister.Controllers
             return View(providerDetailsViewModel);
         }
 
+        [HttpGet("underpinning-service-details")]
+        public async Task<IActionResult> UnderpinningServiceDetails(int serviceId, int previousProviderId)
+        {
+            ViewBag.PreviousProviderId = previousProviderId;
+            ServiceDto service = await registerService.GetServiceDetails(serviceId);
+            return View(service);
+        }
 
         [HttpGet("publish-logs")]
         public async Task<IActionResult> Updates()

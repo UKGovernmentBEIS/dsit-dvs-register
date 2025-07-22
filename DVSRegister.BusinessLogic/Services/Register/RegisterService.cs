@@ -34,6 +34,13 @@ namespace DVSRegister.BusinessLogic.Services
             return providerProfileDto;
         }
 
+        public async Task<ServiceDto> GetServiceDetails(int serviceId)
+        {
+            var service = await registerRepository.GetServiceDetails(serviceId);
+            ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
+            return serviceDto;
+        }
+
         public async Task<List<RegisterPublishLogDto>> GetRegisterPublishLogs()
         {
             var list = await registerRepository.GetRegisterPublishLogs();
