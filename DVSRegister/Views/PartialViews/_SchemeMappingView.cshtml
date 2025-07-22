@@ -18,11 +18,22 @@
             </dt>
 
             <dd class="govuk-summary-list__value">
-                @if (item.SchemeGPG45Mapping != null)
+                @if (item.SchemeGPG45Mapping != null && item.SchemeGPG45Mapping.Count > 0)
                 {
-                    @foreach (var gpg45Mapping in item.SchemeGPG45Mapping)
+                    var groupedProfiles = item.SchemeGPG45Mapping
+                    .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
+                    .ToDictionary(group => group.Key, group => group.ToList())
+                    .OrderBy(g => g.Key);
+
+                    foreach (var group in groupedProfiles)
                     {
-                        @gpg45Mapping.IdentityProfile.IdentityProfileName
+                        <strong>@group.Key</strong>
+                        <br>
+                        foreach (var identity in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
+                        {
+                            @identity.IdentityProfile.IdentityProfileName
+                            <br>
+                        }
                         <br>
                     }
                 }
