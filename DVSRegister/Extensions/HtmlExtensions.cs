@@ -80,7 +80,7 @@ namespace DVSRegister.Extensions
                 return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
             }
             // Check for publicInterestCheck whilst service is not ready to publish
-            else if (publicInterestCheck != null && (serviceStatus < ServiceStatusEnum.ReadyToPublish || serviceStatus == ServiceStatusEnum.Resubmitted))
+            else if (publicInterestCheck != null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received || serviceStatus == ServiceStatusEnum.Resubmitted))
             {
                 if ( publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckFailed
                      || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckPassed
