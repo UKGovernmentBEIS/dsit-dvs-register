@@ -70,8 +70,7 @@ namespace DVSRegister.Data.TrustFramework
             .Include(s => s.ManualUnderPinningService).ThenInclude(s => s.Cab)
             .Include(s => s.CertificateReview)
             .Include(s => s.PublicInterestCheck)
-            .Include(s => s.ServiceDraft)
-            .Include(s => s.Provider)
+            .Include(s => s.ServiceDraft)         
             .Where(x => x.ServiceType == ServiceTypeEnum.WhiteLabelled
                         && x.ManualUnderPinningServiceId != null
                         && x.ManualUnderPinningServiceId > 0
@@ -87,9 +86,8 @@ namespace DVSRegister.Data.TrustFramework
             {
                 if(manualUnderPinningServices != null)
                 manualUnderPinningServices = manualUnderPinningServices
-                                   .Where(x => x.ManualUnderPinningService.ServiceName.ToLower().Contains(trimmedSearchText) ||
-                                                x.Provider.RegisteredName.ToLower().Contains(trimmedSearchText))
-                                   .ToList();
+                .Where(x => x.ManualUnderPinningService.ServiceName.ToLower().Contains(trimmedSearchText) ||
+                 x.ManualUnderPinningService.ProviderName.ToLower().Contains(trimmedSearchText)).ToList();
                 return manualUnderPinningServices;
             }
 
