@@ -785,7 +785,9 @@ namespace DVSRegister.Controllers
         /// <returns></returns>
         [HttpGet("service-submitted")]
         public async Task <IActionResult> InformationSubmitted(string providerName, string serviceName)
-        {         
+        {
+            ViewBag.ServiceName = serviceName;
+            ViewBag.ProviderName = providerName;
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.Email = UserEmail;
             await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail, providerName, serviceName);

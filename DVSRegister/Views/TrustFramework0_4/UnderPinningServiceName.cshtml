@@ -1,6 +1,6 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @{
-    ViewData["Title"] = "The digital identity and attribute service provider’s name of service";
+    ViewData["Title"] = "Name of the underpinning service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -37,7 +37,7 @@
                     }
 
                     <h1 class="govuk-heading-xl form-title">
-                        The digital identity and attribute service provider’s name of service
+                        Name of the underpinning service
                     </h1>
 
                     <p class="govuk-body">
@@ -49,7 +49,7 @@
                         var serviceNameViewmodel = new TextBoxViewModel
                         {
                             PropertyName = "UnderPinningServiceName",
-                            Label = "Name of underpinning service",
+                            Label = "Name of the underpinning service",
                             Value = Model?.UnderPinningServiceName ?? string.Empty,
                             Class = "govuk-input",
                             Hint = "For example, ‘Identity Verification App‘",
