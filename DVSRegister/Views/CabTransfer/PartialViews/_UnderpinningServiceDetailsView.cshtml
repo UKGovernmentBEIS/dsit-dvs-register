@@ -1,0 +1,118 @@
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.Extensions;
+@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.CommonUtility.Models.Enums;
+
+@model ServiceDto
+
+@if (Model.UnderPinningService == null && Model.ManualUnderPinningService != null)
+{
+
+    <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">
+                Underpinning service
+            </h2>
+         
+        </div>
+        <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model?.ManualUnderPinningService?.ServiceName
+                    </dd>                   
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service provider
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.ManualUnderPinningService.ProviderName
+                    </dd>                  
+
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        CAB of underpinning service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.ManualUnderPinningService.Cab.CabName
+                    </dd>
+                   
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Underpinning service <br /> certificate expiry date
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @DateTimeExtensions.FormatDateTime(Model.ManualUnderPinningService.CertificateExpiryDate, "dd MMM yyyy")
+                    </dd>
+                    
+                </div>
+
+            </dl>
+        </div>
+    </div>
+}
+
+else if (Model.ManualUnderPinningService == null && Model.UnderPinningService != null)
+{
+   
+    <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">
+                Underpinning service
+            </h2>
+            
+        </div>
+        <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.UnderPinningService.ServiceName
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service provider
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.UnderPinningService.Provider.RegisteredName
+                    </dd>
+
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        CAB of underpinning service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.UnderPinningService.CabUser.Cab.CabName
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Underpinning service <br /> certificate expiry date
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @DateTimeExtensions.FormatDateTime(Model.UnderPinningService.ConformityExpiryDate, "dd MMM yyyy")
+                    </dd>
+                </div>
+
+            </dl>
+        </div>
+    </div>
+}
