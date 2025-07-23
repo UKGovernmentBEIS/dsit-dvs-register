@@ -1,4 +1,5 @@
-﻿@{
+﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@{
     ViewData["Title"] = "Service submitted successfully";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
@@ -17,10 +18,10 @@
                     Office for Digital Identities and Attributes (OfDIA).
                 </p>
                 <p class="govuk-body">
-                    Provider name: ((name of provider))
+                    Provider name: @ViewBag.ProviderName
                 </p>
                 <p class="govuk-body">
-                    Service name: ((name of service))
+                    Service name: @ViewBag.ServiceName
                 </p>
                 <p class="govuk-body">
                     You can view the service information under the service provider's profile.
