@@ -1,7 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @using DVSRegister.Controllers
 @{
-    ViewData["Title"] = "The digital identity and attribute service provider’s registered company name";
+    ViewData["Title"] = "Name of the underpinning service provider";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
@@ -34,14 +34,14 @@
                         }
                     }
 
-                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s registered name</h1>
-                    <p class="govuk-body">This registered company name will be publicly displayed on the register of digital identity and attribute services. This should match the registered name on the certificate of conformity.</p>
+                    <h1 class="govuk-heading-xl">Name of the underpinning service provider</h1>
+                    <p class="govuk-body">This must match the name of the sevice provider on the certificate. The information you provide will be publicly displayed on the register of digital identity and attribute services.</p>
 
                     @{
                         var registeredNameViewmodel = new TextBoxViewModel
                         {
                             PropertyName = "UnderPinningProviderName",
-                            Label = "Underpinning service provider registered name",
+                            Label = "Underpinning service provider",
                             Value = Model?.UnderPinningProviderName ?? string.Empty,
                             Hint = "For example, ‘Identity Verification App‘",
                             Class = "govuk-input",
