@@ -112,14 +112,13 @@ namespace DVSRegister.Data.CAB
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
-            .Include(p => p.TrustFrameworkVersion)
+             .Include(p => p.Provider)              
+             .Include(p => p.TrustFrameworkVersion)
              .Include(p => p.CertificateReview)
-             .Include(p => p.UnderPinningService).
-             ThenInclude(p => p.Provider)
-             .Include(p => p.UnderPinningService)
-             .ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
-             .Include(p => p.ManualUnderPinningService)
-             .ThenInclude(ms => ms.Cab)
+             .Include(p => p.Provider)
+             .Include(p => p.UnderPinningService).ThenInclude(p=>p.Provider)          
+             .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
+             .Include(p => p.ManualUnderPinningService) .ThenInclude(ms => ms.Cab)
             .Include(p => p.ServiceRoleMapping)            
             .ThenInclude(s => s.Role);
 
