@@ -44,39 +44,56 @@ namespace DVSRegister.Data.TrustFramework
 
             var filteredQuery = baseQuery
                 .Where(s => s.TrustFrameworkVersion.Version == Constants.TFVersion0_4 && s.ServiceType == ServiceTypeEnum.UnderPinning 
-                 && s.ServiceStatus == ServiceStatusEnum.Published);           
+                 && s.ServiceStatus == ServiceStatusEnum.Published);
 
-            string trimmedSearchText = searchText.Trim().ToLower();
-            filteredQuery = filteredQuery
-                .Where(s => s.ServiceName.ToLower().Contains(trimmedSearchText) ||
-                            s.Provider.RegisteredName.ToLower().Contains(trimmedSearchText));
+            if (searchText == "All")
+            {
+                return await filteredQuery.AsNoTracking().ToListAsync();
 
-            return await filteredQuery.AsNoTracking().ToListAsync();
+            }
+            else
+            {
+                string trimmedSearchText = searchText.Trim().ToLower();
+                filteredQuery = filteredQuery
+                    .Where(s => s.ServiceName.ToLower().Contains(trimmedSearchText) ||
+                                s.Provider.RegisteredName.ToLower().Contains(trimmedSearchText));
+                return await filteredQuery.AsNoTracking().ToListAsync();
+            }
         }
 
 
         public async Task<List<Service>> GetServicesWithManualUnderinningService(string searchText)
         {
-            var trimmedSearchText = searchText.Trim().ToLower();
-            // select manually entered under pinning services for a white labelled type
-            var manualUnderPinningServices = await context.Service
-                .Include(s => s.ManualUnderPinningService).ThenInclude(s => s.Cab)
-                .Include(s => s.CertificateReview)
-                .Include(s => s.PublicInterestCheck)
-                .Include(s => s.ServiceDraft)
-                .Where(x => x.ServiceType == ServiceTypeEnum.WhiteLabelled
-                            && x.ManualUnderPinningServiceId != null
-                            && x.ManualUnderPinningServiceId > 0
-                            && x.CertificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved
-                            && (string.IsNullOrEmpty(trimmedSearchText) ||
-                                x.ManualUnderPinningService.ServiceName.ToLower().Contains(trimmedSearchText) ||
-                                x.Provider.RegisteredName.ToLower().Contains(trimmedSearchText)))
-                .AsNoTracking()
-                .GroupBy(x => x.ManualUnderPinningServiceId) 
-                .Select(g => g.FirstOrDefault())
-                .ToListAsync();
+            var trimmedSearchText = searchText.Trim().ToLower();         
 
-            return manualUnderPinningServices;
+            var manualUnderPinningServices = await context.Service
+            .Include(s => s.ManualUnderPinningService).ThenInclude(s => s.Cab)
+            .Include(s => s.CertificateReview)
+            .Include(s => s.PublicInterestCheck)
+            .Include(s => s.ServiceDraft)
+            .Include(s => s.Provider)
+            .Where(x => x.ServiceType == ServiceTypeEnum.WhiteLabelled
+                        && x.ManualUnderPinningServiceId != null
+                        && x.ManualUnderPinningServiceId > 0
+                        && x.CertificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved)
+            .AsNoTracking()
+            .GroupBy(x => x.ManualUnderPinningServiceId)
+            .Select(g => g.FirstOrDefault())
+            .ToListAsync();
+
+            if (searchText == "All")
+                return manualUnderPinningServices;
+            else
+            {
+                if(manualUnderPinningServices != null)
+                manualUnderPinningServices = manualUnderPinningServices
+                                   .Where(x => x.ManualUnderPinningService.ServiceName.ToLower().Contains(trimmedSearchText) ||
+                                                x.Provider.RegisteredName.ToLower().Contains(trimmedSearchText))
+                                   .ToList();
+                return manualUnderPinningServices;
+            }
+
+            
         }
 
 
