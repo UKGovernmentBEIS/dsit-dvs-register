@@ -28,6 +28,12 @@ namespace DVSRegister.Models
                 summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = [];
                 summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = [];
             }
+            if (summaryViewModel.SchemeQualityLevelMapping != null)
+            {
+                summaryViewModel.SchemeQualityLevelMapping.ForEach(item => item.HasGPG44 = false);
+                summaryViewModel.SchemeQualityLevelMapping.ForEach(item => item.QualityLevel.SelectedLevelOfProtections = []);
+                summaryViewModel.SchemeQualityLevelMapping.ForEach(item => item.QualityLevel.SelectedQualityofAuthenticators = []);
+            }
 
         }
         public static void ClearGpg45(ServiceSummaryViewModel summaryViewModel)
