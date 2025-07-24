@@ -398,6 +398,11 @@ namespace DVSRegister.Controllers
                 ModelState.Clear();
                 SearchText = string.Empty;
             }
+            else if( SearchAction == "search" && string.IsNullOrEmpty(SearchText))
+            {
+                SearchText = "All";
+            }
+
 
             if(SearchText != null)
             {
