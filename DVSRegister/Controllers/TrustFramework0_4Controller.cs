@@ -171,7 +171,9 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = GetRefererURL();
+            summaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL()
+            : summaryViewModel.ServiceType == ServiceTypeEnum.WhiteLabelled ? "/cab-service/submit-service/select-underpinning-service"
+            : "/cab-service/submit-service/select-service-type";
             return View(summaryViewModel);
         }
 
@@ -210,8 +212,8 @@ namespace DVSRegister.Controllers
                 IsAmendment = summaryViewModel.IsAmendment,
                 SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList(),
                 AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
-                RefererURL = GetRefererURL()
-            };
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() :"/cab-service/submit-service/service/gpg45-input"
+             };
             return View(identityProfileViewModel);
         }
 
@@ -255,7 +257,9 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = GetRefererURL();
+            summaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() 
+            :summaryViewModel.HasGPG45 == true ? "/cab-service/submit-service/service/gpg45"
+            : "/cab-service/submit-service/service/gpg45-input";
             return View(summaryViewModel);
         }
 
@@ -292,7 +296,7 @@ namespace DVSRegister.Controllers
             QualityLevelViewModel qualityLevelViewModel = new()
             {
                 IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = summaryViewModel.RefererURL
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/service/gpg44-input"
             };
             var qualityLevels = await cabService.GetQualitylevels();
             qualityLevelViewModel.AvailableQualityOfAuthenticators = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
@@ -763,7 +767,10 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = GetRefererURL();
+            int previousSchemeId = GetPreviousScheme(schemeId);
+            summaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() 
+            : previousSchemeId == 0 ? "/cab-service/submit-service/supplementary-schemes" 
+            : "/cab-service/submit-service/scheme/gpg44?schemeId=" + previousSchemeId;
             var identityProfile = summaryViewModel?.SchemeIdentityProfileMapping?.Where(scheme => scheme.SchemeId == schemeId)?.FirstOrDefault()?.IdentityProfile;
             IdentityProfileViewModel identityProfileViewModel = new()
             {
@@ -799,12 +806,17 @@ namespace DVSRegister.Controllers
 
             if (identityProfileViewModel.SelectedIdentityProfileIds.Count > 0)
             {
+                var selectedServiceGpg45 = summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles.Select(x => x.Id).ToList();
+                if (identityProfileViewModel.SelectedIdentityProfileIds.Except(selectedServiceGpg45).Any())
+                {
+                    ModelState.AddModelError("SelectedIdentityProfileIds", Constants.NotGpg45SubsetError);
+                }
+
                 identityProfileViewModel.SelectedIdentityProfiles = availableIdentityProfiles.Where(c => identityProfileViewModel.SelectedIdentityProfileIds.Contains(c.Id)).ToList();
                 SchemeIdentityProfileMappingViewModel schemeIdentityProfileMappingViewModel = new();
                 schemeIdentityProfileMappingViewModel.SchemeId = identityProfileViewModel.SchemeId;
                 schemeIdentityProfileMappingViewModel.IdentityProfile = identityProfileViewModel;
                 schemeIdentityProfileMappingViewModel.IdentityProfile.SelectedIdentityProfiles = availableIdentityProfiles.Where(c => identityProfileViewModel.SelectedIdentityProfileIds.Contains(c.Id)).ToList();
-
 
                 var existingMapping = summaryViewModel?.SchemeIdentityProfileMapping?.FirstOrDefault(x => x.SchemeId == schemeIdentityProfileMappingViewModel.SchemeId);
                 if (existingMapping != null)
@@ -843,7 +855,7 @@ namespace DVSRegister.Controllers
 
             SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = summaryViewModel?.SchemeQualityLevelMapping?.Where(scheme => scheme.SchemeId == schemeId).
             FirstOrDefault() ?? new();
-            schemeQualityLevelMappingViewModel.RefererURL = GetRefererURL();
+            schemeQualityLevelMappingViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/scheme/gpg45?schemeId=" + schemeId;
             schemeQualityLevelMappingViewModel.SchemeId = schemeId;
             schemeQualityLevelMappingViewModel.SchemeName = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Where(scheme => scheme.Id == schemeId)
             .Select(scheme => scheme.SchemeName).FirstOrDefault() ?? string.Empty;
@@ -861,6 +873,11 @@ namespace DVSRegister.Controllers
             viewModel.IsAmendment = summaryViewModel.IsAmendment;
             viewModel.FromDetailsPage = false;
             viewModel.FromSummaryPage = false;
+
+            if (summaryViewModel.HasGPG44 == false && viewModel.HasGPG44 == true)
+            {
+                ModelState.AddModelError("HasGPG44", Constants.ServiceGpg44SelectedNo);
+            }
             if (ModelState["HasGPG44"].Errors.Count == 0)
             {
                 SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = new();
@@ -904,11 +921,12 @@ namespace DVSRegister.Controllers
                 SchemeId = schemeId,
                 SchemeName = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Where(scheme => scheme.Id == schemeId)
                 .Select(scheme => scheme.SchemeName).FirstOrDefault() ?? string.Empty,
-                IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = GetRefererURL()
+                IsAmendment = summaryViewModel.IsAmendment
+            
             };
-            var qualityLevel = summaryViewModel?.SchemeQualityLevelMapping?.Where(scheme => scheme.SchemeId == schemeId)?.FirstOrDefault()?.QualityLevel;
 
+            qualityLevelViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/scheme/gpg44-input?schemeId=" + schemeId;
+            var qualityLevel = summaryViewModel?.SchemeQualityLevelMapping?.Where(scheme => scheme.SchemeId == schemeId)?.FirstOrDefault()?.QualityLevel;
 
             var qualityLevels = await cabService.GetQualitylevels();
             qualityLevelViewModel.AvailableQualityOfAuthenticators = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
@@ -916,7 +934,6 @@ namespace DVSRegister.Controllers
 
             qualityLevelViewModel.AvailableLevelOfProtections = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
             qualityLevelViewModel.SelectedLevelOfProtectionIds = qualityLevel?.SelectedLevelOfProtections?.Select(c => c.Id)?.ToList() ?? [];
-
 
             return View(qualityLevelViewModel);
         }
@@ -941,6 +958,18 @@ namespace DVSRegister.Controllers
             qualityLevelViewModel.SelectedLevelOfProtectionIds = qualityLevelViewModel.SelectedLevelOfProtectionIds ?? [];
             if (qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Count > 0 && qualityLevelViewModel.SelectedLevelOfProtectionIds.Count > 0)
             {
+                var selectedServiceGpg44Authenticator = summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators.Select(x => x.Id).ToList();
+
+                var selectedServiceGpg44Protection = summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections.Select(x => x.Id).ToList();
+                if (qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Except(selectedServiceGpg44Authenticator).Any())
+                {
+                    ModelState.AddModelError("SelectedQualityofAuthenticatorIds", Constants.NotGpg44SubsetError);
+                }
+                if (qualityLevelViewModel.SelectedLevelOfProtectionIds.Except(selectedServiceGpg44Protection).Any())
+                {
+                    ModelState.AddModelError("SelectedLevelOfProtectionIds", Constants.NotGpg44SubsetError);
+                }
+
                 qualityLevelViewModel.SelectedQualityofAuthenticators = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Contains(c.Id)).ToList();
                 qualityLevelViewModel.SelectedLevelOfProtections = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedLevelOfProtectionIds.Contains(c.Id)).ToList();
                 var mapping = summaryViewModel.SchemeQualityLevelMapping?.Where(x => x.SchemeId == qualityLevelViewModel.SchemeId).FirstOrDefault()??new SchemeQualityLevelMappingViewModel();                
@@ -1203,6 +1232,23 @@ namespace DVSRegister.Controllers
             {
                 return false;
             }
+        }
+
+        private int GetPreviousScheme(int schemeId)
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            var selectedSchemeIds = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(x => x.Id).ToList();
+
+            if (selectedSchemeIds != null && selectedSchemeIds.Count > 0)
+            {
+                int currentIndex = selectedSchemeIds.IndexOf(schemeId);               
+                if (currentIndex > 0)
+                {
+                    return selectedSchemeIds[currentIndex - 1]; 
+                }
+            }
+
+            return 0; 
         }
         private async Task HandleInvalidProfileAndCab(int providerProfileId, CabUserDto cabUserDto)
         {
