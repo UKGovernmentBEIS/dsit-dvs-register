@@ -90,7 +90,7 @@ namespace DVSRegister.Controllers
                         summaryViewModel.FromSummaryPage = fromSummaryPage;
                         summaryViewModel.FromDetailsPage = fromDetailsPage;
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return await HandleAmendActions(action, summaryViewModel, false, fromDetailsPage, false, "SelectServiceType");
+                        return await HandleAmendActions(action, summaryViewModel, false, fromDetailsPage, false, false, "SelectServiceType");
                     }
                 }
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
