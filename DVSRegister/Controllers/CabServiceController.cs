@@ -395,7 +395,9 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = GetRefererURL();
+            summaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL()
+            : summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_3 ? summaryViewModel.HasGPG45 == true? "/cab-service/submit-service/gpg45" : "/cab-service/submit-service/gpg45-input"
+            : summaryViewModel.HasGPG44 == true ?  "/cab-service/submit-service/service/gpg44" : "/cab-service/submit-service/service/gpg44-input";
             return View(summaryViewModel);
         }
 
@@ -429,9 +431,9 @@ namespace DVSRegister.Controllers
             {
                 SelectedSupplementarySchemeIds = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(c => c.Id).ToList(),
                 AvailableSchemes = await cabService.GetSupplementarySchemes(),
-                IsAmendment = summaryViewModel.IsAmendment, 
-                RefererURL = summaryViewModel.RefererURL
-            };
+                IsAmendment = summaryViewModel.IsAmendment,
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/supplementary-schemes-input"
+            }; 
             return View(supplementarySchemeViewModel);
         }
 
