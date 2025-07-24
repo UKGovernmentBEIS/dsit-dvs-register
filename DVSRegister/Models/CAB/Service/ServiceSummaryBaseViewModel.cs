@@ -16,5 +16,6 @@ namespace DVSRegister.Models.CAB
         public bool IsSchemeEditedFromSummary { get; set; }
         public bool IsTfVersion0_4 { get; set; }
         public bool FromUnderPinningServiceSummaryPage { get; set; }
+        public bool SingleChange { get; set; }
     }
 }
