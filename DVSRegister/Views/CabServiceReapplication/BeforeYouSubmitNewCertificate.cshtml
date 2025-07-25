@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Before you submit a new certificate for this service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
@@ -9,26 +8,26 @@
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
 
+                <p class="govuk-body">
+                    You should continue with this certificate submission if you are submitting a new certificate for an existing service. This could
+                    be for one of the following reasons:
+                </p>
 
-                <h1 class="govuk-heading-xl">Before you submit a new certificate for this service</h1>
-
-                <p class="govuk-body">You should  continue with this certificate submission if you are submitting a new certificate for an existing service. This could be for one of the following reasons:</p>
-                
                 <ul class="govuk-list govuk-list--bullet">
+                    <li>The service has been transferred to you and you need to upload a new certificate</li>
                     <li>The previous certificate for this service has expired or is expiring soon</li>
                     <li>The scope of the certification for this service has changed and a new certificate is required</li>
-                    <li>This service was previously certified under a version of the trust framework which is no longer valid</li>
+                    <li>You are certifying this service against an updated version of the trust framework</li>
                 </ul>
 
-                <p class="govuk-body">If the certificate is for a different service, or if the service details have changed significantly, you should create a new service submission for this certificate.</p>
-
-
-
-                <p class="govuk-body">@Html.ActionLink("Continue", "ServiceName", "CabService", new { providerProfileId = ViewBag.ProviderProfileId }, new { @class = "govuk-button" })</p>
-
+                <p class="govuk-body">
+                    If the certificate is for a different service, or if the service details have changed significantly, you should create a new service submission
+                    for this certificate.
+                </p>
+                <p class="govuk-body">@Html.ActionLink("Continue", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { providerProfileId = ViewBag.ProviderProfileId }, new { @class = "govuk-button" })</p>
             </div>
         </div>
     </main>
 </div>
-

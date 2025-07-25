@@ -41,6 +41,7 @@ namespace DVSRegister.Data
                     var baseQuery = context.Service
                     .Where(p => p.Id == service.Id)
                     .Include(p => p.ServiceRoleMapping).ThenInclude(s => s.Role)
+                    .Include(p => p.TrustFrameworkVersion)
                     .AsSplitQuery();
 
                     IQueryable<Service> queryWithOptionalIncludes = baseQuery;

@@ -5,6 +5,11 @@
 @{
     ViewData["Title"] = "Service details";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    bool canApproveReject = (Model?.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign ||
+                           Model?.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign) &&
+                           (Model?.CabTransferRequest?.Any(x => x.ServiceId == Model.Id && x.Id == Model.CabTransferRequestId && x.CertificateUploaded == false) == true);
+
+    bool is0_4GammaVersion = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
 }
 
 <div class="govuk-width-container">
@@ -66,6 +71,16 @@
                     </dd>               
                 </div>
 
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Trust framework version
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.TrustFrameworkVersion.TrustFrameworkName
+                    </dd>
+                               
+                </div>
+
                  <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Roles certified
@@ -85,6 +100,50 @@
                     </dd>               
                 </div>
 
+             @if(is0_4GammaVersion)
+            {
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Underpinning or white-labelled service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @ViewModelHelper.GetServiceType(Model.ServiceType)
+                    </dd>
+                   
+                </div>
+            }
+
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    GPG 45 identity profiles
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
+                    {
+                        var groupedProfiles = Model.ServiceIdentityProfileMapping
+                        .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
+                        .ToDictionary(group => group.Key, group => group.ToList())
+                        .OrderBy(g => g.Key);
+
+                        foreach (var group in groupedProfiles)
+                        {
+                            <strong>@group.Key</strong>
+                            <br>
+                            foreach (var item in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
+                            {
+                                @item.IdentityProfile.IdentityProfileName
+                                <br>
+                            }
+                            <br>
+                        }
+                    }
+                    else
+                    {
+                        <div>@Constants.NullFieldsDisplay</div>
+                    }
+                </dd>
+            </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         GPG 44 quality of authenticator
@@ -126,25 +185,7 @@
                
                 </div>
 
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        GPG 45 identity profiles
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
-                        {
-                            @foreach (var item in Model.ServiceIdentityProfileMapping)
-                            {
-                                @item.IdentityProfile.IdentityProfileName
-                                <br>
-                            }
-                        }
-                        else
-                        {
-                            <div>@Constants.NullFieldsDisplay</div>
-                        }
-                    </dd>              
-                </div>
+              
 
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -200,20 +241,33 @@
     </div>
     </div>
 
-    <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-warning-text">
-            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-            <strong class="govuk-warning-text__text">
-                <span class="govuk-visually-hidden">Warning</span>
-                Once you select ‘Approve reassignment’, this service record will be
-                transferred to your Conformity Assessment Body. This action cannot
-                be undone.
-            </strong>
-        </div>
-    </div>
-
-            @if (Model?.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || Model?.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
+            @if (is0_4GammaVersion)
             {
+
+                <div class="govuk-grid-column-full">
+                @await Html.PartialAsync("~/Views/CabTransfer/PartialViews/_SchemeMappingView.cshtml", Model)
+                </div>
+                <div class="govuk-grid-column-full">
+                @await Html.PartialAsync("~/Views/CabTransfer/PartialViews/_UnderpinningServiceDetailsView.cshtml", Model)
+                </div>
+
+            }
+
+
+            @if (canApproveReject)
+            {
+                <div class="govuk-grid-column-two-thirds">
+                    <div class="govuk-warning-text">
+                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                        <strong class="govuk-warning-text__text">
+                            <span class="govuk-visually-hidden">Warning</span>
+                            Once you select ‘Approve reassignment’, this service record will be
+                            transferred to your Conformity Assessment Body. This action cannot
+                            be undone.
+                        </strong>
+                    </div>
+                </div>
+
                 <div class="govuk-grid-column-two-thirds">
                     <div class="govuk-button-group">
                         <a href="@( Url.Action("AboutToApproveReAssignment", "CabTransfer", new { requestId = Model?.CabTransferRequestId }) )" class="govuk-button" role="button">Approve reassignment</a>

@@ -1,6 +1,5 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.Data.Entities;
 using System.Text.Json.Serialization;
 
 namespace DVSRegister.BusinessLogic.Models.CAB
@@ -49,5 +48,19 @@ namespace DVSRegister.BusinessLogic.Models.CAB
 
         public int CabTransferRequestId { get; set; }
         public bool EnableResubmission { get; set; }
+
+      
+        public int TrustFrameworkVersionId { get; set; }
+        public TrustFrameworkVersionDto TrustFrameworkVersion { get; set; }
+        public ServiceTypeEnum? ServiceType { get; set; }       
+        public int? UnderPinningServiceId { get; set; }
+        public ServiceDto UnderPinningService { get; set; }    
+        public int? ManualUnderPinningServiceId { get; set; }
+        public ManualUnderPinningServiceDto ManualUnderPinningService { get; set; }
+        public bool? IsManualServiceLinkedToMultipleServices { get; set; }
+
+        public bool? IsUnderPinningServicePublished { get; set; }
+        public ServiceDraftDto? serviceDraft { get; set; }
+
     }
 }

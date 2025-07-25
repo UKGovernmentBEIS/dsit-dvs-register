@@ -15,7 +15,7 @@
             <div class="govuk-grid-column-full">
 
                 <h1 class="govuk-heading-xl">
-                    Service details: @Model.CurrentServiceVersion.ServiceName
+                    Service details: @(String.IsNullOrEmpty(Model.CurrentServiceVersion.ServiceName) ? "Incomplete" : Model.CurrentServiceVersion.ServiceName)
                 </h1>
             </div>
         </div>

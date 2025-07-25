@@ -17,7 +17,7 @@ namespace DVSRegister.CommonUtility.Models
         Removed = 5,
         [Description("Removal request sent")]
         AwaitingRemovalConfirmation = 6,
-        [Description("Removal request sent to DSIT")]
+        [Description("Removal request sent")]
         CabAwaitingRemovalConfirmation = 7,
         [Description("Saved as draft")]
         SavedAsDraft = 8,
@@ -27,8 +27,6 @@ namespace DVSRegister.CommonUtility.Models
         AmendmentsRequired = 10,
         [Description("Submitted")]
         Resubmitted = 11,
-        [Description("Published - under reassignment")]
-        Reassignment = 12,
         [Description("Published, under reassignment")]
         PublishedUnderReassign = 12,
         [Description("Removed, under reassignment")]

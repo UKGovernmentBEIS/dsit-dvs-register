@@ -1,0 +1,77 @@
+﻿@model DVSRegister.Models.CAB.Service.SchemeQualityLevelMappingViewModel
+@using DVSRegister.Models.UI.Enums
+@{
+    ViewData["Title"] = "Right to work: Is the service certified against GPG 44?";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+@{
+    bool hasError = false;   
+}
+
+@using (Html.BeginForm("SaveSchemeGPG44Input", "TrustFramework0_4", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+    @Html.HiddenFor(m => m.RefererURL)
+    @Html.HiddenFor(m=>m.SchemeId)
+    @Html.HiddenFor(m => m.SchemeName)
+    <div class="govuk-width-container">
+        <a href="@Model.RefererURL" class="govuk-back-link">
+            Back
+        </a>
+        <main id="main-content" class="govuk-main-wrapper" role="main">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+
+                    @if (Html.ViewData?.ModelState.ContainsKey("HasGPG44") == true)
+                    {
+                        hasError = true;
+                        var errors = Html.ViewData?.ModelState["HasGPG44"]?.Errors;
+                        if (errors != null && errors.Count > 0)
+                        {
+                            hasError = true;
+                            ViewData["Title"] = "Error: " + ViewData["Title"];
+                            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("HasGPG44", errors))
+                        }
+
+                    }
+                  
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TwoRadioButtonGroupView.cshtml", new TwoRadioButtonGroupViewModel
+                   {
+                       PropertyName = "HasGPG44",
+                       Value = Model.HasGPG44,
+                       HasError = hasError,
+                       FieldSet = Model.SchemeName + ": Is the service certified against GPG 44?",           
+                       Heading = HeadingEnum.H1,
+                       LegendStyleClass = "govuk-fieldset__legend--xl",
+                       ErrorMessage = hasError ? Html.ViewData?.ModelState["HasGPG44"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                       Label1 = "Yes",
+                       Label2 = "No"
+                   })
+
+                    @if (Model != null && Model.IsAmendment)
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Save changes</button>
+                            <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                                Cancel
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button" name="action" value="continue">
+                                Continue
+                            </button>
+                            <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
+                        </div>
+                    }                    
+                </div>
+            </div>
+        </main>
+    </div>
+}
+

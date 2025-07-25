@@ -40,7 +40,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public ProviderStatusEnum ProviderStatus { get; set; }
 
         [JsonIgnore]
-        public ICollection<ServiceDto>? Services { get; set; }  
+        public ICollection<ServiceDto>? Services { get; set; }
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }

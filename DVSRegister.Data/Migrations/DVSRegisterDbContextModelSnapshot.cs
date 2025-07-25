@@ -387,7 +387,15 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("IdentityProfileType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TrustFrameworkVersionId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TrustFrameworkVersionId");
 
                     b.ToTable("IdentityProfile");
 
@@ -395,163 +403,281 @@ namespace DVSRegister.Data.Migrations
                         new
                         {
                             Id = 1,
-                            IdentityProfileName = "L1A "
+                            IdentityProfileName = "L1A ",
+                            IdentityProfileType = 1,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 2,
-                            IdentityProfileName = "L1B "
+                            IdentityProfileName = "L1B ",
+                            IdentityProfileType = 1,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 3,
-                            IdentityProfileName = "L1C "
+                            IdentityProfileName = "L1C ",
+                            IdentityProfileType = 1,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 4,
-                            IdentityProfileName = "L2A "
+                            IdentityProfileName = "L2A ",
+                            IdentityProfileType = 1,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 5,
-                            IdentityProfileName = "L2B "
+                            IdentityProfileName = "L2B ",
+                            IdentityProfileType = 1,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 6,
-                            IdentityProfileName = "L3A "
+                            IdentityProfileName = "L3A ",
+                            IdentityProfileType = 1,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 7,
-                            IdentityProfileName = "M1A "
+                            IdentityProfileName = "M1A ",
+                            IdentityProfileType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 8,
-                            IdentityProfileName = "M1B "
+                            IdentityProfileName = "M1B ",
+                            IdentityProfileType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 9,
-                            IdentityProfileName = "M1C "
+                            IdentityProfileName = "M1C ",
+                            IdentityProfileType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 10,
-                            IdentityProfileName = "M1D "
+                            IdentityProfileName = "M1D ",
+                            IdentityProfileType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 11,
-                            IdentityProfileName = "M2A "
+                            IdentityProfileName = "M2A ",
+                            IdentityProfileType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 12,
-                            IdentityProfileName = "M2B "
+                            IdentityProfileName = "M2B ",
+                            IdentityProfileType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 13,
-                            IdentityProfileName = "M2C "
+                            IdentityProfileName = "M2C ",
+                            IdentityProfileType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 14,
-                            IdentityProfileName = "M3A "
+                            IdentityProfileName = "M3A ",
+                            IdentityProfileType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 15,
-                            IdentityProfileName = "H1A "
+                            IdentityProfileName = "H1A ",
+                            IdentityProfileType = 3,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 16,
-                            IdentityProfileName = "H1B "
+                            IdentityProfileName = "H1B ",
+                            IdentityProfileType = 3,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 17,
-                            IdentityProfileName = "H1C "
+                            IdentityProfileName = "H1C ",
+                            IdentityProfileType = 3,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 18,
-                            IdentityProfileName = "H2A "
+                            IdentityProfileName = "H2A ",
+                            IdentityProfileType = 3,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 19,
-                            IdentityProfileName = "H2B "
+                            IdentityProfileName = "H2B ",
+                            IdentityProfileType = 3,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 20,
-                            IdentityProfileName = "H2C "
+                            IdentityProfileName = "H2C ",
+                            IdentityProfileType = 3,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 21,
-                            IdentityProfileName = "H2D "
+                            IdentityProfileName = "H2D ",
+                            IdentityProfileType = 3,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 22,
-                            IdentityProfileName = "H2E "
+                            IdentityProfileName = "H2E ",
+                            IdentityProfileType = 3,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 23,
-                            IdentityProfileName = "H3A "
+                            IdentityProfileName = "H3A ",
+                            IdentityProfileType = 3,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 24,
-                            IdentityProfileName = "V1A "
+                            IdentityProfileName = "V1A ",
+                            IdentityProfileType = 4,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 25,
-                            IdentityProfileName = "V1B "
+                            IdentityProfileName = "V1B ",
+                            IdentityProfileType = 4,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 26,
-                            IdentityProfileName = "V1C "
+                            IdentityProfileName = "V1C ",
+                            IdentityProfileType = 4,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 27,
-                            IdentityProfileName = "V1D "
+                            IdentityProfileName = "V1D ",
+                            IdentityProfileType = 4,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 28,
-                            IdentityProfileName = "V2A "
+                            IdentityProfileName = "V2A ",
+                            IdentityProfileType = 4,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 29,
-                            IdentityProfileName = "V2B "
+                            IdentityProfileName = "V2B ",
+                            IdentityProfileType = 4,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 30,
-                            IdentityProfileName = "V2C "
+                            IdentityProfileName = "V2C ",
+                            IdentityProfileType = 4,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 31,
-                            IdentityProfileName = "V2D "
+                            IdentityProfileName = "V2D ",
+                            IdentityProfileType = 4,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 32,
-                            IdentityProfileName = "V3A "
+                            IdentityProfileName = "V3A ",
+                            IdentityProfileType = 4,
+                            TrustFrameworkVersionId = 0
                         });
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ManualUnderPinningService", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CabId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("CertificateExpiryDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ProviderName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ServiceName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CabId");
+
+                    b.ToTable("ManualUnderPinningService");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ManualUnderPinningServiceDraft", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CabId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("CertificateExpiryDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ProviderName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ServiceName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CabId");
+
+                    b.ToTable("ManualUnderPinningServiceDraft");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.PICheckLogs", b =>
@@ -986,7 +1112,8 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasIndex("SecondaryCheckUserId");
 
-                    b.HasIndex("ServiceId");
+                    b.HasIndex("ServiceId")
+                        .IsUnique();
 
                     b.ToTable("PublicInterestCheck");
                 });
@@ -1006,7 +1133,12 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("QualityType")
                         .HasColumnType("integer");
 
+                    b.Property<int>("TrustFrameworkVersionId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TrustFrameworkVersionId");
 
                     b.ToTable("QualityLevel");
 
@@ -1015,43 +1147,50 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             Level = "Low",
-                            QualityType = 1
+                            QualityType = 1,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 2,
                             Level = "Medium",
-                            QualityType = 1
+                            QualityType = 1,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 3,
                             Level = "High",
-                            QualityType = 1
+                            QualityType = 1,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 4,
                             Level = "Low",
-                            QualityType = 2
+                            QualityType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 5,
                             Level = "Medium",
-                            QualityType = 2
+                            QualityType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 6,
                             Level = "High",
-                            QualityType = 2
+                            QualityType = 2,
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 7,
                             Level = "Very High",
-                            QualityType = 2
+                            QualityType = 2,
+                            TrustFrameworkVersionId = 0
                         });
                 });
 
@@ -1186,7 +1325,12 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("TrustFrameworkVersionId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TrustFrameworkVersionId");
 
                     b.ToTable("Role");
 
@@ -1195,20 +1339,129 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             Order = 1,
-                            RoleName = "Identity Service Provider (IDSP)"
+                            RoleName = "Identity Service Provider (IDSP)",
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 2,
                             Order = 2,
-                            RoleName = "Attribute Service Provider (ASP)"
+                            RoleName = "Attribute Service Provider (ASP)",
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 3,
                             Order = 3,
-                            RoleName = "Orchestration Service Provider (OSP)"
+                            RoleName = "Orchestration Service Provider (OSP)",
+                            TrustFrameworkVersionId = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Order = 4,
+                            RoleName = "Holder Service Provider (HSP)",
+                            TrustFrameworkVersionId = 0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Order = 5,
+                            RoleName = "Component Service Provider (CSP)",
+                            TrustFrameworkVersionId = 0
                         });
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG44Mapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("QualityLevelId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceSupSchemeMappingId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QualityLevelId");
+
+                    b.HasIndex("ServiceSupSchemeMappingId");
+
+                    b.ToTable("SchemeGPG44Mapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG44MappingDraft", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("QualityLevelId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceSupSchemeMappingDraftId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QualityLevelId");
+
+                    b.HasIndex("ServiceSupSchemeMappingDraftId");
+
+                    b.ToTable("SchemeGPG44MappingDraft");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG45Mapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdentityProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceSupSchemeMappingId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdentityProfileId");
+
+                    b.HasIndex("ServiceSupSchemeMappingId");
+
+                    b.ToTable("SchemeGPG45Mapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG45MappingDraft", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdentityProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceSupSchemeMappingDraftId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdentityProfileId");
+
+                    b.HasIndex("ServiceSupSchemeMappingDraftId");
+
+                    b.ToTable("SchemeGPG45MappingDraft");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
@@ -1264,6 +1517,12 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool>("IsInRegister")
                         .HasColumnType("boolean");
 
+                    b.Property<bool?>("IsUnderPinningServicePublished")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("ManualUnderPinningServiceId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -1303,7 +1562,16 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("ServiceStatus")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ServiceType")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ServiceVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TrustFrameworkVersionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UnderPinningServiceId")
                         .HasColumnType("integer");
 
                     b.Property<string>("WebSiteAddress")
@@ -1313,7 +1581,13 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasIndex("CabUserId");
 
+                    b.HasIndex("ManualUnderPinningServiceId");
+
                     b.HasIndex("ProviderProfileId");
+
+                    b.HasIndex("TrustFrameworkVersionId");
+
+                    b.HasIndex("UnderPinningServiceId");
 
                     b.ToTable("Service");
                 });
@@ -1344,6 +1618,15 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool?>("HasSupplementarySchemes")
                         .HasColumnType("boolean");
 
+                    b.Property<bool?>("IsUnderpinningServicePublished")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("ManualUnderPinningServiceDraftId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ManualUnderPinningServiceId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -1362,10 +1645,20 @@ namespace DVSRegister.Data.Migrations
                     b.Property<string>("ServiceName")
                         .HasColumnType("text");
 
+                    b.Property<int?>("UnderPinningServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UnderPinninngServiceEditType")
+                        .HasColumnType("integer");
+
                     b.Property<string>("WebSiteAddress")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ManualUnderPinningServiceDraftId");
+
+                    b.HasIndex("ManualUnderPinningServiceId");
 
                     b.HasIndex("ProviderProfileId");
 
@@ -1373,6 +1666,8 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasIndex("ServiceId")
                         .IsUnique();
+
+                    b.HasIndex("UnderPinningServiceId");
 
                     b.ToTable("ServiceDraft");
                 });
@@ -1557,6 +1852,9 @@ namespace DVSRegister.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool?>("HasGpg44Mapping")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("ServiceId")
                         .HasColumnType("integer");
 
@@ -1579,6 +1877,9 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool?>("HasGpg44Mapping")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("ServiceDraftId")
                         .HasColumnType("integer");
@@ -1610,7 +1911,12 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("TrustFrameworkVersionId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TrustFrameworkVersionId");
 
                     b.ToTable("SupplementaryScheme");
 
@@ -1618,20 +1924,62 @@ namespace DVSRegister.Data.Migrations
                         new
                         {
                             Id = 1,
-                            Order = 2,
-                            SchemeName = "Right to Work"
+                            Order = 1,
+                            SchemeName = "Right to Work",
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 2,
-                            Order = 1,
-                            SchemeName = "Right to Rent"
+                            Order = 2,
+                            SchemeName = "Right to Rent",
+                            TrustFrameworkVersionId = 0
                         },
                         new
                         {
                             Id = 3,
                             Order = 3,
-                            SchemeName = "Disclosure and Barring Service"
+                            SchemeName = "Disclosure and Barring Service",
+                            TrustFrameworkVersionId = 0
+                        });
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.TrustFrameworkVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TrustFrameworkName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Version")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TrustFrameworkVersion");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Order = 1,
+                            TrustFrameworkName = "0.4 gamma",
+                            Version = 0m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Order = 2,
+                            TrustFrameworkName = "0.3 beta",
+                            Version = 0m
                         });
                 });
 
@@ -1818,6 +2166,35 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("CetificateReview");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.IdentityProfile", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.TrustFrameworkVersion", "TrustFrameworkVersion")
+                        .WithMany()
+                        .HasForeignKey("TrustFrameworkVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrustFrameworkVersion");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ManualUnderPinningService", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.Cab", "Cab")
+                        .WithMany()
+                        .HasForeignKey("CabId");
+
+                    b.Navigation("Cab");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ManualUnderPinningServiceDraft", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.Cab", "Cab")
+                        .WithMany()
+                        .HasForeignKey("CabId");
+
+                    b.Navigation("Cab");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.PICheckLogs", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.PublicInterestCheck", "PublicInterestCheck")
@@ -1927,8 +2304,8 @@ namespace DVSRegister.Data.Migrations
                         .HasForeignKey("SecondaryCheckUserId");
 
                     b.HasOne("DVSRegister.Data.Entities.Service", "PreRegistration")
-                        .WithMany()
-                        .HasForeignKey("ServiceId")
+                        .WithOne("PublicInterestCheck")
+                        .HasForeignKey("DVSRegister.Data.Entities.PublicInterestCheck", "ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1939,6 +2316,17 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Provider");
 
                     b.Navigation("SecondaryCheckUser");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.QualityLevel", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.TrustFrameworkVersion", "TrustFrameworkVersion")
+                        .WithMany()
+                        .HasForeignKey("TrustFrameworkVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrustFrameworkVersion");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.RegisterPublishLog", b =>
@@ -2001,6 +2389,93 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.Role", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.TrustFrameworkVersion", "TrustFrameworkVersion")
+                        .WithMany()
+                        .HasForeignKey("TrustFrameworkVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrustFrameworkVersion");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG44Mapping", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.QualityLevel", "QualityLevel")
+                        .WithMany()
+                        .HasForeignKey("QualityLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.ServiceSupSchemeMapping", "ServiceSupSchemeMapping")
+                        .WithMany("SchemeGPG44Mapping")
+                        .HasForeignKey("ServiceSupSchemeMappingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("QualityLevel");
+
+                    b.Navigation("ServiceSupSchemeMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG44MappingDraft", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.QualityLevel", "QualityLevel")
+                        .WithMany()
+                        .HasForeignKey("QualityLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.ServiceSupSchemeMappingDraft", "ServiceSupSchemeMappingDraft")
+                        .WithMany("SchemeGPG44MappingDraft")
+                        .HasForeignKey("ServiceSupSchemeMappingDraftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("QualityLevel");
+
+                    b.Navigation("ServiceSupSchemeMappingDraft");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG45Mapping", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.IdentityProfile", "IdentityProfile")
+                        .WithMany()
+                        .HasForeignKey("IdentityProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.ServiceSupSchemeMapping", "ServiceSupSchemeMapping")
+                        .WithMany("SchemeGPG45Mapping")
+                        .HasForeignKey("ServiceSupSchemeMappingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("IdentityProfile");
+
+                    b.Navigation("ServiceSupSchemeMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.SchemeGPG45MappingDraft", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.IdentityProfile", "IdentityProfile")
+                        .WithMany()
+                        .HasForeignKey("IdentityProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.ServiceSupSchemeMappingDraft", "ServiceSupSchemeMappingDraft")
+                        .WithMany("SchemeGPG45MappingDraft")
+                        .HasForeignKey("ServiceSupSchemeMappingDraftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("IdentityProfile");
+
+                    b.Navigation("ServiceSupSchemeMappingDraft");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.CabUser", "CabUser")
@@ -2009,19 +2484,47 @@ namespace DVSRegister.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DVSRegister.Data.Entities.ManualUnderPinningService", "ManualUnderPinningService")
+                        .WithMany()
+                        .HasForeignKey("ManualUnderPinningServiceId");
+
                     b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
                         .WithMany("Services")
                         .HasForeignKey("ProviderProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DVSRegister.Data.Entities.TrustFrameworkVersion", "TrustFrameworkVersion")
+                        .WithMany()
+                        .HasForeignKey("TrustFrameworkVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.Service", "UnderPinningService")
+                        .WithMany()
+                        .HasForeignKey("UnderPinningServiceId");
+
                     b.Navigation("CabUser");
 
+                    b.Navigation("ManualUnderPinningService");
+
                     b.Navigation("Provider");
+
+                    b.Navigation("TrustFrameworkVersion");
+
+                    b.Navigation("UnderPinningService");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceDraft", b =>
                 {
+                    b.HasOne("DVSRegister.Data.Entities.ManualUnderPinningServiceDraft", "ManualUnderPinningServiceDraft")
+                        .WithMany()
+                        .HasForeignKey("ManualUnderPinningServiceDraftId");
+
+                    b.HasOne("DVSRegister.Data.Entities.ManualUnderPinningService", "ManualUnderPinningService")
+                        .WithMany()
+                        .HasForeignKey("ManualUnderPinningServiceId");
+
                     b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
                         .WithMany()
                         .HasForeignKey("ProviderProfileId")
@@ -2040,9 +2543,19 @@ namespace DVSRegister.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DVSRegister.Data.Entities.Service", "UnderPinningService")
+                        .WithMany()
+                        .HasForeignKey("UnderPinningServiceId");
+
+                    b.Navigation("ManualUnderPinningService");
+
+                    b.Navigation("ManualUnderPinningServiceDraft");
+
                     b.Navigation("Provider");
 
                     b.Navigation("Service");
+
+                    b.Navigation("UnderPinningService");
 
                     b.Navigation("User");
                 });
@@ -2210,6 +2723,17 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("SupplementaryScheme");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.SupplementaryScheme", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.TrustFrameworkVersion", "TrustFrameworkVersion")
+                        .WithMany()
+                        .HasForeignKey("TrustFrameworkVersionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TrustFrameworkVersion");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.TrustmarkNumber", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
@@ -2259,6 +2783,9 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("ProceedApplicationConsentToken")
                         .IsRequired();
 
+                    b.Navigation("PublicInterestCheck")
+                        .IsRequired();
+
                     b.Navigation("ServiceDraft")
                         .IsRequired();
 
@@ -2280,6 +2807,20 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("ServiceRoleMappingDraft");
 
                     b.Navigation("ServiceSupSchemeMappingDraft");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceSupSchemeMapping", b =>
+                {
+                    b.Navigation("SchemeGPG44Mapping");
+
+                    b.Navigation("SchemeGPG45Mapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceSupSchemeMappingDraft", b =>
+                {
+                    b.Navigation("SchemeGPG44MappingDraft");
+
+                    b.Navigation("SchemeGPG45MappingDraft");
                 });
 #pragma warning restore 612, 618
         }

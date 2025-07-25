@@ -80,7 +80,7 @@
 
                     foreach (var item in orderedServices)
                     {
-
+                        var previousStatus = item.serviceDraft != null ? item.serviceDraft.PreviousServiceStatus : 0;
                         var latestCabTransferRequest = item?.CabTransferRequest?.OrderByDescending(c => c.Id).FirstOrDefault();
                         certificateUploadRequired = latestCabTransferRequest != null && latestCabTransferRequest.RequestManagement != null
                         && latestCabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
@@ -90,7 +90,7 @@
 
                             <div class="govuk-summary-card__title-wrapper">
                                 <h2 class="govuk-summary-card__title">
-                                    Service details: @item?.ServiceName
+                                Service details: @(!String.IsNullOrEmpty(item?.ServiceName) ? item?.ServiceName : "Incomplete")
                                 </h2>
                                 <ul class="govuk-summary-card__actions">
 
@@ -98,7 +98,7 @@
                                     @if (certificateUploadRequired)
                                     {
                                         <li class="govuk-summary-card__action">
-                                            <a class="govuk-link" href="@Url.Action("BeforeYouSubmitNewCertificate", "CabServiceReApplication", new { serviceKey = item.ServiceKey, providerProfileId = item.ProviderProfileId })">Upload a replacement certificate</a>
+                                        <a class="govuk-link" href="@Url.Action("BeforeYouSubmitNewCertificate", "CabServiceReApplication", new { serviceKey = item.ServiceKey, providerProfileId = item.ProviderProfileId, currentServiceId = item.Id })">Upload a replacement certificate</a>
                                         </li>
                                     }
                                     else
@@ -132,12 +132,24 @@
                             <div class="govuk-summary-card__content">
                                 <dl class="govuk-summary-list">
                                     <div class="govuk-summary-list__row">
-                                        <dt class="govuk-summary-list__key">
-                                            Submission date (GMT)
-                                        </dt>
-                                        <dd class="govuk-summary-list__value">
-                                            @DateTimeExtensions.FormatDateTime(item.CreatedTime)                                            
-                                        </dd>
+                                        @if(item.PublishedTime != null)
+                                        {
+                                            <dt class="govuk-summary-list__key">
+                                                Publication date (GMT)
+                                            </dt>
+                                            <dd class="govuk-summary-list__value">
+                                                @DateTimeExtensions.FormatDateTime(item.PublishedTime) 
+                                            </dd>
+                                        }
+                                        else
+                                        {
+                                            <dt class="govuk-summary-list__key">
+                                                Submission date (GMT)
+                                            </dt>
+                                            <dd class="govuk-summary-list__value">
+                                                @DateTimeExtensions.FormatDateTime(item.CreatedTime) 
+                                            </dd>
+                                        }
                                     </div>
                                     @if (certificateUploadRequired)
                                     {
@@ -156,7 +168,7 @@
                                             Status
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @HtmlExtensions.GetStyledStatusTag(item.CertificateReview,item.PublicInterestCheck, item.ServiceStatus)
+                                            @HtmlExtensions.GetStyledStatusTag(item.CertificateReview,item.PublicInterestCheck, item.ServiceStatus, previousStatus)
                                         </dd>
                                     </div>
                                 </dl>

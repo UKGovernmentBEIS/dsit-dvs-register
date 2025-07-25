@@ -216,6 +216,12 @@ namespace DVSRegister.Data.Repositories
             .Include(p => p.Provider)
             .Include(p => p.CertificateReview)
             .Include(p => p.ProceedApplicationConsentToken)
+             .Include(p => p.TrustFrameworkVersion)
+             .Include(p => p.UnderPinningService)
+             .ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
+             .Include (p => p.UnderPinningService)
+             .ThenInclude(p => p.Provider)
+            .Include(p => p.ManualUnderPinningService).ThenInclude(x => x.Cab)
             .Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Include(p => p.ServiceRoleMapping)
             .ThenInclude(s => s.Role).AsSplitQuery();
@@ -233,6 +239,12 @@ namespace DVSRegister.Data.Repositories
             {
                 queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
                     .ThenInclude(ssm => ssm.SupplementaryScheme);
+
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+               .ThenInclude(ssm => ssm.SchemeGPG44Mapping).ThenInclude(ssm => ssm.QualityLevel);
+
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping).ThenInclude(ssm => ssm.IdentityProfile);
             }
             if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
             {

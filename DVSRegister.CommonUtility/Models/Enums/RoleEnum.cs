@@ -13,6 +13,11 @@ namespace DVSRegister.CommonUtility.Models.Enums
         [Description("Attribute")]
         Attribute = 2,
         [Description("Orchestration")]
-        Orchestration = 3
+        Orchestration = 3,
+        [Description("Holder")]
+        Holder = 4,
+        [Description("Component")]
+        Component = 5
+
     }
 }

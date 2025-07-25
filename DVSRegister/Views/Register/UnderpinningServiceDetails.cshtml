@@ -1,0 +1,176 @@
+﻿@using DVSRegister.BusinessLogic.Models.CAB
+@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models
+@using DVSRegister.CommonUtility.Models.Enums
+@using DVSRegister.Extensions
+@model ServiceDto
+@{
+    ViewData["Title"] = "Underpinning service details";
+    Layout = "~/Views/Shared/_Layout_Register.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ProviderDetails", "Register", new { providerId = ViewBag.PreviousProviderId }, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
+                    @Model.Provider.RegisteredName
+                    <span
+                        class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.ModifiedTime) (GMT)</span>
+                </h1>
+                @if (!string.IsNullOrEmpty(Model.Provider.TradingName))
+                {
+                    <p class="govuk-body-l govuk-!-margin-bottom-7">Trading name: @Model.Provider.TradingName</p>
+                }
+                <h2 class="govuk-heading-m">Provider information</h2>
+                <hr class="govuk-section-break govuk-section-break--visible">
+                <dl class="govuk-summary-list govuk-!-margin-bottom-8">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Public email address</dt>
+                        <dd class="govuk-summary-list__value">@Html.DisplayFor(model => model.Provider.PublicContactEmail)</dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Public telephone number</dt>
+                        <dd class="govuk-summary-list__value">@Html.DisplayFor(model => model.Provider.ProviderTelephoneNumber)</dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Website address</dt>
+                        <dd class="govuk-summary-list__value">@Model.Provider.ProviderWebsiteAddress</dd>
+                    </div>
+                </dl>
+                <h2 class="govuk-heading-l">Service details: @Model.ServiceName</h2>
+                <hr class="govuk-section-break govuk-section-break--visible">
+                <dl class="govuk-summary-list govuk-!-margin-bottom-8">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Trust framework version</dt>
+                        <dd class="govuk-summary-list__value">@Model?.TrustFrameworkVersion?.TrustFrameworkName</dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Name of service</dt>
+                        <dd class="govuk-summary-list__value">@Model.ServiceName</dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Company address details</dt>
+                        <dd class="govuk-summary-list__value">@HtmlExtensions.ToStringWithLineBreaks(Model.CompanyAddress)</dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Roles certified against</dt>
+                        <dd class="govuk-summary-list__value">
+                            @foreach (var item in Model.ServiceRoleMapping)
+                            {
+                                <div>@Enum.GetName(typeof(RoleEnum), item.RoleId)</div>
+                            }
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Underpinning or white-labelled service</dt>
+                        <dd class="govuk-summary-list__value">@ViewModelHelper.GetServiceType(Model.ServiceType)</dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Identity profiles</dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
+                            {
+                                var groupedProfiles = Model.ServiceIdentityProfileMapping
+                                    .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
+                                    .ToDictionary(group => group.Key, group => group.ToList())
+                                    .OrderBy(g => g.Key);
+                                foreach (var group in groupedProfiles)
+                                {
+                                    <strong>@group.Key</strong>
+
+                                    <br>
+                                    foreach (var item in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
+                                    {
+                                        @item.IdentityProfile.IdentityProfileName
+
+                                        <br>
+                                    }
+
+                                    <br>
+                                }
+                            }
+                            else
+                            {
+                                <div>@Constants.NullFieldsDisplay</div>
+                            }
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Quality of authenticator</dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                            {
+                                foreach (var item in Model.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                {
+                                    <div>@item.QualityLevel.Level</div>
+                                }
+                            }
+                            else
+                            {
+                                <div>@Constants.NullFieldsDisplay</div>
+                            }
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Quality of protection</dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                            {
+                                @foreach (var item in Model.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                {
+                                    <div>@item.QualityLevel.Level</div>
+                                }
+                            }
+                            else
+                            {
+                                <div>@Constants.NullFieldsDisplay</div>
+                            }
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Supplementary codes</dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ServiceSupSchemeMapping.Any())
+                            {
+                                @foreach (var item in Model.ServiceSupSchemeMapping)
+                                {
+                                    <div>@item.SupplementaryScheme.SchemeName</div>
+                                }
+                            }
+                            else
+                            {
+                                <div>@Constants.NullFieldsDisplay</div>
+                            }
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Certificate of conformity's date of issue</dt>
+                        <dd class="govuk-summary-list__value">@DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMMM yyyy")</dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">Certificate of conformity's date of expiry</dt>
+                        <dd class="govuk-summary-list__value">@DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMMM yyyy")</dd>
+                    </div>
+                </dl>
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-7">
+                <h3 class="govuk-heading-m">Explore the topic</h3>
+                <ul class="govuk-list">
+                    <li>
+                        <a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers"
+                           class="govuk-link">Role type</a>
+                    </li>
+                    <li>
+                        <a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles"
+                           class="govuk-link">Identity profiles</a>
+                    </li>
+                    <li>
+                        <a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt"
+                           class="govuk-link">Supplementary codes</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+</div>

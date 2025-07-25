@@ -23,9 +23,9 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             this.bucketService = bucketService;
         }
      
-        public async Task<List<RoleDto>> GetRoles()
+        public async Task<List<RoleDto>> GetRoles(decimal tfVersion)
         {
-            var list = await cabRepository.GetRoles();
+            var list = await cabRepository.GetRoles(tfVersion);
             return automapper.Map<List<RoleDto>>(list);
         }
 
@@ -83,8 +83,11 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public async Task<List<ServiceDto>> GetServiceList(int serviceKey, int cabId)
         {
             var serviceList = await cabRepository.GetServiceList(serviceKey, cabId);
-            return automapper.Map<List<ServiceDto>>(serviceList);
- 
+            return automapper.Map<List<ServiceDto>>(serviceList); 
+        }
+        public async Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId)
+        {
+            return await cabRepository.IsManualServiceLinkedToMultipleServices(manualServiceId);
         }
 
         public async Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId)

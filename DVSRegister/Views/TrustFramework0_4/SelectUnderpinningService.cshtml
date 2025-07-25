@@ -1,0 +1,174 @@
+﻿@using DVSRegister.Extensions
+@using DVSRegister.Models.CabTrustFramework
+@model UnderpinningServiceViewModel
+@{
+    ViewData["Title"] = "Select the underpinning service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+
+    var published = Model.IsPublished;
+    
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "StatusOfUnderpinningService", "TrustFramework0_4", null, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
+                @if (published)
+                {
+                    <p class="govuk-hint">
+                        You have told us that the underpinning service is published to the register of digital identity
+                        and attributes services.
+                    </p>
+                    <p class="govuk-hint">
+                        Search for the underpinning service the white-labelled service relies on.
+                    </p>
+                }
+                else
+                {
+                    <p class="govuk-hint">
+                        You have told us that the underpinning service is not published on the register of digital
+                        identity and attribute services.
+                    </p>
+                }
+            </div>
+            @using (Html.BeginForm("SelectUnderpinningService", "TrustFramework0_4", FormMethod.Get))
+            {
+                @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+                @Html.HiddenFor(m => m.RefererURL)
+                <div class="govuk-grid-column-one-half govuk-!-padding-top-4">
+                    @if (published)
+                    {
+                        var searchTextBoxViewModel = new TextBoxViewModel
+                        {
+                            PropertyName = "SearchText",
+                            Label = "Search for a service",
+                            Value = Model?.SearchText ?? string.Empty,
+                            Class = "govuk-input",
+                            Hint = "You can find a service by searching for its name or the service provider's name"
+                        };
+                        @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
+                    }
+                    else
+                    {
+                        var searchTextBoxViewModel = new TextBoxViewModel
+                        {
+                            PropertyName = "SearchText",
+                            Label = "Search for a service",
+                            Value = Model?.SearchText ?? string.Empty,
+                            Class = "govuk-input",
+                            Hint = "Tell us the name of the underpinning service by searching for it, or entering the details manually."
+                        };
+                        @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
+                    }                    
+
+                    <div class="govuk-button-group govuk-!-margin-bottom-2">
+                        <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction"
+                                value="search">
+                            Search
+                        </button>
+                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction"
+                                value="clearSearch">
+                            Clear search
+                        </button>
+                    </div>
+                    @if (!published)
+                    {
+                        <p class="govuk-body">
+                            <a class="govuk-link" href="@Url.Action("UnderPinningServiceName", "TrustFramework0_4", new {manualEntryFirstTimeLoad = true})">Enter underpinning service details manually</a>
+                        </p>
+                    }
+                </div>
+
+                <div class="govuk-grid-column-full">
+                    @if (!string.IsNullOrEmpty(Model.SearchText))
+                    {
+                         <table class="govuk-table govuk-table--small-text-until-tablet moj-sortable-table" data-module="moj-sortable-table">
+                    <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">
+                        search results table - column headers with buttons are sortable
+                    </caption>
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Service Name</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Service provider</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Conformity Body Assessment</th>
+                            <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
+                        </tr>
+                    </thead>
+
+                    @if(published)
+                    {
+                    <tbody class="govuk-table__body">
+                        @if (Model?.UnderpinningServices != null && Model.UnderpinningServices.Count > 0)
+                        {
+                            @foreach (var item in Model.UnderpinningServices)
+                            {
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell" data-sort-value="@item.ServiceName">
+                                        @Html.ActionLink(item.ServiceName, "SelectedUnderpinningService", "TrustFramework0_4", new
+                                            {
+                                                serviceId = item.Id,
+                                                published = published,
+                                                fromSummaryPage = ViewBag.FromSummaryPage,
+                                                            fromDetailsPage = ViewBag.FromDetailsPage
+                                            }, new { @class = "govuk-link" })
+                                    </td>
+                                    <td class="govuk-table__cell">@item.Provider.RegisteredName</td>
+                                    <td class="govuk-table__cell">@item.CabUser.Cab.CabName</td>
+                                    <td class="govuk-table__cell">@HtmlExtensions.ToStyledStrongTag(item.ServiceStatus)</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell" colspan="4">
+                                    <p class="govuk-body"><b>Your search did not match any services or service providers.</b> </p>
+                                </td>
+                            </tr>
+                        }
+                                </tbody>
+                            }
+                            else
+                            {
+                                <tbody class="govuk-table__body">
+                                    @if (Model?.ManualUnderpinningServices != null && Model.ManualUnderpinningServices.Count > 0)
+                                    {
+                                        @foreach (var item in Model.ManualUnderpinningServices)
+                                        {
+                                            <tr class="govuk-table__row">
+                                                <td class="govuk-table__cell" data-sort-value="@item.ManualUnderPinningService.ServiceName">
+                                                    @Html.ActionLink(item.ManualUnderPinningService.ServiceName, "SelectedUnderpinningService", "TrustFramework0_4", new
+                                                        {
+                                                            serviceId = item.Id,
+                                                            published = published,
+                                                            fromSummaryPage = ViewBag.fromSummaryPage,
+                                                            fromDetailsPage = ViewBag.fromDetailsPage
+                                                        }, new { @class = "govuk-link" })
+                                                </td>
+                                                <td class="govuk-table__cell">@item.ManualUnderPinningService.ProviderName</td>
+                                                <td class="govuk-table__cell">@item.ManualUnderPinningService.Cab.CabName</td>
+                                                <td class="govuk-table__cell">@HtmlExtensions.GetStyledStatusTag(item.CertificateReview, item.PublicInterestCheck, item.ServiceStatus, item?.serviceDraft?.PreviousServiceStatus)</td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr class="govuk-table__row">
+                                            <td class="govuk-table__cell" colspan="4">
+                                                <p class="govuk-body"><b>Your search did not match any services or service providers.</b> </p>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            }
+                  
+                </table>                    
+                }
+                </div>
+                }
+        </div>
+    </main>
+</div>

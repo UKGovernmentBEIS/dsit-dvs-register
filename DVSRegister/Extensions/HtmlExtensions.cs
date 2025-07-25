@@ -28,8 +28,9 @@ namespace DVSRegister.Extensions
                     return "govuk-tag govuk-tag--blue";
 
                 case ServiceStatusEnum.Published:
-                case CertificateReviewEnum.Approved:
+                case CertificateReviewEnum.Approved:              
                 case ServiceStatusEnum.PublishedUnderReassign:
+                case PublicInterestCheckEnum.PublicInterestCheckPassed:
                     return "govuk-tag govuk-tag--green";
 
                 case CertificateReviewEnum.Rejected:
@@ -45,8 +46,8 @@ namespace DVSRegister.Extensions
                 case ServiceStatusEnum.SavedAsDraft:
                 case ServiceStatusEnum.AwaitingRemovalConfirmation:
                 case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
-                case ServiceStatusEnum.UpdatesRequested:
                 case CertificateReviewEnum.InReview:
+                case ServiceStatusEnum.ReadyToPublish:
                     return "govuk-tag govuk-tag--yellow";
 
                 default:
@@ -71,37 +72,33 @@ namespace DVSRegister.Extensions
         }
 
 
-        public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview,PublicInterestCheckDto publicInterestCheck,  ServiceStatusEnum serviceStatus)
+        public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview,PublicInterestCheckDto publicInterestCheck, ServiceStatusEnum serviceStatus, ServiceStatusEnum? previousServiceStatus)
         {
-            // Check for Certificate Review Rejected
-            if (certificateReview != null && certificateReview.CertificateReviewStatus == CertificateReviewEnum.Rejected)
+            // Check for Certificate Review whilst public interest has not become complete
+            if (certificateReview != null && publicInterestCheck == null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received || serviceStatus == ServiceStatusEnum.Resubmitted))
             {
                 return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
             }
-            // Check for publicInterestCheckRejected
-            if (publicInterestCheck != null && publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PublicInterestCheckFailed)
+            // Check for publicInterestCheck whilst service is not ready to publish
+            else if (publicInterestCheck != null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received || serviceStatus == ServiceStatusEnum.Resubmitted))
             {
-                return HtmlExtensions.ToStyledStrongTag(publicInterestCheck.PublicInterestCheckStatus);
+                if ( publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckFailed
+                     || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckPassed
+                    || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.SentBackBySecondReviewer
+                     || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.InPrimaryReview)
+                {
+                    return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
+                }
+                else
+                {
+                    return HtmlExtensions.ToStyledStrongTag(publicInterestCheck.PublicInterestCheckStatus); // passed or failed
+                }
             }
-
-            // Check for ServiceStatus Received or ReadyToPublish
-            else if (serviceStatus == ServiceStatusEnum.Received || serviceStatus == ServiceStatusEnum.ReadyToPublish)
+            // Check if it is being edited and display the status before updates
+            else if (previousServiceStatus > 0 && serviceStatus == ServiceStatusEnum.UpdatesRequested)
             {
-                return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Submitted);
+                return HtmlExtensions.ToStyledStrongTag((ServiceStatusEnum)previousServiceStatus);               
             }
-
-            // if status is under 2i review with admin return published 
-            //or if status is published under reassignment, show as published
-            else if (serviceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || serviceStatus == ServiceStatusEnum.PublishedUnderReassign)
-            {
-                return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Published);
-            }
-            //or if status is removed under reassignment, show as removed
-            else if (serviceStatus == ServiceStatusEnum.RemovedUnderReassign)
-            {
-                return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Removed);
-            }
-
             // Default to displaying the actual ServiceStatus
             return HtmlExtensions.ToStyledStrongTag(serviceStatus);
         }

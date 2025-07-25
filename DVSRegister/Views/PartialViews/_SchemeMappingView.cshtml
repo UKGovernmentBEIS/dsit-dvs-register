@@ -1,0 +1,92 @@
+﻿@using DVSRegister.BusinessLogic.Models.CAB
+@using DVSRegister.CommonUtility
+@using DVSRegister.Extensions;
+@using DVSRegister.CommonUtility.Models;
+@using DVSRegister.CommonUtility.Models.Enums;
+
+@model ServiceDto
+
+
+@foreach(var item in Model.ServiceSupSchemeMapping)
+{
+    <h3 class="govuk-heading-s">@item.SupplementaryScheme.SchemeName</h3>
+    <dl class="govuk-summary-list govuk-!-margin-bottom-8">
+
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                GPG 45 identity profiles
+            </dt>
+
+            <dd class="govuk-summary-list__value">
+                @if (item.SchemeGPG45Mapping != null && item.SchemeGPG45Mapping.Count > 0)
+                {
+                    var groupedProfiles = item.SchemeGPG45Mapping
+                    .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
+                    .ToDictionary(group => group.Key, group => group.ToList())
+                    .OrderBy(g => g.Key);
+
+                    foreach (var group in groupedProfiles)
+                    {
+                        <strong>@group.Key</strong>
+                        <br>
+                        foreach (var identity in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
+                        {
+                            @identity.IdentityProfile.IdentityProfileName
+                            <br>
+                        }
+                        <br>
+                    }
+                }
+                else
+                {
+                    @Constants.NullFieldsDisplay
+                }
+            </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                GPG 44 quality of authenticator
+            </dt>
+
+            <dd class="govuk-summary-list__value">
+                @if (item.SchemeGPG44Mapping != null && item.HasGpg44Mapping == true)
+                {
+                    @foreach (var gpg44Mapping in item.SchemeGPG44Mapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                    {
+                        @gpg44Mapping.QualityLevel.Level
+                        <br>
+                    }
+                }
+                else
+                {
+                    @Constants.NullFieldsDisplay
+                }
+            </dd>
+        </div>
+
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                GPG 44 quality of protection
+            </dt>
+
+            <dd class="govuk-summary-list__value">
+                @if (item.SchemeGPG44Mapping != null && item.HasGpg44Mapping == true)
+                {
+                    @foreach (var gpg44Mapping in item.SchemeGPG44Mapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                    {
+                        @gpg44Mapping.QualityLevel.Level
+                        <br>
+                    }
+                }
+                else
+                {
+                    @Constants.NullFieldsDisplay
+                }
+            </dd>
+        </div>
+
+     </dl>
+
+
+}

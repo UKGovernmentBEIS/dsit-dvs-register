@@ -1,0 +1,43 @@
+@using DVSRegister.BusinessLogic.Models.CAB
+@using DVSRegister.Models.CAB
+@using DVSRegister.Models.CabTrustFramework
+@model ServiceDto
+@{
+    ViewData["Title"] = "Service Details:";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    ViewData["Confirmed"] = false;
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "SelectUnderpinningService", "TrustFramework0_4", new { published = ViewBag.published }, new { @class = "govuk-back-link" })
+
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">@ViewData["Title"] @(ViewBag.published ? @Model.ServiceName : @Model.ManualUnderPinningService.ServiceName) </h1>
+                <p class="govuk-body govuk-hint govuk-!-padding-bottom-6">
+                    Check that the details for the underpinning service are correct, and select 'Confirm'.
+                </p>
+                @if (ViewBag.published)
+                {
+                    @await Html.PartialAsync("PartialViews/_UnderpinningServiceOnRegister", Model)
+                }
+                else
+                {
+                ServiceSummaryViewModel serviceSummary = new()
+                {
+                    ServiceId = Model.Id,
+                    SelectedManualUnderPinningServiceId = Model.ManualUnderPinningService.Id,
+                    UnderPinningProviderName = Model.ManualUnderPinningService.ProviderName,
+                    UnderPinningServiceName = Model.ManualUnderPinningService.ServiceName,
+                    UnderPinningServiceExpiryDate = Model.ManualUnderPinningService.CertificateExpiryDate,
+                    SelectCabViewModel = new SelectCabViewModel { SelectedCabId = Model.ManualUnderPinningService.CabId, SelectedCabName = Model.ManualUnderPinningService.Cab.CabName}
+
+                 };
+                   
+                    @await Html.PartialAsync("PartialViews/_UnderpinningServiceDetails", serviceSummary)
+                }
+            </div>
+        </div>
+    </main>
+</div>
