@@ -49,19 +49,19 @@ else if(Model.UnderPinningService!=null)
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Service Provider</dt>
             <dd class="govuk-summary-list__value">
-                @Model.Provider.RegisteredName
+                @Model.UnderPinningService.Provider.RegisteredName
             </dd>
         </div>
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">CAB of underpinning service</dt>
             <dd class="govuk-summary-list__value">
-                @Model.CabUser.Cab.CabName
+                @Model.UnderPinningService.CabUser.Cab.CabName
             </dd>
         </div>
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">Underpinning certificate expiry date</dt>
             <dd class="govuk-summary-list__value">
-                @DateTimeExtensions.FormatDateTime(@Model.ConformityExpiryDate, "dd MMMM yyyy")
+                @DateTimeExtensions.FormatDateTime(@Model.UnderPinningService.ConformityExpiryDate, "dd MMMM yyyy")
             </dd>
         </div>
     </dl>
