@@ -2,11 +2,9 @@
 using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.Data.Entities;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 namespace DVSRegister.Controllers
 {
@@ -16,7 +14,7 @@ namespace DVSRegister.Controllers
     {         
         private readonly IRegisterService registerService = registerService;
         private readonly ICabService cabService = cabService;
-        private readonly decimal TFVersionNumber = 0.3m;//To Do : update after all tf changes 
+        private readonly decimal TFVersionNumber = 0.4m;
 
         [Route("")]
         [HttpGet("register-search")]
