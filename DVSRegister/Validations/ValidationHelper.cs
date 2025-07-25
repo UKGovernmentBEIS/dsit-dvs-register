@@ -66,7 +66,7 @@ public class ValidationHelper
 
                 if (expiryDate.HasValue && fromSummaryPage)
                 {
-                    minIssueDate = expiryDate.Value.AddYears(-2).AddDays(-60);
+                    minIssueDate = isTFVersion0_4? expiryDate.Value.AddYears(-3).AddDays(-60): expiryDate.Value.AddYears(-2).AddDays(-60);
                     if (date < minIssueDate)
                     {
                         modelstate.AddModelError("ValidDate", isTFVersion0_4 ? Constants.ConformityMaxExpiryDateErrorTF0_4: Constants.ConformityMaxExpiryDateError);

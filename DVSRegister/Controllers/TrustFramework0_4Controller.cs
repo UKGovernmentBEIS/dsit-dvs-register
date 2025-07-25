@@ -1071,7 +1071,7 @@ namespace DVSRegister.Controllers
                     {
                         ViewModelHelper.ClearGpg44(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
+                        return fromSummaryPage ? RedirectToAction("ServiceSummary", "CabService") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
                        : RedirectToAction("HasSupplementarySchemesInput","CabService");
                     }
 
