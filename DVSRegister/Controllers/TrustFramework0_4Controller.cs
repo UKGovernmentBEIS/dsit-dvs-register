@@ -82,10 +82,10 @@ namespace DVSRegister.Controllers
                     ViewModelHelper.ClearTFVersion0_4Fields(summaryViewModel); // clear extra fields value changed from 0.4 to 0.3
                 }
                 else if (previousSelection?.Version == Constants.TFVersion0_3 && summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_4)
-                {
-                    ViewModelHelper.ClearSchemes(summaryViewModel);
+                {                    
                     if (fromSummaryPage)
-                    {                        
+                    {
+                        ViewModelHelper.ClearSchemes(summaryViewModel);
                         summaryViewModel.HasSupplementarySchemes = null;
                         summaryViewModel.FromSummaryPage = fromSummaryPage;
                         summaryViewModel.FromDetailsPage = fromDetailsPage;
