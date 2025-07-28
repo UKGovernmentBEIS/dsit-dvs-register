@@ -1,7 +1,13 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @using DVSRegister.CommonUtility
 @using DVSRegister.CommonUtility.Models;
+@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.CommonUtility.Models.Enums
 @using DVSRegister.Extensions
+
+@{
+    bool is0_4GammaVersion = Model?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_4;
+}
 
 
 <div class="govuk-summary-card">
@@ -12,6 +18,23 @@
     </div>
     <div class="govuk-summary-card__content">
         <dl class="govuk-summary-list">
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Trust framework version
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    @Model?.TFVersionViewModel?.SelectedTFVersion?.TrustFrameworkName
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                    @if (Model.ServiceStatus != ServiceStatusEnum.AmendmentsRequired )
+                    { 
+                        @Html.ActionLink("Change", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model?.ProviderProfileId },
+                             new { @class = "govuk-link", @aria_label = "Change selected tf version" })
+                    }
+                </dd>
+            </div>
+
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">
                     Name of service
@@ -21,7 +44,7 @@
                 </dd>
                 <dd class="govuk-summary-list__actions">
                     @Html.ActionLink("Change", "ServiceName", "CabService", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                                               new { @class = "govuk-link", @aria_label = "Change service provider certified against any supplementary codes on their certificate" })
+                                               new { @class = "govuk-link", @aria_label = "" })
                 </dd>
             </div>
 
@@ -47,8 +70,6 @@
                     </dd>
                 </div>
             }
-
-
 
 
             <div class="govuk-summary-list__row">
@@ -99,86 +120,195 @@
                 </dd>
             </div>
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    GPG 44 quality of authenticator
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    @if (Model.QualityLevelViewModel.SelectedQualityofAuthenticators != null && Model.QualityLevelViewModel.SelectedQualityofAuthenticators.Count > 0)
-                    {
-                        @foreach (var item in Model.QualityLevelViewModel.SelectedQualityofAuthenticators)
+            @if(is0_4GammaVersion)
+            {
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Underpinning or white-labelled service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @ServiceTypeEnumExtensions.GetDisplayValue(Model.ServiceType)
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @Html.ActionLink("Change", "SelectServiceType", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
+                                 new { @class = "govuk-link", @aria_label = "" })
+                    </dd>
+                </div>
+            }
+
+            @if (is0_4GammaVersion)
+            {
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        GPG 45 identity profiles
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model?.IdentityProfileViewModel?.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
                         {
-                            @item.Level
-                            <br>
+                            var groupedProfiles = Model.IdentityProfileViewModel.SelectedIdentityProfiles
+                            .GroupBy(profile => profile.IdentityProfileType)
+                            .OrderBy(g => g.Key);
+
+                            foreach(var group in groupedProfiles)
+                            {
+                                <strong>@group.Key</strong>
+                                <br>
+                                foreach (var item in group.OrderBy(c => c.IdentityProfileName))
+                                {
+                                    @item.IdentityProfileName
+                                    <br>
+                                }
+                                <br>
+                            }
                         }
-                    }
-                    else
-                    {
-                        <div>@Constants.NullFieldsDisplay</div>
-                    }
-                </dd>
-                <dd class="govuk-summary-list__actions">
-                    @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromSummaryPage = true },
-                                               new { @class = "govuk-link", @aria_label = "Change supplementary code" })
+                        else
+                        {
+                            <div>@Constants.NullFieldsDisplay</div>
+                        }
+                    </dd>
+
+                    <dd class="govuk-summary-list__actions">
+                        @Html.ActionLink("Change", "ServiceGPG45Input", "TrustFramework0_4", new { fromSummaryPage = true },
+                        new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
                 </dd>
             </div>
 
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    GPG 44 level of protection
-                </dt>
 
-                <dd class="govuk-summary-list__value">
-                    @if (Model.QualityLevelViewModel.SelectedLevelOfProtections != null && Model.QualityLevelViewModel.SelectedLevelOfProtections.Count > 0)
-                    {
-
-                        @foreach (var item in Model.QualityLevelViewModel.SelectedLevelOfProtections)
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        GPG 44 quality of authenticator
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model?.QualityLevelViewModel?.SelectedQualityofAuthenticators != null && Model.QualityLevelViewModel.SelectedQualityofAuthenticators.Count > 0)
                         {
-                            @item.Level
-                            <br>
+                            @foreach (var item in Model.QualityLevelViewModel.SelectedQualityofAuthenticators)
+                            {
+                                @item.Level
+                                <br>
+                            }
                         }
-                    }
-                    else
-                    {
-                        <div>@Constants.NullFieldsDisplay</div>
-                    }
-                </dd>
-                <dd class="govuk-summary-list__actions">
-                    @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromSummaryPage = true },
-                                               new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
-                </dd>
-            </div>
-
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    GPG 45 identity profiles
-                </dt>
-                <dd class="govuk-summary-list__value">
-                    @if (Model.IdentityProfileViewModel.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
-                    {
-                        @foreach (var item in Model.IdentityProfileViewModel.SelectedIdentityProfiles)
+                        else
                         {
-                            @item.IdentityProfileName
-                            <br>
+                            <div>@Constants.NullFieldsDisplay</div>
                         }
-                    }
-                    else
-                    {
-                        <div>@Constants.NullFieldsDisplay</div>
-                    }
-                </dd>
-                <dd class="govuk-summary-list__actions">
-                    @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromSummaryPage = true },
-                                      new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
-                </dd>
-            </div>
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true },
+                                 new { @class = "govuk-link", @aria_label = "Change supplementary code" })
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        GPG 44 level of protection
+                    </dt>
+
+                    <dd class="govuk-summary-list__value">
+                        @if (Model?.QualityLevelViewModel?.SelectedLevelOfProtections != null && Model.QualityLevelViewModel.SelectedLevelOfProtections.Count > 0)
+                        {
+                            @foreach (var item in Model.QualityLevelViewModel.SelectedLevelOfProtections)
+                            {
+                                @item.Level
+                                <br>
+                            }
+                        }
+                        else
+                        {
+                            <div>@Constants.NullFieldsDisplay</div>
+                        }
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true },
+                                 new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
+                    </dd>
+                </div>
+
+              
+            }
+            else
+            {
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        GPG 44 quality of authenticator
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model?.QualityLevelViewModel?.SelectedQualityofAuthenticators != null && Model.QualityLevelViewModel.SelectedQualityofAuthenticators.Count > 0)
+                        {
+                            @foreach (var item in Model.QualityLevelViewModel.SelectedQualityofAuthenticators)
+                            {
+                                @item.Level
+                                <br>
+                            }
+                        }
+                        else
+                        {
+                            <div>@Constants.NullFieldsDisplay</div>
+                        }
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromSummaryPage = true },
+                                 new { @class = "govuk-link", @aria_label = "Change supplementary code" })
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        GPG 44 level of protection
+                    </dt>
+
+                    <dd class="govuk-summary-list__value">
+                        @if (Model?.QualityLevelViewModel?.SelectedLevelOfProtections != null && Model.QualityLevelViewModel.SelectedLevelOfProtections.Count > 0)
+                        {
+                            @foreach (var item in Model.QualityLevelViewModel.SelectedLevelOfProtections)
+                            {
+                                @item.Level
+                                <br>
+                            }
+                        }
+                        else
+                        {
+                            <div>@Constants.NullFieldsDisplay</div>
+                        }
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromSummaryPage = true },
+                                 new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        GPG 45 identity profiles
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model?.IdentityProfileViewModel?.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
+                        {
+                            @foreach (var item in Model.IdentityProfileViewModel.SelectedIdentityProfiles)
+                            {
+                                @item.IdentityProfileName
+                                <br>
+                            }
+                        }
+                        else
+                        {
+                            <div>@Constants.NullFieldsDisplay</div>
+                        }
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromSummaryPage = true },
+                                 new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
+                    </dd>
+                </div>
+            }
+
+           
 
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">
                     Supplementary codes
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @if (Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count > 0)
+                    @if (Model?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count > 0)
                     {
 
                         @foreach (var item in Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
@@ -239,4 +369,229 @@
 
         </dl>
     </div>
+
 </div>
+
+
+@if (is0_4GammaVersion)
+{
+    @if(Model?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count>0)
+    {
+    List<IdentityProfileDto> identityProfilesMappings = [];
+    List<QualityLevelDto> qualityLevelprotectionMappings = [];
+    List<QualityLevelDto> qualityLevelAuthenticationMappings = [];
+
+    @foreach (var schemeMapping in Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
+    {
+
+        @if (Model.SchemeIdentityProfileMapping != null && Model.SchemeIdentityProfileMapping.Count > 0)
+        {
+            var maapings = Model.SchemeIdentityProfileMapping.Where(x => x.SchemeId == schemeMapping.Id).FirstOrDefault();
+            identityProfilesMappings = maapings?.IdentityProfile?.SelectedIdentityProfiles??[];
+
+        }
+
+        @if (Model.SchemeQualityLevelMapping != null && Model.SchemeQualityLevelMapping.Count > 0)
+        {
+            var protectionMappings = Model.SchemeQualityLevelMapping.Where(x => x.SchemeId == schemeMapping.Id).FirstOrDefault();
+            qualityLevelprotectionMappings = protectionMappings?.QualityLevel?.SelectedLevelOfProtections??[];
+
+            var authenticationMappings = Model.SchemeQualityLevelMapping.Where(x => x.SchemeId == schemeMapping.Id).FirstOrDefault();
+
+            qualityLevelAuthenticationMappings = authenticationMappings?.QualityLevel?.SelectedQualityofAuthenticators??[];
+        }
+
+
+        <div class="govuk-summary-card">
+            <div class="govuk-summary-card__title-wrapper">
+                <h2 class="govuk-summary-card__title">
+                    Supplementary codes: @schemeMapping.SchemeName
+                </h2>
+            </div>
+            <div class="govuk-summary-card__content">
+                <dl class="govuk-summary-list">
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG 45 identity profiles
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+
+                            @if (identityProfilesMappings != null && identityProfilesMappings.Count > 0)
+                            {
+                                var groupedProfiles = identityProfilesMappings
+                                .GroupBy(profile => profile.IdentityProfileType)
+                                .OrderBy(g => g.Key);
+
+                                foreach (var group in groupedProfiles)
+                                {
+                                    <strong>@group.Key</strong>
+                                    <br>
+                                    foreach (var item in group.OrderBy(c => c.IdentityProfileName))
+                                    {
+                                        @item.IdentityProfileName
+                                                            <br>
+                                    }
+                                    <br>
+                                }
+                            }
+                            else
+                            {
+                                <div>@Constants.NullFieldsDisplay</div>
+                            }
+
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "SchemeGPG45", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.Id },
+                                         new { @class = "govuk-link", @aria_label = "Change selected GPG45 options for " + schemeMapping.SchemeName })
+                        </dd>
+                    </div>
+
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG 44 quality of authentication
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (qualityLevelAuthenticationMappings != null && qualityLevelAuthenticationMappings.Count > 0)
+                            {
+                                @foreach (var item in qualityLevelAuthenticationMappings)
+                                {
+                                    @item.Level
+                                    <br>
+                                }
+                            }
+                            else
+                            {
+                                <div>@Constants.NullFieldsDisplay</div>
+                            }
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.Id },
+                                         new { @class = "govuk-link", @aria_label = "Change selected GPG 44 options for " + schemeMapping.SchemeName })
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG 44 quality of protection
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (qualityLevelprotectionMappings != null && qualityLevelprotectionMappings.Count > 0)
+                            {
+                                @foreach (var item in qualityLevelprotectionMappings)
+                                {
+                                    @item.Level
+                                    <br>
+                                }
+                            }
+                            else
+                            {
+                                <div>@Constants.NullFieldsDisplay</div>
+                            }
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.Id },
+                                         new { @class = "govuk-link", @aria_label = "Change selected GPG 44 options for " + schemeMapping.SchemeName })
+                        </dd>
+                    </div>
+
+                </dl>
+            </div>
+        </div>
+    }
+
+    }
+
+    @if(Model.ServiceType == DVSRegister.CommonUtility.Models.Enums.ServiceTypeEnum.WhiteLabelled)
+    {        
+    
+        @*   if the service is entered manually , go to specific page *@
+        bool isManualUnderPinningService = (Model.SelectedManualUnderPinningServiceId == null) && (Model.SelectedUnderPinningServiceId == null);
+        bool isFieldEditable = Model.SelectedManualUnderPinningServiceId != null && !Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault();
+        <div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+            <h2 class="govuk-summary-card__title">
+                Underpinning service
+            </h2>
+                <ul class="govuk-summary-card__actions">
+                    <li class="govuk-summary-card__action">
+                        @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { singleChange = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                    </li>
+                </ul>
+        </div>
+        <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+
+                        @Model.UnderPinningServiceName
+
+                    </dd>
+                        @if (isFieldEditable || isManualUnderPinningService)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4", new { singleChange = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                        </dd>
+                    }
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service provider
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+
+                        @Model.UnderPinningProviderName
+                    </dd>
+
+                        @if (isFieldEditable || isManualUnderPinningService)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "UnderPinningProviderName", "TrustFramework0_4", new { singleChange = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                        </dd>
+                    }
+
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        CAB of underpinning service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model?.SelectCabViewModel?.SelectedCabName
+                    </dd>
+                        @if (isFieldEditable || isManualUnderPinningService)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { singleChange = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                        </dd>
+                    }
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Underpinning service <br /> certificate expiry date
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @DateTimeExtensions.FormatDateTime(Model?.UnderPinningServiceExpiryDate, "dd MMM yyyy")
+                    </dd>
+                        @if (isFieldEditable || isManualUnderPinningService)
+                    {
+                        <dd class="govuk-summary-list__actions">
+                                @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { singleChange = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                        </dd>
+                    }
+                </div>
+
+            </dl>
+        </div>
+    </div>
+
+    }
+
+}

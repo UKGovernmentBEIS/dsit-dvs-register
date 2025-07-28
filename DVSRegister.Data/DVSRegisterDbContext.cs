@@ -55,7 +55,16 @@ namespace DVSRegister.Data
         public DbSet<CabTransferRequest> CabTransferRequest { get; set; }
         public DbSet<RequestManagement> RequestManagement { get; set; }
 
-        public DbSet<ProviderProfileCabMapping> ProviderProfileCabMapping { get; set; }
+        public DbSet<ProviderProfileCabMapping> ProviderProfileCabMapping { get; set; }        
+        public DbSet<TrustFrameworkVersion> TrustFrameworkVersion { get; set; }
+        public DbSet<SchemeGPG44Mapping> SchemeGPG44Mapping { get; set; }
+        public DbSet<SchemeGPG45Mapping> SchemeGPG45Mapping { get; set; }
+        public DbSet<ManualUnderPinningService> ManualUnderPinningService { get; set; }
+
+        public DbSet<SchemeGPG45MappingDraft> SchemeGPG45MappingDraft { get; set; }
+        public DbSet<SchemeGPG44MappingDraft> SchemeGPG44MappingDraft { get; set; }
+        public DbSet<ManualUnderPinningServiceDraft> ManualUnderPinningServiceDraft { get; set; }
+
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
             if (actorId !=null)
@@ -123,6 +132,27 @@ namespace DVSRegister.Data
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             Console.WriteLine(environment);
 
+
+            modelBuilder.Entity<ServiceDraft>(b =>
+            {
+                b.HasOne(sd => sd.Service)
+                .WithOne(s => s.ServiceDraft)
+                .HasForeignKey<ServiceDraft>(sd => sd.ServiceId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+
+                b.HasOne(sd => sd.User)
+                .WithMany()
+                .HasForeignKey(sd => sd.RequestedUserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+
+                b.Navigation("Service");
+                b.Navigation("User");
+            });
+
+
+
             modelBuilder.Entity<TrustmarkNumber>()
             .Property(t => t.TrustMarkNumber)
             .HasComputedColumnSql("LPAD(\"CompanyId\"::VARCHAR(4), 4, '0') || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", stored: true);
@@ -183,46 +213,52 @@ namespace DVSRegister.Data
             modelBuilder.Entity<Role>().HasData(
             new Role { Id =1, RoleName = "Identity Service Provider (IDSP)",Order = 1 },
             new Role { Id =2, RoleName = "Attribute Service Provider (ASP)", Order = 2 },
-            new Role { Id =3, RoleName = "Orchestration Service Provider (OSP)", Order = 3 });
+            new Role { Id =3, RoleName = "Orchestration Service Provider (OSP)", Order = 3 },
+            new Role { Id = 4, RoleName = "Holder Service Provider (HSP)", Order = 4 },
+            new Role { Id = 5, RoleName = "Component Service Provider (CSP)", Order = 5 });
 
                 modelBuilder.Entity<IdentityProfile>().HasData(
-                new IdentityProfile { Id =1, IdentityProfileName = "L1A " },
-                new IdentityProfile { Id =2, IdentityProfileName = "L1B " },
-                new IdentityProfile { Id =3, IdentityProfileName = "L1C " },
-                new IdentityProfile { Id =4, IdentityProfileName = "L2A " },
-                new IdentityProfile { Id =5, IdentityProfileName = "L2B " },
-                new IdentityProfile { Id =6, IdentityProfileName = "L3A " },
-                new IdentityProfile { Id =7, IdentityProfileName = "M1A " },
-                new IdentityProfile { Id =8, IdentityProfileName = "M1B " },
-                new IdentityProfile { Id =9, IdentityProfileName = "M1C " },
-                new IdentityProfile { Id =10, IdentityProfileName = "M1D " },
-                new IdentityProfile { Id =11, IdentityProfileName = "M2A " },
-                new IdentityProfile { Id =12, IdentityProfileName = "M2B " },
-                new IdentityProfile { Id =13, IdentityProfileName = "M2C " },
-                new IdentityProfile { Id =14, IdentityProfileName = "M3A " },
-                new IdentityProfile { Id =15, IdentityProfileName = "H1A " },
-                new IdentityProfile { Id =16, IdentityProfileName = "H1B " },
-                new IdentityProfile { Id =17, IdentityProfileName = "H1C " },
-                new IdentityProfile { Id =18, IdentityProfileName = "H2A " },
-                new IdentityProfile { Id =19, IdentityProfileName = "H2B " },
-                new IdentityProfile { Id =20, IdentityProfileName = "H2C " },
-                new IdentityProfile { Id =21, IdentityProfileName = "H2D " },
-                new IdentityProfile { Id =22, IdentityProfileName = "H2E " },
-                new IdentityProfile { Id =23, IdentityProfileName = "H3A " },
-                new IdentityProfile { Id =24, IdentityProfileName = "V1A " },
-                new IdentityProfile { Id =25, IdentityProfileName = "V1B " },
-                new IdentityProfile { Id =26, IdentityProfileName = "V1C " },
-                new IdentityProfile { Id =27, IdentityProfileName = "V1D " },
-                new IdentityProfile { Id =28, IdentityProfileName = "V2A " },
-                new IdentityProfile { Id =29, IdentityProfileName = "V2B " },
-                new IdentityProfile { Id =30, IdentityProfileName = "V2C " },
-                new IdentityProfile { Id =31, IdentityProfileName = "V2D " },
-                new IdentityProfile { Id =32, IdentityProfileName = "V3A " });
+                new IdentityProfile { Id =1, IdentityProfileName = "L1A ",IdentityProfileType = IdentityProfileTypeEnum.Low },
+                new IdentityProfile { Id =2, IdentityProfileName = "L1B ", IdentityProfileType = IdentityProfileTypeEnum.Low },
+                new IdentityProfile { Id =3, IdentityProfileName = "L1C ", IdentityProfileType = IdentityProfileTypeEnum.Low },
+                new IdentityProfile { Id =4, IdentityProfileName = "L2A ", IdentityProfileType = IdentityProfileTypeEnum.Low },
+                new IdentityProfile { Id =5, IdentityProfileName = "L2B ", IdentityProfileType = IdentityProfileTypeEnum.Low },
+                new IdentityProfile { Id =6, IdentityProfileName = "L3A ", IdentityProfileType = IdentityProfileTypeEnum.Low },
+                new IdentityProfile { Id =7, IdentityProfileName = "M1A ", IdentityProfileType = IdentityProfileTypeEnum.Medium },
+                new IdentityProfile { Id =8, IdentityProfileName = "M1B ", IdentityProfileType = IdentityProfileTypeEnum.Medium },
+                new IdentityProfile { Id =9, IdentityProfileName = "M1C ", IdentityProfileType = IdentityProfileTypeEnum.Medium },
+                new IdentityProfile { Id =10, IdentityProfileName = "M1D ", IdentityProfileType = IdentityProfileTypeEnum.Medium },
+                new IdentityProfile { Id =11, IdentityProfileName = "M2A ", IdentityProfileType = IdentityProfileTypeEnum.Medium },
+                new IdentityProfile { Id =12, IdentityProfileName = "M2B ", IdentityProfileType = IdentityProfileTypeEnum.Medium },
+                new IdentityProfile { Id =13, IdentityProfileName = "M2C ", IdentityProfileType = IdentityProfileTypeEnum.Medium },
+                new IdentityProfile { Id =14, IdentityProfileName = "M3A ", IdentityProfileType = IdentityProfileTypeEnum.Medium },
+                new IdentityProfile { Id =15, IdentityProfileName = "H1A ", IdentityProfileType = IdentityProfileTypeEnum.High },
+                new IdentityProfile { Id =16, IdentityProfileName = "H1B ", IdentityProfileType = IdentityProfileTypeEnum.High },
+                new IdentityProfile { Id =17, IdentityProfileName = "H1C ", IdentityProfileType = IdentityProfileTypeEnum.High },
+                new IdentityProfile { Id =18, IdentityProfileName = "H2A ", IdentityProfileType = IdentityProfileTypeEnum.High },
+                new IdentityProfile { Id =19, IdentityProfileName = "H2B ", IdentityProfileType = IdentityProfileTypeEnum.High },
+                new IdentityProfile { Id =20, IdentityProfileName = "H2C ", IdentityProfileType = IdentityProfileTypeEnum.High },
+                new IdentityProfile { Id =21, IdentityProfileName = "H2D ", IdentityProfileType = IdentityProfileTypeEnum.High },
+                new IdentityProfile { Id =22, IdentityProfileName = "H2E ", IdentityProfileType = IdentityProfileTypeEnum.High },
+                new IdentityProfile { Id =23, IdentityProfileName = "H3A ", IdentityProfileType = IdentityProfileTypeEnum.High },
+                new IdentityProfile { Id =24, IdentityProfileName = "V1A ", IdentityProfileType = IdentityProfileTypeEnum.VeryHigh },
+                new IdentityProfile { Id =25, IdentityProfileName = "V1B ", IdentityProfileType = IdentityProfileTypeEnum.VeryHigh },
+                new IdentityProfile { Id =26, IdentityProfileName = "V1C ", IdentityProfileType = IdentityProfileTypeEnum.VeryHigh },
+                new IdentityProfile { Id =27, IdentityProfileName = "V1D ", IdentityProfileType = IdentityProfileTypeEnum.VeryHigh },
+                new IdentityProfile { Id =28, IdentityProfileName = "V2A ", IdentityProfileType = IdentityProfileTypeEnum.VeryHigh },
+                new IdentityProfile { Id =29, IdentityProfileName = "V2B ", IdentityProfileType = IdentityProfileTypeEnum.VeryHigh },
+                new IdentityProfile { Id =30, IdentityProfileName = "V2C ", IdentityProfileType = IdentityProfileTypeEnum.VeryHigh },
+                new IdentityProfile { Id =31, IdentityProfileName = "V2D ", IdentityProfileType = IdentityProfileTypeEnum.VeryHigh },
+                new IdentityProfile { Id =32, IdentityProfileName = "V3A ", IdentityProfileType = IdentityProfileTypeEnum.VeryHigh });
 
                 modelBuilder.Entity<SupplementaryScheme>().HasData(
-                new SupplementaryScheme { Id =1, SchemeName = "Right to Work", Order = 2 },
-                new SupplementaryScheme { Id =2, SchemeName = "Right to Rent", Order =1 },
+                new SupplementaryScheme { Id =1, SchemeName = "Right to Work", Order = 1 },
+                new SupplementaryScheme { Id =2, SchemeName = "Right to Rent", Order = 2 },
                 new SupplementaryScheme { Id =3, SchemeName = "Disclosure and Barring Service", Order =3 });
+
+            modelBuilder.Entity<TrustFrameworkVersion>().HasData(
+                new TrustFrameworkVersion { Id = 1, TrustFrameworkName = "0.4 gamma", Order = 1 },
+                new TrustFrameworkVersion { Id = 2, TrustFrameworkName = "0.3 beta", Order = 2 });
 
         }
     }

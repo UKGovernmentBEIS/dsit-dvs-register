@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Models.DSITEdit2i;
 using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.Data.Entities;
 
@@ -24,8 +25,17 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceIdentityProfileMappingDto, ServiceIdentityProfileMapping>();
             CreateMap<ServiceRoleMapping, ServiceRoleMappingDto>();
             CreateMap<ServiceRoleMappingDto, ServiceRoleMapping>();
-            CreateMap<ServiceSupSchemeMapping, ServiceSupSchemeMappingDto>();
-            CreateMap<ServiceSupSchemeMappingDto, ServiceSupSchemeMapping>();
+
+            CreateMap<SchemeGPG44Mapping, SchemeGPG44MappingDto>();
+            CreateMap<SchemeGPG44MappingDto, SchemeGPG44Mapping>();
+
+            CreateMap<SchemeGPG45Mapping, SchemeGPG45MappingDto>();
+            CreateMap<SchemeGPG45MappingDto, SchemeGPG45Mapping>();
+
+            CreateMap<ServiceSupSchemeMapping, ServiceSupSchemeMappingDto>()
+            .ForMember(dest => dest.SchemeGPG44Mapping, opt => opt.MapFrom(src =>src.SchemeGPG44Mapping));
+            CreateMap<ServiceSupSchemeMappingDto, ServiceSupSchemeMapping>()
+            .ForMember(dest => dest.SchemeGPG45Mapping, opt => opt.MapFrom(src => src.SchemeGPG45Mapping));
             CreateMap<ServiceQualityLevelMapping, ServiceQualityLevelMappingDto>();
             CreateMap<ServiceQualityLevelMappingDto, ServiceQualityLevelMapping>();         
           
@@ -69,7 +79,8 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview))
             .ForMember(dest => dest.PublicInterestCheck, opt => opt.MapFrom(src => src.PublicInterestCheck))
             .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest))
-            .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom<CreatedTimeResolver>());
+            .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom<CreatedTimeResolver>())
+            .ForMember(dest => dest.TrustFrameworkVersion, opt => opt.MapFrom(src => src.TrustFrameworkVersion));
 
             CreateMap<ServiceDto, Service>()
            .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
@@ -80,7 +91,9 @@ namespace DVSRegister.BusinessLogic
            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider))
            .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview))
            .ForMember(dest => dest.PublicInterestCheck, opt => opt.MapFrom(src => src.PublicInterestCheck))
-           .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest));
+           .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest))
+           .ForMember(dest => dest.TrustFrameworkVersion, opt => opt.MapFrom(src => src.TrustFrameworkVersion));
+
 
             CreateMap<ProceedApplicationConsentToken, ProceedApplicationConsentTokenDto>()
            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
@@ -99,6 +112,11 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ProviderDraftToken, ProviderDraftTokenDto>();
             CreateMap<ProviderDraftTokenDto, ProviderDraftToken>();
 
+            CreateMap<SchemeGPG45MappingDraft, SchemeGPG45MappingDraftDto>();
+            CreateMap<SchemeGPG45MappingDraftDto, SchemeGPG45MappingDraft>().ForMember(x => x.IdentityProfile, opt => opt.Ignore());
+
+            CreateMap<SchemeGPG44MappingDraft, SchemeGPG44MappingDraftDto>();
+            CreateMap<SchemeGPG44MappingDraftDto, SchemeGPG44MappingDraft>().ForMember(x => x.QualityLevel, opt => opt.Ignore());
 
             CreateMap<ServiceIdentityProfileMappingDraft, ServiceIdentityProfileMappingDraftDto>();
             CreateMap<ServiceIdentityProfileMappingDraftDto, ServiceIdentityProfileMappingDraft>().ForMember(x => x.IdentityProfile, opt => opt.Ignore());
@@ -106,7 +124,9 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ServiceRoleMappingDraftDto, ServiceRoleMappingDraft>().ForMember(x => x.Role, opt => opt.Ignore());
 
 
-            CreateMap<ServiceSupSchemeMappingDraft, ServiceSupSchemeMappingDraftDto>();
+            CreateMap<ServiceSupSchemeMappingDraft, ServiceSupSchemeMappingDraftDto>()
+           .ForMember(dest => dest.SchemeGPG44MappingDraft, opt => opt.MapFrom(src => src.SchemeGPG44MappingDraft))
+            .ForMember(dest => dest.SchemeGPG45MappingDraft, opt => opt.MapFrom(src => src.SchemeGPG45MappingDraft));
             CreateMap<ServiceSupSchemeMappingDraftDto, ServiceSupSchemeMappingDraft>().ForMember(x => x.SupplementaryScheme, opt => opt.Ignore());
             CreateMap<ServiceQualityLevelMappingDraft, ServiceQualityLevelMappingDraftDto>();
             CreateMap<ServiceQualityLevelMappingDraftDto, ServiceQualityLevelMappingDraft>().ForMember(x => x.QualityLevel, opt => opt.Ignore());
@@ -137,6 +157,14 @@ namespace DVSRegister.BusinessLogic
           .ForMember(dest => dest.RequestManagement, opt => opt.MapFrom(src => src.RequestManagement));
             CreateMap<CabTransferRequestDto, CabTransferRequest>()
             .ForMember(dest => dest.RequestManagement, opt => opt.MapFrom(src => src.RequestManagement));
+
+            CreateMap<TrustFrameworkVersion, TrustFrameworkVersionDto>();
+            CreateMap<TrustFrameworkVersionDto, TrustFrameworkVersion>();
+            CreateMap<ManualUnderPinningService, ManualUnderPinningServiceDto>();
+            CreateMap<ManualUnderPinningServiceDto, ManualUnderPinningService>();
+
+            CreateMap<ManualUnderPinningServiceDraft, ManualUnderPinningServiceDraftDto>();
+            CreateMap<ManualUnderPinningServiceDraftDto, ManualUnderPinningServiceDraft>();
         }
     }
 }

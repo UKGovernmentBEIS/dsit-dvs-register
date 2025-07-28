@@ -116,6 +116,11 @@ namespace DVSRegister.Controllers
             serviceVersions.CurrentServiceVersion = currentServiceVersion;
             serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
 
+            if (currentServiceVersion.ManualUnderPinningServiceId != null)
+            {
+                currentServiceVersion.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)currentServiceVersion.ManualUnderPinningServiceId);
+            }
+
             if (serviceVersions.ServiceHistoryVersions.Any())
             {
                 serviceVersions.CurrentServiceVersion.EnableResubmission = (currentServiceVersion.ServiceStatus == ServiceStatusEnum.Published || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed) ||
@@ -130,8 +135,11 @@ namespace DVSRegister.Controllers
                 || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed;
 
             }
-
-            SetServiceDataToSession(CabId, serviceVersions.CurrentServiceVersion, serviceVersions.ServiceHistoryVersions.Count);
+            if (currentServiceVersion?.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+            {
+                SetServiceDataToSession(CabId, currentServiceVersion);
+            }
+          
             return View(serviceVersions);
         }
 

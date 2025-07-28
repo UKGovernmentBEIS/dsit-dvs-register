@@ -1,4 +1,5 @@
-﻿@{
+﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@{
     ViewData["Title"] = "Service submitted successfully";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
@@ -14,8 +15,16 @@
                 </div>
                 <p class="govuk-body">
                     The service information you have provided has been submitted to the
-                    Office for Digital Identities and Attributes (OfDIA). You can view the service
-                    information under the service provider profile.
+                    Office for Digital Identities and Attributes (OfDIA).
+                </p>
+                <p class="govuk-body">
+                    Provider name: @ViewBag.ProviderName
+                </p>
+                <p class="govuk-body">
+                    Service name: @ViewBag.ServiceName
+                </p>
+                <p class="govuk-body">
+                    You can view the service information under the service provider's profile.
                 </p>
                 <p class="govuk-body">
                     We have sent a confirmation of your submitted information to the following

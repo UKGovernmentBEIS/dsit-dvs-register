@@ -28,7 +28,7 @@ public class ValidationHelper
     }
 
 
-    public static DateTime? ValidateIssueDate(DateViewModel dateViewModel, DateTime? expiryDate, bool fromSummaryPage, ModelStateDictionary modelstate)
+    public static DateTime? ValidateIssueDate(DateViewModel dateViewModel, DateTime? expiryDate, bool fromSummaryPage, ModelStateDictionary modelstate, bool isTFVersion0_4 = false)
     {
         DateTime? date = null;
         DateTime minDate = new DateTime(1900, 1, 1);
@@ -66,10 +66,10 @@ public class ValidationHelper
 
                 if (expiryDate.HasValue && fromSummaryPage)
                 {
-                    minIssueDate = expiryDate.Value.AddYears(-2).AddDays(-60);
+                    minIssueDate = isTFVersion0_4? expiryDate.Value.AddYears(-3).AddDays(-60): expiryDate.Value.AddYears(-2).AddDays(-60);
                     if (date < minIssueDate)
                     {
-                        modelstate.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
+                        modelstate.AddModelError("ValidDate", isTFVersion0_4 ? Constants.ConformityMaxExpiryDateErrorTF0_4: Constants.ConformityMaxExpiryDateError);
                     }
                 }
 
@@ -83,7 +83,7 @@ public class ValidationHelper
         return date;
     }
 
-    public static DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate)
+    public static DateTime? ValidateExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate,bool isTFVersion0_4 = false, int years = 2, int days = 60)
     {
         DateTime? date = null;
 
@@ -107,7 +107,7 @@ public class ValidationHelper
             else
             {
                 date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
-                var maxExpiryDate = issueDate.AddYears(2).AddDays(60);
+                var maxExpiryDate = issueDate.AddYears(years).AddDays(days);
                 if (date <= DateTime.Today)
                 {
                     modelstate.AddModelError("ValidDate", Constants.ConformityExpiryPastDateError);
@@ -118,8 +118,49 @@ public class ValidationHelper
                 }
                 else if (date > maxExpiryDate)
                 {
-                    modelstate.AddModelError("ValidDate", Constants.ConformityMaxExpiryDateError);
+                    modelstate.AddModelError("ValidDate", isTFVersion0_4? Constants.ConformityMaxExpiryDateErrorTF0_4: Constants.ConformityMaxExpiryDateError);
                 }
+            }
+
+        }
+        catch (Exception)
+        {
+            modelstate.AddModelError("ValidDate", Constants.ConformityExpiryDateInvalidError);
+
+        }
+        return date;
+    }
+
+    public static DateTime? ValidateCustomExpiryDate(DateViewModel dateViewModel, DateTime issueDate, ModelStateDictionary modelstate)
+    {
+        DateTime? date = null;
+
+        try
+        {
+            if (dateViewModel.Day == null || dateViewModel.Month == null || dateViewModel.Year == null)
+            {
+                if (dateViewModel.Day == null)
+                {
+                    modelstate.AddModelError("Day", Constants.ConformityExpiryDayError);
+                }
+                if (dateViewModel.Month == null)
+                {
+                    modelstate.AddModelError("Month", Constants.ConformityExpiryMonthError);
+                }
+                if (dateViewModel.Year == null)
+                {
+                    modelstate.AddModelError("Year", Constants.ConformityExpiryYearError);
+                }
+            }
+            else
+            {
+                date = new DateTime(Convert.ToInt32(dateViewModel.Year), Convert.ToInt32(dateViewModel.Month), Convert.ToInt32(dateViewModel.Day));
+            
+                if (date <= DateTime.Today)
+                {
+                    modelstate.AddModelError("ValidDate", Constants.ConformityExpiryPastDateError);
+                }
+               
             }
 
         }

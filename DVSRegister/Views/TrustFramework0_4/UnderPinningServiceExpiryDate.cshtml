@@ -1,0 +1,116 @@
+﻿@model DVSRegister.Models.DateViewModel
+@{
+    ViewData["Title"] = "Underpinning Service Certificate Expiry Date";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+@{
+    bool hasError = false;
+    bool hasDateError = false;
+    bool hasDayError = false;
+    bool hasMonthError = false;
+    bool hasYearError = false;
+}
+
+<div class="govuk-width-container">
+    <a href="@Model.RefererURL" class="govuk-back-link">
+        Back
+    </a>
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                <h1 class="govuk-heading-xl">
+                    Underpinning service certificate expiry date
+                </h1>
+                @if (ViewData.ModelState.ErrorCount > 0)
+                {
+                    hasError = true;
+                    ViewData["Title"] = "Error: " + ViewData["Title"];
+
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_DateErrorSummaryView.cshtml", Model)
+
+
+                    if ((Html.ViewData.ModelState.ContainsKey("ValidDate") && Html?.ViewData?.ModelState["ValidDate"]?.Errors.Count > 0))
+                    {
+                        hasDateError = true; hasDayError = true; hasMonthError = true; hasYearError = true;
+                    }
+                    if ((Html.ViewData.ModelState.ContainsKey("Day") && Html?.ViewData?.ModelState["Day"]?.Errors.Count > 0))
+                    {
+                        hasDayError = true;
+                    }
+
+                    if ((Html.ViewData.ModelState.ContainsKey("Month") && Html?.ViewData?.ModelState["Month"]?.Errors.Count > 0))
+                    {
+                        hasMonthError = true;
+                    }
+                    if ((Html.ViewData.ModelState.ContainsKey("Year") && Html?.ViewData?.ModelState["Year"]?.Errors.Count > 0))
+                    {
+                        hasYearError = true;
+                    }
+                }
+
+                @using (Html.BeginForm("SaveUnderPinningServiceExpiryDate", "TrustFramework0_4", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+                    @Html.HiddenFor(m => m.SingleChange, new { @Value = ViewBag.singleChange })
+                    @Html.HiddenFor(m => m.FromUnderPinningServiceSummaryPage, new { @Value = ViewBag.fromUnderPinningServiceSummaryPage })
+                    @Html.HiddenFor(m => m.RefererURL)
+                    <p class="govuk-body">
+                        This must match the information on the certificate.
+                    </p>
+                    <p class="govuk-body">
+                       The certificate expiry date must not be more than 3 years and 60 days from the date of issue.
+                    </p>
+
+
+                    var conformityExpiryDateViewModel = new DateInputViewModel
+                {
+                    PropertyName = "UnderPinningServiceExpiryDate",
+                    HasError = hasError,
+                    ErrorMessage = hasDateError ? Html?.ViewData?.ModelState["ValidDate"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                    FieldsetLegend = "Certificate of conformity expiry date",
+                    Hint = "For example, 27 3 2007",
+
+                    Day = Convert.ToString(Model.Day) ?? string.Empty,
+                    HasDayError = hasDayError,
+                    DayError = !hasDateError & hasDayError ? Html?.ViewData?.ModelState["Day"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+
+                    Month = Convert.ToString(Model.Month) ?? string.Empty,
+                    HasMonthError = hasMonthError,
+                    MonthError = !hasDateError & hasMonthError ? Html?.ViewData?.ModelState["Month"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+
+                    Year = Convert.ToString(Model.Year) ?? string.Empty,
+                    HasYearError = hasYearError,
+                    YearError = !hasDateError & hasYearError ? Html?.ViewData?.ModelState["Year"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty
+                };
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_DateView.cshtml", conformityExpiryDateViewModel)
+
+                    @if (Model != null && Model.IsAmendment)
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Continue</button>
+                            <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                                Cancel
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button" name="action" value="continue">
+                                Continue
+                            </button>
+                            <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
+                        </div>
+                    }
+
+                }
+            </div>
+        </div>
+    </main>
+</div>
+

@@ -1,0 +1,262 @@
+﻿@using DVSRegister.BusinessLogic.Models.CAB
+@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models
+@using DVSRegister.Extensions
+@model ServiceDto
+
+@{
+    bool is0_4GammaVersion = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
+}
+
+<div class="govuk-summary-card">
+        <div class="govuk-summary-card__title-wrapper">
+        <p class="govuk-summary-card__title">
+            Submission date (GMT): @DateTimeExtensions.FormatDateTime(@Model.CreatedTime)
+        </p>
+        <ul class="govuk-summary-card__actions">
+            <li class="govuk-summary-card__action">
+                <a class="govuk-link" href="@Url.Action("ConfirmUnderpinningService", "TrustFramework0_4", new {serviceId = Model.Id, published = true, isManual = false,
+                fromSummaryPage = ViewBag.fromSummaryPage, fromDetailsPage = ViewBag.fromDetailsPage})">
+                    Confirm
+                </a>
+                </li>
+                </ul>
+        </div>        
+        <div class="govuk-summary-card__content">
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                    Trust framework version
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                    @Model.TrustFrameworkVersion.TrustFrameworkName
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Name of service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.ServiceName
+                    </dd>
+                </div>           
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Status
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                    @HtmlExtensions.ToStyledStrongTag(Model.ServiceStatus)
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        URL link to the service
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.WebSiteAddress
+                    </dd>
+                </div>
+                 <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Conformity Assessment Body 
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.CabUser.Cab.CabName
+                    </dd>
+                </div>
+                 <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Registered name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.Provider.RegisteredName
+                    </dd>
+                </div>
+                 <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Trading name
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Html.DisplayFor(model => model.Provider.TradingName)
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Company address details
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @HtmlExtensions.ToStringWithLineBreaks(Model.CompanyAddress)
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Roles certified against
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @if (Model.ServiceRoleMapping.Count > 0)
+                        {
+                            @foreach (var item in Model.ServiceRoleMapping)
+                            {
+                                @item.Role.RoleName <br />
+                            }
+                        }
+                        else
+                        {
+                            @Constants.NullFieldsDisplay
+                        }
+                    </dd>
+                </div>
+
+                @if (Model.HasGPG44 == false)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG 44 quality levels
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Constants.NullFieldsDisplay
+                        </dd>
+                    </div>
+                }
+                else
+                {
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG 44 quality of authenticator
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                            {
+                                foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                {
+                                    @item.QualityLevel.Level <br />
+                                }
+                            }   
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG 44 level of protection
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                            {
+                                foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                                {
+                                    @item.QualityLevel.Level <br />
+                                }
+                            }
+                        </dd>
+                    </div>
+
+                }
+                @if (Model.HasGPG45 == false)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG 45 identity profiles
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Constants.NullFieldsDisplay
+                        </dd>
+                    </div>
+                }
+                else
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            GPG 45 identity profiles
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
+                            {
+                                @foreach (var item in Model.ServiceIdentityProfileMapping)
+                                {
+                                    @item.IdentityProfile.IdentityProfileName <br />
+                                }
+                            }
+                        </dd>
+                    </div>
+                }
+
+                @if (Model?.HasSupplementarySchemes == false)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Supplementary codes
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Constants.NullFieldsDisplay
+                        </dd>
+                    </div>
+                }
+                else
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Supplementary codes
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (Model?.ServiceSupSchemeMapping?.Count > 0)
+                            {
+                                @foreach (var item in Model.ServiceSupSchemeMapping)
+                                {
+                                    @item.SupplementaryScheme.SchemeName <br />
+                                }
+                            }
+                        </dd>
+                    </div>
+
+                }
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Service provider’s certificate of conformity
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model.FileName
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Date of issue
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")  
+                    </dd>
+                </div>
+
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Date of expiry
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMM yyyy")                    
+                        </dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <div class="govuk-grid-column-two-thirds govuk-!-padding-0">
+        <h2 class="govuk-heading-m">Provided certificate of conformity</h2>
+        <p class="govuk-body-l govuk-!-margin-bottom-2">
+            @Model.FileName
+        </p>
+        <p class="govuk-body govuk-!-margin-bottom-2">
+            <span class="govuk-hint">
+               PDF, @Model.FileSizeInKb KB, 1 page
+            </span>
+         </p>
+         <p class="govuk-body">
+             <span class="govuk-hint">
+                 This file may not be suitable for users of assistive technology.
+             </span>
+          </p>
+          <a href="@Url.Action("DownloadCertificate", "TrustFramework0_4", new {key = Model.FileLink, filename = Model.FileName})"
+          role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" target="_blank">
+                 Download certificate of conformity                  
+          </a>
+    </div>

@@ -1,4 +1,7 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Models.CAB.Service;
+using DVSRegister.Models.CabTrustFramework;
 using DVSRegister.Validations;
 using System.ComponentModel.DataAnnotations;
 
@@ -23,6 +26,7 @@ namespace DVSRegister.Models.CAB
 
         [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG44")]
         public bool? HasGPG44 { get; set; }
+    
 
         [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG45")]
         public bool? HasGPG45 { get; set; }
@@ -42,6 +46,33 @@ namespace DVSRegister.Models.CAB
         public int ServiceId { get; set; }
         public int ServiceKey { get; set; }      
         public DateTime? CreatedDate { get; set; }
+        public TFVersionViewModel? TFVersionViewModel { get; set; }
+
+        public int? SelectedUnderPinningServiceId { get; set; }
+        public int? SelectedManualUnderPinningServiceId { get; set; }
+        public bool? IsManualServiceLinkedToMultipleServices { get; set; }
+
+        [RequiredEnumValue(ErrorMessage = "Select the service type")]
+        public ServiceTypeEnum? ServiceType { get; set; }
+
+        [Required(ErrorMessage = "Select the registration status")]
+        public bool? IsUnderpinningServicePublished { get; set; }
+        public List<SchemeQualityLevelMappingViewModel>? SchemeQualityLevelMapping { get; set; }
+        public List<SchemeIdentityProfileMappingViewModel>? SchemeIdentityProfileMapping { get; set; }
+
+        [Required(ErrorMessage = "Enter the service name")]
+        [MaximumLength(160, ErrorMessage = "The service name must be less than 161 characters")]
+        [AcceptedCharacters(@"^[A-Za-z0-9 &@#().:_'-]+$", ErrorMessage = "The service name must contain only letters, numbers and accepted characters")]
+        public string? UnderPinningServiceName { get; set; }
+
+        [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
+        [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
+        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
+        public string? UnderPinningProviderName { get; set; }
+
+        public SelectCabViewModel? SelectCabViewModel { get; set; }
+
+        public DateTime? UnderPinningServiceExpiryDate { get; set; }
 
 
         public void ResetInpuData()
@@ -81,6 +112,9 @@ namespace DVSRegister.Models.CAB
             FileSizeInKb = null;
             ConformityIssueDate = null;
             ConformityExpiryDate = null;
+            TFVersionViewModel = null;
+         
+           
         }
     }
 }

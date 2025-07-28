@@ -41,6 +41,7 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
             serviceSummaryViewModel.CabId = cabUserDto.CabId;
             serviceSummaryViewModel.CabUserId = cabUserDto.Id;
+            serviceSummaryViewModel.ProviderProfileId = providerProfileId;
             HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
             return View();            
 
@@ -49,18 +50,12 @@ namespace DVSRegister.Controllers
 
         #region Service Name
         [HttpGet("name-of-service")]
-        public async Task<IActionResult> ServiceName(bool fromSummaryPage, int providerProfileId, bool fromDetailsPage)
-        {
-            
+        public IActionResult ServiceName(bool fromSummaryPage, bool fromDetailsPage)
+        {           
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;          
-            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();         
-            CabUserDto cabUserDto = await userService.GetUser(UserEmail);
-            await HandleInvalidProfileAndCab(providerProfileId, cabUserDto);
-
-            serviceSummaryViewModel.ProviderProfileId = providerProfileId;
+            ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
             serviceSummaryViewModel.RefererURL = GetRefererURL();
-            HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);
             return View(serviceSummaryViewModel);
 
         }
@@ -165,7 +160,7 @@ namespace DVSRegister.Controllers
             RoleViewModel roleViewModel = new()
             {
                 SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList(),
-                AvailableRoles = await cabService.GetRoles(),
+                AvailableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version),
                 IsAmendment = summaryViewModel.IsAmendment,
                 RefererURL = GetRefererURL()
             };
@@ -184,7 +179,7 @@ namespace DVSRegister.Controllers
             bool fromSummaryPage = roleViewModel.FromSummaryPage;
             bool fromDetailsPage = roleViewModel.FromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            List<RoleDto> availableRoles = await cabService.GetRoles();          
+            List<RoleDto> availableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version);          
             roleViewModel.AvailableRoles = availableRoles;
             roleViewModel.SelectedRoleIds =  roleViewModel.SelectedRoleIds??[];
             roleViewModel.IsAmendment = summaryViewModel.IsAmendment;
@@ -194,7 +189,16 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");
+                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+                {
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SelectServiceType", "TrustFramework0_4");
+                }
+                else
+                {
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");
+                
+                }
+
             }
             else
             {
@@ -275,11 +279,13 @@ namespace DVSRegister.Controllers
               qualityLevelViewModel.IsAmendment = summaryViewModel.IsAmendment;
             List<QualityLevelDto> availableQualityLevels = await cabService.GetQualitylevels();
             qualityLevelViewModel.AvailableQualityOfAuthenticators = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
+
             qualityLevelViewModel.SelectedQualityofAuthenticatorIds = qualityLevelViewModel.SelectedQualityofAuthenticatorIds ?? [];
             if (qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Count > 0)
                 summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Contains(c.Id)).ToList();
 
             qualityLevelViewModel.AvailableLevelOfProtections = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
+
             qualityLevelViewModel.SelectedLevelOfProtectionIds =  qualityLevelViewModel.SelectedLevelOfProtectionIds??[];
             if (qualityLevelViewModel.SelectedLevelOfProtectionIds.Count > 0)
                 summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedLevelOfProtectionIds.Contains(c.Id)).ToList();
@@ -341,7 +347,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             IdentityProfileViewModel identityProfileViewModel = new()
-            {
+            {                
                 IsAmendment = summaryViewModel.IsAmendment,
                 SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList(),
                 AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
@@ -389,7 +395,9 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = GetRefererURL();
+            summaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL()
+            : summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_3 ? summaryViewModel.HasGPG45 == true? "/cab-service/submit-service/gpg45" : "/cab-service/submit-service/gpg45-input"
+            : summaryViewModel.HasGPG44 == true ?  "/cab-service/submit-service/service/gpg44" : "/cab-service/submit-service/service/gpg44-input";
             return View(summaryViewModel);
         }
 
@@ -402,6 +410,7 @@ namespace DVSRegister.Controllers
             viewModel.IsAmendment = summaryViewModel.IsAmendment;           
             if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
             {
+                summaryViewModel.IsSchemeEditedFromSummary = viewModel.FromSummaryPage;
                 summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
                 summaryViewModel.RefererURL = viewModel.RefererURL;
                 return await HandleSchemeActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage);     
@@ -422,9 +431,9 @@ namespace DVSRegister.Controllers
             {
                 SelectedSupplementarySchemeIds = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Select(c => c.Id).ToList(),
                 AvailableSchemes = await cabService.GetSupplementarySchemes(),
-                IsAmendment = summaryViewModel.IsAmendment, 
-                RefererURL = summaryViewModel.RefererURL
-            };
+                IsAmendment = summaryViewModel.IsAmendment,
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/supplementary-schemes-input"
+            }; 
             return View(supplementarySchemeViewModel);
         }
 
@@ -444,8 +453,27 @@ namespace DVSRegister.Controllers
 
             if (ModelState.IsValid)
             {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);                
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "CertificateUploadPage");
+                string nextPage;
+                string controller;
+                object routeValues = null;
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+                {                   
+                    HttpContext?.Session.Set("SelectedSchemeIds", supplementarySchemeViewModel.SelectedSupplementarySchemeIds);
+                    int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];
+                    nextPage = "SchemeGPG45";
+                    controller = "TrustFramework0_4";
+                    routeValues= new { schemeId = firstSchemeId };
+                    return await HandleSchemeSelectionActions(action, summaryViewModel, false, fromDetailsPage, nextPage, controller, routeValues!);
+                }
+                else
+                {
+                    nextPage = "CertificateUploadPage";
+                    controller = "CabService";
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller, routeValues!);
+
+                }
+                
             }
             else
             {
@@ -632,7 +660,8 @@ namespace DVSRegister.Controllers
             dateViewModel.FromDetailsPage = false;
             dateViewModel.PropertyName = "ConfirmityIssueDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            DateTime? conformityIssueDate = ValidationHelper.ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage,ModelState);
+            DateTime? conformityIssueDate = ValidationHelper.ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage,ModelState,
+            summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4);
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
@@ -663,6 +692,10 @@ namespace DVSRegister.Controllers
             {
                 dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
             }
+            if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+            {
+                dateViewModel.IsTfVersion0_4 = true;
+            }
             dateViewModel.RefererURL = GetRefererURL();
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
@@ -681,8 +714,17 @@ namespace DVSRegister.Controllers
             dateViewModel.FromDetailsPage = false;
             dateViewModel.PropertyName = "ConfirmityExpiryDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-
-            DateTime? conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate),ModelState);
+            DateTime? conformityExpiryDate;
+            if (dateViewModel.IsTfVersion0_4)
+            {
+                conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState, dateViewModel. IsTfVersion0_4, years: 3, days: 59);                
+            }
+               
+            else
+            {
+                conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState);
+            }
+              
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
@@ -711,32 +753,34 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveServiceSummary()
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
-            ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
+            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;           
+           ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
+            
+            ViewModelHelper.MapTFVersion0_4Fields(summaryViewModel, serviceDto);
 
             if (!IsValidCabId(summaryViewModel.CabId))
-                return HandleInvalidCabId(summaryViewModel.CabId);           
+                return HandleInvalidCabId(summaryViewModel.CabId);
 
-               GenericResponse genericResponse = new();
-                if(summaryViewModel.IsResubmission) 
-                {
-                    genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
-                }
-                else
-                {
-                    genericResponse = await cabService.SaveService(serviceDto, UserEmail);
-                }               
-                if (genericResponse.Success)
-                {
-                    ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
-                    string providerName = provider?.RegisteredName;
-                    return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName});
-                }
-                else
-                {
-                  throw new InvalidOperationException("Service submission failed");
-                }
-        }
+            GenericResponse genericResponse = new();
+            if(summaryViewModel.IsResubmission)
+            {
+                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
+            }
+            else
+            {
+                genericResponse = await cabService.SaveService(serviceDto, UserEmail);
+            }
+            if (genericResponse.Success)
+            {
+                ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
+                string providerName = provider?.RegisteredName;
+                return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName});
+            }
+            else
+            {
+                throw new InvalidOperationException("Service submission failed");
+            }
+        }        
 
         /// <summary>
         ///Final page if save success
@@ -744,7 +788,9 @@ namespace DVSRegister.Controllers
         /// <returns></returns>
         [HttpGet("service-submitted")]
         public async Task <IActionResult> InformationSubmitted(string providerName, string serviceName)
-        {         
+        {
+            ViewBag.ServiceName = serviceName;
+            ViewBag.ProviderName = providerName;
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.Email = UserEmail;
             await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail, providerName, serviceName);
@@ -762,6 +808,9 @@ namespace DVSRegister.Controllers
             GenericResponse genericResponse = new();
             serviceSummary.ServiceStatus = ServiceStatusEnum.SavedAsDraft;
             ServiceDto serviceDto = _mapper.Map<ServiceDto>(serviceSummary);
+
+            ViewModelHelper.MapTFVersion0_4Fields(serviceSummary, serviceDto);
+
             if (!IsValidCabId(serviceSummary.CabId))
                 return HandleInvalidCabId(serviceSummary.CabId);
 
@@ -798,14 +847,15 @@ namespace DVSRegister.Controllers
 
         #region Handle save/draft/amend actions
 
-        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, string nextPage)
+        private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, 
+            string nextPage,  string controller = "CabService", object routeValues = null!)
         {
             switch (action)
             {
                 case "continue":
                     return fromSummaryPage ? RedirectToAction("ServiceSummary")
                         : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
-                        : RedirectToAction(nextPage);
+                        : routeValues== null? RedirectToAction(nextPage,controller): RedirectToAction(nextPage, controller, routeValues);
 
                 case "draft":
                     return await SaveAsDraftAndRedirect(serviceSummary);
@@ -816,10 +866,7 @@ namespace DVSRegister.Controllers
                 default:
                     throw new ArgumentException("Invalid action parameter");
             }
-        }
-        
-
-       
+        }      
 
         private async Task<IActionResult> HandleGpg44Actions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage)
         {
@@ -954,11 +1001,34 @@ namespace DVSRegister.Controllers
             }
         }
 
+        private async Task<IActionResult> HandleSchemeSelectionActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage,
+            string nextPage, string controller = "CabService", object routeValues = null!)
+        {
+            switch (action)
+            {
+                case "continue":
+                    return fromSummaryPage ? RedirectToAction("ServiceSummary")
+                        : fromDetailsPage ? await SaveAsDraftAndRedirect(serviceSummary)
+                        : routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues);
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(serviceSummary);
+
+                case "amend":
+                    return RedirectToAction(nextPage, controller, routeValues);
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
+
+
         #endregion
 
-      
 
- 
+
+
 
         #endregion
     }

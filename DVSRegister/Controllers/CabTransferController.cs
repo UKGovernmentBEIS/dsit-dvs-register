@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.CabTransfer;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
@@ -8,13 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-transfer")]
-    public class CabTransferController(ICabTransferService cabTransferService, IConfiguration configuration, ILogger<CabTransferController> logger) : BaseController(logger)
+    public class CabTransferController(ICabTransferService cabTransferService, ICabService cabService, IConfiguration configuration, ILogger<CabTransferController> logger) : BaseController(logger)
     {
         private readonly ICabTransferService cabTransferService = cabTransferService;
+        private readonly ICabService cabService = cabService;
         private readonly IConfiguration configuration = configuration;        
         
         [HttpGet("service-management-requests")]
-        public async Task<IActionResult> ServiceManagementRequests()
+        public async Task<IActionResult> ServiceManagementRequests(string previousPage)
         {
             var list = await cabTransferService.GetServiceTransferRequests(CabId);
 
@@ -25,7 +27,7 @@ namespace DVSRegister.Controllers
                 CompletedRequests = list.Where(x => x.RequestManagement != null && x.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
                 && (x.RequestManagement.RequestStatus == RequestStatusEnum.Approved)).ToList()
             };
-
+            ViewBag.previousPage = previousPage;
             return View(serviceManagementRequestsViewModel);
         }
       
@@ -36,12 +38,17 @@ namespace DVSRegister.Controllers
             ServiceDto serviceDto = await cabTransferService.GetServiceDetailsWithCabTransferDetails(serviceId, fromCabId);
             if (serviceDto.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || serviceDto.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
             {
+                
                 serviceDto.CabTransferRequestId = serviceDto.CabTransferRequest.Where(x=>x.ServiceId == serviceDto.Id && x.CertificateUploaded== false && x.RequestManagement!=null 
                 && x.RequestManagement.RequestStatus == RequestStatusEnum.Pending && x.RequestManagement.RequestType== RequestTypeEnum.CabTransfer).Select(x=>x.Id).FirstOrDefault();
                 return View(serviceDto);
             }
-                
-            else throw new InvalidOperationException("Invalid service status for reassign");           
+            else
+            {
+                ServiceDto serviceDtoAfterTransfer = await cabService.GetServiceDetails(serviceId, CabId);
+                return View(serviceDtoAfterTransfer);
+            }                
+                       
         }
       
 

@@ -1,0 +1,96 @@
+@using System.ComponentModel
+@using DVSRegister.CommonUtility.Models.Enums
+@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Tell us if the service is an underpinning or a white-labelled service";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    var id = ViewBag.ProviderProfileId as int?;
+    bool hasError = false;
+}
+
+<div class="govuk-width-container">
+    <a href="@Model.RefererURL" class="govuk-back-link">Back</a>
+
+
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @if (Html.ViewData?.ModelState.ContainsKey("ServiceType") == true)
+                {
+                    var errors = Html.ViewData?.ModelState["ServiceType"]?.Errors;
+                    if (errors != null && errors.Count > 0)
+                    {
+                        hasError = true;
+                        @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                            new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ServiceType", errors))
+                    }
+                }
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
+                <div class="govuk-body">
+                    <h2 class="govuk-heading-m">Underpinning and white-label services</h2>
+                    <p class="govuk-hint">
+                        An underpinning service can be used by a second-party to white-label and
+                        redistribute a product, service, or process.
+                    </p>
+                    <p class="govuk-hint">
+                        A white-labelled service relies on an underpinning service produced by
+                        another digital identity and attributes service provider.
+                    </p>
+                </div>
+                @using (Html.BeginForm("SaveServiceType", "TrustFramework0_4", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+                    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+                    @Html.HiddenFor(m => m.RefererURL)
+                    <div class="govuk-form-group@(hasError ? " govuk-form-group--error" : "")">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-visually-hidden">
+                                Tell us if the service is an underpinning or a white-labelled service
+                            </legend>
+
+                            
+
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                @{
+
+                                    var serviceTypes = Enum.GetValues(typeof(ServiceTypeEnum)).Cast<ServiceTypeEnum>().ToList();
+                                    for (int i = 0; i < serviceTypes.Count; i++)
+                                    {
+                                        var serviceType = serviceTypes[i];
+                                        var radioId = i == 1 ? "servicetype" : "servicetype" + +(int)i;
+                                        var description = serviceType.GetDescription();
+                                        bool isChecked = Model.ServiceType == serviceType;
+
+                                        <div class="govuk-radios__item">
+                                            @Html.RadioButton("ServiceType", serviceType, isChecked, new { @id = radioId, @class = "govuk-radios__input" })
+                                            <label class="govuk-label govuk-radios__label" for="@radioId">@description</label>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </fieldset>
+                    </div>
+                    @if (Model != null && Model.IsAmendment)
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Submit changes</button>
+                            <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                                Cancel
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="continue">Continue</button>
+                            <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
+                        </div>
+                    }
+       
+            }
+            </div>
+        </div>
+    </main>
+</div>

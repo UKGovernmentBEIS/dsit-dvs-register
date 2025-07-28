@@ -5,6 +5,7 @@ using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
+using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -61,6 +62,7 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             summaryViewModel.ServiceStatus = ServiceStatusEnum.Resubmitted;
             ServiceDto serviceDto = mapper.Map<ServiceDto>(summaryViewModel);
+            ViewModelHelper.MapTFVersion0_4Fields(summaryViewModel, serviceDto);
             var existingService = await cabService.GetServiceDetails(summaryViewModel.ServiceId,CabId);
 
             if (action == "save")

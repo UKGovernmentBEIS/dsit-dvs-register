@@ -16,18 +16,31 @@
         </div>
 
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-half">
+            <div class="govuk-grid-column-one-third">
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                <p class="govuk-body">@Html.ActionLink("Create new service provider profile", "BeforeYouStart", "CabProvider", null, new { @class = "govuk-link govuk-!-font-weight-bold" })</p>
+                <p class="govuk-body">
+                    @Html.ActionLink("New service providers – create a profile", "BeforeYouStart",
+                    "CabProvider", null, new { @class = "govuk-link govuk-!-font-weight-bold" })</p>
                 <p class="govuk-body govuk-!-margin-bottom-9">
-                    If this is the first time you are submitting information about a service provider, you will need to create a new profile for them.
+                    Create a new profile to submit information about a service provider for the first time.
                 </p>
             </div>
-            <div class="govuk-grid-column-one-half">
+            <div class="govuk-grid-column-one-third">
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-                <p class="govuk-body">@Html.ActionLink("Submit certificate information", "ListProviders", "Cab", null, new { @class = "govuk-link govuk-!-font-weight-bold" })</p>
+                <p class="govuk-body">
+                    @Html.ActionLink("Existing service providers – view and amend details", "ListProviders",
+                    "Cab", null, new { @class = "govuk-link govuk-!-font-weight-bold" })</p>
                 <p class="govuk-body govuk-!-margin-bottom-9">
-                    Submit certificate information for new services against existing profiles.
+                    View and amend information about an existing provider, or their services.
+                </p>
+            </div>
+            <div class="govuk-grid-column-one-third">
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                <p class="govuk-body">@Html.ActionLink("Manage service requests",
+                "ServiceManagementRequests", "CabTransfer", new {previousPage = "landing"}, new { @class = "govuk-link govuk-!-font-weight-bold" })
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-9">
+                    View, accept, or reject all requests for services to be reassigned to your Conformity Assessment Body.
                 </p>
             </div>
         </div>

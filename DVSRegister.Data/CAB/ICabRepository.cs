@@ -5,7 +5,7 @@ namespace DVSRegister.Data.CAB
 {
     public interface ICabRepository
     { 
-        public Task<List<Role>> GetRoles();
+        public Task<List<Role>> GetRoles(decimal tfVersion);
         public Task<List<IdentityProfile>> GetIdentityProfiles();
         public Task<List<SupplementaryScheme>> GetSupplementarySchemes();
         public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
@@ -14,6 +14,7 @@ namespace DVSRegister.Data.CAB
         public Task<ProviderProfile> GetProvider(int providerId, int cabId);
         public Task<Service> GetServiceDetails(int serviceId, int cabId);
         public Task<List<Service>> GetServiceList(int serviceKey, int cabId);
+        public Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId);
         public Task<List<QualityLevel>> QualityLevels();
         public Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId);
         public Task<Service> GetServiceDetailsWithProvider(int serviceId, int cabId);

@@ -53,7 +53,7 @@ namespace DVSRegister.Data.Entities
         public string? RemovalReasonByCab { get; set; }
         public DateTime? RemovalRequestTime { get; set; }
         public DateTime? RemovedTime { get; set; }
-        public ServiceDraft ServiceDraft { get; set; }
+       
         public DateTime? ResubmissionTime { get; set; }
         public TokenStatusEnum RemovalTokenStatus { get; set; }
         public TokenStatusEnum EditServiceTokenStatus { get; set; }
@@ -61,5 +61,23 @@ namespace DVSRegister.Data.Entities
         public TokenStatusEnum ClosingLoopTokenStatus { get; set; }
         public bool IsInRegister { get; set; }
         public ICollection<CabTransferRequest>? CabTransferRequest { get; set; }
+        [ForeignKey("TrustFrameworkVersion")]
+        public int TrustFrameworkVersionId { get; set; }
+        public TrustFrameworkVersion TrustFrameworkVersion { get; set; }
+        public ServiceTypeEnum? ServiceType { get; set; }
+
+        public bool? IsUnderPinningServicePublished { get; set; }
+
+        // Foreign key for self-referencing
+        [ForeignKey("UnderPinningService")]
+        public int? UnderPinningServiceId { get; set; }
+        public Service UnderPinningService { get; set; }
+
+        [ForeignKey("ManualUnderPinningService")]
+        public int? ManualUnderPinningServiceId { get; set; }
+        public ManualUnderPinningService ManualUnderPinningService { get; set; }
+
+        public ServiceDraft ServiceDraft { get; set; }
+
     }
 }

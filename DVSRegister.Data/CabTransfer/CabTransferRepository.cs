@@ -31,8 +31,11 @@ namespace DVSRegister.Data.CabTransfer
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
              .Include(p => p.CabTransferRequest).ThenInclude(p=>p.RequestManagement)
               .Include(p => p.Provider)
-            .Include(p => p.ServiceRoleMapping)
-            .ThenInclude(s => s.Role);
+              .Include(p => p.TrustFrameworkVersion)
+              .Include(p => p.UnderPinningService).ThenInclude(p => p.Provider)
+              .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(p=>p.Cab)
+               .Include(p => p.ManualUnderPinningService).ThenInclude(p=>p.Cab)
+            .Include(p => p.ServiceRoleMapping).ThenInclude(s => s.Role);
 
 
             IQueryable<Service> queryWithOptionalIncludes = baseQuery;
@@ -46,6 +49,10 @@ namespace DVSRegister.Data.CabTransfer
             {
                 queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
                     .ThenInclude(ssm => ssm.SupplementaryScheme);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping).ThenInclude(s=>s.SchemeGPG44Mapping)
+                   .ThenInclude(ssm => ssm.QualityLevel);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping).ThenInclude(s => s.SchemeGPG45Mapping)
+                  .ThenInclude(ssm => ssm.IdentityProfile);
             }
 
             if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
@@ -53,7 +60,7 @@ namespace DVSRegister.Data.CabTransfer
                 queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)
                     .ThenInclude(ssm => ssm.IdentityProfile);
             }
-            var service = await queryWithOptionalIncludes.FirstOrDefaultAsync() ?? new Service();
+            var service = await queryWithOptionalIncludes.AsNoTracking().FirstOrDefaultAsync() ?? new Service();
 
 
             return service;
