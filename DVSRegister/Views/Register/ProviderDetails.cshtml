@@ -63,17 +63,14 @@
                     <h2 class="govuk-heading-l">Service details: @service.ServiceName</h2>
                     <hr class="govuk-section-break govuk-section-break--visible">
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
-                        @if (is0_4GammaVersion)
-                        {
-                            <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Trust framework version
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @service?.TrustFrameworkVersion?.TrustFrameworkName
-                               </dd>
-                           </div>  
-                        }                        
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Trust framework version
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @service?.TrustFrameworkVersion?.TrustFrameworkName
+                            </dd>
+                        </div>                        
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 Name of service
