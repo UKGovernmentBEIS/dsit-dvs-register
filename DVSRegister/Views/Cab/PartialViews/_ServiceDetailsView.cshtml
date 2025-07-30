@@ -840,16 +840,7 @@
                             Service name
                         </dt>
                         <dd class="govuk-summary-list__value">
-
-                            @if (Model?.UnderPinningService?.ServiceName != null)
-                            {
                                 @Model.UnderPinningService.ServiceName
-                            }
-                            else
-                            {
-                                hasValue = false;
-                                @:Incomplete
-                            }
                         </dd>
                     </div>
 
@@ -858,14 +849,8 @@
                             Service provider
                         </dt>
                         <dd class="govuk-summary-list__value">
-
-                            @if (Model?.UnderPinningService?.Provider?.RegisteredName!=null)
-                            {
-                                @Model.UnderPinningService.Provider.RegisteredName
-                            }
-                           
-                        </dd>                     
-
+                            @Model.UnderPinningService.Provider.RegisteredName                           
+                        </dd>                  
                     </div>
 
                     <div class="govuk-summary-list__row">
@@ -873,13 +858,8 @@
                             CAB of underpinning service
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model?.UnderPinningService?.CabUser?.Cab?.CabName != null)
-                            {
-                                @Model.UnderPinningService.CabUser.Cab.CabName
-                            }
-                           
-                        </dd>
-                       
+                                @Model.UnderPinningService.CabUser.Cab.CabName                           
+                        </dd>                       
                     </div>
 
                     <div class="govuk-summary-list__row">
@@ -887,15 +867,9 @@
                             Underpinning service <br /> certificate expiry date
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model?.UnderPinningService?.ConformityExpiryDate != null)
-                            {
-                                @DateTimeExtensions.FormatDateTime(Model.UnderPinningService.ConformityExpiryDate, "dd MMM yyyy")
-                            }
-                           
-                        </dd>
-                       
+                                @DateTimeExtensions.FormatDateTime(Model.UnderPinningService.ConformityExpiryDate, "dd MMM yyyy")                           
+                        </dd>                       
                     </div>
-
                 </dl>
             </div>
         </div>
