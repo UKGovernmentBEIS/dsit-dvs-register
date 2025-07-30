@@ -102,6 +102,7 @@ namespace DVSRegister.Data.CabTransfer
                     else
                     {
                         entity.RequestManagement.RequestStatus = RequestStatusEnum.Rejected;
+                        entity.Service.ServiceStatus = entity.PreviousServiceStatus;
                     }
                     entity.Service.ModifiedTime = DateTime.UtcNow;
                     //Previous status will be updated on certificate upload (reapplictaion) 
