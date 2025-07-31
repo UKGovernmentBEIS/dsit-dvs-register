@@ -102,8 +102,10 @@ namespace DVSRegister.Data.CabTransfer
                     else
                     {
                         entity.RequestManagement.RequestStatus = RequestStatusEnum.Rejected;
+                        entity.Service.ServiceStatus = entity.PreviousServiceStatus;
                     }
-                   //Previous status will be updated on certificate upload (reapplictaion) 
+                    entity.Service.ModifiedTime = DateTime.UtcNow;
+                    //Previous status will be updated on certificate upload (reapplictaion) 
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ApproveOrRejectReAssign, loggedInUserEmail);
                    
                     await transaction.CommitAsync();
