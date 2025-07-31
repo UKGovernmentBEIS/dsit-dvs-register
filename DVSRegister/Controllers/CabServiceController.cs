@@ -488,13 +488,16 @@ namespace DVSRegister.Controllers
         [HttpGet("certificate-upload")]
         public async Task<IActionResult> CertificateUploadPage(bool fromSummaryPage, bool remove, bool fromDetailsPage)
         {
-
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            var lastScheme = summaryViewModel?.SchemeQualityLevelMapping?.LastOrDefault() ?? null;
             CertificateFileViewModel certificateFileViewModel = new()
             {
-                RefererURL = GetRefererURL(),
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL()
+                : lastScheme == null ? "/cab-service/submit-service/supplementary-schemes-input"
+                : lastScheme.HasGPG44.GetValueOrDefault() ? "/cab-service/submit-service/scheme/gpg44?schemeId=" + lastScheme.SchemeId
+                : "/cab-service/submit-service/scheme/gpg44-input?schemeId=" + lastScheme.SchemeId,
                 IsAmendment = summaryViewModel.IsAmendment
             };
 
@@ -639,7 +642,7 @@ namespace DVSRegister.Controllers
             {
                 dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.ConformityIssueDate);
             }
-            dateViewModel.RefererURL = GetRefererURL();
+            dateViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/certificate-upload";
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
         }
@@ -696,7 +699,7 @@ namespace DVSRegister.Controllers
             {
                 dateViewModel.IsTfVersion0_4 = true;
             }
-            dateViewModel.RefererURL = GetRefererURL();
+            dateViewModel.RefererURL =  fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/enter-issue-date";
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
         }

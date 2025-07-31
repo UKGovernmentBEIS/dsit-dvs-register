@@ -111,7 +111,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-            serviceSummaryViewModel.RefererURL = GetRefererURL();
+            serviceSummaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/provider-roles";
             return View(serviceSummaryViewModel);
         }
 
@@ -154,9 +154,7 @@ namespace DVSRegister.Controllers
                     return await HandleAmendActions(action, summaryViewModel, false, fromDetailsPage, false, false, "StatusOfUnderpinningService");
                 }
                 else
-                    throw new InvalidDataException("Invalid service type");
-
-                
+                    throw new InvalidDataException("Invalid service type");               
 
             }
             else
@@ -358,7 +356,7 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = GetRefererURL();
+            summaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/select-service-type";
             return View(summaryViewModel);
         }
 
@@ -443,7 +441,8 @@ namespace DVSRegister.Controllers
                 SearchText = SearchText,
                 UnderpinningServices = services,
                 ManualUnderpinningServices = manualServices,
-                IsAmendment = summaryViewModel.IsAmendment
+                IsAmendment = summaryViewModel.IsAmendment,
+                RefererURL = "/cab-service/submit-service/status-of-underpinning-service"
             };
             return View(underpinningServiceViewModel);
         }
@@ -556,8 +555,8 @@ namespace DVSRegister.Controllers
                 ViewModelHelper.ClearUnderPinningServiceFieldsBeforeManualEntry(serviceSummaryViewModel);
                 HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);            
             }
-            serviceSummaryViewModel.RefererURL = GetRefererURL();
-            
+            serviceSummaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/select-underpinning-service";
+
             return View(serviceSummaryViewModel);
         }
 
@@ -596,7 +595,7 @@ namespace DVSRegister.Controllers
             ViewBag.singleChange = singleChange;
             ViewBag.fromUnderPinningServiceSummaryPage = fromUnderPinningServiceSummaryPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-            serviceSummaryViewModel.RefererURL = GetRefererURL();
+            serviceSummaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/underpinning-service-name?manualEntryFirstTimeLoad=True";
             return View(serviceSummaryViewModel);
         }
 
@@ -638,7 +637,7 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
             var selectCabViewModel = serviceSummaryViewModel?.SelectCabViewModel ?? new SelectCabViewModel();
             selectCabViewModel.Cabs = allCabs;
-            selectCabViewModel.RefererURL = GetRefererURL();
+            selectCabViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/select-underpinning-service";
             return View(selectCabViewModel);
         }
 
@@ -689,7 +688,7 @@ namespace DVSRegister.Controllers
             {
                 dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.UnderPinningServiceExpiryDate);
             }
-            dateViewModel.RefererURL = GetRefererURL();
+            dateViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/underpinning-provider-name";
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
         }
@@ -732,7 +731,8 @@ namespace DVSRegister.Controllers
         [HttpGet("underpinning-service-details-summary")]
         public IActionResult UnderpinningServiceDetailsSummary()
         {        
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();           
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            summaryViewModel.RefererURL = "/cab-service/submit-service/under-pinning-service-expiry-date";
             return View(summaryViewModel);
         }
 
