@@ -11,8 +11,10 @@ namespace DVSRegister.CommonUtility.Models.Enums
         RemovedByCronJob = 1,
         [Description("The service provider has requested to remove one or more services, and there are remaining services published on the register for this provider")]
         ProviderRequestedRemoval,
-        [Description("The service provider no longer provides the listed service")]
+        [Description("The service provider no longer provides the listed service, and there are remaining services published on the register for this provider")]
         ProviderNotExists,
+        [Description("To help OfDIA maintain accurate record")]
+        RemovedByOfDia = 4
     }
     public static class ServiceRemovalReasonEnumExtensions
     {
