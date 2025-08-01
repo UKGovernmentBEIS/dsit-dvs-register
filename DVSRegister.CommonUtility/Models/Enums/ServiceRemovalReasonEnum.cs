@@ -9,10 +9,10 @@ namespace DVSRegister.CommonUtility.Models.Enums
         //New entries should be added at the last
         [Description("The service certificate has expired")]
         RemovedByCronJob = 1,
-        [Description("The service provider has requested to remove one or more services, and there are remaining services published on the register for this provider")]
-        ProviderRequestedRemoval,
+        [Description("The service provider has requested to remove a service, and there are remaining services published on the register for this provider")]
+        ProviderRequestedRemoval = 2,
         [Description("The service provider no longer provides the listed service, and there are remaining services published on the register for this provider")]
-        ProviderNotExists,
+        ProviderNotExists = 3,
         [Description("To help OfDIA maintain accurate record")]
         RemovedByOfDia = 4
     }
