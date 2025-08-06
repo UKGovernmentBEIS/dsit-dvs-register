@@ -58,7 +58,7 @@ namespace DVSRegister.CommonUtility.Email
               { template.ServiceName,  serviceName},
               { template.ReasonForRemoval,  reasonForRemoval},
              };
-            return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
+            return await SendNotification(emailAddress, template, personalisation);
         }
     }
 }
