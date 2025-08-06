@@ -46,26 +46,35 @@
                         When entering the date of issue within the file name, you should use a
                         DDMMYY format. For example, if the issue date is the 15th of June 2023,
                         enter 150623.
-                    </p>                  
+                    </p>
 
 
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" for="file">
 
-                    @{
-                        var fileViewModel = new TextBoxViewModel
+                            Upload a file
+                        </label>
+                        <div id="file-hint" class="govuk-hint">
+
+                            This file should be in PDF format and no bigger than 5MB
+                        </div>
+
+                        @if (hasError)
+
                         {
-                            PropertyName = "File",
-                            Label = "Upload the  certificate of conformity for this service",
-                            File = Model.File,
-                            Class = "govuk-file-upload",
-                            TextBoxType = "file",
-                            Hint = "This file should be in PDF format and no bigger than 5MB",
-                            HasError = hasError,
-                            ErrorMessage = hasError ? Html.ViewData?.ModelState["File"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
-                        };
-                    }
+                            <p id="file-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> @Html.ViewData?.ModelState["File"]?.Errors[0].ErrorMessage
+                            </p>
 
-                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", fileViewModel)
-                
+                        }
+                        <div class="govuk-drop-zone" data-module="govuk-file-upload">
+                            <input class="govuk-file-upload" id="file" name="file" type="file"
+                                   aria-describedby="@((hasError ? "file-error " : "") + "file-hint")">
+                        </div>
+                    </div>
+
+
+
 
                     @if (ViewData.Model?.FileUploadedSuccessfully == true)
                     {
