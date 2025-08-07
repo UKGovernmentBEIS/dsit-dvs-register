@@ -137,14 +137,18 @@ namespace DVSRegister.Models
                             serviceDto.ManualUnderPinningServiceId = summaryViewModel?.SelectedManualUnderPinningServiceId;                          
 
                         }
-                       
-                        serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
+                        else
                         {
-                            ServiceName = summaryViewModel?.UnderPinningServiceName,
-                            ProviderName = summaryViewModel?.UnderPinningProviderName,
-                            CabId = summaryViewModel?.SelectCabViewModel?.SelectedCabId,
-                            CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
-                        };
+                            serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
+                            {
+                                ServiceName = summaryViewModel?.UnderPinningServiceName,
+                                ProviderName = summaryViewModel?.UnderPinningProviderName,
+                                CabId = summaryViewModel?.SelectCabViewModel?.SelectedCabId,
+                                CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
+                            };
+                        }
+                       
+                        
 
                     }
 
