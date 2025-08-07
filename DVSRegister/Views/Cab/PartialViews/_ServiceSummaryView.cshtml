@@ -516,7 +516,7 @@
             </h2>
                 <ul class="govuk-summary-card__actions">
                     <li class="govuk-summary-card__action">
-                        @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { singleChange = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                        @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true}, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
                     </li>
                 </ul>
         </div>
@@ -535,7 +535,7 @@
                         @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4", new { singleChange = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                                @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true}, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
                         </dd>
                     }
                 </div>
@@ -552,7 +552,7 @@
                         @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "UnderPinningProviderName", "TrustFramework0_4", new { singleChange = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                @Html.ActionLink("Change", "UnderPinningProviderName", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true}, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
                         </dd>
                     }
 
@@ -568,7 +568,7 @@
                         @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { singleChange = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true}, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
                         </dd>
                     }
                 </div>
@@ -583,7 +583,7 @@
                         @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { singleChange = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true}, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
                         </dd>
                     }
                 </div>
