@@ -67,6 +67,9 @@ namespace DVSRegister.Controllers
         {
 
             ProviderProfileDto providerProfileDto = await registerService.GetProviderWithServiceDeatils(providerId);
+            if(providerProfileDto == null)
+                return RedirectToAction("RegisterPageNotFound", "Error");
+
             ProviderDetailsViewModel providerDetailsViewModel = new()
             {
                 Provider = providerProfileDto,
@@ -79,6 +82,10 @@ namespace DVSRegister.Controllers
         {
             ViewBag.PreviousProviderId = previousProviderId;
             ServiceDto service = await registerService.GetServiceDetails(serviceId);
+
+            if(service == null)
+                return RedirectToAction("RegisterPageNotFound", "Error");
+         
             return View(service);
         }
 

@@ -20,46 +20,15 @@ namespace DVSAdmin.CommonUtility.Models.Enums
         [Description("The Secretary of State is satisfied that the provider is failing to comply with the supplementary code")]
         FailingToComplyWithSupplementaryCode = 7,
         [Description("The Secretary of State considers removal necessary in the interests of national security")]
-        NecessaryForNationalSecurity = 8
+        NecessaryForNationalSecurity = 8,
+        [Description("To help OfDIA maintain accurate record")]
+        RemovedByOfDia = 9
 
     }
 
     public static class RemovalReasonsEnumExtensions
-    {
-        private static readonly Dictionary<RemovalReasonsEnum, bool> RequiresAdditionalInfoMap = new Dictionary<RemovalReasonsEnum, bool>
-        {
-            { RemovalReasonsEnum.RemovedByCronJob, false },
-            { RemovalReasonsEnum.ProviderRequestedRemoval, false },
-            { RemovalReasonsEnum.ProviderNoLongerExists, false },
-            { RemovalReasonsEnum.FailedToProvideInformation, false },
-            { RemovalReasonsEnum.FailingToComplyWithTrustFramework, false },
-            { RemovalReasonsEnum.FailingToComplyWithSupplementaryCode, false },
-            { RemovalReasonsEnum.NecessaryForNationalSecurity, false }
-
-        };
-
-        private static readonly Dictionary<RemovalReasonsEnum, string> ContactInfoMap = new Dictionary<RemovalReasonsEnum, string>
-        {
-            { RemovalReasonsEnum.RemovedByCronJob, "DSIT" },
-            { RemovalReasonsEnum.ProviderRequestedRemoval, "Provider" },
-            { RemovalReasonsEnum.ProviderNoLongerExists, "DSIT" },
-            { RemovalReasonsEnum.FailedToProvideInformation, "DSIT" },
-            { RemovalReasonsEnum.FailingToComplyWithTrustFramework, "DSIT" },
-            { RemovalReasonsEnum.FailingToComplyWithSupplementaryCode, "DSIT" },
-            { RemovalReasonsEnum.NecessaryForNationalSecurity, "DSIT" }
-
-        };
-
-        public static bool RequiresAdditionalInfo(this RemovalReasonsEnum reason)
-        {
-            return RequiresAdditionalInfoMap.TryGetValue(reason, out var requiresAdditionalInfo) && requiresAdditionalInfo;
-        }
-
-        public static string GetContactInfo(this RemovalReasonsEnum reason)
-        {
-            return ContactInfoMap.TryGetValue(reason, out var contactInfo) ? contactInfo : "Unknown";
-        }
-
+    {        
+        
         public static string GetDescription(this RemovalReasonsEnum value)
         {
             FieldInfo field = value.GetType().GetField(value.ToString());

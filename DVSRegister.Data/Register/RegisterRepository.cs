@@ -1,6 +1,7 @@
 ﻿using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using DVSRegister.CommonUtility.Models.Enums;
 
 namespace DVSRegister.Data
 {
@@ -60,7 +61,7 @@ namespace DVSRegister.Data
            .Include(p => p.Services).ThenInclude(x => x.ServiceIdentityProfileMapping).ThenInclude(p => p.IdentityProfile)
             .Include(p => p.Services).ThenInclude(x => x.ServiceQualityLevelMapping).ThenInclude(p => p.QualityLevel)
             .Include(p => p.Services).ThenInclude(p => p.TrustFrameworkVersion)
-           .OrderBy(c => c.ModifiedTime).FirstOrDefaultAsync(p => p.Id == providerId) ?? new ProviderProfile();
+           .OrderBy(c => c.ModifiedTime).FirstOrDefaultAsync(p => p.Id == providerId && p.IsInRegister == true);
             return providerProfile;
         }
 
@@ -74,7 +75,7 @@ namespace DVSRegister.Data
                 .Include(x => x.ServiceQualityLevelMapping).ThenInclude(p => p.QualityLevel)
                 .Include(p => p.TrustFrameworkVersion)
                 .Include(x => x.Provider).AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == serviceId) ?? new Service();
+                .FirstOrDefaultAsync(s => s.Id == serviceId && s.ServiceType == ServiceTypeEnum.UnderPinning && s.IsInRegister == true );
             return service;
         }
     }

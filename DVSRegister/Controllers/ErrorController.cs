@@ -35,5 +35,19 @@ namespace DVSRegister.Controllers
             }
         }
 
+        [HttpGet("cab-service/page-not-found")]
+        public IActionResult CabServicePageNotFound()
+        {   
+            ViewData["Layout"] = "~/Views/Shared/_Layout_CAB.cshtml";
+            return View("PageNotFound");
+        }
+
+        [HttpGet("register/page-not-found")]
+        public IActionResult RegisterPageNotFound()
+        {           
+            ViewData["Layout"] = "~/Views/Shared/_Layout_Register.cshtml";
+            return View("PageNotFound");
+        }
+
     }
 }

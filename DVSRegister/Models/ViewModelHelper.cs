@@ -31,8 +31,15 @@ namespace DVSRegister.Models
             if (summaryViewModel.SchemeQualityLevelMapping != null)
             {
                 summaryViewModel.SchemeQualityLevelMapping.ForEach(item => item.HasGPG44 = false);
-                summaryViewModel.SchemeQualityLevelMapping.ForEach(item => item.QualityLevel.SelectedLevelOfProtections = []);
-                summaryViewModel.SchemeQualityLevelMapping.ForEach(item => item.QualityLevel.SelectedQualityofAuthenticators = []);
+                summaryViewModel.SchemeQualityLevelMapping.ForEach(item =>
+                {
+                    if (item.QualityLevel != null)
+                    {
+                        item.QualityLevel.SelectedQualityofAuthenticators = [];
+                        item.QualityLevel.SelectedLevelOfProtections = [];
+                    }
+                });
+
             }
 
         }
@@ -130,14 +137,18 @@ namespace DVSRegister.Models
                             serviceDto.ManualUnderPinningServiceId = summaryViewModel?.SelectedManualUnderPinningServiceId;                          
 
                         }
-                       
-                        serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
+                        else
                         {
-                            ServiceName = summaryViewModel?.UnderPinningServiceName,
-                            ProviderName = summaryViewModel?.UnderPinningProviderName,
-                            CabId = summaryViewModel?.SelectCabViewModel?.SelectedCabId,
-                            CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
-                        };
+                            serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
+                            {
+                                ServiceName = summaryViewModel?.UnderPinningServiceName,
+                                ProviderName = summaryViewModel?.UnderPinningProviderName,
+                                CabId = summaryViewModel?.SelectCabViewModel?.SelectedCabId,
+                                CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
+                            };
+                        }
+                       
+                        
 
                     }
 
