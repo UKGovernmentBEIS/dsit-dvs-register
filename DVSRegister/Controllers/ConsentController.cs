@@ -85,7 +85,7 @@ namespace DVSRegister.Controllers
 
         private async Task<ActionResult?> HandleOpeningLoopInvalidRequest(TokenDetails tokenDetails, ServiceDto? serviceDto)
         {
-            var (openingLoopStatus, _) = await consentService.GetTokenStatus(tokenDetails);
+            var openingLoopStatus  = await consentService.GetTokenStatus(tokenDetails);
             if (tokenDetails.IsExpired)
             {
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Opening loop: Token is expired"));
@@ -121,102 +121,7 @@ namespace DVSRegister.Controllers
         #endregion
 
 
-        #region Closing the loop        
-
-        [HttpGet("publish-service-give-consent")]
-        public  async Task<ActionResult> Consent(string token)
-        {
-            ConsentViewModel consentViewModel = new()
-            {
-                token = token
-            };
-            TokenDetails tokenDetails = await jwtService.ValidateToken(token);
-            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByClosingLoopToken(tokenDetails.Token, tokenDetails.TokenId);            
-            var invalidRequestResult = await HandleClosingLoopInvalidRequest(tokenDetails, serviceDto);
-            if (invalidRequestResult != null)
-            {
-                return invalidRequestResult;
-            }
-            else
-            {
-                consentViewModel.Service = serviceDto;
-                return View(consentViewModel);
-            }
-        }
-
-        [HttpPost("publish-service-give-consent")]
-        public async Task<ActionResult> GiveConsent(ConsentViewModel consentViewModel)
-        {
-
-            TokenDetails tokenDetails = await jwtService.ValidateToken(consentViewModel.token);
-            ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByClosingLoopToken(tokenDetails.Token, tokenDetails.TokenId);
-            string email = serviceDto == null ? string.Empty : serviceDto.Provider.PrimaryContactEmail + ";" + serviceDto.Provider.SecondaryContactEmail;
-
-            var invalidRequestResult = await HandleClosingLoopInvalidRequest(tokenDetails, serviceDto);
-            if (invalidRequestResult != null)
-            {
-                return invalidRequestResult;
-            }
-            else
-            {
-                if (ModelState.IsValid)
-                {
-                    GenericResponse genericResponse = await consentService.UpdateServiceAndProviderStatus(tokenDetails.Token, tokenDetails.TokenId, serviceDto, email);
-                    if (genericResponse.Success)
-                    {
-                        await consentService.RemoveProceedPublishConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
-                        return View("ConsentSuccess");
-                    }
-                    else
-                    {
-                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("GiveConsent failed: Unable to update service/provider status."));
-                        return View("ConsentError");
-                    }
-                }
-                else
-                {
-                    consentViewModel.Service = serviceDto;
-                    return View("Consent", consentViewModel);
-                }
-            }
-        }
-
-        private async Task<ActionResult?> HandleClosingLoopInvalidRequest(TokenDetails tokenDetails, ServiceDto? serviceDto)
-        {
-            var (_, closingLoopStatus) = await consentService.GetTokenStatus(tokenDetails);
-            if (tokenDetails.IsExpired)
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Closing loop: Token is expired"));
-                return View("ConsentErrorURLExpired");
-            }
-            else if (!tokenDetails.IsAuthorised)
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Closing loop:Invalid token"));
-                return View("ConsentError");
-            }
-            else if (closingLoopStatus == TokenStatusEnum.RequestResent && serviceDto == null)
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Closing loop: Request resent"));
-                return View("ConsentError"); // to do : check for new content for request resent
-            }
-
-            else if (closingLoopStatus == TokenStatusEnum.RequestCompleted)
-            {
-                return View("ConsentErrorAlreadyAgreed");
-            }
-            else if ( serviceDto?.ServiceStatus == ServiceStatusEnum.ReadyToPublish)
-            {//keep this condition for old tokens without a token status
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Closing loop:Already consented"));
-                return View("ConsentErrorAlreadyAgreed");
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-
-        #endregion
+  
 
 
 
