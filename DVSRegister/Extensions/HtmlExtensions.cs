@@ -46,8 +46,7 @@ namespace DVSRegister.Extensions
                 case ServiceStatusEnum.SavedAsDraft:
                 case ServiceStatusEnum.AwaitingRemovalConfirmation:
                 case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
-                case CertificateReviewEnum.InReview:
-                case ServiceStatusEnum.ReadyToPublish:
+                case CertificateReviewEnum.InReview:                
                     return "govuk-tag govuk-tag--yellow";
 
                 default:

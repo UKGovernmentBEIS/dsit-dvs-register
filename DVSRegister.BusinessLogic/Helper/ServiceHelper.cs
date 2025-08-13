@@ -1,7 +1,6 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic
 {
@@ -27,8 +26,7 @@ namespace DVSRegister.BusinessLogic
                 ServiceStatusEnum.AwaitingRemovalConfirmation => 2,
                 ServiceStatusEnum.Submitted or
                     ServiceStatusEnum.Received or
-                    ServiceStatusEnum.Resubmitted or
-                    ServiceStatusEnum.ReadyToPublish => 3,
+                    ServiceStatusEnum.Resubmitted or                    
                 ServiceStatusEnum.Published => 4,
                 ServiceStatusEnum.Removed => 6,
                 _ => 7
