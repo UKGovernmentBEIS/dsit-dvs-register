@@ -19,6 +19,7 @@
         public AgreementToPublishTemplate AgreementToPublishTemplate { get; set; }
         public AgreementToPublishToDSITTemplate AgreementToPublishToDSITTemplate { get; set; }
         public AgreementToProceedApplicationToDSIT AgreementToProceedApplicationToDSIT { get; set; }
+        public ConfirmationToProceedApplicationToDIP ConfirmationToProceedApplicationToDIP { get; set; }
         public ProviderRemovalRequestConfirmed ProviderRemovalRequestConfirmed { get; set; }
 
         public ProviderRemovalConfirmationToDSIT ProviderRemovalConfirmationToDSIT { get; set; }

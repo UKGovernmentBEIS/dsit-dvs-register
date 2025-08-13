@@ -21,6 +21,17 @@ namespace DVSRegister.CommonUtility.Email
              };
             return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
         }
+
+        public async Task<bool> SendConfirmationToProceedApplicationToDIP(string serviceName, string emailAddress)
+        {
+            var template = govUkNotifyConfig.ConfirmationToProceedApplicationToDIP;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.ServiceName,  serviceName}
+             };
+            return await SendNotification(emailAddress, template, personalisation);
+        }
         #endregion
 
      
