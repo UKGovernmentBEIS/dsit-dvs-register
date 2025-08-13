@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250812210826_UpdatePublishStatus")]
+    partial class UpdatePublishStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -744,6 +747,40 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("ProceedApplicationConsentToken");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProceedPublishConsentToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("ModifiedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("Token");
+
+                    b.HasIndex("TokenId");
+
+                    b.ToTable("ProceedPublishConsentToken");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.ProviderDraftToken", b =>
                 {
                     b.Property<string>("Id")
@@ -1439,6 +1476,9 @@ namespace DVSRegister.Data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CabUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ClosingLoopTokenStatus")
                         .HasColumnType("integer");
 
                     b.Property<string>("CompanyAddress")
@@ -2182,6 +2222,17 @@ namespace DVSRegister.Data.Migrations
                     b.HasOne("DVSRegister.Data.Entities.Service", "Service")
                         .WithOne("ProceedApplicationConsentToken")
                         .HasForeignKey("DVSRegister.Data.Entities.ProceedApplicationConsentToken", "ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProceedPublishConsentToken", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
