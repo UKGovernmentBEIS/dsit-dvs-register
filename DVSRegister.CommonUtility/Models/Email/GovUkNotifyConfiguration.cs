@@ -20,6 +20,8 @@
         public AgreementToPublishToDSITTemplate AgreementToPublishToDSITTemplate { get; set; }
         public AgreementToProceedApplicationToDSIT AgreementToProceedApplicationToDSIT { get; set; }
         public ConfirmationToProceedApplicationToDIP ConfirmationToProceedApplicationToDIP { get; set; }
+        public DeclinedToProceedApplicationToDSIT DeclinedToProceedApplicationToDSIT { get; set; }
+        public DeclinedToProceedConfirmationToDIP DeclinedToProceedConfirmationToDIP { get; set; }
         public ProviderRemovalRequestConfirmed ProviderRemovalRequestConfirmed { get; set; }
 
         public ProviderRemovalConfirmationToDSIT ProviderRemovalConfirmationToDSIT { get; set; }
