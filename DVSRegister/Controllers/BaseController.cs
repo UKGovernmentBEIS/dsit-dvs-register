@@ -11,8 +11,8 @@ using System.Security.Claims;
 namespace DVSRegister.Controllers
 {
 
-    
-    //[ValidCognitoToken]
+
+    [ValidCognitoToken]
     public class BaseController : Controller
     {
         private readonly ILogger<BaseController> _logger;
@@ -21,25 +21,20 @@ namespace DVSRegister.Controllers
         {
             _logger = logger;
         }
-        protected string UserEmail => "aiswarya.rajendran@ie.ey.com";
+        protected string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
         protected int CabId => HttpContext.Session.Get<int>("CabId");
 
         protected string ControllerName => ControllerContext.ActionDescriptor.ControllerName;
         protected string ActionName => ControllerContext.ActionDescriptor.ActionName;
-        protected string Cab = "EY";
-        //protected string Cab
-        //{
-        //    get
-        //    {
-        //        var identity = HttpContext?.User.Identity as ClaimsIdentity;
-        //        var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
-        //        return profileClaim?.Value ?? string.Empty;
-        //    }
-        //}
-
-
-    
-
+        protected string Cab
+        {
+            get
+            {
+                var identity = HttpContext?.User.Identity as ClaimsIdentity;
+                var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
+                return profileClaim?.Value ?? string.Empty;
+            }
+        }
 
         protected bool IsValidCabId(int cabId)
         {
