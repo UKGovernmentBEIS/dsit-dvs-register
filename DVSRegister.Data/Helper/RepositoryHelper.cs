@@ -13,8 +13,7 @@ namespace DVSRegister.Data
             {
                 var priorityOrder = new List<ServiceStatusEnum>
                     {
-                        ServiceStatusEnum.CabAwaitingRemovalConfirmation,
-                        ServiceStatusEnum.ReadyToPublish,
+                        ServiceStatusEnum.CabAwaitingRemovalConfirmation,                      
                         ServiceStatusEnum.UpdatesRequested,
                         ServiceStatusEnum.AwaitingRemovalConfirmation,
                         ServiceStatusEnum.PublishedUnderReassign,
@@ -24,7 +23,7 @@ namespace DVSRegister.Data
                     };
 
                 ServiceStatusEnum highestPriorityStatus = services
-                  .Where(service => service.ServiceStatus == ServiceStatusEnum.ReadyToPublish ||
+                  .Where(service => 
                     service.ServiceStatus == ServiceStatusEnum.Published ||
                     service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign ||
                     service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign ||
@@ -41,10 +40,7 @@ namespace DVSRegister.Data
                 switch (highestPriorityStatus)
                 {
                     case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
-                        return ProviderStatusEnum.CabAwaitingRemovalConfirmation;
-                    case ServiceStatusEnum.ReadyToPublish:
-                        bool hasPublishedServices = services.Any(service => service.ServiceStatus == ServiceStatusEnum.Published);
-                        return hasPublishedServices ? ProviderStatusEnum.ReadyToPublishNext : ProviderStatusEnum.ReadyToPublish;
+                        return ProviderStatusEnum.CabAwaitingRemovalConfirmation;                 
                     case ServiceStatusEnum.UpdatesRequested:
                         return ProviderStatusEnum.UpdatesRequested;
                     case ServiceStatusEnum.AwaitingRemovalConfirmation:

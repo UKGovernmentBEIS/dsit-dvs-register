@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 namespace DVSRegister.Controllers
 {
+
+
     [ValidCognitoToken]
     public class BaseController : Controller
     {
@@ -33,7 +35,6 @@ namespace DVSRegister.Controllers
                 return profileClaim?.Value ?? string.Empty;
             }
         }
-
 
         protected bool IsValidCabId(int cabId)
         {

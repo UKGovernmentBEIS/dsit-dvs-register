@@ -36,7 +36,7 @@ namespace DVSRegister.Data
         public DbSet<ProceedApplicationConsentToken> ProceedApplicationConsentToken { get; set; }
         public DbSet<PublicInterestCheck> PublicInterestCheck { get; set; }
         public DbSet<PICheckLogs> PICheckLogs { get; set; }
-        public DbSet<ProceedPublishConsentToken> ProceedPublishConsentToken { get; set; }
+
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         public DbSet<TrustmarkNumber> TrustmarkNumber { get; set; }
         public DbSet<Event> EventLogs { get; set; }

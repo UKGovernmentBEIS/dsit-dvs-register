@@ -44,8 +44,7 @@ namespace DVSRegister.Data.Repositories
                     && existingDraftProvider.ProviderProfileId == existingProvider.Id)
                 {
                     existingProvider.ModifiedTime = DateTime.UtcNow;
-                    existingProvider.ProviderStatus = ProviderStatusEnum.ReadyToPublish; 
-                    existingProvider.IsInRegister= false;
+                    existingProvider.ProviderStatus = ProviderStatusEnum.Published;                    
                     existingProvider.EditProviderTokenStatus = TokenStatusEnum.RequestCompleted;
 
                     existingProvider.RegisteredName = existingDraftProvider.RegisteredName ?? existingProvider.RegisteredName;
@@ -79,8 +78,7 @@ namespace DVSRegister.Data.Repositories
                     foreach (var serviceDraft in serviceDrafts)
                     {
                         var service = await context.Service.Where(s => s.Id == serviceDraft.ServiceId).FirstOrDefaultAsync();
-                        service.ServiceStatus = ServiceStatusEnum.ReadyToPublish;
-                        service.IsInRegister = false;
+                        service.ServiceStatus = ServiceStatusEnum.Published;                  
                         service.ModifiedTime = DateTime.UtcNow;
                         context.Remove(serviceDraft);
                     }
@@ -270,10 +268,10 @@ namespace DVSRegister.Data.Repositories
                   
 
                     existingService.ModifiedTime = DateTime.UtcNow;
-                    existingService.ServiceStatus = ServiceStatusEnum.ReadyToPublish;                   
+                    existingService.ServiceStatus = ServiceStatusEnum.Published;                   
                     existingService.Provider.ModifiedTime = DateTime.UtcNow;
                     existingService.EditServiceTokenStatus = TokenStatusEnum.RequestCompleted;
-                    existingService.IsInRegister = false;
+                  
 
                     existingService.ServiceName = existingDraftService.ServiceName ?? existingService.ServiceName;
                     existingService.CompanyAddress = existingDraftService.CompanyAddress ?? existingService.CompanyAddress;

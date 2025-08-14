@@ -21,35 +21,19 @@ namespace DVSRegister.CommonUtility.Email
              };
             return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
         }
-        #endregion
 
-        #region closing the loop
-        public async Task<bool> SendAgreementToPublishToDIP(string companyName, string serviceName, string recipientName, string emailAddress)
+        public async Task<bool> SendConfirmationToProceedApplicationToDIP(string serviceName, string emailAddress)
         {
-            var template = govUkNotifyConfig.AgreementToPublishTemplate;
+            var template = govUkNotifyConfig.ConfirmationToProceedApplicationToDIP;
 
             var personalisation = new Dictionary<string, dynamic>
             {
-
-                { template.ServiceName,  serviceName},
-                { template.CompanyName,  companyName},
-                { template.RecipientName,  recipientName}
+                { template.ServiceName,  serviceName}
              };
             return await SendNotification(emailAddress, template, personalisation);
         }
-
-        public async Task<bool> SendAgreementToPublishToDSIT(string companyName, string serviceName)
-        {
-            var template = govUkNotifyConfig.AgreementToPublishToDSITTemplate;
-
-            var personalisation = new Dictionary<string, dynamic>
-            {
-                { template.CompanyName,  companyName},
-                { template.ServiceName,  serviceName}
-             };
-            return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
-        }
-
         #endregion
+
+     
     }
 }

@@ -100,10 +100,7 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ProceedApplicationConsentTokenDto, ProceedApplicationConsentToken>()
             .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
 
-            CreateMap<ProceedPublishConsentToken, ProceedPublishConsentTokenDto>()
-            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
-            CreateMap<ProceedPublishConsentTokenDto, ProceedPublishConsentToken>()
-            .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
+         
 
             CreateMap<ProviderProfileDraft, ProviderProfileDraftDto>();
             CreateMap<ProviderProfileDraftDto, ProviderProfileDraft>();
