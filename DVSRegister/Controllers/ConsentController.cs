@@ -56,27 +56,19 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    if (ModelState.IsValid)
-                    {
-                        GenericResponse genericResponse = await consentService.UpdateServiceStatus(serviceDto.Id, email, serviceDto?.Provider?.RegisteredName ?? string.Empty, 
-                            serviceDto?.ServiceName ?? string.Empty, agree);
-                        if (genericResponse.Success)
-                        {
-                            await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
-                            return View(agree == "accept" ? "ProceedApplicationConsentSuccess" : "ProceedApplicationConsentDeclined");
-                        }
-                        else
-                        {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationGiveConsent failed: Unable to update service status."));
-                            return View("ProceedApplicationConsentError");
-                        }
-                    }
-                    else
-                    {
-                        consentViewModel.Service = serviceDto;
-                        return View("ProceedApplicationConsent", consentViewModel);
-                    }
+                GenericResponse genericResponse = await consentService.UpdateServiceStatus(serviceDto.Id, email, serviceDto?.Provider?.RegisteredName ?? string.Empty, 
+                    serviceDto?.ServiceName ?? string.Empty, agree);
+                if (genericResponse.Success)
+                {
+                    await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
+                    return View(agree == "accept" ? "ProceedApplicationConsentSuccess" : "ProceedApplicationConsentDeclined");
                 }
+                else
+                {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationGiveConsent failed: Unable to update service status."));
+                    return View("ProceedApplicationConsentError");
+                }
+            }
         }
 
 
