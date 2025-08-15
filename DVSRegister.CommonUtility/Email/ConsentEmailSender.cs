@@ -32,8 +32,32 @@ namespace DVSRegister.CommonUtility.Email
              };
             return await SendNotification(emailAddress, template, personalisation);
         }
+
+        public async Task<bool> SendDeclineToProceedApplicationToDSIT(string companyName, string serviceName)
+        {
+            var template = govUkNotifyConfig.DeclinedToProceedApplicationToDSIT;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.CompanyName,  companyName},
+                { template.ServiceName,  serviceName}
+            };
+            return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
+        }
+
+        public async Task<bool> SendConfirmationOfDeclineToProceedApplicationToDIP(string serviceName, string emailAddress)
+        {
+            var template = govUkNotifyConfig.DeclinedToProceedConfirmationToDIP;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.ServiceName,  serviceName}
+            };
+            return await SendNotification(emailAddress, template, personalisation);
+        }
+
         #endregion
 
-     
+
     }
 }

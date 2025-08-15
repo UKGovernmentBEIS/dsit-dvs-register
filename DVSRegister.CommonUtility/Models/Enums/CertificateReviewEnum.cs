@@ -16,6 +16,8 @@ namespace DVSRegister.CommonUtility.Models.Enums
         [Description("Expired")]
         Expired = 4,
         [Description("Amendments needed")]
-        AmendmentsRequired = 5
+        AmendmentsRequired = 5,
+        [Description("Declined by Provider")]
+        DeclinedByProvider = 6
     }
 }

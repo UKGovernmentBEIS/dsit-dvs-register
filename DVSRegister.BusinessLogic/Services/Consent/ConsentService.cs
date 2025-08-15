@@ -62,20 +62,28 @@ namespace DVSRegister.BusinessLogic.Services
                 return null ;
             }
         }
-        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string companyName,string serviceName)
+        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string companyName,string serviceName, string agree)
         {
-            GenericResponse genericResponse = await consentRepository.UpdateServiceStatus(serviceId, ServiceStatusEnum.Received, providerEmail);
+            GenericResponse genericResponse = await consentRepository.UpdateServiceStatus(serviceId, providerEmail, agree);
             if(genericResponse.Success) 
             {
-                await emailSender.SendAgreementToProceedApplicationToDSIT(companyName, serviceName);
-                foreach (var email in providerEmail.Split(';'))
+                if (agree == "accept")
                 {
-                    await emailSender.SendConfirmationToProceedApplicationToDIP(serviceName, email);
+                    await emailSender.SendAgreementToProceedApplicationToDSIT(companyName, serviceName);
+                    foreach (var email in providerEmail.Split(';'))
+                    {
+                        await emailSender.SendConfirmationToProceedApplicationToDIP(serviceName, email);
+                    }
                 }
-
-
-
-
+                else
+                {
+                    await emailSender.SendDeclineToProceedApplicationToDSIT(companyName, serviceName);
+                    foreach (var email in providerEmail.Split(';'))
+                    {
+                        await emailSender.SendConfirmationOfDeclineToProceedApplicationToDIP(serviceName, email);
+                    }
+                }
+                
             }
             return genericResponse;
         }
