@@ -35,7 +35,7 @@ namespace DVSRegister.UnitTests.Repository
             int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
             int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
 
-            var genericResponse = await consentRepository.UpdateServiceStatus(serviceId, ServiceStatusEnum.Received,"test.user123@test.com");
+            var genericResponse = await consentRepository.UpdateServiceStatus(serviceId,"test.user123@test.com", "accept");
 
             var service = await dbContext.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
 
