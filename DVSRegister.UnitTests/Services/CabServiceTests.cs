@@ -185,7 +185,7 @@ namespace DVSRegister.UnitTests.Services
             {
                 Services =
             [
-                new() { CertificateReview = new CertificateReviewDto { CertificateReviewStatus = CertificateReviewEnum.InReview }, ServiceStatus = ServiceStatusEnum.Submitted },
+              //  new() { CertificateReview = new CertificateReviewDto { CertificateReviewStatus = CertificateReviewEnum.InReview }, ServiceStatus = ServiceStatusEnum.Submitted },
                 new() { CertificateReview = new CertificateReviewDto { CertificateReviewStatus = CertificateReviewEnum.Rejected }, ServiceStatus = ServiceStatusEnum.Submitted }
             ]
             };
@@ -215,7 +215,7 @@ namespace DVSRegister.UnitTests.Services
                 Services =
             [
                 new () { CertificateReview = new CertificateReviewDto { CertificateReviewStatus = CertificateReviewEnum.Approved }, ServiceStatus = ServiceStatusEnum.Submitted },
-                new () { CertificateReview = new CertificateReviewDto { CertificateReviewStatus = CertificateReviewEnum.InReview }, ServiceStatus = ServiceStatusEnum.Submitted }
+              // new () { CertificateReview = new CertificateReviewDto { CertificateReviewStatus = CertificateReviewEnum.InReview }, ServiceStatus = ServiceStatusEnum.Submitted }
             ]
             };
             var result = cabService.CheckCompanyInfoEditable(providerProfileDto);

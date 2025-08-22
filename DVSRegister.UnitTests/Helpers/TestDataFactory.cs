@@ -16,7 +16,7 @@ namespace DVSRegister.UnitTests.Helpers
             };
         }
 
-        public static CertificateReviewDto CreateCertificateReviewDto(CertificateReviewEnum status = CertificateReviewEnum.InReview,string comments = null!
+        public static CertificateReviewDto CreateCertificateReviewDto(CertificateReviewEnum status = CertificateReviewEnum.AmendmentsRequired,string comments = null!
             ,string commentsForIncorrect = null!)
         {
             return new CertificateReviewDto
