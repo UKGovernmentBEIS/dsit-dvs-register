@@ -79,5 +79,8 @@ namespace DVSRegister.Data.Entities
 
         public ServiceDraft ServiceDraft { get; set; }
 
+        [ForeignKey("User")]
+        public int? RemovalRequestedUser{ get; set; }
+
     }
 }
