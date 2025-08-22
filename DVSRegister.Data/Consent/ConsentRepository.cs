@@ -45,7 +45,7 @@ namespace DVSRegister.Data.Repositories
         }
 
         // opening loop - update service status to received
-        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, ServiceStatusEnum serviceStatus, string providerEmail)
+        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string agree)
         {
             GenericResponse genericResponse = new();
             using var transaction = context.Database.BeginTransaction();
@@ -54,7 +54,14 @@ namespace DVSRegister.Data.Repositories
                 var service = await context.Service.FirstOrDefaultAsync(e => e.Id == serviceId);
                 if (service != null)
                 {
-                    service.ServiceStatus = serviceStatus;
+                    if (agree == "accept")
+                    {
+                        service.ServiceStatus = ServiceStatusEnum.Received;
+                    }
+                    else
+                    {
+                        service.CertificateReview.CertificateReviewStatus = CertificateReviewEnum.DeclinedByProvider;
+                    }
                     service.ModifiedTime = DateTime.UtcNow;
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.OpeningLoop, providerEmail);
                     transaction.Commit();

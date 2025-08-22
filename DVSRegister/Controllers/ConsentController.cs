@@ -43,9 +43,8 @@ namespace DVSRegister.Controllers
 
 
         [HttpPost("proceed-application-consent")]     
-        public async Task<ActionResult> ProceedApplicationGiveConsent(ConsentViewModel consentViewModel)
-        {            
-            
+        public async Task<ActionResult> ProceedApplicationGiveConsent(ConsentViewModel consentViewModel, string agree)
+        {              
             TokenDetails tokenDetails = await jwtService.ValidateToken(consentViewModel.token);
             ServiceDto? serviceDto = await consentService.GetProviderAndCertificateDetailsByOpeningLoopToken(tokenDetails.Token, tokenDetails.TokenId);                  
             string email = serviceDto ==null?string.Empty: serviceDto.Provider.PrimaryContactEmail + ";"+ serviceDto.Provider.SecondaryContactEmail;
@@ -57,29 +56,19 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    if (ModelState.IsValid)
-                    {
-                        GenericResponse genericResponse = await consentService.UpdateServiceStatus(serviceDto.Id, email, serviceDto?.Provider?.RegisteredName ?? string.Empty, serviceDto?.ServiceName ?? string.Empty);
-                        if (genericResponse.Success)
-                        {
-                            await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
-                            return View("ProceedApplicationConsentSuccess");
-                        }
-                        else
-                        {
-                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationGiveConsent failed: Unable to update service status."));
-                            return View("ProceedApplicationConsentError");
-                        }
-                    }
-                    else
-                    {
-
-                        consentViewModel.Service = serviceDto;
-                        return View("ProceedApplicationConsent", consentViewModel);
-                    }
-                }            
-               
-
+                GenericResponse genericResponse = await consentService.UpdateServiceStatus(serviceDto.Id, email, serviceDto?.Provider?.RegisteredName ?? string.Empty, 
+                    serviceDto?.ServiceName ?? string.Empty, agree);
+                if (genericResponse.Success)
+                {
+                    await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
+                    return View(agree == "accept" ? "ProceedApplicationConsentSuccess" : "ProceedApplicationConsentDeclined");
+                }
+                else
+                {
+                    _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationGiveConsent failed: Unable to update service status."));
+                    return View("ProceedApplicationConsentError");
+                }
+            }
         }
 
 
