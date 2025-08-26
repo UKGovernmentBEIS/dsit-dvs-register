@@ -24,13 +24,14 @@ namespace DVSRegister.Extensions
             {
                 case ServiceStatusEnum.Submitted:
                 case ServiceStatusEnum.Received:
-                case ServiceStatusEnum.Resubmitted:
+                case ServiceStatusEnum.Resubmitted:                
                     return "govuk-tag govuk-tag--blue";
 
                 case ServiceStatusEnum.Published:
                 case CertificateReviewEnum.Approved:              
                 case ServiceStatusEnum.PublishedUnderReassign:
                 case PublicInterestCheckEnum.PublicInterestCheckPassed:
+                case CertificateReviewEnum.DeclinedByProvider:
                     return "govuk-tag govuk-tag--green";
 
                 case CertificateReviewEnum.Rejected:
