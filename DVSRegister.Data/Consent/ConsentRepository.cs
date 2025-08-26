@@ -45,7 +45,7 @@ namespace DVSRegister.Data.Repositories
         }
 
         // opening loop - update service status to received
-        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, ServiceStatusEnum serviceStatus, string providerEmail)
+        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string agree)
         {
             GenericResponse genericResponse = new();
             using var transaction = context.Database.BeginTransaction();
@@ -54,7 +54,14 @@ namespace DVSRegister.Data.Repositories
                 var service = await context.Service.FirstOrDefaultAsync(e => e.Id == serviceId);
                 if (service != null)
                 {
-                    service.ServiceStatus = serviceStatus;
+                    if (agree == "accept")
+                    {
+                        service.ServiceStatus = ServiceStatusEnum.Received;
+                    }
+                    else
+                    {
+                        service.CertificateReview.CertificateReviewStatus = CertificateReviewEnum.DeclinedByProvider;
+                    }
                     service.ModifiedTime = DateTime.UtcNow;
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.OpeningLoop, providerEmail);
                     transaction.Commit();
@@ -74,139 +81,6 @@ namespace DVSRegister.Data.Repositories
         #endregion
 
 
-        #region closing the loop
-
-       
-
-        public async Task<ProceedPublishConsentToken> GetProceedPublishConsentToken(string token, string tokenId)
-        {
-            return await context.ProceedPublishConsentToken.Include(p => p.Service).FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId)??new ProceedPublishConsentToken();
-        }
-     
-        public async Task<bool> RemoveProceedPublishConsentToken(string token, string tokenId, string loggedInUserEmail)
-        {
-            var consent = await context.ProceedPublishConsentToken.Include(p => p.Service)
-           .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId);
-            
-            var service = await context.Service.FirstOrDefaultAsync(s => s.Id == consent.ServiceId);
-            service.ClosingLoopTokenStatus = TokenStatusEnum.RequestCompleted;
-
-            if (consent != null)
-            {
-                context.ProceedPublishConsentToken.Remove(consent);
-                await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveClosingLoopToken, loggedInUserEmail);
-                logger.LogInformation("Closing Loop : Token Removed for service {0}", consent.Service.ServiceName);
-                return true;                
-            }
-
-            return false;
-        }
-
-        // closing the loop
-        public async Task<GenericResponse> UpdateServiceAndProviderStatus(int serviceId, string loggedInUserEmail)
-        {
-            GenericResponse genericResponse = new();
-            using var transaction = context.Database.BeginTransaction();
-            try
-            {
-
-                var serviceEntity = await context.Service.FirstOrDefaultAsync(e => e.Id == serviceId);               
-
-                if (serviceEntity != null )
-                {                   
-
-                    serviceEntity.ServiceStatus = ServiceStatusEnum.ReadyToPublish;
-                    serviceEntity.ModifiedTime = DateTime.UtcNow;
-               
-                    var providerEntity = await context.ProviderProfile.Include(p => p.Services).FirstOrDefaultAsync(e => e.Id == serviceEntity.ProviderProfileId);
-                    ProviderStatusEnum providerStatus = RepositoryHelper.GetProviderStatus(providerEntity.Services, providerEntity.ProviderStatus);
-                    providerEntity.ProviderStatus = providerStatus;
-                    providerEntity.ModifiedTime = DateTime.UtcNow;
-                    await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.ClosingTheLoop, loggedInUserEmail);
-
-                    if (await AddTrustMarkNumber(serviceEntity.Id,serviceEntity.ServiceKey, providerEntity.Id, loggedInUserEmail))
-                    {
-                        transaction.Commit();
-                        genericResponse.Success = true;
-                    }
-                    else
-                    {
-                        transaction.Rollback();
-                        genericResponse.Success = false;
-                    }
-
-                   
-                }
-            }
-            catch (Exception ex)
-            {
-                genericResponse.EmailSent = false;
-                genericResponse.Success = false;
-                transaction.Rollback();
-                logger.LogError(ex.Message);
-            }
-            return genericResponse;
-        }
-
-        private async Task<bool> AddTrustMarkNumber(int serviceId, int serviceKey, int providerId, string loggedInUserEmail)
-        {
-            bool success = false;
-            try
-            {
-                int serviceNumber;
-                int companyId;
-                var existingTrustmarkWithServiceKey = await context.TrustmarkNumber.FirstOrDefaultAsync(t => t.ServiceKey == serviceKey);
-                if(existingTrustmarkWithServiceKey == null)
-                {
-                    var existingTrustmark = await context.TrustmarkNumber.FirstOrDefaultAsync(t => t.ProviderProfileId == providerId);
-                    if (existingTrustmark != null)
-                    {
-                        // If it exists, select the existing CompanyId
-                        // select max of service number, if doesnt exist set as 0                    
-                        serviceNumber = await context.TrustmarkNumber.Where(p => p.ProviderProfileId == providerId).MaxAsync(p => (int?)p.ServiceNumber) ?? 0;
-                        companyId = existingTrustmark.CompanyId;
-
-                    }
-                    else
-                    {
-                        //If doesn't exist, get max company id or return initial value as 199 and then increment by 1
-                        int maxCompanyId = await context.TrustmarkNumber.MaxAsync(t => (int?)t.CompanyId) ?? 199;
-                        companyId = maxCompanyId + 1;
-                        serviceNumber = 0; // service number initialize to 0 if doesnt exist
-                    }
-
-                    TrustmarkNumber trustmarkNumber = new()
-                    {
-                        ProviderProfileId = providerId,
-                        ServiceId = serviceId,
-                        CompanyId = companyId,
-                        ServiceNumber = serviceNumber + 1, // service id start with 1 
-                        TimeStamp = DateTime.UtcNow,
-                        ServiceKey = serviceKey
-
-                    };
-
-                    await context.TrustmarkNumber.AddAsync(trustmarkNumber);
-                    await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.TrustmarkNumberGeneration, loggedInUserEmail);
-                    success = true;
-                }
-                else
-                {
-                    success = true; // if already TM number with same service key exists , donot generate new TM number
-                    Console.WriteLine("TM number already generated for first version:ProviderId{0} ServiceId: {1} ServiceKey: {2}", providerId, serviceId, serviceKey);
-                }
-                
-            }
-            catch (Exception ex)
-            {
-                success = false;
-                logger.LogError($"Failed to generate trustmark number: {ex}");
-               Console.WriteLine("ProviderId:{0} serviceId: {1}", providerId, serviceId);
-            }
-            return success;
-
-        }
-        #endregion
 
         public async Task<Service> GetServiceDetails(int serviceId)
         {

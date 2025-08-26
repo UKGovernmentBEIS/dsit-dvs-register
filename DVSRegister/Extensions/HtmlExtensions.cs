@@ -45,9 +45,7 @@ namespace DVSRegister.Extensions
 
                 case ServiceStatusEnum.SavedAsDraft:
                 case ServiceStatusEnum.AwaitingRemovalConfirmation:
-                case ServiceStatusEnum.CabAwaitingRemovalConfirmation:
-                case CertificateReviewEnum.InReview:
-                case ServiceStatusEnum.ReadyToPublish:
+                case ServiceStatusEnum.CabAwaitingRemovalConfirmation:                           
                     return "govuk-tag govuk-tag--yellow";
 
                 default:
@@ -84,8 +82,7 @@ namespace DVSRegister.Extensions
             {
                 if ( publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckFailed
                      || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckPassed
-                    || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.SentBackBySecondReviewer
-                     || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.InPrimaryReview)
+                    || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.SentBackBySecondReviewer)
                 {
                     return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
                 }
@@ -104,9 +101,18 @@ namespace DVSRegister.Extensions
         }
         private static string GetDescription<TEnum>(TEnum value) where TEnum : struct, Enum
         {
-            FieldInfo field = value.GetType().GetField(value.ToString());
-            DescriptionAttribute attribute = field.GetCustomAttribute<DescriptionAttribute>();
-            return attribute == null ? value.ToString() : attribute.Description;
+            try
+            {
+                FieldInfo field = value.GetType().GetField(value.ToString());
+                DescriptionAttribute attribute = field.GetCustomAttribute<DescriptionAttribute>();
+                return attribute == null ? value.ToString() : attribute.Description;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception ex" + ex.Message);
+                return string.Empty;
+                
+            }
         }
 
     }

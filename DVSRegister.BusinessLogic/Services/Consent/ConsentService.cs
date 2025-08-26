@@ -2,7 +2,6 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using DVSRegister.Data.Repositories;
 
@@ -24,10 +23,10 @@ namespace DVSRegister.BusinessLogic.Services
         }
 
 
-        public async Task<(TokenStatusEnum, TokenStatusEnum)> GetTokenStatus(TokenDetails tokenDetails)
+        public async Task<TokenStatusEnum> GetTokenStatus(TokenDetails tokenDetails)
         {
             TokenStatusEnum openingLoopStatus = TokenStatusEnum.NA;
-            TokenStatusEnum closingLoopStatus = TokenStatusEnum.NA;
+           
 
             if (tokenDetails.ServiceIds!= null && tokenDetails.ServiceIds.Count == 1)
             {
@@ -36,11 +35,11 @@ namespace DVSRegister.BusinessLogic.Services
                 if (service.Id>0)
                 {
                     openingLoopStatus = service.OpeningLoopTokenStatus;
-                    closingLoopStatus = service.ClosingLoopTokenStatus;
+                   
                 }
             }
            
-            return (openingLoopStatus,closingLoopStatus);
+            return (openingLoopStatus);
         }
 
         //opening loop
@@ -63,59 +62,36 @@ namespace DVSRegister.BusinessLogic.Services
                 return null ;
             }
         }
-        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string companyName, string serviceName)
+        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string companyName,string serviceName, string agree)
         {
-            GenericResponse genericResponse = await consentRepository.UpdateServiceStatus(serviceId, ServiceStatusEnum.Received, providerEmail);
+            GenericResponse genericResponse = await consentRepository.UpdateServiceStatus(serviceId, providerEmail, agree);
             if(genericResponse.Success) 
             {
-                await emailSender.SendAgreementToProceedApplicationToDSIT(companyName, serviceName);
-            }
-            return genericResponse;
-        }
-
-
-        //closing loop
-
-        public async Task<bool> RemoveProceedPublishConsentToken(string token, string tokenId, string loggedInUserEmail)
-        {
-            return await consentRepository.RemoveProceedPublishConsentToken(token, tokenId, loggedInUserEmail);
-        }
-
-        public async Task<ServiceDto?> GetProviderAndCertificateDetailsByClosingLoopToken(string token, string tokenId)
-        {
-            ProceedPublishConsentToken consentToken = await consentRepository.GetProceedPublishConsentToken(token, tokenId);
-            if (consentToken.Service!=null)
-            {
-                var service = await consentRepository.GetServiceDetails(consentToken.ServiceId);
-                ServiceDto serviceDto = mapper.Map<ServiceDto>(service);
-                return serviceDto;
-            }
-            else
-            {
-                return null;
-            }           
-           
-        }
-        public async Task<GenericResponse> UpdateServiceAndProviderStatus(string token, string tokenId, ServiceDto serviceDto, string loggedInUserEmail)
-        {
-            GenericResponse genericResponse = new GenericResponse();
-            ProceedPublishConsentToken consentToken = await consentRepository.GetProceedPublishConsentToken(token, tokenId);
-            if (!string.IsNullOrEmpty(consentToken.Token) && !string.IsNullOrEmpty(consentToken.TokenId))   //proceed update status if token exists           
-            {                
-                genericResponse = await consentRepository.UpdateServiceAndProviderStatus(serviceDto.Id, loggedInUserEmail);
-                if (genericResponse.Success)
+                if (agree == "accept")
                 {
-
-                    genericResponse.Success = await emailSender.SendAgreementToPublishToDIP(serviceDto.Provider.RegisteredName, serviceDto.ServiceName,
-                    serviceDto.Provider.PrimaryContactFullName, serviceDto.Provider.PrimaryContactEmail);
-                    genericResponse.Success = await emailSender.SendAgreementToPublishToDIP(serviceDto.Provider.RegisteredName, serviceDto.ServiceName,
-                    serviceDto.Provider.SecondaryContactFullName, serviceDto.Provider.SecondaryContactEmail);
-                    await emailSender.SendAgreementToPublishToDSIT(serviceDto.Provider.RegisteredName, serviceDto.ServiceName);
+                    await emailSender.SendAgreementToProceedApplicationToDSIT(companyName, serviceName);
+                    foreach (var email in providerEmail.Split(';'))
+                    {
+                        await emailSender.SendConfirmationToProceedApplicationToDIP(serviceName, email);
+                    }
                 }
-
+                else
+                {
+                    await emailSender.SendDeclineToProceedApplicationToDSIT(companyName, serviceName);
+                    foreach (var email in providerEmail.Split(';'))
+                    {
+                        await emailSender.SendConfirmationOfDeclineToProceedApplicationToDIP(serviceName, email);
+                    }
+                }
+                
             }
             return genericResponse;
         }
+
+
+       
+
+       
 
     }
 }

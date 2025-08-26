@@ -35,13 +35,13 @@ namespace DVSRegister.UnitTests.Repository
             int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
             int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
 
-            var genericResponse = await consentRepository.UpdateServiceStatus(serviceId, ServiceStatusEnum.ReadyToPublish,"test.user123@test.com");
+            var genericResponse = await consentRepository.UpdateServiceStatus(serviceId,"test.user123@test.com", "accept");
 
             var service = await dbContext.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
 
             Assert.True(genericResponse.Success);
             Assert.NotNull(service);
-            Assert.Equal(ServiceStatusEnum.ReadyToPublish, service.ServiceStatus);
+            Assert.Equal(ServiceStatusEnum.Received, service.ServiceStatus);
         }
 
         [Fact]
@@ -88,7 +88,7 @@ namespace DVSRegister.UnitTests.Repository
 
         private async Task<int> SaveServiceAsync(int providerProfileId, DVSRegisterDbContext dbContext)
         {
-            var service = RepositoryTestHelper.CreateService(1, "sample service 1", providerProfileId, ServiceStatusEnum.ReadyToPublish, false, false, false, 1);
+            var service = RepositoryTestHelper.CreateService(1, "sample service 1", providerProfileId, ServiceStatusEnum.Published, false, false, false, 1);
             var serviceEntity = await dbContext.Service.AddAsync(service);
             await dbContext.SaveChangesAsync();
             return serviceEntity.Entity.Id;
