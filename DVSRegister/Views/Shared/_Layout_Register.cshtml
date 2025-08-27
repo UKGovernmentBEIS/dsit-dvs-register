@@ -188,7 +188,6 @@ await Html.RenderPartialAsync("_CookieBanner");
     </div>
 </footer>
 
-<script nonce="@Context.GetScriptNonce()" src="~/js/site.js" asp-append-version="true"></script>
 <script nonce="@Context.GetScriptNonce()">document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
 <script nonce="@Context.GetScriptNonce()" type="module" src="~/js/govuk.js"></script>
 <script nonce="@Context.GetScriptNonce()" type="module">

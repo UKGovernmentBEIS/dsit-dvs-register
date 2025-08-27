@@ -167,7 +167,6 @@ await Html.RenderPartialAsync("_CookieBanner");
     </div>
 </footer>
 
-<script nonce="@Context.GetScriptNonce()"  src="~/js/site.js" asp-append-version="true"></script>
 <script type="module" nonce="@Context.GetScriptNonce()">
     import { initAll as govukInit } from '/lib/govuk-frontend/govuk-frontend-5.10.0.min.js';
     import { SortableTable } from '/lib/moj-frontend/moj-frontend-5.1.5.min.js';
