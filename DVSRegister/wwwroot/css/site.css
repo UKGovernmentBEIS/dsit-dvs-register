@@ -1,26 +1,8 @@
-/* make the header container a flex layout */
 .govuk-header__container {
     display: flex;
     align-items: baseline;
     white-space: nowrap
 }
-
-.govuk-template--rebranded .hmrc-header.hmrc-header--with-additional-navigation .hmrc-sign-out-nav__link:link, .govuk-template--rebranded .hmrc-header.hmrc-header--with-additional-navigation .hmrc-sign-out-nav__link:visited {
-    color: #fff;
-}
-
-.govuk-template--rebranded .hmrc-header.hmrc-header--with-additional-navigation .hmrc-sign-out-nav__link {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-family: GDS Transport, arial, sans-serif;
-    font-weight: 400;
-    text-decoration: underline;
-    text-decoration-thickness: max(1px, .0625rem);
-    text-underline-offset: .1578em;
-}
-
-
-/* push the service navigation (your sign‑out link) all the way to the right */
 .govuk-header__container > .govuk-service-navigation__wrapper {
     margin-left: auto;
 }
