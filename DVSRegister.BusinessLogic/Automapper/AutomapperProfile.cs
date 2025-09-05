@@ -142,8 +142,7 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.ServiceSupSchemeMappingDraft, opt => opt.MapFrom(src => src.ServiceSupSchemeMappingDraft))
             .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
 
-            CreateMap<ServiceDraftToken, ServiceDraftTokenDto>();
-            CreateMap<ServiceDraftTokenDto, ServiceDraftToken>();
+          
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
 
