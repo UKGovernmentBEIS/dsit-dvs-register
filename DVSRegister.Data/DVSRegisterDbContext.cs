@@ -46,7 +46,7 @@ namespace DVSRegister.Data
         public DbSet<ProviderProfileDraft> ProviderProfileDraft { get; set; }
         public DbSet<ProviderDraftToken> ProviderDraftToken { get; set; }
         public DbSet<ServiceDraft> ServiceDraft { get; set; }
-        public DbSet<ServiceDraftToken> ServiceDraftToken { get; set; }
+     
         public DbSet<ServiceRoleMappingDraft> ServiceRoleMappingDraft { get; set; }
         public DbSet<ServiceQualityLevelMappingDraft> ServiceQualityLevelMappingDraft { get; set; }
         public DbSet<ServiceIdentityProfileMappingDraft> ServiceIdentityProfileMappingDraft { get; set; }
