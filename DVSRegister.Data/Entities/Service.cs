@@ -42,6 +42,8 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("CabUser")]
         public int CabUserId { get; set; }
         public CabUser CabUser { get; set; }
+
+        [ConcurrencyCheck]
         public ServiceStatusEnum ServiceStatus { get; set; }      
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
