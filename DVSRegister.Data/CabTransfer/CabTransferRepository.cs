@@ -81,7 +81,9 @@ namespace DVSRegister.Data.CabTransfer
                 
                 var entity = await context.CabTransferRequest.Include(c=>c.RequestManagement).Include(c=>c.Service).Where(x=>x.Id == requestId).FirstOrDefaultAsync();
                 var cabUser = await context.CabUser.Where(x => x.CabEmail == loggedInUserEmail && x.IsActive).FirstOrDefaultAsync();
-               
+                var previousVersions = await context.Service.Where(x => x.ServiceKey == entity.Service.ServiceKey && x.ServiceVersion < entity.Service.ServiceVersion).ToListAsync();
+                var inProgressServices = await context.Service.Include(c=>c.CertificateReview).Include(p=>p.PublicInterestCheck)
+                    .Where(x => x.ServiceKey == entity.Service.ServiceKey && x.ServiceVersion > entity.Service.ServiceVersion).ToListAsync();
                 if (entity != null && entity.RequestManagement != null && entity.Service != null && 
                 (entity.Service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || entity.Service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
                 {
@@ -98,6 +100,17 @@ namespace DVSRegister.Data.CabTransfer
                         }
                         entity.RequestManagement.RequestStatus = RequestStatusEnum.Approved;
                         entity.Service.CabUserId =  cabUser.Id;
+                        entity.Service.IsCurrent = true;
+                        foreach(var previousService in previousVersions)
+                        {
+                            previousService.CabUserId = cabUser.Id;
+                            previousService.ModifiedTime = DateTime.UtcNow;
+                        }
+
+                        foreach (var inProgressService in inProgressServices)
+                        {
+                            context.Service.Remove(inProgressService);
+                        }
                     }
                     else
                     {
