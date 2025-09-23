@@ -45,5 +45,6 @@ namespace DVSRegister.Data.Entities
         public TokenStatusEnum EditProviderTokenStatus { get; set; }
         public bool IsInRegister { get; set; }
         public ICollection<ProviderProfileCabMapping> ProviderProfileCabMapping { get; set; }
+        public ICollection<ProviderRemovalRequest>? ProviderRemovalRequests { get; set; }
     }
 }
