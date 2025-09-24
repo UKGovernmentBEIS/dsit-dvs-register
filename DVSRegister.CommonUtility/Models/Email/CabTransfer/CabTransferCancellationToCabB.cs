@@ -1,4 +1,4 @@
-namespace DVSRegister.CommonUtility
+namespace DVSRegister.CommonUtility.Models.Email
 {
     public class CabTransferCancellationToCabB
     {

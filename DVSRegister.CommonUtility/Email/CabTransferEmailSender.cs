@@ -44,5 +44,32 @@ namespace DVSRegister.CommonUtility.Email
             };
             return SendNotification(email, template, personalisation);
         }
+
+
+        public Task<bool> SendCabTransferConfirmationToDSIT(string existingCabName, string acceptingCabName, string providerName, string serviceName)
+        {
+            var template = govUkNotifyConfig.CabTransferConfirmationToDSIT;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.ExistingCabName, existingCabName},
+                { template.AcceptingCabName, acceptingCabName},
+                { template.ProviderName,  providerName},
+                { template.ServiceName, serviceName }
+            };
+            return SendNotificationToOfDiaCommonMailBox(template, personalisation);
+        }
+
+        public Task<bool> SendCabTransferCancellationToDSIT(string existingCabName, string decliningCabName, string providerName, string serviceName)
+        {
+            var template = govUkNotifyConfig.CabTransferCancellationToDSIT;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.DecliningCabName, decliningCabName },
+                { template.ExistingCabName, existingCabName },
+                { template.ProviderName, providerName },
+                { template.ServiceName, serviceName}
+            };
+            return SendNotificationToOfDiaCommonMailBox(template, personalisation);
+        }
     }
 }
