@@ -71,7 +71,7 @@ namespace DVSRegister.BusinessLogic.Services.CabTransfer
                     {
                         await emailSender.SendCabTransferConfirmationToCabB(user.CabEmail, acceptingCabName, providerName, serviceName);
                     }
-
+                    await emailSender.SendCabTransferConfirmationToDSIT(fullRequest.FromCabUser.Cab.CabName, acceptingCabName, providerName, serviceName);
                     //Tranfered from  cab list
                     List<CabUser> activeCabAUsers = await cabTransferRepository.GetActiveCabUsers(fullRequest.FromCabUser.CabId);
                     var currentCabName = activeCabAUsers.FirstOrDefault()?.Cab.CabName ?? string.Empty;
@@ -87,6 +87,7 @@ namespace DVSRegister.BusinessLogic.Services.CabTransfer
                     {
                         await emailSender.SendCabTransferCancellationToCabB(user.CabEmail, acceptingCabName, providerName, serviceName);
                     }
+                    await emailSender.SendCabTransferCancellationToDSIT(fullRequest.FromCabUser.Cab.CabName, acceptingCabName, providerName, serviceName);
                 }
             }
             

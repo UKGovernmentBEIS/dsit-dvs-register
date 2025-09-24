@@ -1,4 +1,6 @@
-﻿namespace DVSRegister.CommonUtility.Models
+﻿using DVSRegister.CommonUtility.Models.Email;
+
+namespace DVSRegister.CommonUtility.Models
 {
     public class GovUkNotifyConfiguration
     {
@@ -62,5 +64,7 @@
         public CabTransferConfirmationToCabA CabTransferConfirmationToCabA { get; set; }
         public CabTransferConfirmationToCabB CabTransferConfirmationToCabB { get; set; }
         public CabTransferCancellationToCabB CabTransferCancellationToCabB { get; set; }
+        public CabTransferCancellationToDSIT CabTransferCancellationToDSIT { get; set; }
+        public CabTransferConfirmationToDSIT CabTransferConfirmationToDSIT { get; set; }
     }
 }
