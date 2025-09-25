@@ -24,7 +24,7 @@ namespace DVSRegister.Data.Entities
         public int? RemovalRequestedUserId { get; set; }
         public  User? RemovalRequestedUser { get; set; }
         public bool IsRequestPending { get; set; }
-        public DateTime RemovalRequestTime { get; set; }
+        public DateTime? RemovalRequestTime { get; set; }
         public DateTime? RemovedTime { get; set; }
         public ProviderStatusEnum PreviousProviderStatus { get; set; }
     }

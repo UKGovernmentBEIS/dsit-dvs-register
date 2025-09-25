@@ -1,15 +1,14 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Remove2i;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.JWT;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-    [Route("remove-provider")]
+    [Route("provider-requested-removal")]
     public class RemoveProvider2iController(IJwtService jwtService, IRemoveProvider2iService removeProvider2iService, ILogger<RemoveProvider2iController> logger) : Controller
     {
         private readonly IJwtService jwtService = jwtService;
@@ -17,21 +16,21 @@ namespace DVSRegister.Controllers
         private readonly ILogger<RemoveProvider2iController> _logger = logger;
         #region Remove provider - Approve removal by Provider 2i check
 
-        [HttpGet("provider/provider-details")]
+        [HttpGet("provider-details")]
         public async Task<ActionResult> RemoveProviderDetails(string token)
         {
             RemoveProviderViewModel removeProviderViewModel = new();
             removeProviderViewModel.token = token;
-            TokenDetails tokenDetails = await jwtService.ValidateToken(token);          
-            ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
-            var invalidRequestResult = await HandleInvalidRequest(tokenDetails, provider);
+            TokenDetails tokenDetails = await jwtService.ValidateToken(token);
+            ProviderRemovalRequestDto? removalRequest = await removeProvider2iService.GetProviderRemovalDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
+            var invalidRequestResult = await HandleInvalidRequest(tokenDetails, removalRequest);
             if (invalidRequestResult != null) 
             {
                 return invalidRequestResult; 
             }
             else
             {
-                removeProviderViewModel.Provider = provider;
+                removeProviderViewModel.Provider = removalRequest.Provider;
                 return View(removeProviderViewModel);
             }          
         }
@@ -44,9 +43,9 @@ namespace DVSRegister.Controllers
             string user = "Provider";
 
             TokenDetails tokenDetails = await jwtService.ValidateToken(removeProviderViewModel.token);
-            ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
+            ProviderRemovalRequestDto? removalRequest = await removeProvider2iService.GetProviderRemovalDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
 
-            var invalidRequestResult = await HandleInvalidRequest(tokenDetails, provider);
+            var invalidRequestResult = await HandleInvalidRequest(tokenDetails, removalRequest);
             if (invalidRequestResult != null)
             {
                 return invalidRequestResult;
@@ -55,20 +54,38 @@ namespace DVSRegister.Controllers
             {
                 if (action == "remove")
                 {
-                    user = provider.PrimaryContactEmail + ";" + provider.SecondaryContactEmail;
+                    user = removalRequest.Provider.PrimaryContactEmail + ";" + removalRequest.Provider.SecondaryContactEmail;
                     if (ModelState.IsValid)
                         {
-                            return await HandleRemoveRequest(user,TeamEnum.Provider, tokenDetails, provider);
+                        GenericResponse genericResponse = await removeProvider2iService.ApproveProviderRemoval(removalRequest, user);
+                        if (genericResponse.Success)
+                        {
+                            return View("RemoveProviderSuccess");
                         }
                         else
                         {
-                            removeProviderViewModel.Provider = provider;
+                            _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to update removal status for provider."));
+                            return View("RemoveProviderError");
+                        }
+                    }
+                        else
+                        {
+                            removeProviderViewModel.Provider = removalRequest.Provider;
                             return View("RemoveProviderDetails", removeProviderViewModel);
                         }
                     }
                 else if (action == "cancel")
                 {
-                    return await HandleCancelRequest(user,TeamEnum.Provider, tokenDetails, provider);
+                    GenericResponse genericResponse = await removeProvider2iService.CancelProviderRemoval(removalRequest, user);
+                    if (genericResponse.Success)
+                    {
+                        return View("RemovalRequestCancelled");
+                    }
+                    else
+                    {
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to cancel removal request for provider."));
+                        return View("RemoveProviderError");
+                    }
                 }
                 else
                 {
@@ -76,9 +93,7 @@ namespace DVSRegister.Controllers
                     return RedirectToAction("RemoveProviderError");
                 }
             }
-        }
-
-      
+        }   
 
 
 
@@ -86,71 +101,7 @@ namespace DVSRegister.Controllers
 
 
 
-        #region Remove provider - Approve removal by DSIT
-
-        [HttpGet("dsit/provider-details")]
-        public async Task<ActionResult> RemoveProviderDetailsDSIT(string token)
-        {
-            RemoveProviderViewModel removeProviderViewModel = new();
-            TokenDetails tokenDetails = await jwtService.ValidateToken(token, "DSIT");
-            ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
-
-            var invalidRequestResult = await HandleInvalidRequest(tokenDetails, provider);
-            if (invalidRequestResult != null)
-            {
-                return invalidRequestResult;
-            }
-            else
-            {
-                removeProviderViewModel.Provider = provider;
-                return View(removeProviderViewModel);
-            }           
-        }
-
-
-
-        [HttpPost("dsit/provider-details")]
-        public async Task<IActionResult> RemoveProviderDetailsDSIT(RemoveProviderViewModel removeProviderViewModel, string action)
-        {
-            string user = "DSIT";           
-            TokenDetails tokenDetails = await jwtService.ValidateToken(removeProviderViewModel.token, "DSIT");
-            ProviderProfileDto? provider = await removeProvider2iService.GetProviderAndServiceDetailsByRemovalToken(tokenDetails.Token, tokenDetails.TokenId);
-
-            var invalidRequestResult = await HandleInvalidRequest(tokenDetails, provider);
-            if (invalidRequestResult != null)
-            {
-                return invalidRequestResult;
-            }
-            else
-            {
-
-                if (action == "remove")
-                {
-                    if (ModelState.IsValid)
-                    {
-                        return await HandleRemoveRequest(user, TeamEnum.DSIT, tokenDetails, provider);
-                    }
-                    else
-                    {
-                        removeProviderViewModel.Provider = provider;
-                        return View("RemoveProviderDetailsDSIT", removeProviderViewModel);
-                    }
-                }
-                else if (action == "cancel")
-                {
-                    return await HandleCancelRequest(user, TeamEnum.DSIT, tokenDetails, provider);
-
-                }
-                else
-                {
-                    return RedirectToAction("RemoveProviderError");
-                }
-            }
-           
-
-        }
-
-        #endregion
+    
 
 
         
@@ -158,9 +109,8 @@ namespace DVSRegister.Controllers
 
         #region Private methods
 
-        private async Task<ActionResult?> HandleInvalidRequest(TokenDetails tokenDetails, ProviderProfileDto? provider)
-        {
-            TokenStatusEnum tokenStatus = await removeProvider2iService.GetTokenStatus(tokenDetails);
+        private async Task<ActionResult?> HandleInvalidRequest(TokenDetails tokenDetails, ProviderRemovalRequestDto? removalRequest)
+        {            
             if (tokenDetails.IsExpired)
             {
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Token expired"));
@@ -171,20 +121,8 @@ namespace DVSRegister.Controllers
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Invalid token"));
                 return View("RemoveProviderError");
             }
-            else if (tokenStatus == TokenStatusEnum.RequestResent && provider == null)
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Request resent"));
-                return View("RemoveProviderError");
-            }
-            else if (tokenStatus == TokenStatusEnum.AdminCancelled)
-            {
-                return View("RemovalRequestCancelledByDSIT");
-            }
-            else if (tokenStatus == TokenStatusEnum.RequestCompleted || tokenStatus == TokenStatusEnum.UserCancelled)
-            {
-                return View("AlreadyReviewed");
-            }
-            else if (provider == null || provider?.ProviderStatus == ProviderStatusEnum.RemovedFromRegister)
+           
+            else if (removalRequest == null || removalRequest.Provider == null || removalRequest.Provider.IsInRegister == false)
             {
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Provider null for the given token or token already removed"));// need to keep this condition for old requests to work, can be removed later
                 return View("AlreadyReviewed");
@@ -195,35 +133,7 @@ namespace DVSRegister.Controllers
             }
         }
 
-        private async Task<IActionResult> HandleRemoveRequest(string user, TeamEnum team, TokenDetails tokenDetails, ProviderProfileDto? provider)
-        {
-            GenericResponse genericResponse = await removeProvider2iService.UpdateRemovalStatus(team, tokenDetails.Token, tokenDetails.TokenId, provider, user);
-            if (genericResponse.Success)
-            {
-                await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
-                return team == TeamEnum.Provider?  View("RemoveProviderSuccess"):  View("RemoveProviderSuccessDSIT");
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to update removal status for provider."));
-                return View("RemoveProviderError");
-            }
-        }
-
-        private async Task<IActionResult> HandleCancelRequest(string user, TeamEnum team, TokenDetails tokenDetails, ProviderProfileDto? provider)
-        {
-            GenericResponse genericResponse = await removeProvider2iService.CancelRemovalRequest(team, tokenDetails.Token, tokenDetails.TokenId, provider, user);
-            if (genericResponse.Success)
-            {
-                await removeProvider2iService.RemoveRemovalToken(tokenDetails.Token, tokenDetails.TokenId, user);
-                return View("RemovalRequestCancelled");
-            }
-            else
-            {
-                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Failed to cancel removal request for provider."));
-                return View("RemoveProviderError");
-            }
-        }
+       
         #endregion
 
     }

@@ -3,6 +3,7 @@ using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.DSITEdit2i;
 using DVSRegister.BusinessLogic.Models.Register;
+using DVSRegister.BusinessLogic.Remove2i;
 using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic
@@ -161,6 +162,9 @@ namespace DVSRegister.BusinessLogic
 
             CreateMap<ManualUnderPinningServiceDraft, ManualUnderPinningServiceDraftDto>();
             CreateMap<ManualUnderPinningServiceDraftDto, ManualUnderPinningServiceDraft>();
+
+            CreateMap<ProviderRemovalRequest, ProviderRemovalRequestDto>();
+            CreateMap<ProviderRemovalRequestDto, ProviderRemovalRequest>();
         }
     }
 }

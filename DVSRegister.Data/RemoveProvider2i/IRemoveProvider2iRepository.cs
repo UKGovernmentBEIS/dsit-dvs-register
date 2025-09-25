@@ -8,11 +8,13 @@ namespace DVSRegister.Data
     {
         #region Remove Provider
 
-        public Task<RemoveProviderToken> GetRemoveProviderToken(string token, string tokenId);
+        public Task<ProviderRemovalRequest> GetRemoveProviderToken(string token, string tokenId);
+        public Task<GenericResponse> ApproveProviderRemoval(int providerProfileId, int providerRemovalRequestId, string loggedInUserEmail);
+        public Task<GenericResponse> CancelRemoveProviderRequest(int providerProfileId, int providerRemovalRequestId, string loggedInUserEmail);
 
         public Task<ProviderProfile> GetProviderDetails(int providerId);
         public Task<GenericResponse> UpdateRemovalStatus(int providerProfileId, TeamEnum teamEnum, EventTypeEnum eventType, List<int>? serviceIds, string loggedInUserEmail);
-        public Task<bool> RemoveRemovalToken(string token, string tokenId, string loggedInUserEmail);          
+       // public Task<bool> RemoveRemovalToken(string token, string tokenId, string loggedInUserEmail);          
 
         public Task<GenericResponse> CancelServiceRemoval(int providerProfileId, TeamEnum teamEnum, EventTypeEnum eventType, List<int>? serviceIds, string loggedInUserEmail);
 

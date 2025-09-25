@@ -17,10 +17,10 @@ namespace DVSRegister.Data
             this.logger = logger;
         }
         #region Remove provider
-        public async Task<RemoveProviderToken> GetRemoveProviderToken(string token, string tokenId)
+        public async Task<ProviderRemovalRequest> GetRemoveProviderToken(string token, string tokenId)
         {
-            return await context.RemoveProviderToken.Include(p => p.Provider).ThenInclude(p => p.Services).Include(p=>p.RemoveTokenServiceMapping)
-            .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new RemoveProviderToken();
+            return await context.ProviderRemovalRequest.Include(p => p.Provider)
+            .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId) ?? new ProviderRemovalRequest();
         }
 
 
@@ -28,7 +28,7 @@ namespace DVSRegister.Data
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.Services)
+            provider = await context.ProviderProfile.Include(p => p.Services.Where(s=>s.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation))
             .Where(p => p.Id == providerId).FirstOrDefaultAsync() ?? new ProviderProfile();
 
 
@@ -81,6 +81,87 @@ namespace DVSRegister.Data
             }
 
             return provider;
+        }
+
+        public async Task<GenericResponse> ApproveProviderRemoval(int providerProfileId, int providerRemovalRequestId,  string loggedInUserEmail)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                var existingProvider = await context.ProviderProfile.Include(p=>p.ProviderRemovalRequests).Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == providerProfileId);
+                var providerRemovalRequest = await context.ProviderRemovalRequest.FirstOrDefaultAsync(p => p.Id == providerRemovalRequestId && p.ProviderProfileId == providerProfileId);
+                if (existingProvider != null && providerRemovalRequest!=null)
+                {
+                    existingProvider.IsInRegister = false;
+                    existingProvider.ModifiedTime = DateTime.UtcNow;
+                    providerRemovalRequest.RemovedTime = DateTime.UtcNow;
+                    providerRemovalRequest.Token = null;
+                    providerRemovalRequest.TokenId = null;
+                    // Update the status of each service
+                    if (existingProvider.Services != null)
+                    {
+                        foreach (var service in existingProvider.Services)
+                        {
+                            if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
+                            {                                
+                                service.ServiceStatus = ServiceStatusEnum.Removed;
+                                service.ModifiedTime = DateTime.UtcNow;                               
+                                service.IsInRegister = false;
+                            }
+                        }
+                    }
+                    await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveProvider2i, loggedInUserEmail);
+                    await transaction.CommitAsync();
+                    genericResponse.Success = true;
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    genericResponse.Success = false;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                await transaction.RollbackAsync();
+                logger.LogError(ex.Message);
+            }
+            return genericResponse;
+        }
+        public async Task<GenericResponse> CancelRemoveProviderRequest(int providerProfileId, int providerRemovalRequestId, string loggedInUserEmail)
+        {
+            var genericResponse = new GenericResponse();
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                var provider = await context.ProviderProfile.Include(p => p.ProviderRemovalRequests).Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == providerProfileId);
+                var currentRequest = await context.ProviderRemovalRequest.FirstOrDefaultAsync(p => p.Id == providerRemovalRequestId && p.ProviderProfileId == providerProfileId);
+
+                provider.ModifiedTime = DateTime.UtcNow;
+                provider.ProviderStatus = ProviderStatusEnum.Published;
+
+                context.ProviderRemovalRequest.Remove(currentRequest);
+
+                foreach (var service in provider.Services.Where(s => s.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation))
+                {
+                    service.ModifiedTime = DateTime.UtcNow;
+                    service.ServiceStatus = ServiceStatusEnum.Published;                    
+                }
+
+                await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.CancelRemovalRequest, loggedInUserEmail);
+                await transaction.CommitAsync();
+                genericResponse.Success = true;
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                await transaction.RollbackAsync();
+                logger.LogError(ex.Message);
+            }
+            return genericResponse;
         }
 
         public async Task<GenericResponse> UpdateRemovalStatus(int providerProfileId, TeamEnum teamEnum, EventTypeEnum eventType, List<int>? serviceIds, string loggedInUserEmail)
@@ -184,20 +265,20 @@ namespace DVSRegister.Data
 
         
 
-        public async Task<bool> RemoveRemovalToken(string token, string tokenId, string loggedInUserEmail)
-        {
-            var removeProviderToken = await context.RemoveProviderToken.Include(p => p.Provider).Include(p => p.RemoveTokenServiceMapping)
-           .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId);
-            if (removeProviderToken != null)
-            {
-                context.RemoveProviderToken.Remove(removeProviderToken);
-                await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveProviderRemovalToken, loggedInUserEmail);
-                logger.LogInformation("Remove Provider Token : Token Removed for Provider {0}", removeProviderToken.Provider.TradingName);
-                return true;
-            }
+        //public async Task<bool> RemoveRemovalToken(string token, string tokenId, string loggedInUserEmail)
+        //{
+        //    var removeProviderToken = await context.RemoveProviderToken.Include(p => p.Provider).Include(p => p.RemoveTokenServiceMapping)
+        //   .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId);
+        //    if (removeProviderToken != null)
+        //    {
+        //        context.RemoveProviderToken.Remove(removeProviderToken);
+        //        await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveProviderRemovalToken, loggedInUserEmail);
+        //        logger.LogInformation("Remove Provider Token : Token Removed for Provider {0}", removeProviderToken.Provider.TradingName);
+        //        return true;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
 
 
