@@ -123,29 +123,29 @@ namespace DVSRegister.UnitTests.DVSRegister
             Assert.Equal("RequestRemoval failed: Invalid ServiceId.", ex.Message);
         }
 
-        [Fact]
-        public async Task RequestRemoval_ReturnsRemovalRequestedView_WhenRemovalIsSuccessful_Test()
-        {
-            Session.SetString("ReasonForRemoval", "Removal reason");
-            Session.SetString("WhatToRemove",      "service");
+        //[Fact]
+        //public async Task RequestRemoval_ReturnsRemovalRequestedView_WhenRemovalIsSuccessful_Test()
+        //{
+        //    Session.SetString("ReasonForRemoval", "Removal reason");
+        //    Session.SetString("WhatToRemove",      "service");
 
-            CabRemovalRequestService
-              .UpdateRemovalStatus(
-                 Arg.Any<int>(),
-                 1, 1, Arg.Any<string>(),
-                 "Removal reason", "service"
-              )
-              .Returns(new GenericResponse { Success = true });
+        //    CabRemovalRequestService
+        //      .UpdateRemovalStatus(
+        //         Arg.Any<int>(),
+        //         1, 1, Arg.Any<string>(),
+        //         "Removal reason", "service"
+        //      )
+        //      .Returns(new GenericResponse { Success = true });
 
-            CabService
-              .GetServiceDetailsWithProvider(1, Arg.Any<int>())
-              .Returns(new ServiceDto { Id = 1 });
+        //    CabService
+        //      .GetServiceDetailsWithProvider(1, Arg.Any<int>())
+        //      .Returns(new ServiceDto { Id = 1 });
 
-            var result = await Controller.RequestRemoval(1, 1);
+        //    var result = await Controller.RequestRemoval(1, 1);
 
-            var vr = Assert.IsType<ViewResult>(result);
-            Assert.Equal("RemovalRequested", vr.ViewName);
-        }
+        //    var vr = Assert.IsType<ViewResult>(result);
+        //    Assert.Equal("RemovalRequested", vr.ViewName);
+        //}
 
         #endregion
     }

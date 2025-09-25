@@ -106,9 +106,7 @@ namespace DVSRegister
             services.AddScoped<IRemoveProvider2iService, RemoveProvider2iService>();
             services.AddScoped<IRemoveProvider2iRepository, RemoveProvider2iRepository>();
             services.AddScoped<ICabRemovalRequestService, CabRemovalRequestService>();
-            services.AddScoped<ICabRemovalRequestRepository, CabRemovalRequestRepository>();
-            services.AddScoped<IDSITEdit2iService, DSITEdit2iService>();
-            services.AddScoped<IDSITEdit2iRepository, DSITEdit2iRepository>();
+            services.AddScoped<ICabRemovalRequestRepository, CabRemovalRequestRepository>();           
             services.AddScoped<IRemoveProviderRepository, RemoveProviderRepository>();
             services.AddScoped<IRemoveProviderService, RemoveProviderService>();
             services.AddSingleton<DVSRegister.Services.AutoMapperProfile>();
