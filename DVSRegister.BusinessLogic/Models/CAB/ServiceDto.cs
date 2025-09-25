@@ -60,6 +60,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
 
         public bool? IsUnderPinningServicePublished { get; set; }
         public ServiceDraftDto? serviceDraft { get; set; }
+        public bool IsInRegister { get; set; }
+
 
     }
 }
