@@ -31,5 +31,9 @@ namespace DVSRegister.Data.Entities
         public DateTime? RemovalRequestTime { get; set; }// if removed by cron job there will not be requested time
         public DateTime? RemovedTime { get; set; }
         public ServiceStatusEnum PreviousServiceStatus { get; set; }
+
+        [ForeignKey("User")]
+        public int? RemovedByUserId { get; set; }
+        public User? RemovedByUser { get; set; }
     }
 }

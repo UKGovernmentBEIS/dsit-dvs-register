@@ -27,5 +27,9 @@ namespace DVSRegister.Data.Entities
         public DateTime? RemovalRequestTime { get; set; }
         public DateTime? RemovedTime { get; set; }
         public ProviderStatusEnum PreviousProviderStatus { get; set; }
+
+        [ForeignKey("User")]
+        public int? RemovedByUserId { get; set; }
+        public User? RemovedByUser { get; set; }
     }
 }

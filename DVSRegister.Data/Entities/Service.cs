@@ -55,8 +55,7 @@ namespace DVSRegister.Data.Entities
         public DateTime? RemovedTime { get; set; }
        
         public DateTime? ResubmissionTime { get; set; }
-        public TokenStatusEnum RemovalTokenStatus { get; set; }
-        public TokenStatusEnum EditServiceTokenStatus { get; set; }
+      
         public TokenStatusEnum OpeningLoopTokenStatus { get; set; }
    
         public bool IsInRegister { get; set; }
