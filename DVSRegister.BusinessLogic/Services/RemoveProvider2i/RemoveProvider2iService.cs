@@ -38,27 +38,7 @@ namespace DVSRegister.BusinessLogic.Services
             providerRemovalRequest.Provider = providerWithServiceDetails;
              return mapper.Map<ProviderRemovalRequestDto>(providerRemovalRequest);           
         }
-        public async Task<TokenStatusEnum> GetTokenStatus(TokenDetails tokenDetails)
-        {
-            TokenStatusEnum tokenStatus = TokenStatusEnum.NA;
-
-            var provider = await removeProvider2iRepository.GetProviderDetails(tokenDetails.ProviderProfileId);
-
-            if(tokenDetails.ServiceIds!=null)
-            {
-                var services = provider?.Services?.Where(service => tokenDetails.ServiceIds.Contains(service.Id)).ToList();
-
-                 if(services != null) 
-                 {
-                    if (services.All(x => x.RemovalTokenStatus == TokenStatusEnum.AdminCancelled)) { tokenStatus = TokenStatusEnum.AdminCancelled; }
-                    else if (services.All(x => x.RemovalTokenStatus == TokenStatusEnum.RequestCompleted)) { tokenStatus = TokenStatusEnum.RequestCompleted; }
-                    else if (services.All(x => x.RemovalTokenStatus == TokenStatusEnum.RequestResent)) { tokenStatus = TokenStatusEnum.RequestResent; }
-                    else if (services.All(x => x.RemovalTokenStatus == TokenStatusEnum.UserCancelled)) { tokenStatus = TokenStatusEnum.UserCancelled; }
-                }                   
-            }           
-            return tokenStatus;
-        }
-
+       
         public async Task<GenericResponse> ApproveProviderRemoval(ProviderRemovalRequestDto providerRemovalRequest, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();

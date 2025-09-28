@@ -8,9 +8,10 @@ namespace DVSRegister.BusinessLogic.Services
     {
         //Remove provider
         public Task<ProviderRemovalRequestDto?> GetProviderRemovalDetailsByRemovalToken(string token, string tokenId);
-        public Task<GenericResponse> ApproveProviderRemoval(ProviderRemovalRequestDto providerRemovalRequest, string loggedInUserEmail);        public Task<GenericResponse> CancelProviderRemoval(ProviderRemovalRequestDto providerRemovalRequest, string loggedInUserEmail);
+        public Task<GenericResponse> ApproveProviderRemoval(ProviderRemovalRequestDto providerRemovalRequest, string loggedInUserEmail); 
+        public Task<GenericResponse> CancelProviderRemoval(ProviderRemovalRequestDto providerRemovalRequest, string loggedInUserEmail);
 
-        public Task<TokenStatusEnum> GetTokenStatus(TokenDetails tokenDetails);
+
 
         //Remove service
         public Task<ServiceRemovalRequestDto?> GetServiceRemovalDetailsByRemovalToken(string token, string tokenId);
