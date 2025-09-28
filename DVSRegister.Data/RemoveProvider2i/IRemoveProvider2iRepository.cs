@@ -1,5 +1,4 @@
-﻿using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.CommonUtility.Models;
+﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Entities;
 
 namespace DVSRegister.Data
@@ -11,14 +10,13 @@ namespace DVSRegister.Data
         public Task<ProviderRemovalRequest> GetRemoveProviderToken(string token, string tokenId);
         public Task<GenericResponse> ApproveProviderRemoval(int providerProfileId, int providerRemovalRequestId, string loggedInUserEmail);
         public Task<GenericResponse> CancelRemoveProviderRequest(int providerProfileId, int providerRemovalRequestId, string loggedInUserEmail);
-
         public Task<ProviderProfile> GetProviderDetails(int providerId);
-        public Task<GenericResponse> UpdateRemovalStatus(int providerProfileId, TeamEnum teamEnum, EventTypeEnum eventType, List<int>? serviceIds, string loggedInUserEmail);
-       // public Task<bool> RemoveRemovalToken(string token, string tokenId, string loggedInUserEmail);          
+        public Task<ServiceRemovalRequest> GetRemoveServiceToken(string token, string tokenId);
+        public Task<Service> GetServiceDetails(int serviceId);
+        public Task<GenericResponse> ApproveServiceRemoval(int serviceId, int serviceRemovalRequestId, string loggedInUserEmail);
+        public Task<GenericResponse> CancelRemoveServiceRequest(int serviceId, int serviceRemovalRequestId, string loggedInUserEmail);
 
-        public Task<GenericResponse> CancelServiceRemoval(int providerProfileId, TeamEnum teamEnum, EventTypeEnum eventType, List<int>? serviceIds, string loggedInUserEmail);
 
-     
         #endregion
     }
 }
