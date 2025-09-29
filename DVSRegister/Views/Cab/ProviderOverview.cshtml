@@ -112,11 +112,10 @@
                                             </li>
                                         }
                                         @if (item.ServiceStatus == ServiceStatusEnum.Published)
-                                        {
-                                            string whatToRemove = removeProvider ? "provider" : "service";
+                                        {                                       
                                             <li class="govuk-summary-card__action">
-                                            <a class="govuk-link" href="/cab-service/remove/reason-for-removing?whatToRemove=@whatToRemove&providerid=@item.ProviderProfileId&serviceId=@item.Id">
-                                                Request @whatToRemove removal <span class="govuk-visually-hidden"> of @whatToRemove @item.ServiceName</span>
+                                            <a class="govuk-link" href="/cab-service/remove/reason-for-removing?providerId=@item.ProviderProfileId&serviceId=@item.Id">
+                                                Request service removal <span class="govuk-visually-hidden"> of service @item.ServiceName</span>
                                             </a>
                                             </li>
                                         }

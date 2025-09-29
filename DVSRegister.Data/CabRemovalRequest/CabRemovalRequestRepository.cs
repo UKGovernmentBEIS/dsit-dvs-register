@@ -79,5 +79,14 @@ namespace DVSRegister.Data.CabRemovalRequest
             }
             return genericResponse;
         }
+
+        public async Task<bool> IsLastService(int serviceId, int providerProfileId)
+        {
+            var provider = await context.ProviderProfile
+                    .Include(p => p.Services)
+                    .FirstOrDefaultAsync(p => p.Id == providerProfileId);
+
+            return provider.Services.Where(s => s.Id != serviceId).All(s => s.IsInRegister == false);
+        }
     }
 }

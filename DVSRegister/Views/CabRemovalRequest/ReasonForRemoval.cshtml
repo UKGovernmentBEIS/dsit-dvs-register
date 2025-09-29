@@ -11,12 +11,14 @@
 @using (Html.BeginForm("SaveReasonForRemoval", "CabRemovalRequest", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.ServiceId)
+    @Html.HiddenFor(m => m.ProviderId)
+    @Html.HiddenFor(m => m.IsProviderRemoval)
     <div class="govuk-width-container">
         @Html.ActionLink("Back", "ProviderOverview", "Cab", new { @providerId = Model.ProviderId }, new { @class = "govuk-back-link" })
         <main id="main-content" class="govuk-main-wrapper" role="main">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
-                    <h1 class="govuk-heading-xl">Give details on the reason for removing this @(Model.WhatToRemove == "provider" ? "service provider" : "service")</h1>
+                    <h1 class="govuk-heading-xl">Give details on the reason for removing this @(Model.IsProviderRemoval ? "service provider" : "service")</h1>
 
                     @if (ViewData.ModelState.ErrorCount > 0)
                     {
@@ -26,15 +28,15 @@
                     }
 
                     <p class="govuk-body">
-                        You are about to request the removal of a @(Model.WhatToRemove == "provider" ? "service from the register. As there are no other published services associated with this provider, removing this service will result in the deletion of the entire provider's record from the register." : "service from the register.")
+                        You are about to request the removal of a @(Model.IsProviderRemoval ? "service from the register. As there are no other published services associated with this provider, removing this service will result in the deletion of the entire provider's record from the register." : "service from the register.")
                     </p>
                     <p class="govuk-body">
-                        Please provide details on the reason for removing this @(Model.WhatToRemove == "provider" ? "service provider" : "service") below.
+                        Please provide details on the reason for removing this @(Model.IsProviderRemoval? "service provider" : "service") below.
                     </p>
 
                     <div class="govuk-form-group @(isValid ? "" : "govuk-form-group--error")">
                         <label class="govuk-label govuk-label--s" for="removalreasonbycab">
-                            Provide details on the reason for removing this @(Model.WhatToRemove == "provider" ? "service provider" : "service")
+                            Provide details on the reason for removing this @(Model.IsProviderRemoval ? "service provider" : "service")
                         </label>
                         <p id="removalreasonbycab-error" class="govuk-error-message">
                             <span class="govuk-visually-hidden">Error:</span> @Html.ValidationMessageFor(m => m.RemovalReasonByCab, "", new { @class = "govuk-error-message" })
