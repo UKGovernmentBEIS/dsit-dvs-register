@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Models.DSITEdit2i;
 using DVSRegister.BusinessLogic.Models.Register;
+using DVSRegister.BusinessLogic.Models.Remove2i;
+using DVSRegister.BusinessLogic.Remove2i;
+using DVSRegister.BusinessLogic.Users;
 using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic
@@ -100,49 +102,6 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ProceedApplicationConsentTokenDto, ProceedApplicationConsentToken>()
             .ForMember(dest => dest.Service, opt => opt.MapFrom(src => src.Service));
 
-         
-
-            CreateMap<ProviderProfileDraft, ProviderProfileDraftDto>();
-            CreateMap<ProviderProfileDraftDto, ProviderProfileDraft>();
-
-
-            CreateMap<ProviderDraftToken, ProviderDraftTokenDto>();
-            CreateMap<ProviderDraftTokenDto, ProviderDraftToken>();
-
-            CreateMap<SchemeGPG45MappingDraft, SchemeGPG45MappingDraftDto>();
-            CreateMap<SchemeGPG45MappingDraftDto, SchemeGPG45MappingDraft>().ForMember(x => x.IdentityProfile, opt => opt.Ignore());
-
-            CreateMap<SchemeGPG44MappingDraft, SchemeGPG44MappingDraftDto>();
-            CreateMap<SchemeGPG44MappingDraftDto, SchemeGPG44MappingDraft>().ForMember(x => x.QualityLevel, opt => opt.Ignore());
-
-            CreateMap<ServiceIdentityProfileMappingDraft, ServiceIdentityProfileMappingDraftDto>();
-            CreateMap<ServiceIdentityProfileMappingDraftDto, ServiceIdentityProfileMappingDraft>().ForMember(x => x.IdentityProfile, opt => opt.Ignore());
-            CreateMap<ServiceRoleMappingDraft, ServiceRoleMappingDraftDto>();
-            CreateMap<ServiceRoleMappingDraftDto, ServiceRoleMappingDraft>().ForMember(x => x.Role, opt => opt.Ignore());
-
-
-            CreateMap<ServiceSupSchemeMappingDraft, ServiceSupSchemeMappingDraftDto>()
-           .ForMember(dest => dest.SchemeGPG44MappingDraft, opt => opt.MapFrom(src => src.SchemeGPG44MappingDraft))
-            .ForMember(dest => dest.SchemeGPG45MappingDraft, opt => opt.MapFrom(src => src.SchemeGPG45MappingDraft));
-            CreateMap<ServiceSupSchemeMappingDraftDto, ServiceSupSchemeMappingDraft>().ForMember(x => x.SupplementaryScheme, opt => opt.Ignore());
-            CreateMap<ServiceQualityLevelMappingDraft, ServiceQualityLevelMappingDraftDto>();
-            CreateMap<ServiceQualityLevelMappingDraftDto, ServiceQualityLevelMappingDraft>().ForMember(x => x.QualityLevel, opt => opt.Ignore());
-
-            CreateMap<ServiceDraft, ServiceDraftDto>()
-            .ForMember(dest => dest.ServiceQualityLevelMappingDraft, opt => opt.MapFrom(src => src.ServiceQualityLevelMappingDraft))
-            .ForMember(dest => dest.ServiceRoleMappingDraft, opt => opt.MapFrom(src => src.ServiceRoleMappingDraft))
-            .ForMember(dest => dest.ServiceIdentityProfileMappingDraft, opt => opt.MapFrom(src => src.ServiceIdentityProfileMappingDraft))
-            .ForMember(dest => dest.ServiceSupSchemeMappingDraft, opt => opt.MapFrom(src => src.ServiceSupSchemeMappingDraft))
-            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
-
-            CreateMap<ServiceDraftDto, ServiceDraft>()
-            .ForMember(dest => dest.ServiceQualityLevelMappingDraft, opt => opt.MapFrom(src => src.ServiceQualityLevelMappingDraft))
-            .ForMember(dest => dest.ServiceRoleMappingDraft, opt => opt.MapFrom(src => src.ServiceRoleMappingDraft))
-            .ForMember(dest => dest.ServiceIdentityProfileMappingDraft, opt => opt.MapFrom(src => src.ServiceIdentityProfileMappingDraft))
-            .ForMember(dest => dest.ServiceSupSchemeMappingDraft, opt => opt.MapFrom(src => src.ServiceSupSchemeMappingDraft))
-            .ForMember(dest => dest.Provider, opt => opt.MapFrom(src => src.Provider));
-
-          
             CreateMap<UserDto, User>();
             CreateMap<User, UserDto>();
 
@@ -159,8 +118,15 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ManualUnderPinningService, ManualUnderPinningServiceDto>();
             CreateMap<ManualUnderPinningServiceDto, ManualUnderPinningService>();
 
-            CreateMap<ManualUnderPinningServiceDraft, ManualUnderPinningServiceDraftDto>();
-            CreateMap<ManualUnderPinningServiceDraftDto, ManualUnderPinningServiceDraft>();
+           
+            CreateMap<ProviderRemovalRequest, ProviderRemovalRequestDto>();
+            CreateMap<ProviderRemovalRequestDto, ProviderRemovalRequest>();
+
+            CreateMap<ServiceDraft, ServiceDraftDto>();
+            CreateMap<ServiceDraftDto, ServiceDraft>();
+
+            CreateMap<ServiceRemovalRequest, ServiceRemovalRequestDto>();
+            CreateMap<ServiceRemovalRequestDto, ServiceRemovalRequest>();
         }
     }
 }

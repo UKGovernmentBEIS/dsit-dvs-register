@@ -1,5 +1,5 @@
 ﻿@using DVSRegister.CommonUtility.Models.Enums
-@model RemoveProviderViewModel
+@model RemoveServiceViewModel
 @{
     ViewData["Title"] = "You are about to remove your details from the register of digital identity and attribute services";
     Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
@@ -8,7 +8,7 @@
 @{
     ViewData["HidePublishStatus"] = true;// setting variable to hide status field in partial view
 }
-@using (Html.BeginForm("RemoveProviderDetails", "RemoveProvider2i", FormMethod.Post))
+@using (Html.BeginForm("RemoveServiceDetails", " Removal2iCheck", FormMethod.Post))
 {
 
     @Html.HiddenFor(m => m.token)
@@ -36,7 +36,7 @@
                                 Public contact email
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @Html.DisplayFor(model => model.Provider.PublicContactEmail)
+                                @Html.DisplayFor(model => model.Service.Provider.PublicContactEmail)
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -44,7 +44,7 @@
                                 Telephone number
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @Html.DisplayFor(model => model.Provider.ProviderTelephoneNumber)
+                                @Html.DisplayFor(model => model.Service.Provider.ProviderTelephoneNumber)
                             </dd>
                         </div>
                         <div class="govuk-summary-list__row">
@@ -52,38 +52,34 @@
                                 Website address
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @Model.Provider.ProviderWebsiteAddress
+                                @Model.Service.Provider.ProviderWebsiteAddress
                             </dd>
                         </div>
                     </dl>
 
+                    <h2 class="govuk-heading-m"> Service: @Model.Service.ServiceName </h2>
+                    @await Html.PartialAsync("~/Views/Consent/PartialViews/_ServiceDetailsView.cshtml", @Model.Service)
 
-                    @foreach (var service in Model.Provider.Services)
+                    @if (@Model.Service.ServiceSupSchemeMapping != null && @Model.Service.ServiceSupSchemeMapping.Count > 0)
                     {
-                        <h2 class="govuk-heading-m"> Service: @service.ServiceName </h2>
-                        @await Html.PartialAsync("~/Views/Consent/PartialViews/_ServiceDetailsView.cshtml", service)
-
-                        @if (service.ServiceSupSchemeMapping != null && service.ServiceSupSchemeMapping.Count > 0)
-                        {
-                            if ((service.ServiceSupSchemeMapping.Any(mapping => mapping.SchemeGPG44Mapping != null && mapping.SchemeGPG44Mapping.Count > 0))
-                            || (service.ServiceSupSchemeMapping.Any(mapping => mapping.SchemeGPG45Mapping != null && mapping.SchemeGPG45Mapping.Count > 0)))
-                            {
-
-                                <h3 class="govuk-heading-m">Supplementary codes</h3>
-
-                                @await Html.PartialAsync("~/Views/PartialViews/_SchemeMappingView.cshtml", service)
-
-                            }
-                        }
-
-                        @if (service.ServiceType == ServiceTypeEnum.WhiteLabelled)
+                        if ((@Model.Service.ServiceSupSchemeMapping.Any(mapping => mapping.SchemeGPG44Mapping != null && mapping.SchemeGPG44Mapping.Count > 0))
+                        || (@Model.Service.ServiceSupSchemeMapping.Any(mapping => mapping.SchemeGPG45Mapping != null && mapping.SchemeGPG45Mapping.Count > 0)))
                         {
 
-                            @await Html.PartialAsync("~/Views/PartialViews/_UnderpinningServiceDetailsView.cshtml", service)
+                            <h3 class="govuk-heading-m">Supplementary codes</h3>
+
+                            @await Html.PartialAsync("~/Views/PartialViews/_SchemeMappingView.cshtml", @Model.Service)
 
                         }
-                        <hr class="govuk-section-break govuk-section-break--m">
                     }
+
+                    @if (@Model.Service.ServiceType == ServiceTypeEnum.WhiteLabelled)
+                    {
+
+                        @await Html.PartialAsync("~/Views/PartialViews/_UnderpinningServiceDetailsView.cshtml", @Model.Service)
+
+                    }
+                    <hr class="govuk-section-break govuk-section-break--m">
 
 
 
@@ -99,17 +95,16 @@
 
 
                     @await Html.PartialAsync("~/Views/PartialViews/_CheckBoxView.cshtml", new ConsentCheckBoxViewModel
-           {
-               PropertyName = "HasConsent",
-               Value = Model.HasConsent,
-               HasError = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0,
-               ErrorMessage = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0 ?
-                Html.ViewData.ModelState["HasConsent"].Errors[0].ErrorMessage : string.Empty,
-               Label = "I agree to remove my provider and service details from the register of digital identity and attribute services"
+                    {
+                        PropertyName = "HasConsent",
+                        Value = Model.HasConsent,
+                        HasError = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0,
+                        ErrorMessage = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0 ?
+                        Html.ViewData.ModelState["HasConsent"].Errors[0].ErrorMessage : string.Empty,
+                        Label = "I agree to remove my provider and service details from the register of digital identity and attribute services"
 
-           })
+                    })
                     <div class="govuk-button-group">
-
                         <button type="submit" class="govuk-button" data-module="govuk-button" name="action" value="remove">
                             Accept removal
                         </button>

@@ -1,7 +1,6 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
@@ -75,8 +74,7 @@ namespace DVSRegister.Controllers
             HttpContext.Session.Remove("ReasonForRemoval");
             HttpContext.Session.Remove("WhatToRemove");
 
-            GenericResponse genericResponse = await cabRemovalRequestService.UpdateRemovalStatus(CabId, providerId,
-                serviceId, UserEmail, removalReasonByCab, whatToRemove);
+            GenericResponse genericResponse = await cabRemovalRequestService.AddServiceRemovalrequest(CabId,serviceId, UserEmail, removalReasonByCab, whatToRemove);
             if (genericResponse.Success)
             {
                 ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);

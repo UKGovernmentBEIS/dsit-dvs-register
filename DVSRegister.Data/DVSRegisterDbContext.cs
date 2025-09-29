@@ -40,8 +40,8 @@ namespace DVSRegister.Data
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         public DbSet<TrustmarkNumber> TrustmarkNumber { get; set; }
         public DbSet<Event> EventLogs { get; set; }
-        public DbSet<RemoveProviderToken> RemoveProviderToken { get; set; }
-        public DbSet<RemoveTokenServiceMapping> RemoveTokenServiceMapping { get; set; }
+        //public DbSet<RemoveProviderToken> RemoveProviderToken { get; set; }
+      //  public DbSet<RemoveTokenServiceMapping> RemoveTokenServiceMapping { get; set; }
 
         public DbSet<ProviderProfileDraft> ProviderProfileDraft { get; set; }
         public DbSet<ProviderDraftToken> ProviderDraftToken { get; set; }

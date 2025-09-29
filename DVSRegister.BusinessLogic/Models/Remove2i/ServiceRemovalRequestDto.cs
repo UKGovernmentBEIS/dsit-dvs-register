@@ -1,27 +1,22 @@
-﻿using DVSRegister.CommonUtility.Models;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
-using System.ComponentModel.DataAnnotations;
+using DVSRegister.Data.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DVSRegister.Data.Entities
+namespace DVSRegister.BusinessLogic.Models.Remove2i
 {
-    public class ServiceRemovalRequest
+    public class ServiceRemovalRequestDto
     {
-        public ServiceRemovalRequest() { }
-
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey("Service")]
+     
         public int ServiceId { get; set; }
-        public Service Service { get; set; }
+        public ServiceDto Service { get; set; }
         public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
         public string? RemovalReasonByCab { get; set; }
         public string? TokenId { get; set; }
-        public string? Token { get; set; }
-
-        [ForeignKey("User")]
+        public string? Token { get; set; }    
         public int? RemovalRequestedUserId { get; set; }
         public User? RemovalRequestedUser { get; set; }
         [ForeignKey("CabUser")]
@@ -31,9 +26,5 @@ namespace DVSRegister.Data.Entities
         public DateTime? RemovalRequestTime { get; set; }// if removed by cron job there will not be requested time
         public DateTime? RemovedTime { get; set; }
         public ServiceStatusEnum PreviousServiceStatus { get; set; }
-
-        [ForeignKey("User")]
-        public int? RemovedByUserId { get; set; }
-        public User? RemovedByUser { get; set; }
     }
 }

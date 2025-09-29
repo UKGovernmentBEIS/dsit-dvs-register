@@ -1,4 +1,5 @@
-﻿using DVSRegister.CommonUtility.Models.Enums;
+﻿using DVSRegister.BusinessLogic.Users;
+using DVSRegister.CommonUtility.Models.Enums;
 
 namespace DVSRegister.BusinessLogic.Models
 {

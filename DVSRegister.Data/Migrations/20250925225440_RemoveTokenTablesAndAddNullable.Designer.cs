@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250925225440_RemoveTokenTablesAndAddNullable")]
+    partial class RemoveTokenTablesAndAddNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1027,9 +1030,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int?>("RemovalRequestedUserId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("RemovedByUserId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("RemovedTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -1044,8 +1044,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("ProviderProfileId");
 
                     b.HasIndex("RemovalRequestedUserId");
-
-                    b.HasIndex("RemovedByUserId");
 
                     b.ToTable("ProviderRemovalRequest");
                 });
@@ -1452,6 +1450,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("EditServiceTokenStatus")
+                        .HasColumnType("integer");
+
                     b.Property<string>("FileLink")
                         .HasColumnType("text");
 
@@ -1501,6 +1502,9 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("RemovalRequestedUser")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RemovalTokenStatus")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("RemovedTime")
@@ -1749,9 +1753,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int?>("RemovalRequestedUserId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("RemovedByUserId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("RemovedTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -1772,8 +1773,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("RemovalRequestedCabUserId");
 
                     b.HasIndex("RemovalRequestedUserId");
-
-                    b.HasIndex("RemovedByUserId");
 
                     b.HasIndex("ServiceId")
                         .IsUnique();
@@ -2269,15 +2268,9 @@ namespace DVSRegister.Data.Migrations
                         .WithMany()
                         .HasForeignKey("RemovalRequestedUserId");
 
-                    b.HasOne("DVSRegister.Data.Entities.User", "RemovedByUser")
-                        .WithMany()
-                        .HasForeignKey("RemovedByUserId");
-
                     b.Navigation("Provider");
 
                     b.Navigation("RemovalRequestedUser");
-
-                    b.Navigation("RemovedByUser");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.PublicInterestCheck", b =>
@@ -2611,10 +2604,6 @@ namespace DVSRegister.Data.Migrations
                         .WithMany()
                         .HasForeignKey("RemovalRequestedUserId");
 
-                    b.HasOne("DVSRegister.Data.Entities.User", "RemovedByUser")
-                        .WithMany()
-                        .HasForeignKey("RemovedByUserId");
-
                     b.HasOne("DVSRegister.Data.Entities.Service", "Service")
                         .WithOne("ServiceRemovalRequest")
                         .HasForeignKey("DVSRegister.Data.Entities.ServiceRemovalRequest", "ServiceId")
@@ -2624,8 +2613,6 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("RemovalRequestedCabUser");
 
                     b.Navigation("RemovalRequestedUser");
-
-                    b.Navigation("RemovedByUser");
 
                     b.Navigation("Service");
                 });

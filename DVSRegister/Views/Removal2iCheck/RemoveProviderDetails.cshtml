@@ -1,16 +1,14 @@
 ﻿@using DVSRegister.CommonUtility.Models.Enums
-@* TODO: update content *@
-
 @model RemoveProviderViewModel
 @{
-    ViewData["Title"] = "You are reviewing a request to remove a service provider from the register";
+    ViewData["Title"] = "You are about to remove your details from the register of digital identity and attribute services";
     Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
 }
 
 @{
     ViewData["HidePublishStatus"] = true;// setting variable to hide status field in partial view
 }
-@using (Html.BeginForm("RemoveProviderDetailsDSIT", "RemoveProvider2i", FormMethod.Post))
+@using (Html.BeginForm("RemoveProviderDetails", "Removal2iCheck", FormMethod.Post))
 {
 
     @Html.HiddenFor(m => m.token)
@@ -26,10 +24,10 @@
                         ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                     }
-                    <h1 class="govuk-heading-xl">You are reviewing a request to remove a service provider from the register</h1>
+                    <h1 class="govuk-heading-xl">You are about to remove your details from the register of digital identity and attribute services</h1>
                     <p class="govuk-body">
-                        This action will remove all the company information and any services listed
-                        under the profile
+                        This action will remove all your company information and any services listed
+                        under your profile from the register.
                     </p>
                     <h2 class="govuk-heading-m">Basic information</h2>
                     <dl class="govuk-summary-list govuk-!-margin-bottom-8">
@@ -84,7 +82,6 @@
                             @await Html.PartialAsync("~/Views/PartialViews/_UnderpinningServiceDetailsView.cshtml", service)
 
                         }
-
                         <hr class="govuk-section-break govuk-section-break--m">
                     }
 
@@ -92,36 +89,25 @@
 
                     <p class="govuk-body">Please read the following carefully before proceeding:</p>
                     <ul class="govuk-list govuk-list--bullet">
-                        <li>Review the details above and the reason for removal carefully.</li>
                         <li>
-                            You should not accept until you are satisfied that all legislative requirements
-                            have been met in relation to the provider removal.
+                            Once you confirm and select 'Accept removal', your entire record will be
+                            removed from the public register and you will receive a
+                            confirmation email.
                         </li>
-                        <li>
-                            Once you confirm and click Accept Removal , the service provider s entire
-                            record will be permanently removed from the public register and you will
-                            receive a confirmation email.
-                        </li>
-                        <li>This action cannot be undone.</li>
-                        <li>If you click Cancel removal , no changes will be made.</li>
+                        <li>If you select 'Cancel removal', no changes will be made.</li>
                     </ul>
-
-                    <p class="govuk-body">
-                        To proceed, check the box below and click Accept removal . If you do not
-                        wish to proceed, click Cancel removal .
-                    </p>
 
 
                     @await Html.PartialAsync("~/Views/PartialViews/_CheckBoxView.cshtml", new ConsentCheckBoxViewModel
-                       {
-                           PropertyName = "HasConsent",
-                           Value = Model.HasConsent,
-                           HasError = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0,
-                           ErrorMessage = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0 ?
-                            Html.ViewData.ModelState["HasConsent"].Errors[0].ErrorMessage : string.Empty,
-                           Label = "I agree to proceed with my application to join the register of digitial identity and attribute services"
+           {
+               PropertyName = "HasConsent",
+               Value = Model.HasConsent,
+               HasError = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0,
+               ErrorMessage = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0 ?
+                Html.ViewData.ModelState["HasConsent"].Errors[0].ErrorMessage : string.Empty,
+               Label = "I agree to remove my provider and service details from the register of digital identity and attribute services"
 
-                       })
+           })
                     <div class="govuk-button-group">
 
                         <button type="submit" class="govuk-button" data-module="govuk-button" name="action" value="remove">
