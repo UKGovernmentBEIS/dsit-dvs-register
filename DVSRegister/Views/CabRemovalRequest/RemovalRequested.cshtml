@@ -14,10 +14,10 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-xl">
-                    You have requested to remove @(ViewBag.WhatToRemove == "service" ? "a service" : "this provider") from the register
+                    You have requested to remove @(ViewBag.IsProviderRemoval == true ? "this provider" : "a service") from the register
                 </h1>
 
-                @if (ViewBag.WhatToRemove == "service")
+                @if (!ViewBag.IsProviderRemoval == true)
                 {
                     <div class="govuk-summary-card">
                         <div class="govuk-summary-card__title-wrapper">

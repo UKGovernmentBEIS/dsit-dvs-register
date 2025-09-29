@@ -9,7 +9,6 @@ using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
-using DVSRegister.Models.CAB.Service;
 using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
 

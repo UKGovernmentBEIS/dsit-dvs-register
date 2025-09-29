@@ -1,0 +1,52 @@
+﻿@model DVSRegister.BusinessLogic.Models.CAB.ServiceDto
+
+@{
+    ViewData["Title"] = "You are requesting to remove both the service and the provider from the register";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ReasonForRemoval", "CabRemovalRequest", new { serviceId = Model.Id, providerId = Model.Provider.Id }, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">
+                    @ViewData["Title"]
+                </h1>
+                <table class="govuk-table">                  
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">Service name</th>
+                            <th scope="col" class="govuk-table__header">Provider’s registered name</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">@Model.ServiceName</td>
+                            <td class="govuk-table__cell">@Model.Provider.RegisteredName</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <p class="govuk-body">
+                    The service you are requesting to remove is the only service published under
+                    the provider on the register. Removing this service will remove the provider
+                    from the register.
+                </p>
+                <p class="govuk-body">
+                    Select ‘Continue’ if you wish to proceed.
+                </p>
+
+                <div class="govuk-button-group govuk-!-margin-top-6">                  
+                    <a class="govuk-button" href="about-to-remove?serviceId=@Model.Id" role="button">
+                      Continue
+                    </a>
+                    <a class="govuk-button govuk-button--secondary" href="reason-for-removing?providerId=@Model.Provider.Id&serviceId=@Model.Id" role="button">
+                        Cancel and back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
