@@ -366,11 +366,8 @@ namespace DVSRegister.Data.CAB
                                 .FirstOrDefaultAsync(p => p.Id == service.ProviderProfileId);
 
                             if (existingProvider != null)
-                            {
-                                var services = existingProvider.Services;
-                                var providerStatus = RepositoryHelper.GetProviderStatus(services, existingProvider.ProviderStatus);
-                                existingProvider.ModifiedTime = DateTime.UtcNow;
-                                existingProvider.ProviderStatus = providerStatus;
+                            {                                               
+                                existingProvider.ModifiedTime = DateTime.UtcNow;                               
                             }
                         }
                         var entity = await context.Service.AddAsync(service);

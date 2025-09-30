@@ -137,7 +137,7 @@ namespace DVSRegister.Data
                 if (currentRequest != null && provider!=null && provider.IsInRegister)
                 {
                     provider.ModifiedTime = DateTime.UtcNow;
-                    provider.ProviderStatus = ProviderStatusEnum.Published;
+                    provider.ProviderStatus = ProviderStatusEnum.NA;
 
                     context.ProviderRemovalRequest.Remove(currentRequest);
 
@@ -259,8 +259,7 @@ namespace DVSRegister.Data
                         await context.ProviderRemovalRequest.AddAsync(providerRemovalRequest);
 
                         provider.ModifiedTime = DateTime.UtcNow;
-                        provider.IsInRegister = false;
-                        provider.ProviderStatus = ProviderStatusEnum.RemovedFromRegister;
+                        provider.IsInRegister = false;                     
                     }
 
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveProvider2i, loggedInUserEmail);

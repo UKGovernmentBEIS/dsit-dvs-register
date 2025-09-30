@@ -21,104 +21,104 @@ namespace DVSRegister.UnitTests.Repository
             logger = Substitute.For<ILogger<CabRemovalRequestRepository>>();
         }
 
-        [Fact]
-        public async Task UpdateRemovalStatus_ReturnSuccess()
-        {
-            InitializeDbContext(out DVSRegisterDbContext dbContext);
-            var cabRemovalRequestRepository = new CabRemovalRequestRepository(dbContext, logger);
+        //[Fact]
+        //public async Task UpdateRemovalStatus_ReturnSuccess()
+        //{
+        //    InitializeDbContext(out DVSRegisterDbContext dbContext);
+        //    var cabRemovalRequestRepository = new CabRemovalRequestRepository(dbContext, logger);
 
-            int cabUserId = 1;
-            int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
-            int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
+        //    int cabUserId = 1;
+        //    int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
+        //    int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
 
-            var removalResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(cabUserId, providerProfileId, serviceId, "test.user123@test.com", "test");
+        //    var removalResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(cabUserId, providerProfileId, serviceId, "test.user123@test.com", "test");
 
-            var service = await dbContext.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
+        //    var service = await dbContext.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
 
-            Assert.True(removalResponse.Success);
-            Assert.NotNull(service);
-            Assert.Equal(ServiceStatusEnum.CabAwaitingRemovalConfirmation, service.ServiceStatus);
-            Assert.Equal("test", service.RemovalReasonByCab);
-        }
+        //    Assert.True(removalResponse.Success);
+        //    Assert.NotNull(service);
+        //    Assert.Equal(ServiceStatusEnum.CabAwaitingRemovalConfirmation, service.ServiceStatus);
+        //    Assert.Equal("test", service.RemovalReasonByCab);
+        //}
 
-        [Fact]
-        public async Task UpdateRemovalStatus_NullService_ReturnFailure()
-        {
-            InitializeDbContext(out DVSRegisterDbContext dbContext);
-            var cabRemovalRequestRepository = new CabRemovalRequestRepository(dbContext, logger);
+        //[Fact]
+        //public async Task UpdateRemovalStatus_NullService_ReturnFailure()
+        //{
+        //    InitializeDbContext(out DVSRegisterDbContext dbContext);
+        //    var cabRemovalRequestRepository = new CabRemovalRequestRepository(dbContext, logger);
 
-            int cabUserId = 1;
-            int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
-            int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
+        //    int cabUserId = 1;
+        //    int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
+        //    int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
 
-            var removalResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(cabUserId, providerProfileId, serviceId, "test.user123@test.com", "test");
+        //    var removalResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(cabUserId, providerProfileId, serviceId, "test.user123@test.com", "test");
 
-            var service = await dbContext.Service.Where(s => s.Id == 3 && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
-            Assert.Null(service);
-        }
+        //    var service = await dbContext.Service.Where(s => s.Id == 3 && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
+        //    Assert.Null(service);
+        //}
 
-        [Fact]
-        public async Task UpdateRemovalStatus_WrongCabId_ReturnFailure()
-        {
-            InitializeDbContext(out DVSRegisterDbContext dbContext);
-            var cabRemovalRequestRepository = new CabRemovalRequestRepository(dbContext, logger);
+        //[Fact]
+        //public async Task UpdateRemovalStatus_WrongCabId_ReturnFailure()
+        //{
+        //    InitializeDbContext(out DVSRegisterDbContext dbContext);
+        //    var cabRemovalRequestRepository = new CabRemovalRequestRepository(dbContext, logger);
 
-            int cabUserId = 1;
-            int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
-            int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
+        //    int cabUserId = 1;
+        //    int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
+        //    int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
 
-            int wrongCabId = cabUserId + 1;
+        //    int wrongCabId = cabUserId + 1;
 
-            var removalResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(wrongCabId, providerProfileId, serviceId, "test.user123@test.com", "test");
+        //    var removalResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(wrongCabId, providerProfileId, serviceId, "test.user123@test.com", "test");
 
-            var service = await dbContext.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
-            Assert.False(removalResponse.Success);
-            Assert.NotNull(service);
-            Assert.NotEqual(ServiceStatusEnum.CabAwaitingRemovalConfirmation, service.ServiceStatus);
-            Assert.NotEqual("test", service.RemovalReasonByCab);
-        }
+        //    var service = await dbContext.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
+        //    Assert.False(removalResponse.Success);
+        //    Assert.NotNull(service);
+        //    Assert.NotEqual(ServiceStatusEnum.CabAwaitingRemovalConfirmation, service.ServiceStatus);
+        //    Assert.NotEqual("test", service.RemovalReasonByCab);
+        //}
 
-        [Fact]
-        public async Task UpdateRemovalStatus_WrongProviderId_ReturnFailure()
-        {
-            InitializeDbContext(out DVSRegisterDbContext dbContext);
-            var cabRemovalRequestRepository = new CabRemovalRequestRepository(dbContext, logger);
+        //[Fact]
+        //public async Task UpdateRemovalStatus_WrongProviderId_ReturnFailure()
+        //{
+        //    InitializeDbContext(out DVSRegisterDbContext dbContext);
+        //    var cabRemovalRequestRepository = new CabRemovalRequestRepository(dbContext, logger);
 
-            int cabUserId = 1;
-            int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
-            int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
+        //    int cabUserId = 1;
+        //    int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
+        //    int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
 
-            int wrongProviderProfileId = providerProfileId + 1;
+        //    int wrongProviderProfileId = providerProfileId + 1;
 
-            var removalResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(cabUserId, wrongProviderProfileId, serviceId, "test.user123@test.com", "test");
+        //    var removalResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(cabUserId, wrongProviderProfileId, serviceId, "test.user123@test.com", "test");
 
-            var service = await dbContext.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
-            Assert.False(removalResponse.Success);
-            Assert.NotNull(service);
-            Assert.NotEqual(ServiceStatusEnum.CabAwaitingRemovalConfirmation, service.ServiceStatus);
-            Assert.NotEqual("test", service.RemovalReasonByCab);
-        }
+        //    var service = await dbContext.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
+        //    Assert.False(removalResponse.Success);
+        //    Assert.NotNull(service);
+        //    Assert.NotEqual(ServiceStatusEnum.CabAwaitingRemovalConfirmation, service.ServiceStatus);
+        //    Assert.NotEqual("test", service.RemovalReasonByCab);
+        //}
 
-        [Fact]
-        public async Task UpdateRemovalStatus_WrongServiceId_ReturnFailure()
-        {
-            InitializeDbContext(out DVSRegisterDbContext dbContext);
-            var cabRemovalRequestRepository = new CabRemovalRequestRepository(dbContext, logger);
+        //[Fact]
+        //public async Task UpdateRemovalStatus_WrongServiceId_ReturnFailure()
+        //{
+        //    InitializeDbContext(out DVSRegisterDbContext dbContext);
+        //    var cabRemovalRequestRepository = new CabRemovalRequestRepository(dbContext, logger);
 
-            int cabUserId = 1;
-            int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
-            int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
+        //    int cabUserId = 1;
+        //    int providerProfileId = await SaveProviderProfileAsync("company name", "test@test.com", cabUserId, dbContext);
+        //    int serviceId = await SaveServiceAsync(providerProfileId, dbContext);
 
-            int wrongServiceId = serviceId + 1;
+        //    int wrongServiceId = serviceId + 1;
 
-            var removalResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(cabUserId, providerProfileId, wrongServiceId, "test.user123@test.com", "test");
+        //    var removalResponse = await cabRemovalRequestRepository.UpdateRemovalStatus(cabUserId, providerProfileId, wrongServiceId, "test.user123@test.com", "test");
 
-            var service = await dbContext.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
-            Assert.False(removalResponse.Success);
-            Assert.NotNull(service);
-            Assert.NotEqual(ServiceStatusEnum.CabAwaitingRemovalConfirmation, service.ServiceStatus);
-            Assert.NotEqual("test", service.RemovalReasonByCab);
-        }
+        //    var service = await dbContext.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabUserId).FirstOrDefaultAsync();
+        //    Assert.False(removalResponse.Success);
+        //    Assert.NotNull(service);
+        //    Assert.NotEqual(ServiceStatusEnum.CabAwaitingRemovalConfirmation, service.ServiceStatus);
+        //    Assert.NotEqual("test", service.RemovalReasonByCab);
+        //}
 
         #region Private methods
 

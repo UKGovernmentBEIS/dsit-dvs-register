@@ -17,33 +17,7 @@ namespace DVSRegister.Data.CabRemovalRequest
             this.logger = logger;
         }
 
-        public async Task<GenericResponse> UpdateRemovalStatus(int cabId,int providerProfileId, int serviceId, string loggedInUserEmail, string removalReasonByCab)
-        {
-            GenericResponse genericResponse = new();    
-            using var transaction = await context.Database.BeginTransactionAsync();
-            try
-            {
-                var service = await context.Service.Where(s => s.Id == serviceId && s.ProviderProfileId == providerProfileId && s.CabUser.CabId == cabId).FirstOrDefaultAsync();
-                service.ServiceStatus = ServiceStatusEnum.CabAwaitingRemovalConfirmation;
-                service.ModifiedTime = DateTime.UtcNow;
-                service.RemovalRequestTime = DateTime.UtcNow;
-                service.RemovalReasonByCab = removalReasonByCab;
-                //update provider status
-                var providerEntity = await context.ProviderProfile.Include(p => p.Services).FirstOrDefaultAsync(e => e.Id == providerProfileId);
-                ProviderStatusEnum providerStatus = RepositoryHelper.GetProviderStatus(providerEntity.Services, providerEntity.ProviderStatus);
-                providerEntity.ProviderStatus = providerStatus;
-                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveServiceRequestedByCab, loggedInUserEmail);    
-                await transaction.CommitAsync();
-                genericResponse.Success = true;
-            }
-            catch (Exception ex)
-            {
-                genericResponse.Success = false;
-                await transaction.RollbackAsync();
-                logger.LogError($"Error in UpdateRemovalStatus method: '{ex.Message}'");
-            }
-            return genericResponse;
-        }
+      
 
 
         public async Task<GenericResponse> AddServiceRemovalRequest(int cabId, int serviceId, string loggedInUserEmail, string removalReasonByCab)
