@@ -3,7 +3,6 @@ using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CabTransfer;
 using DVSRegister.Data.Entities;
 
@@ -11,15 +10,13 @@ namespace DVSRegister.BusinessLogic.Services.CabTransfer
 {
     public class CabTransferService: ICabTransferService
     {
-        private readonly ICabTransferRepository cabTransferRepository;
-        private readonly IRemoveProviderService removeProviderService;
+        private readonly ICabTransferRepository cabTransferRepository;     
         private readonly CabTransferEmailSender emailSender;
         private readonly IMapper automapper;
 
-        public CabTransferService(ICabTransferRepository cabTransferRepository, IRemoveProviderService removeProviderService, CabTransferEmailSender emailSender, IMapper automapper)
+        public CabTransferService(ICabTransferRepository cabTransferRepository, CabTransferEmailSender emailSender, IMapper automapper)
         {
-            this.cabTransferRepository = cabTransferRepository;
-            this.removeProviderService = removeProviderService;
+            this.cabTransferRepository = cabTransferRepository;        
             this.emailSender = emailSender;
             this.automapper = automapper;            
         }
@@ -50,12 +47,7 @@ namespace DVSRegister.BusinessLogic.Services.CabTransfer
             GenericResponse genericResponse = await cabTransferRepository.ApproveOrCancelTransferRequest(approve,requestId,providerProfileId, loggedInUserEmail);
 
             if (genericResponse.Success)
-            {               
-
-                genericResponse = await removeProviderService.UpdateProviderStatus(providerProfileId, loggedInUserEmail, EventTypeEnum.ApproveOrRejectReAssign, TeamEnum.CAB);
-
-                if (!genericResponse.Success)
-                    return genericResponse;
+            { 
 
                 var fullRequest = await cabTransferRepository.GetCabTransferRequestDetails(requestId);
                 string serviceName = fullRequest.Service.ServiceName;
