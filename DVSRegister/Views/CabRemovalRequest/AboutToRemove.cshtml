@@ -19,68 +19,28 @@
                 </h1>
             </div>
 
-            @if (!ViewBag.IsProviderRemoval == true)
-            {
-                <div class="govuk-grid-column-full">
-                    <div class="govuk-summary-card">
-                        <div class="govuk-summary-card__title-wrapper">
-                            <h2 class="govuk-summary-card__title">Service: @Model.ServiceName</h2>
-                        </div>
-                        <div class="govuk-summary-card__content">
-                            <dl class="govuk-summary-list">
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Service name</dt>
-                                    <dd class="govuk-summary-list__value">@Model.ServiceName</dd>
-                                </div>
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Status</dt>
-                                    <dd class="govuk-summary-list__value">@HtmlExtensions.ToStyledStrongTag(Model.ServiceStatus)</dd>
-                                </div>
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Provider registered name</dt>
-                                    <dd class="govuk-summary-list__value">@Model.Provider.RegisteredName</dd>
-                                </div>
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Conformity Assessment Body</dt>
-                                    <dd class="govuk-summary-list__value">@Model.CabUser.Cab.CabName</dd>
-                                </div>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="govuk-grid-column-full">
-                    <table class="govuk-table">
-                        <thead class="govuk-table__head">
-                            <tr class="govuk-table__row">
-                                <th scope="col" class="govuk-table__header">Registered Name</th>
-                                <th scope="col" class="govuk-table__header">Trading Name</th>
-                                <th scope="col" class="govuk-table__header">Services</th>
-                                <th scope="col" class="govuk-table__header">Last Updated (GMT)</th>
-                            </tr>
-                        </thead>
-                        <tbody class="govuk-table__body">
-                            <tr class="govuk-table__row">
-                                <td class="govuk-table__cell">@Model.Provider.RegisteredName</td>
-                                <td class="govuk-table__cell">
-                                    @Html.DisplayFor(model => model.Provider.TradingName)
-                                </td>
-                                <td class="govuk-table__cell">
-                                    @foreach (var item in Model.Provider.Services.Where(s => s.ServiceStatus != ServiceStatusEnum.Removed))
-                                    {
-                                        @item.ServiceName
-
-                                        <br />
-                                    }
-                                </td>
-                                <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.Provider.ModifiedTime)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            }
+            <div class="govuk-grid-column-full">
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">Registered Name</th>
+                            <th scope="col" class="govuk-table__header">Trading Name</th>
+                            <th scope="col" class="govuk-table__header">Services</th>
+                            <th scope="col" class="govuk-table__header">Last Updated (GMT)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell">@Model.Provider.RegisteredName</td>
+                            <td class="govuk-table__cell">
+                                @Html.DisplayFor(model => model.Provider.TradingName)
+                            </td>
+                            <td class="govuk-table__cell">@Model.ServiceName  </td>
+                            <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.ModifiedTime)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <div class="govuk-grid-column-three-quarters">
                 <h2 class="govuk-heading-m govuk-!-margin-top-6">Selected reason for removing this service</h2>

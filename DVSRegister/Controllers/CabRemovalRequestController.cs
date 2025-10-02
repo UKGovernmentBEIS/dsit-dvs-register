@@ -34,12 +34,11 @@ namespace DVSRegister.Controllers
 
 
         [HttpPost("reason-for-removing")]
-        public async Task<IActionResult> SaveReasonForRemoval(RemovalRequestViewModel removalRequestViewModel)
+        public  IActionResult SaveReasonForRemoval(RemovalRequestViewModel removalRequestViewModel)
         {
             if (ModelState.IsValid)
             {
-                HttpContext.Session.SetString("ReasonForRemoval", removalRequestViewModel.RemovalReasonByCab);
-             
+                HttpContext.Session.SetString("ReasonForRemoval", removalRequestViewModel.RemovalReasonByCab);             
                 if (removalRequestViewModel.IsProviderRemoval)
                 {
                     return RedirectToAction("ProviderWillBeRemoved", new { serviceId = removalRequestViewModel.ServiceId });

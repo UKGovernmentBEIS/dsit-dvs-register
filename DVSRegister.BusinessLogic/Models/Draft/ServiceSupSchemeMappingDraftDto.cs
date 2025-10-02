@@ -1,5 +1,4 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Models.DSITEdit2i;
 
 namespace DVSRegister.BusinessLogic.Models
 {

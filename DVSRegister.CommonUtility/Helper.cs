@@ -27,28 +27,7 @@ namespace DVSRegister.CommonUtility
 
             return qrCodeImageAsBase64;
         }
-        public static string ConcatenateKeyValuePairs(Dictionary<string, List<string>> data)
-        {
-            var result = new StringBuilder();
-
-            foreach (var kvp in data)
-            {
-                result.Append(kvp.Key + ": ");
-                if (kvp.Value.Count > 1)
-                {
-                    string values = string.Join(",", kvp.Value);
-                    result.Append(values);
-                }
-                else
-                {
-                    result.Append(kvp.Value[0]);
-                }
-
-                result.AppendLine();
-            }
-
-            return result.ToString();
-        }
+    
 
         public static class LoggingHelper
         {

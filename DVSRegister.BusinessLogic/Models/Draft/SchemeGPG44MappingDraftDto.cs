@@ -1,6 +1,6 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 
-namespace DVSRegister.BusinessLogic.Models.DSITEdit2i
+namespace DVSRegister.BusinessLogic.Models
 {
     public class SchemeGPG44MappingDraftDto
     {       

@@ -29,12 +29,9 @@ namespace DVSRegister.BusinessLogic.Services
 
                 if (isProviderRemoval)
                 {
-                 
-                    if (service != null)
-                    {
-                        await emailSender.RecordRemovalRequestByCabToDSIT(service.Provider.RegisteredName, service.ServiceName, removalReasonByCab);
-                        await emailSender.RecordRemovalRequestConfirmationToCab(loggedInUserEmail, loggedInUserEmail, service.Provider.RegisteredName, service.ServiceName, removalReasonByCab);
-                    }
+
+                    await emailSender.RecordRemovalRequestByCabToDSIT(service.Provider.RegisteredName, service.ServiceName, removalReasonByCab);
+                    await emailSender.RecordRemovalRequestConfirmationToCab(loggedInUserEmail, loggedInUserEmail, service.Provider.RegisteredName, service.ServiceName, removalReasonByCab);
                 }
                 else
                 {                    

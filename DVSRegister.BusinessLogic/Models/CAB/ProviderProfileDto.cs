@@ -44,8 +44,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
-        public DateTimeInfoDto LastUpdatedInfo { get; set; }
-        public RemovalReasonsEnum? RemovalReason { get; set; }
+        public DateTimeInfoDto LastUpdatedInfo { get; set; }       
 
         [JsonIgnore]
         public ICollection<ProviderProfileCabMappingDto>? ProviderProfileCabMapping { get; set; }
