@@ -240,6 +240,7 @@ namespace DVSRegister.Data
                 {
                     existingService.IsInRegister = false;
                     existingService.ModifiedTime = DateTime.UtcNow;
+                    existingService.ServiceStatus = ServiceStatusEnum.Removed;
                     serviceRemovalRequest.RemovedTime = DateTime.UtcNow;
                     serviceRemovalRequest.Token = null;
                     serviceRemovalRequest.TokenId = null;
@@ -249,18 +250,15 @@ namespace DVSRegister.Data
                     {                      
 
                         ProviderRemovalRequest providerRemovalRequest = new ();
-                        providerRemovalRequest.RemovedTime = DateTime.UtcNow;
-                        providerRemovalRequest.RemovalRequestedUserId = context.User
-                            .Where(u => u.Email == loggedInUserEmail)
-                            .Select(u => u.Id)
-                            .FirstOrDefault();
+                        providerRemovalRequest.RemovedTime = DateTime.UtcNow;                       
                         providerRemovalRequest.IsRequestPending = false;
                         providerRemovalRequest.ProviderProfileId = provider.Id;
                         providerRemovalRequest.PreviousProviderStatus = provider.ProviderStatus;
                         await context.ProviderRemovalRequest.AddAsync(providerRemovalRequest);
 
                         provider.ModifiedTime = DateTime.UtcNow;
-                        provider.IsInRegister = false;                     
+                        provider.IsInRegister = false;
+                        provider.ProviderStatus = ProviderStatusEnum.NA;
                     }
 
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveProvider2i, loggedInUserEmail);
