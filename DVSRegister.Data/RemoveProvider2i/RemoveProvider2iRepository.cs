@@ -91,6 +91,7 @@ namespace DVSRegister.Data
                 {
                     existingProvider.IsInRegister = false;
                     existingProvider.ModifiedTime = DateTime.UtcNow;
+                    existingProvider.ProviderStatus = ProviderStatusEnum.NA;
                     providerRemovalRequest.RemovedTime = DateTime.UtcNow;
                     providerRemovalRequest.Token = null;
                     providerRemovalRequest.TokenId = null;
