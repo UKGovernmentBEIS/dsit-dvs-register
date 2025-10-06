@@ -1001,6 +1001,55 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("ProviderProfileDraft");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderRemovalRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsRequestPending")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("PreviousProviderStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProviderProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RemovalReason")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RemovalRequestTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("RemovalRequestedUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RemovedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RemovedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderProfileId");
+
+                    b.HasIndex("RemovalRequestedUserId");
+
+                    b.HasIndex("RemovedByUserId");
+
+                    b.ToTable("ProviderRemovalRequest");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.PublicInterestCheck", b =>
                 {
                     b.Property<int>("Id")
@@ -1194,61 +1243,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("ProviderProfileId");
 
                     b.ToTable("RegisterPublishLog");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveProviderToken", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("ModifiedTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("ProviderProfileId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TokenId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProviderProfileId");
-
-                    b.ToTable("RemoveProviderToken");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveTokenServiceMapping", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("RemoveProviderTokenId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RemoveProviderTokenId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("RemoveTokenServiceMapping");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.RequestManagement", b =>
@@ -1458,9 +1452,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("CreatedTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("EditServiceTokenStatus")
-                        .HasColumnType("integer");
-
                     b.Property<string>("FileLink")
                         .HasColumnType("text");
 
@@ -1510,9 +1501,6 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int?>("RemovalRequestedUser")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("RemovalTokenStatus")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("RemovedTime")
@@ -1643,40 +1631,6 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("ServiceDraft");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceDraftToken", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("ModifiedTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("ServiceDraftId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TokenId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServiceDraftId");
-
-                    b.HasIndex("Token");
-
-                    b.HasIndex("TokenId");
-
-                    b.ToTable("ServiceDraftToken");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceIdentityProfileMapping", b =>
                 {
                     b.Property<int>("Id")
@@ -1767,6 +1721,64 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("ServiceDraftId");
 
                     b.ToTable("ServiceQualityLevelMappingDraft");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceRemovalRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsRequestPending")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("PreviousServiceStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RemovalReasonByCab")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RemovalRequestTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("RemovalRequestedCabUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RemovalRequestedUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RemovedByUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("RemovedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ServiceRemovalReason")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenId")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RemovalRequestedCabUserId");
+
+                    b.HasIndex("RemovalRequestedUserId");
+
+                    b.HasIndex("RemovedByUserId");
+
+                    b.HasIndex("ServiceId")
+                        .IsUnique();
+
+                    b.ToTable("ServiceRemovalRequest");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceRoleMapping", b =>
@@ -2245,6 +2257,29 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ProviderRemovalRequest", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
+                        .WithMany("ProviderRemovalRequests")
+                        .HasForeignKey("ProviderProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "RemovalRequestedUser")
+                        .WithMany()
+                        .HasForeignKey("RemovalRequestedUserId");
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "RemovedByUser")
+                        .WithMany()
+                        .HasForeignKey("RemovedByUserId");
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("RemovalRequestedUser");
+
+                    b.Navigation("RemovedByUser");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.PublicInterestCheck", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.User", "PrimaryCheckUser")
@@ -2298,36 +2333,6 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Provider");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveProviderToken", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
-                        .WithMany()
-                        .HasForeignKey("ProviderProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Provider");
-                });
-
-            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveTokenServiceMapping", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.RemoveProviderToken", "RemoveProviderToken")
-                        .WithMany("RemoveTokenServiceMapping")
-                        .HasForeignKey("RemoveProviderTokenId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RemoveProviderToken");
-
-                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.RequestManagement", b =>
@@ -2520,17 +2525,6 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceDraftToken", b =>
-                {
-                    b.HasOne("DVSRegister.Data.Entities.ServiceDraft", "ServiceDraft")
-                        .WithMany()
-                        .HasForeignKey("ServiceDraftId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ServiceDraft");
-                });
-
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceIdentityProfileMapping", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.IdentityProfile", "IdentityProfile")
@@ -2605,6 +2599,35 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("QualityLevel");
 
                     b.Navigation("ServiceDraft");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ServiceRemovalRequest", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.CabUser", "RemovalRequestedCabUser")
+                        .WithMany()
+                        .HasForeignKey("RemovalRequestedCabUserId");
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "RemovalRequestedUser")
+                        .WithMany()
+                        .HasForeignKey("RemovalRequestedUserId");
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "RemovedByUser")
+                        .WithMany()
+                        .HasForeignKey("RemovedByUserId");
+
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithOne("ServiceRemovalRequest")
+                        .HasForeignKey("DVSRegister.Data.Entities.ServiceRemovalRequest", "ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RemovalRequestedCabUser");
+
+                    b.Navigation("RemovalRequestedUser");
+
+                    b.Navigation("RemovedByUser");
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceRoleMapping", b =>
@@ -2725,12 +2748,9 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("ProviderProfileDraft")
                         .IsRequired();
 
-                    b.Navigation("Services");
-                });
+                    b.Navigation("ProviderRemovalRequests");
 
-            modelBuilder.Entity("DVSRegister.Data.Entities.RemoveProviderToken", b =>
-                {
-                    b.Navigation("RemoveTokenServiceMapping");
+                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
@@ -2752,6 +2772,8 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("ServiceIdentityProfileMapping");
 
                     b.Navigation("ServiceQualityLevelMapping");
+
+                    b.Navigation("ServiceRemovalRequest");
 
                     b.Navigation("ServiceRoleMapping");
 

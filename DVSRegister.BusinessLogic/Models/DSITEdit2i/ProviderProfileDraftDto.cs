@@ -1,6 +1,6 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Users;
 using DVSRegister.CommonUtility;
-using DVSRegister.Data.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.BusinessLogic.Models

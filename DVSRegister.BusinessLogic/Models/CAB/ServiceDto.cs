@@ -37,11 +37,9 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public CertificateReviewDto CertificateReview { get; set; }
         public PublicInterestCheckDto PublicInterestCheck { get; set; }
         [JsonIgnore]
-        public ProceedApplicationConsentTokenDto ProceedApplicationConsentToken { get; set; }
-
-     
-        public string? RemovalReasonByCab { get; set; }
-        public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
+        public ProceedApplicationConsentTokenDto ProceedApplicationConsentToken { get; set; }   
+      
+   
         [JsonIgnore]
         public ICollection<CabTransferRequestDto> CabTransferRequest { get; set; }
 
@@ -60,6 +58,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
 
         public bool? IsUnderPinningServicePublished { get; set; }
         public ServiceDraftDto? serviceDraft { get; set; }
+        public bool IsInRegister { get; set; }
+
 
     }
 }

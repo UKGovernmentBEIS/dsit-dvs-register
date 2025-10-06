@@ -69,7 +69,7 @@ namespace DVSRegister.Data.CabTransfer
         public async Task<CabTransferRequest> GetCabTransferRequestDetails(int requestId)
         {
             return await context.CabTransferRequest.Include(r => r.Service).ThenInclude(r => r.Provider)            
-            .Include(r => r.FromCabUser).Where(r => r.Id == requestId).FirstOrDefaultAsync() ?? new CabTransferRequest();
+            .Include(r => r.FromCabUser).ThenInclude(s=>s.Cab).Where(r => r.Id == requestId).FirstOrDefaultAsync() ?? new CabTransferRequest();
         }
 
         public async Task<GenericResponse> ApproveOrCancelTransferRequest(bool approve, int requestId,int providerProfileId,  string loggedInUserEmail)
@@ -81,7 +81,9 @@ namespace DVSRegister.Data.CabTransfer
                 
                 var entity = await context.CabTransferRequest.Include(c=>c.RequestManagement).Include(c=>c.Service).Where(x=>x.Id == requestId).FirstOrDefaultAsync();
                 var cabUser = await context.CabUser.Where(x => x.CabEmail == loggedInUserEmail && x.IsActive).FirstOrDefaultAsync();
-               
+                var previousVersions = await context.Service.Where(x => x.ServiceKey == entity.Service.ServiceKey && x.ServiceVersion < entity.Service.ServiceVersion).ToListAsync();
+                var inProgressServices = await context.Service.Include(c=>c.CertificateReview).Include(p=>p.PublicInterestCheck)
+                    .Where(x => x.ServiceKey == entity.Service.ServiceKey && x.ServiceVersion > entity.Service.ServiceVersion).ToListAsync();
                 if (entity != null && entity.RequestManagement != null && entity.Service != null && 
                 (entity.Service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || entity.Service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
                 {
@@ -98,6 +100,17 @@ namespace DVSRegister.Data.CabTransfer
                         }
                         entity.RequestManagement.RequestStatus = RequestStatusEnum.Approved;
                         entity.Service.CabUserId =  cabUser.Id;
+                        entity.Service.IsCurrent = true;
+                        foreach(var previousService in previousVersions)
+                        {
+                            previousService.CabUserId = cabUser.Id;
+                            previousService.ModifiedTime = DateTime.UtcNow;
+                        }
+
+                        foreach (var inProgressService in inProgressServices)
+                        {
+                            context.Service.Remove(inProgressService);
+                        }
                     }
                     else
                     {

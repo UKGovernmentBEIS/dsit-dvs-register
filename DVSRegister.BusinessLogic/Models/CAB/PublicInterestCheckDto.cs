@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Users;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using System.Text.Json.Serialization;

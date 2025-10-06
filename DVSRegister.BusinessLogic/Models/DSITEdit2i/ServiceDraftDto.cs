@@ -2,8 +2,8 @@
 
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.DSITEdit2i;
+using DVSRegister.BusinessLogic.Users;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic.Models
 {

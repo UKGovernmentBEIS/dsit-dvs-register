@@ -35,6 +35,7 @@
         ProviderEdit2i = 29,
         ServiceEdit2i = 30,
         ServiceAmendments = 31,
-        ApproveOrRejectReAssign = 32
+        ApproveOrRejectReAssign = 32,
+        CancelRemovalRequest = 33
     }
 }

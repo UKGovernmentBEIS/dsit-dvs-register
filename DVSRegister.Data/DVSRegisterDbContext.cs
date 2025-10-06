@@ -40,13 +40,13 @@ namespace DVSRegister.Data
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         public DbSet<TrustmarkNumber> TrustmarkNumber { get; set; }
         public DbSet<Event> EventLogs { get; set; }
-        public DbSet<RemoveProviderToken> RemoveProviderToken { get; set; }
-        public DbSet<RemoveTokenServiceMapping> RemoveTokenServiceMapping { get; set; }
+        //public DbSet<RemoveProviderToken> RemoveProviderToken { get; set; }
+      //  public DbSet<RemoveTokenServiceMapping> RemoveTokenServiceMapping { get; set; }
 
         public DbSet<ProviderProfileDraft> ProviderProfileDraft { get; set; }
         public DbSet<ProviderDraftToken> ProviderDraftToken { get; set; }
         public DbSet<ServiceDraft> ServiceDraft { get; set; }
-        public DbSet<ServiceDraftToken> ServiceDraftToken { get; set; }
+     
         public DbSet<ServiceRoleMappingDraft> ServiceRoleMappingDraft { get; set; }
         public DbSet<ServiceQualityLevelMappingDraft> ServiceQualityLevelMappingDraft { get; set; }
         public DbSet<ServiceIdentityProfileMappingDraft> ServiceIdentityProfileMappingDraft { get; set; }
@@ -64,6 +64,8 @@ namespace DVSRegister.Data
         public DbSet<SchemeGPG45MappingDraft> SchemeGPG45MappingDraft { get; set; }
         public DbSet<SchemeGPG44MappingDraft> SchemeGPG44MappingDraft { get; set; }
         public DbSet<ManualUnderPinningServiceDraft> ManualUnderPinningServiceDraft { get; set; }
+        public DbSet<ProviderRemovalRequest> ProviderRemovalRequest { get; set; }
+        public DbSet<ServiceRemovalRequest> ServiceRemovalRequest { get; set; }
 
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {

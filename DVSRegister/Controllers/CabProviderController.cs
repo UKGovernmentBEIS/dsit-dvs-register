@@ -904,7 +904,7 @@ namespace DVSRegister.Controllers
                 providerDto.ProviderTelephoneNumber = model.ProviderTelephoneNumber;
                 providerDto.ProviderWebsiteAddress = model.ProviderWebsiteAddress;
                 providerDto.ProviderProfileCabMapping = [new ProviderProfileCabMappingDto { CabId = CabId }];
-                providerDto.ProviderStatus = ProviderStatusEnum.Unpublished;
+                providerDto.ProviderStatus = ProviderStatusEnum.NA;
                 providerDto.CreatedTime = DateTime.UtcNow;
             }
 
