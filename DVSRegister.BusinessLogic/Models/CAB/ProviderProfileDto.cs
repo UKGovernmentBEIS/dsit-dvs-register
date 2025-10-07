@@ -51,5 +51,6 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public ICollection<ProviderProfileCabMappingDto>? ProviderProfileCabMapping { get; set; }
         public bool HasPendingCertificateUpload { get; set; }
         public string ProviderServiceNames { get; set; }
+        public bool IsInRegister { get; set; }
     }
 }

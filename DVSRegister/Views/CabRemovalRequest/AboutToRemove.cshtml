@@ -10,16 +10,16 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ReasonForRemoval", "CabRemovalRequest", new { providerid = Model.ProviderProfileId, serviceId = Model.Id, whatToRemove = ViewBag.WhatToRemove }, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "ReasonForRemoval", "CabRemovalRequest", new { providerId = Model.ProviderProfileId, serviceId = Model.Id }, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-xl">
-                    You are about to send a request to remove a @(ViewBag.WhatToRemove == "service" ? "service" : "provider’s whole record") from the register
+                    You are about to send a request to remove a service from the register
                 </h1>
             </div>
 
-            @if (ViewBag.WhatToRemove == "service")
+            @if (!ViewBag.IsProviderRemoval == true)
             {
                 <div class="govuk-grid-column-full">
                     <div class="govuk-summary-card">
@@ -88,7 +88,7 @@
                 <dl class="govuk-summary-list govuk-!-margin-bottom-8">
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">Reason for removal</dt>
-                        <dd class="govuk-summary-list__value">@Model.RemovalReasonByCab</dd>
+                        <dd class="govuk-summary-list__value">@ViewBag.RemovalReasonByCab</dd>
                     </div>
                 </dl>
 
@@ -117,11 +117,21 @@
                     <input type="hidden" name="providerId" value="@Model.ProviderProfileId" />
                     <div class="govuk-button-group govuk-!-margin-top-8 govuk-!-margin-bottom-8">
                         <button type="submit" class="govuk-button govuk-button--warning" data-module="govuk-button">
-                            Request @(ViewBag.WhatToRemove == "service" ? "service" : "provider") removal
+                            Request removal
                         </button>
-                        <a class="govuk-button govuk-button--secondary" href="/cab-service/remove/reason-for-removing?providerId=@Model.ProviderProfileId&serviceId=@Model.Id&whatToRemove=@ViewBag.WhatToRemove">
-                            Cancel
-                        </a>
+                        @if (ViewBag.IsProviderRemoval == true)
+                        {
+                            <a class="govuk-button govuk-button--secondary" href="provider-will-be-removed?serviceId=@Model.Id">
+                                Cancel
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="govuk-button govuk-button--secondary" href="reason-for-removing?providerId=@Model.ProviderProfileId&serviceId=@Model.Id">
+                                Cancel
+                            </a>
+                        }
+
                     </div>
                 }
             </div>
