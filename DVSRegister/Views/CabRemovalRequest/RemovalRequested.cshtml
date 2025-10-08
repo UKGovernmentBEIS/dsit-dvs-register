@@ -5,7 +5,7 @@
 @model ServiceDto;
 
 @{
-    ViewData["Title"] = "You have requested to remove a service from the register";
+    ViewData["Title"] = "You have requested to remove this service from the register";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
@@ -14,39 +14,8 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-xl">
-                    You have requested to remove @(ViewBag.IsProviderRemoval == true ? "this provider" : "a service") from the register
+                    You have requested to remove this service from the register
                 </h1>
-
-                @if (!ViewBag.IsProviderRemoval == true)
-                {
-                    <div class="govuk-summary-card">
-                        <div class="govuk-summary-card__title-wrapper">
-                            <h2 class="govuk-summary-card__title">Service: @Model.ServiceName</h2>
-                        </div>
-                        <div class="govuk-summary-card__content">
-                            <dl class="govuk-summary-list">
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Service name</dt>
-                                    <dd class="govuk-summary-list__value">@Model.ServiceName</dd>
-                                </div>
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Status</dt>
-                                    <dd class="govuk-summary-list__value">@HtmlExtensions.ToStyledStrongTag(Model.ServiceStatus)</dd>
-                                </div>
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Service provider registered name</dt>
-                                    <dd class="govuk-summary-list__value">@Model.Provider.RegisteredName</dd>
-                                </div>
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Conformity Assessment Body</dt>
-                                    <dd class="govuk-summary-list__value">@Model.CabUser.Cab.CabName</dd>
-                                </div>
-                            </dl>
-                        </div>
-                    </div>
-                }
-                else
-                {
                     <p class="govuk-body">You have sent a removal request for the following provider:</p>
                     <table class="govuk-table">
                         <thead class="govuk-table__head">
@@ -55,21 +24,19 @@
                                 <th scope="col" class="govuk-table__header">Trading Name</th>
                                 <th scope="col" class="govuk-table__header">Services</th>
                                 <th scope="col" class="govuk-table__header">Last Updated (GMT)</th>
+                                <th scope="col" class="govuk-table__header">Status</th>
                             </tr>
                         </thead>
                         <tbody class="govuk-table__body">
                             <tr class="govuk-table__row">
                                 <td class="govuk-table__cell">@Model.Provider.RegisteredName</td>
-                                <td class="govuk-table__cell">@Html.DisplayFor(model => model.Provider.TradingName) </td>
-                                <td class="govuk-table__cell">
-                                    @Model.ServiceName
-                                </td>
-                                <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.Provider.ModifiedTime)
-                                </td>
+                                <td class="govuk-table__cell">@Html.DisplayFor(model => model.Provider.TradingName)</td>
+                                <td class="govuk-table__cell">@Model.ServiceName</td>
+                                <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.ModifiedTime)</td>
+                                <td class="govuk-table__cell">@HtmlExtensions.ToStyledStrongTag(Model.ServiceStatus)</td>
                             </tr>
                         </tbody>
                     </table>
-                }
 
                 <p class="govuk-body govuk-!-margin-bottom-5">You will receive an email confirming that you have requested the removal.</p>
                 <a class="govuk-button govuk-!-margin-bottom-9" href="/cab-service/profile-overview?providerId=@Model.ProviderProfileId">

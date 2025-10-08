@@ -2,6 +2,7 @@
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.CabRemovalRequest;
+using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic.Services
 {
@@ -48,6 +49,18 @@ namespace DVSRegister.BusinessLogic.Services
         public async Task<bool> IsLastService(int serviceId, int providerProfileId)
         {
             return await cabRemovalRequestRepository.IsLastService(serviceId, providerProfileId);
+        }
+
+        public async Task<GenericResponse> CancelServiceRemovalRequest(int cabId, int serviceId, string loggedInUserEmail)
+        {
+            GenericResponse genericResponse = await cabRemovalRequestRepository.CancelServiceRemovalRequest(serviceId, loggedInUserEmail);
+            if (genericResponse.Success)
+            {
+                var service = await cabService.GetServiceDetailsWithProvider(serviceId, cabId);
+                await emailSender.RemovalRequestCancelledToCab(loggedInUserEmail, service.CabUser.Cab.CabName, service.Provider.RegisteredName, service.ServiceName);
+                await emailSender.RemovalRequestCancelledToDSIT(service.CabUser.Cab.CabName, service.Provider.RegisteredName, service.ServiceName);
+            }
+            return genericResponse;
         }
     }
 }

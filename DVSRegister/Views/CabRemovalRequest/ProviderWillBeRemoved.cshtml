@@ -13,7 +13,9 @@
                 <h1 class="govuk-heading-xl">
                     @ViewData["Title"]
                 </h1>
-                <table class="govuk-table">                  
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+                <table class="govuk-table">
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
                             <th scope="col" class="govuk-table__header">Service name</th>
@@ -28,6 +30,8 @@
 
                     </tbody>
                 </table>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
                 <p class="govuk-body">
                     The service you are requesting to remove is the only service published under
                     the provider on the register. Removing this service will remove the provider
@@ -37,9 +41,9 @@
                     Select ‘Continue’ if you wish to proceed.
                 </p>
 
-                <div class="govuk-button-group govuk-!-margin-top-6">                  
+                <div class="govuk-button-group govuk-!-margin-top-6">
                     <a class="govuk-button" href="about-to-remove?serviceId=@Model.Id" role="button">
-                      Continue
+                        Continue
                     </a>
                     <a class="govuk-button govuk-button--secondary" href="reason-for-removing?providerId=@Model.Provider.Id&serviceId=@Model.Id" role="button">
                         Cancel and back
