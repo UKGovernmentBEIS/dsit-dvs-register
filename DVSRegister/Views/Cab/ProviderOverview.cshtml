@@ -64,8 +64,7 @@
                 </div>
 
                 @if (Model.Services?.Any() == true)
-                {
-                bool removeProvider = Model.Services.Count(s => s.IsInRegister == true) ==1; // if there is only one service which is published                
+                {                  
 
                     var orderedServices = Model.Services
                         .Where(s => s.IsCurrent)
@@ -111,10 +110,11 @@
                                                 <a class="govuk-link" href="/cab-service/service-details?serviceKey=@item?.ServiceKey">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
                                             </li>
                                         }
-                                        @if (item.ServiceStatus == ServiceStatusEnum.Published)
+                                       
+                                        @if (item.PublishedServiceVersion != null && item.PublishedServiceVersion.ServiceStatus == ServiceStatusEnum.Published)
                                         {                                       
                                             <li class="govuk-summary-card__action">
-                                            <a class="govuk-link" href="/cab-service/remove/reason-for-removing?providerId=@item.ProviderProfileId&serviceId=@item.Id">
+                                            <a class="govuk-link" href="/cab-service/remove/reason-for-removing?providerId=@item.ProviderProfileId&serviceId=@item.PublishedServiceVersion.Id">
                                                 Request service removal <span class="govuk-visually-hidden"> of service @item.ServiceName</span>
                                             </a>
                                             </li>

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CAB;
@@ -13,14 +12,13 @@ namespace DVSRegister.BusinessLogic.Services.CAB
     {
         private readonly ICabRepository cabRepository;
         private readonly IMapper automapper;
-        private readonly IBucketService bucketService;
 
 
-        public CabService(ICabRepository cabRepository, IMapper automapper, IBucketService bucketService)
+
+        public CabService(ICabRepository cabRepository, IMapper automapper)
         {
             this.cabRepository = cabRepository;
-            this.automapper = automapper;
-            this.bucketService = bucketService;
+            this.automapper = automapper;            
         }
      
         public async Task<List<RoleDto>> GetRoles(decimal tfVersion)
@@ -71,6 +69,22 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         {
             var provider = await cabRepository.GetProvider(providerId, cabId);
             ProviderProfileDto providerDto = automapper.Map<ProviderProfileDto>(provider);
+            return providerDto;
+        }
+
+        public async Task<ProviderProfileDto> GetProviderAndAssignPublishedService(int providerId, int cabId)
+        {
+            var provider = await cabRepository.GetProvider(providerId, cabId);
+            ProviderProfileDto providerDto = automapper.Map<ProviderProfileDto>(provider);
+            if(providerDto.Services!=null && providerDto.Services.Count>0)
+            {
+                var groupedServices = providerDto.Services.GroupBy(s => s.ServiceKey).ToDictionary(g => g.Key, g => g.ToList());
+                foreach (var service in providerDto.Services)
+                {
+                    service.PublishedServiceVersion = groupedServices[service.ServiceKey].FirstOrDefault(s => s.ServiceStatus == ServiceStatusEnum.Published);
+                }
+
+            }
             return providerDto;
         }
         public async Task<ServiceDto> GetServiceDetails(int serviceId, int cabId)

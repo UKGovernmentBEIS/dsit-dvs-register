@@ -60,6 +60,9 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public ServiceDraftDto? serviceDraft { get; set; }
         public bool IsInRegister { get; set; }
 
+        [JsonIgnore]
+        public ServiceDto? PublishedServiceVersion { get; set; }
+
 
     }
 }
