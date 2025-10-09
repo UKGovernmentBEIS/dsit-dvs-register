@@ -16,43 +16,28 @@ namespace DVSRegister.Data
 
         public async Task<List<ProviderProfile>> GetProviders(List<int> roles, List<int> schemes, string searchText = "")
         {
-            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile
-                .Where(p => p.IsInRegister == true);
+            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile;
+            providerQuery = providerQuery.Where(p => p.IsInRegister == true &&
+            (string.IsNullOrEmpty(searchText)
+            || searchText.ToLower().Contains(searchText)
+             || p.TradingName!.ToLower().Contains(searchText))
+             || p.Services.Any(ci => ci.IsInRegister == true && ci.ServiceName.ToLower().Contains(searchText)))
 
-            // Apply search filters if searchText is provided
-            if (!string.IsNullOrEmpty(searchText))
-            {
-                var lowerSearchText = searchText.ToLower();
-                providerQuery = providerQuery.Where(p =>
-                    // Search in provider names with partial matching
-                    p.RegisteredName.ToLower().Contains(lowerSearchText) ||
-                    p.TradingName!.ToLower().Contains(lowerSearchText) ||
-                    // Search in service names
-                    p.Services.Any(s => s.IsInRegister == true && s.ServiceName.ToLower().Contains(lowerSearchText))
-                );
-            }
+            .Include(p => p.Services).ThenInclude(ci => ci.ServiceRoleMapping)
+            .Include(p => p.Services).ThenInclude(ci => ci.ServiceSupSchemeMapping)
+            .OrderByDescending(p => p.PublishedTime)
+            .ThenBy(p => p.RegisteredName)
+            .AsSplitQuery();
+            // Include roles and schemes filters
 
-            // Apply role and scheme filters
-            if (roles.Any() || schemes.Any())
-            {
-                providerQuery = providerQuery.Where(p =>
-                    p.Services.Any(s => s.IsInRegister == true &&
-                        (!roles.Any() || s.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId))) &&
-                        (!schemes.Any() || s.ServiceSupSchemeMapping.Any(sm => schemes.Contains(sm.SupplementarySchemeId)))
-                    )
-                );
-            }
-
-            // Return related data and execute query
-            return await providerQuery
-                .Include(p => p.Services.Where(s => s.IsInRegister == true))
-                    .ThenInclude(s => s.ServiceRoleMapping)
-                .Include(p => p.Services.Where(s => s.IsInRegister == true))
-                    .ThenInclude(s => s.ServiceSupSchemeMapping)
-                .OrderByDescending(p => p.PublishedTime)
-                .ThenBy(p => p.RegisteredName)
-                .AsSplitQuery()
-                .ToListAsync();
+            providerQuery = providerQuery.Include(p => p.Services
+            .Where(ci => ci.IsInRegister == true &&
+               (string.IsNullOrEmpty(searchText) || ci.ServiceName.ToLower().Contains(searchText) ||
+               ci.Provider.RegisteredName.ToLower().Contains(searchText) || ci.Provider.TradingName.ToLower().Contains(searchText)) &&
+              (!roles.Any() || (ci.ServiceRoleMapping != null && ci.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))) &&
+             (!schemes.Any() || (ci.ServiceSupSchemeMapping != null && ci.ServiceSupSchemeMapping.Any(s => schemes.Contains(s.SupplementarySchemeId))))
+             ));
+            return await providerQuery.ToListAsync();
         }
 
         public async Task<List<RegisterPublishLog>> GetRegisterPublishLogs()
