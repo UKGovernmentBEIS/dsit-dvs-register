@@ -78,15 +78,11 @@ namespace DVSRegister.Data.CAB
             {
                 var lowerSearchText = searchText.Trim().ToLower();
                 providerQuery = providerQuery.Where(p =>
-                    // Search in provider names with both trigram similarity and partial matching
-                    EF.Functions.TrigramsSimilarity(p.RegisteredName.ToLower(), lowerSearchText) > 0.2 ||
-                    EF.Functions.TrigramsSimilarity(p.TradingName!.ToLower(), lowerSearchText) > 0.2 ||
+                    // Search in provider names with partial matching
                     p.RegisteredName.ToLower().Contains(lowerSearchText) ||
                     p.TradingName!.ToLower().Contains(lowerSearchText) ||
                     // Search in service names
-                    p.Services.Any(s => s.CabUser.CabId == cabId &&
-                        (EF.Functions.TrigramsSimilarity(s.ServiceName.ToLower(), lowerSearchText) > 0.2 ||
-                         s.ServiceName.ToLower().Contains(lowerSearchText)))
+                    p.Services.Any(s => s.CabUser.CabId == cabId && s.ServiceName.ToLower().Contains(lowerSearchText))
                 );
             }
             var searchResults = await providerQuery.ToListAsync();
