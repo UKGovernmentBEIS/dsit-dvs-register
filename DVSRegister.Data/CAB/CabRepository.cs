@@ -76,8 +76,14 @@ namespace DVSRegister.Data.CAB
             .OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime);
             if (!string.IsNullOrEmpty(searchText))
             {
-                searchText = searchText.Trim().ToLower();
-                providerQuery = providerQuery.Where(p => p.Services.Any(s => EF.Functions.TrigramsSimilarity(s.ServiceName.ToLower(), searchText.ToLower()) > .1));
+                var lowerSearchText = searchText.Trim().ToLower();
+                providerQuery = providerQuery.Where(p =>
+                    // Search in provider names with partial matching
+                    p.RegisteredName.ToLower().Contains(lowerSearchText) ||
+                    p.TradingName!.ToLower().Contains(lowerSearchText) ||
+                    // Search in service names
+                    p.Services.Any(s => s.CabUser.CabId == cabId && s.ServiceName.ToLower().Contains(lowerSearchText))
+                );
             }
             var searchResults = await providerQuery.ToListAsync();
             return searchResults;
