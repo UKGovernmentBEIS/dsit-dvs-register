@@ -16,29 +16,47 @@ namespace DVSRegister.Data
 
         public async Task<List<ProviderProfile>> GetProviders(List<int> roles, List<int> schemes, string searchText = "")
         {
+            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile
+                .Where(p => p.IsInRegister == true);
 
-            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile;
-            providerQuery = providerQuery.Where(p => p.IsInRegister == true &&
-            (string.IsNullOrEmpty(searchText)
-            || EF.Functions.TrigramsSimilarity(p.RegisteredName.ToLower(), searchText.ToLower()) > .2
-             || EF.Functions.TrigramsSimilarity(p.TradingName!.ToLower(), searchText.ToLower()) > .2)
-             || p.Services.Any(ci => ci.IsInRegister == true && (EF.Functions.TrigramsSimilarity(ci.ServiceName.ToLower(), searchText.ToLower()) > .2)))
-            .Include(p => p.Services).ThenInclude(ci => ci.ServiceRoleMapping)
-            .Include(p => p.Services).ThenInclude(ci => ci.ServiceSupSchemeMapping)
-            .OrderByDescending(p => p.PublishedTime)
-            .ThenBy(p => p.RegisteredName)
-            .AsSplitQuery();
-            // Include roles and schemes filters
+            // Apply search filters if searchText is provided
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                var lowerSearchText = searchText.ToLower();
+                providerQuery = providerQuery.Where(p =>
+                    // Search in provider names with both trigram similarity and partial matching
+                    EF.Functions.TrigramsSimilarity(p.RegisteredName.ToLower(), lowerSearchText) > 0.2 ||
+                    EF.Functions.TrigramsSimilarity(p.TradingName!.ToLower(), lowerSearchText) > 0.2 ||
+                    p.RegisteredName.ToLower().Contains(lowerSearchText) ||
+                    p.TradingName!.ToLower().Contains(lowerSearchText) ||
+                    // Search in service names
+                    p.Services.Any(s => s.IsInRegister == true &&
+                        (EF.Functions.TrigramsSimilarity(s.ServiceName.ToLower(), lowerSearchText) > 0.2 ||
+                         s.ServiceName.ToLower().Contains(lowerSearchText)))
+                );
+            }
 
-            providerQuery = providerQuery.Include(p => p.Services
-            .Where(ci => ci.IsInRegister == true &&
-               (string.IsNullOrEmpty(searchText) || EF.Functions.TrigramsSimilarity(ci.ServiceName.ToLower(), searchText.ToLower()) > .2 ||
-               EF.Functions.TrigramsSimilarity(ci.Provider.RegisteredName.ToLower(), searchText.ToLower()) > .2 || EF.Functions.TrigramsSimilarity(ci.Provider.TradingName.ToLower(), searchText.ToLower()) > .2) &&
-              (!roles.Any() || (ci.ServiceRoleMapping != null && ci.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))) &&
-             (!schemes.Any() || (ci.ServiceSupSchemeMapping != null && ci.ServiceSupSchemeMapping.Any(s => schemes.Contains(s.SupplementarySchemeId))))
-             ));
-            return await providerQuery.ToListAsync();
+            // Apply role and scheme filters
+            if (roles.Any() || schemes.Any())
+            {
+                providerQuery = providerQuery.Where(p =>
+                    p.Services.Any(s => s.IsInRegister == true &&
+                        (!roles.Any() || s.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId))) &&
+                        (!schemes.Any() || s.ServiceSupSchemeMapping.Any(sm => schemes.Contains(sm.SupplementarySchemeId)))
+                    )
+                );
+            }
 
+            // Return related data and execute query
+            return await providerQuery
+                .Include(p => p.Services.Where(s => s.IsInRegister == true))
+                    .ThenInclude(s => s.ServiceRoleMapping)
+                .Include(p => p.Services.Where(s => s.IsInRegister == true))
+                    .ThenInclude(s => s.ServiceSupSchemeMapping)
+                .OrderByDescending(p => p.PublishedTime)
+                .ThenBy(p => p.RegisteredName)
+                .AsSplitQuery()
+                .ToListAsync();
         }
 
         public async Task<List<RegisterPublishLog>> GetRegisterPublishLogs()
