@@ -174,6 +174,11 @@ namespace DVSRegister.Data
                         var serviceMapping = currentRequest.ProviderRemovalRequestServiceMapping?.FirstOrDefault(m => m.ServiceId == service.Id);
                         service.ModifiedTime = DateTime.UtcNow;
                         service.ServiceStatus = serviceMapping.PreviousServiceStatus;
+
+                        if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
+                        {
+                            service.ServiceRemovalRequest.IsRequestPending = true;
+                        }
                     }
                     await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.CancelRemovalRequest, loggedInUserEmail);
                     await transaction.CommitAsync();
