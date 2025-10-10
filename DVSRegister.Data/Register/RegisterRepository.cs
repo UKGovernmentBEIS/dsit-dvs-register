@@ -17,23 +17,22 @@ namespace DVSRegister.Data
         public async Task<List<ProviderProfile>> GetProviders(List<int> roles, List<int> schemes, string searchText = "")
         {
             IQueryable<ProviderProfile> providerQuery = context.ProviderProfile;
-            providerQuery = providerQuery.Where(p => p.IsInRegister == true &&
-            (string.IsNullOrEmpty(searchText)
-            || searchText.ToLower().Contains(searchText)
-             || p.TradingName!.ToLower().Contains(searchText))
-             || p.Services.Any(ci => ci.IsInRegister == true && ci.ServiceName.ToLower().Contains(searchText)))
-
-            .Include(p => p.Services).ThenInclude(ci => ci.ServiceRoleMapping)
-            .Include(p => p.Services).ThenInclude(ci => ci.ServiceSupSchemeMapping)
-            .OrderByDescending(p => p.PublishedTime)
-            .ThenBy(p => p.RegisteredName)
-            .AsSplitQuery();
+            var lowerSearchText = searchText.Trim().ToLower();
+            providerQuery = providerQuery.Where(p => p.IsInRegister == true && (string.IsNullOrEmpty(searchText)
+                     || p.RegisteredName.ToLower().Contains(lowerSearchText)
+                     || p.TradingName!.ToLower().Contains(lowerSearchText))
+                     || p.Services.Any(ci => ci.IsInRegister == true && ci.ServiceName.ToLower().Contains(lowerSearchText)))
+                .Include(p => p.Services).ThenInclude(ci => ci.ServiceRoleMapping)
+                .Include(p => p.Services).ThenInclude(ci => ci.ServiceSupSchemeMapping)
+                .OrderByDescending(p => p.PublishedTime)
+                .ThenBy(p => p.RegisteredName)
+                .AsSplitQuery();
+            
             // Include roles and schemes filters
-
             providerQuery = providerQuery.Include(p => p.Services
             .Where(ci => ci.IsInRegister == true &&
-               (string.IsNullOrEmpty(searchText) || ci.ServiceName.ToLower().Contains(searchText) ||
-               ci.Provider.RegisteredName.ToLower().Contains(searchText) || ci.Provider.TradingName.ToLower().Contains(searchText)) &&
+               (string.IsNullOrEmpty(searchText) || ci.ServiceName.ToLower().Contains(lowerSearchText) ||
+               ci.Provider.RegisteredName.ToLower().Contains(lowerSearchText) || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)) &&
               (!roles.Any() || (ci.ServiceRoleMapping != null && ci.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))) &&
              (!schemes.Any() || (ci.ServiceSupSchemeMapping != null && ci.ServiceSupSchemeMapping.Any(s => schemes.Contains(s.SupplementarySchemeId))))
              ));
