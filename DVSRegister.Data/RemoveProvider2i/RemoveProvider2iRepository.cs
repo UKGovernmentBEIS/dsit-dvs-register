@@ -175,7 +175,7 @@ namespace DVSRegister.Data
                         service.ModifiedTime = DateTime.UtcNow;
                         service.ServiceStatus = serviceMapping.PreviousServiceStatus;
 
-                        if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
+                        if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || service.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
                         {
                             service.ServiceRemovalRequest.IsRequestPending = true;
                         }
