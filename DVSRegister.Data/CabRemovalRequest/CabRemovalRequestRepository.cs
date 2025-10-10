@@ -15,11 +15,7 @@ namespace DVSRegister.Data.CabRemovalRequest
         {
             this.context = context;
             this.logger = logger;
-        }
-
-      
-
-
+        }    
         public async Task<GenericResponse> AddServiceRemovalRequest(int cabId, int serviceId, string loggedInUserEmail, string removalReasonByCab)
         {
             GenericResponse genericResponse = new();
@@ -41,6 +37,7 @@ namespace DVSRegister.Data.CabRemovalRequest
                 serviceRemovalRequest.IsRequestPending = true;
                 await context.ServiceRemovalRequest.AddAsync(serviceRemovalRequest); 
                 service.ServiceStatus = ServiceStatusEnum.CabAwaitingRemovalConfirmation;
+                service.ModifiedTime = DateTime.UtcNow;
                 await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveServiceRequestedByCab, loggedInUserEmail);
                 await transaction.CommitAsync();
                 genericResponse.Success = true;
@@ -50,6 +47,35 @@ namespace DVSRegister.Data.CabRemovalRequest
                 genericResponse.Success = false;
                 await transaction.RollbackAsync();
                 logger.LogError($"Error in UpdateRemovalStatus method: '{ex.Message}'");
+            }
+            return genericResponse;
+        }
+
+        public async Task<GenericResponse> CancelServiceRemovalRequest(int serviceId, string loggedInUserEmail)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                var service = await context.Service.Include(s => s.ServiceRemovalRequest).FirstOrDefaultAsync(s => s.Id == serviceId);
+
+                if (service.ServiceRemovalRequest == null || service == null) { 
+                    genericResponse.Success = false; 
+                    return genericResponse; 
+                }
+
+                service.ServiceStatus = service.ServiceRemovalRequest.PreviousServiceStatus;
+                context.ServiceRemovalRequest.Remove(service.ServiceRemovalRequest);
+
+                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.CancelRemovalRequest, loggedInUserEmail);
+                await transaction.CommitAsync();
+                genericResponse.Success = true;
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                await transaction.RollbackAsync();
+                logger.LogError($"Error in CancelRemoval method: '{ex.Message}'");
             }
             return genericResponse;
         }

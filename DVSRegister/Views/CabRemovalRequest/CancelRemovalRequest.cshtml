@@ -1,0 +1,57 @@
+﻿@using DVSRegister.BusinessLogic.Models.CAB
+@using DVSRegister.Extensions
+@model ServiceDto
+@{
+    ViewData["Title"] = "You are about to cancel your request to remove a service from the register";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ProviderServiceDetails", "Cab", new { serviceKey = Model.ServiceKey }, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl" aria-label="Cancellation warning">You are about to cancel your request to remove a service from the register</h1>                
+            </div>
+                <div class="govuk-grid-column-full">
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">Service name</th>
+                            <th scope="col" class="govuk-table__header">Provider's registered name</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <td scope="row" class="govuk-table__cell">@Model.ServiceName</td>
+                            <td scope="row" class="govuk-table__cell">@Model.Provider.RegisteredName</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="govuk-grid-column-two-thirds">
+                <p class="govuk-body">
+                    By cancelling your removal request, the service will remain published on the register.                               
+                </p>
+                <p class="govuk-body">
+                    If you want to remove the service in the future, you will need to create a new request.
+                </p>
+                <p class="govuk-body">
+                    Select ‘Continue’ to proceed with cancelling your removal request.
+                </p>
+                @using (Html.BeginForm("CancelRemovalRequestConfirmation", "CabRemovalRequest", FormMethod.Post))
+                {
+                    <input type="hidden" name="serviceId" value="@Model.Id"/>
+                    <div class="govuk-button-group govuk-!-margin-top-8 govuk-!-margin-bottom-8">
+                        <button type="submit" class="govuk-button" data-module="govuk-button">
+                            Continue
+                        </button>
+                        <a class="govuk-button govuk-button--secondary" href="@Url.Action("ProviderServiceDetails", "Cab", new { serviceKey = Model.ServiceKey })">
+                            Cancel and back
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </main>
+</div>

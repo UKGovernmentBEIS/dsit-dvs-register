@@ -60,5 +60,28 @@ namespace DVSRegister.CommonUtility.Email
              };
             return await SendNotification(emailAddress, template, personalisation);
         }
+
+        public async Task<bool> RemovalRequestCancelledToCab(string emailAddress, string cabName, string companyName, string serviceName)
+        {
+            var template = govUkNotifyConfig.RemovalRequestCancelledToCab;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+              { template.CabName,  cabName},
+              { template.CompanyName,  companyName},
+              { template.ServiceName,  serviceName},
+             };
+            return await SendNotification(emailAddress, template, personalisation);
+        }
+        public async Task<bool> RemovalRequestCancelledToDSIT(string cabName, string providerName, string serviceName)
+        {
+            var template = govUkNotifyConfig.RemovalRequestCancelledToDSIT;
+            var personalisation = new Dictionary<string, dynamic>
+            {
+              { template.CabName,  cabName},
+              { template.ProviderName,  providerName},
+              { template.ServiceName,  serviceName}
+             };
+            return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
+        }
     }
 }

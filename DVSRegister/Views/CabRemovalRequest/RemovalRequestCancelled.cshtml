@@ -1,0 +1,49 @@
+﻿@using DVSRegister.BusinessLogic.Models.CAB
+@using DVSRegister.Extensions
+@model ServiceDto
+@{
+    ViewData["Title"] = "You have cancelled your request to remove this service from the register";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl" aria-label="Confirmation of cancellation">You have cancelled your request to remove this service from the register</h1>
+                <p class="govuk-body  govuk-!-margin-bottom-5">
+                    You have cancelled the removal request for the following service:
+                </p>
+                <table class="govuk-table">
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">Registered name</th>
+                            <th scope="col" class="govuk-table__header">Trading name</th>
+                            <th scope="col" class="govuk-table__header">Services</th>
+                            <th scope="col" class="govuk-table__header">Last updated (GMT)</th>
+                            <th scope="col" class="govuk-table__header">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <td scope="row" class="govuk-table__cell">@Model.Provider.RegisteredName</td>
+                            <td scope="row" class="govuk-table__cell">@Html.DisplayFor(s => s.Provider.TradingName)</td>
+                            <td scope="row" class="govuk-table__cell">@Model.ServiceName</td>
+                            <td scope="row" class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.ModifiedTime)</td>
+                            <td scope="row" class="govuk-table__cell">@HtmlExtensions.ToStyledStrongTag(Model.ServiceStatus)</td>
+                        </tr>                        
+                    </tbody>
+                </table>
+                <p class="govuk-body">
+                    You will receive a email confirming that you have cancelled the removal request.
+                </p>
+                <div class="govuk-button-group govuk-!-margin-top-5">
+                    <a href="@Url.Action("ProviderOverview", "Cab", new { providerId = Model.ProviderProfileId})"
+                       role="button" draggable="false" class="govuk-button" data-module="govuk-button" aria-label="Return to service provider page">
+                        Go back to provider overview
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

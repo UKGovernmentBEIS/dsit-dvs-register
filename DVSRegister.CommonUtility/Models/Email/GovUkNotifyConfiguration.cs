@@ -46,21 +46,16 @@ namespace DVSRegister.CommonUtility.Models
         public ServiceRemovedToDSIT ServiceRemovedToDSIT { get; set; }  
         public CabServiceRemovalRequested CabServiceRemovalRequested { get; set; }
         public CabServiceRemovalRequestedToDSIT CabServiceRemovalRequestedToDSIT { get; set; }
-
         public RecordRemovalRequestByCabToDSIT RecordRemovalRequestByCabToDSIT { get; set; }
-
         public RecordRemovalRequestConfirmationToCab RecordRemovalRequestConfirmationToCab { get;set; }
-
+        public RemovalRequestCancelledToCab RemovalRequestCancelledToCab { get; set; }
+        public RemovalRequestCancelledToDSIT RemovalRequestCancelledToDSIT { get; set; }
         public Service2iCheckDeclinedToDSIT Service2iCheckDeclinedToDSIT { get; set; }
         public Service2iCheckApprovedToDSIT Service2iCheckApprovedToDSIT { get; set; }
-
         public EditProviderAccepted EditProviderAccepted { get; set; }
-
         public EditProviderDeclined EditProviderDeclined { get; set; }  
-
         public EditServiceAccepted EditServiceAccepted { get; set; }
-        public EditServiceDeclined EditServiceDeclined { get; set; }
-        
+        public EditServiceDeclined EditServiceDeclined { get; set; }       
         public CabTransferConfirmationToCabA CabTransferConfirmationToCabA { get; set; }
         public CabTransferConfirmationToCabB CabTransferConfirmationToCabB { get; set; }
         public CabTransferCancellationToCabB CabTransferCancellationToCabB { get; set; }
