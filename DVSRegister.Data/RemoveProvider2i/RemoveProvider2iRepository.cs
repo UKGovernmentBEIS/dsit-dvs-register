@@ -85,7 +85,7 @@ namespace DVSRegister.Data
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var existingProvider = await context.ProviderProfile.Include(p=>p.ProviderRemovalRequests).Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == providerProfileId);
+                var existingProvider = await context.ProviderProfile.Include(p=>p.ProviderRemovalRequests).ThenInclude(r=> r.ProviderRemovalRequestServiceMapping).Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == providerProfileId);
                 var providerRemovalRequest = await context.ProviderRemovalRequest.FirstOrDefaultAsync(p => p.Id == providerRemovalRequestId && p.ProviderProfileId == providerProfileId);
                 if (existingProvider != null && providerRemovalRequest!=null)
                 {
@@ -96,6 +96,12 @@ namespace DVSRegister.Data
                     providerRemovalRequest.Token = null;
                     providerRemovalRequest.TokenId = null;
                     providerRemovalRequest.IsRequestPending = false;
+                    if (providerRemovalRequest.PreviousProviderStatus == ProviderStatusEnum.UpdatesRequested)
+                    {
+                        var pendingProvidereUpdateRequest = await context.ProviderProfileDraft.FirstOrDefaultAsync(p => p.Id == providerProfileId);
+                        context.ProviderProfileDraft.Remove(pendingProvidereUpdateRequest);
+                    }
+
                     // Update the status of each service
                     if (existingProvider.Services != null)
                     {
@@ -104,6 +110,27 @@ namespace DVSRegister.Data
                             service.ServiceStatus = ServiceStatusEnum.Removed;
                             service.ModifiedTime = DateTime.UtcNow;
                             service.IsInRegister = false;
+
+                            var mapping = providerRemovalRequest.ProviderRemovalRequestServiceMapping?.FirstOrDefault(m => m.ServiceId == service.Id);
+                            if (mapping.PreviousServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || mapping.PreviousServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
+                            {
+                                var pendingRemovalRequest = await context.ServiceRemovalRequest.FirstOrDefaultAsync(s => s.Id == service.Id);
+                                context.ServiceRemovalRequest.Remove(pendingRemovalRequest);
+                            }
+                            if (mapping.PreviousServiceStatus == ServiceStatusEnum.UpdatesRequested)
+                            {
+                                var pendingServiceUpdateRequest = await context.ServiceDraft.FirstOrDefaultAsync(s => s.Id == service.Id);
+                                context.ServiceDraft.Remove(pendingServiceUpdateRequest);
+                            }
+                            if (mapping.PreviousServiceStatus == ServiceStatusEnum.PublishedUnderReassign || mapping.PreviousServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
+                            {
+                                var pendingReassignmentRequest = await context.CabTransferRequest.Include(c => c.RequestManagement).FirstOrDefaultAsync(s => s.Id == service.Id);
+                                if (pendingReassignmentRequest != null)
+                                {
+                                    context.RequestManagement.Remove(pendingReassignmentRequest.RequestManagement);
+                                    context.CabTransferRequest.Remove(pendingReassignmentRequest);
+                                }
+                            }
                         }
                     }
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveProvider2i, loggedInUserEmail);
@@ -132,7 +159,7 @@ namespace DVSRegister.Data
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var provider = await context.ProviderProfile.Include(p => p.ProviderRemovalRequests).Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == providerProfileId);
+                var provider = await context.ProviderProfile.Include(p => p.ProviderRemovalRequests).ThenInclude(r => r.ProviderRemovalRequestServiceMapping).Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == providerProfileId);
                 var currentRequest = await context.ProviderRemovalRequest.FirstOrDefaultAsync(p => p.Id == providerRemovalRequestId && p.ProviderProfileId == providerProfileId);
 
                 if (currentRequest != null && provider!=null && provider.IsInRegister)
@@ -144,8 +171,9 @@ namespace DVSRegister.Data
 
                     foreach (var service in provider.Services.Where(s => s.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation))
                     {
+                        var serviceMapping = currentRequest.ProviderRemovalRequestServiceMapping?.FirstOrDefault(m => m.ServiceId == service.Id);
                         service.ModifiedTime = DateTime.UtcNow;
-                        service.ServiceStatus = ServiceStatusEnum.Published;
+                        service.ServiceStatus = serviceMapping.PreviousServiceStatus;
                     }
                     await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.CancelRemovalRequest, loggedInUserEmail);
                     await transaction.CommitAsync();
@@ -166,9 +194,6 @@ namespace DVSRegister.Data
             }
             return genericResponse;
         }
-
-
-
 
         #endregion
 
