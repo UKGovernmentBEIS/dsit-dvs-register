@@ -98,7 +98,7 @@ namespace DVSRegister.Data
                     providerRemovalRequest.IsRequestPending = false;
                     if (providerRemovalRequest.PreviousProviderStatus == ProviderStatusEnum.UpdatesRequested)
                     {
-                        var pendingProvidereUpdateRequest = await context.ProviderProfileDraft.FirstOrDefaultAsync(p => p.Id == providerProfileId);
+                        var pendingProvidereUpdateRequest = await context.ProviderProfileDraft.FirstOrDefaultAsync(p => p.ProviderProfileId == providerProfileId);
                         context.ProviderProfileDraft.Remove(pendingProvidereUpdateRequest);
                     }
 
@@ -114,21 +114,31 @@ namespace DVSRegister.Data
                             var mapping = providerRemovalRequest.ProviderRemovalRequestServiceMapping?.FirstOrDefault(m => m.ServiceId == service.Id);
                             if (mapping.PreviousServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || mapping.PreviousServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
                             {
-                                var pendingRemovalRequest = await context.ServiceRemovalRequest.FirstOrDefaultAsync(s => s.Id == service.Id);
+                                var pendingRemovalRequest = await context.ServiceRemovalRequest.FirstOrDefaultAsync(s => s.ServiceId == service.Id);
                                 context.ServiceRemovalRequest.Remove(pendingRemovalRequest);
                             }
                             if (mapping.PreviousServiceStatus == ServiceStatusEnum.UpdatesRequested)
                             {
-                                var pendingServiceUpdateRequest = await context.ServiceDraft.FirstOrDefaultAsync(s => s.Id == service.Id);
+                                var pendingServiceUpdateRequest = await context.ServiceDraft.FirstOrDefaultAsync(s => s.ServiceId == service.Id);
                                 context.ServiceDraft.Remove(pendingServiceUpdateRequest);
                             }
                             if (mapping.PreviousServiceStatus == ServiceStatusEnum.PublishedUnderReassign || mapping.PreviousServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
                             {
-                                var pendingReassignmentRequest = await context.CabTransferRequest.Include(c => c.RequestManagement).FirstOrDefaultAsync(s => s.Id == service.Id);
+                                var pendingReassignmentRequest = await context.CabTransferRequest.Include(c => c.RequestManagement).FirstOrDefaultAsync(s => s.ServiceId == service.Id);
                                 if (pendingReassignmentRequest != null)
                                 {
-                                    context.RequestManagement.Remove(pendingReassignmentRequest.RequestManagement);
                                     context.CabTransferRequest.Remove(pendingReassignmentRequest);
+                                }
+                                else
+                                {
+                                    var pendingCertificateUpload = await context.CabTransferRequest
+                                    .Include(c => c.RequestManagement).OrderByDescending(c => c.Id)
+                                    .FirstOrDefaultAsync(s => s.ServiceId == service.Id && s.RequestManagement.RequestStatus == RequestStatusEnum.Approved && s.CertificateUploaded == false);
+                                    if (pendingCertificateUpload != null)
+                                    {
+                                        context.CabTransferRequest.Remove(pendingCertificateUpload);
+                                    }
+
                                 }
                             }
                         }
