@@ -124,20 +124,15 @@ namespace DVSRegister.Data
                             }
                             if (mapping.PreviousServiceStatus == ServiceStatusEnum.PublishedUnderReassign || mapping.PreviousServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
                             {
-                                var pendingReassignmentRequest = await context.CabTransferRequest.Include(c => c.RequestManagement).FirstOrDefaultAsync(s => s.ServiceId == service.Id);
+                                var pendingReassignmentRequest = await context.CabTransferRequest.Include(s => s.RequestManagement)
+                                 .OrderByDescending(c => c.Id)
+                                 .FirstOrDefaultAsync(s => s.ServiceId == service.Id && s.RequestManagement.RequestStatus == RequestStatusEnum.AwaitingRemoval);
+
+
                                 if (pendingReassignmentRequest != null)
                                 {
-                                    context.CabTransferRequest.Remove(pendingReassignmentRequest);
-                                }
-                                else
-                                {
-                                    var pendingCertificateUpload = await context.CabTransferRequest
-                                    .Include(c => c.RequestManagement).OrderByDescending(c => c.Id)
-                                    .FirstOrDefaultAsync(s => s.ServiceId == service.Id && s.RequestManagement.RequestStatus == RequestStatusEnum.Approved && s.CertificateUploaded == false);
-                                    if (pendingCertificateUpload != null)
-                                    {
-                                        context.CabTransferRequest.Remove(pendingCertificateUpload);
-                                    }
+                                    var pendingRequest = await context.RequestManagement.Where(x => x.Id == pendingReassignmentRequest.RequestManagementId).FirstOrDefaultAsync();
+                                    if (pendingRequest != null) { context.RequestManagement.Remove(pendingRequest); }
 
                                 }
                             }
@@ -169,7 +164,10 @@ namespace DVSRegister.Data
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var provider = await context.ProviderProfile.Include(p => p.ProviderRemovalRequests).ThenInclude(r => r.ProviderRemovalRequestServiceMapping).Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == providerProfileId);
+                var provider = await context.ProviderProfile.Include(p => p.ProviderRemovalRequests).ThenInclude(r => r.ProviderRemovalRequestServiceMapping)
+                 .Include(p => p.Services).ThenInclude(s=>s.ServiceRemovalRequest)
+                 .Include(p => p.Services).ThenInclude(s => s.CabTransferRequest).ThenInclude(s => s.RequestManagement)
+                 .FirstOrDefaultAsync(p => p.Id == providerProfileId);
                 var currentRequest = await context.ProviderRemovalRequest.FirstOrDefaultAsync(p => p.Id == providerRemovalRequestId && p.ProviderProfileId == providerProfileId);
 
                 if (currentRequest != null && provider!=null && provider.IsInRegister)
@@ -188,6 +186,15 @@ namespace DVSRegister.Data
                         if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || service.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
                         {
                             service.ServiceRemovalRequest.IsRequestPending = true;
+                        }
+                        else if (service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
+                        {
+                            var pendingReassignmentRequest = await context.CabTransferRequest.Include(c => c.RequestManagement).FirstOrDefaultAsync(s => s.ServiceId == service.Id);
+
+                            if (pendingReassignmentRequest != null && serviceMapping.PreviousCabTransferStatus != null)
+                            {
+                                pendingReassignmentRequest.RequestManagement.RequestStatus = (RequestStatusEnum)serviceMapping.PreviousCabTransferStatus;
+                            }
                         }
                     }
                     await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.CancelRemovalRequest, loggedInUserEmail);
