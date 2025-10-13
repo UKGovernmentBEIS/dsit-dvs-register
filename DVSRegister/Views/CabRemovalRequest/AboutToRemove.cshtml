@@ -35,19 +35,13 @@
                                     @Html.DisplayFor(model => model.Provider.TradingName)
                                 </td>
                                 <td class="govuk-table__cell">
-                                    @foreach (var item in Model.Provider.Services.Where(s => s.ServiceStatus != ServiceStatusEnum.Removed))
-                                    {
-                                        @item.ServiceName
-
-                                        <br />
-                                    }
+                                    @Model.ServiceName
                                 </td>
-                                <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.Provider.ModifiedTime)</td>
+                                <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.ModifiedTime ?? Model.CreatedTime)</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
             <div class="govuk-grid-column-three-quarters">
                 <h2 class="govuk-heading-m govuk-!-margin-top-6">Selected reason for removing this service</h2>
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-0" />
