@@ -1,4 +1,5 @@
 ﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,6 +21,7 @@ namespace DVSRegister.Data.Entities
         public int ServiceId { get; set; }
         public Service Service { get; set; }
         public ServiceStatusEnum PreviousServiceStatus { get; set; }
-     
+        public RequestStatusEnum? PreviousCabTransferStatus { get; set; }
+
     }
 }

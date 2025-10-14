@@ -21,7 +21,7 @@ namespace DVSRegister.Data.CabTransfer
         {
             return await context.CabTransferRequest.Include(r=>r.RequestManagement).Include(r=>r.Service).ThenInclude(r=>r.Provider).Include(r => r.ToCab)
             .Include(r=>r.FromCabUser)
-           .Where(r=>r.ToCabId == cabId && (r.Service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || r.Service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
+           .Where(r=>r.ToCabId == cabId && r.RequestManagement.RequestStatus!=RequestStatusEnum.AwaitingRemoval)
            .OrderBy(r=>r.DecisionTime).ToListAsync();
         }
 
