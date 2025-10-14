@@ -69,7 +69,7 @@ namespace DVSRegister.Controllers
             ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);
             string removalReasonByCab = HttpContext.Session.GetString("ReasonForRemoval") ?? string.Empty;
             ViewBag.RemovalReasonByCab = removalReasonByCab;
-            ViewBag.IsProviderRemoval = await cabRemovalRequestService.IsLastService(serviceId, serviceDto.ProviderProfileId);
+            ViewBag.RefererURL = GetRefererURL();
             return View(serviceDto);
         }
 
@@ -90,7 +90,6 @@ namespace DVSRegister.Controllers
             ViewBag.RemovalReasonByCab = removalReasonByCab;
             HttpContext.Session.Remove("ReasonForRemoval");
             bool isProviderRemoval = await cabRemovalRequestService.IsLastService(serviceId, providerId);
-            ViewBag.IsProviderRemoval = isProviderRemoval;
             GenericResponse genericResponse = await cabRemovalRequestService.AddServiceRemovalrequest(CabId,serviceId, UserEmail, removalReasonByCab, isProviderRemoval);
             if (genericResponse.Success)
             {
@@ -100,6 +99,28 @@ namespace DVSRegister.Controllers
             else
             {
                 throw new InvalidOperationException("RequestRemoval failed: Unable to update removal status.");
+            }
+        }
+
+        [HttpGet("cancel-removal-request")]
+        public async Task<IActionResult> CancelRemovalRequest(int serviceId)
+        {
+            ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);
+            return View(serviceDto);
+        }
+
+        [HttpPost("cancel-removal-request")]
+        public async Task<IActionResult> CancelRemovalRequestConfirmation(int serviceId)
+        {
+            GenericResponse genericResponse = await cabRemovalRequestService.CancelServiceRemovalRequest(CabId, serviceId, UserEmail);
+            if (genericResponse.Success)
+            {
+                ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);
+                return View("RemovalRequestCancelled", serviceDto);
+            }
+            else
+            {
+                throw new InvalidOperationException("CancelRemovalRequest failed: Unable to cancel removal request.");
             }
         }
     }

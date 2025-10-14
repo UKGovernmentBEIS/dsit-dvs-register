@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251009095523_AddProviderRemovalRequestServiceMapping")]
+    partial class AddProviderRemovalRequestServiceMapping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1057,9 +1060,6 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("PreviousCabTransferStatus")
-                        .HasColumnType("integer");
 
                     b.Property<int>("PreviousServiceStatus")
                         .HasColumnType("integer");

@@ -10,7 +10,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ReasonForRemoval", "CabRemovalRequest", new { providerId = Model.ProviderProfileId, serviceId = Model.Id }, new { @class = "govuk-back-link" })
+    <a href="@ViewBag.RefererURL" class="govuk-back-link">Back</a>
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
@@ -18,39 +18,6 @@
                     You are about to send a request to remove a service from the register
                 </h1>
             </div>
-
-            @if (!ViewBag.IsProviderRemoval == true)
-            {
-                <div class="govuk-grid-column-full">
-                    <div class="govuk-summary-card">
-                        <div class="govuk-summary-card__title-wrapper">
-                            <h2 class="govuk-summary-card__title">Service: @Model.ServiceName</h2>
-                        </div>
-                        <div class="govuk-summary-card__content">
-                            <dl class="govuk-summary-list">
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Service name</dt>
-                                    <dd class="govuk-summary-list__value">@Model.ServiceName</dd>
-                                </div>
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Status</dt>
-                                    <dd class="govuk-summary-list__value">@HtmlExtensions.ToStyledStrongTag(Model.ServiceStatus)</dd>
-                                </div>
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Provider registered name</dt>
-                                    <dd class="govuk-summary-list__value">@Model.Provider.RegisteredName</dd>
-                                </div>
-                                <div class="govuk-summary-list__row">
-                                    <dt class="govuk-summary-list__key">Conformity Assessment Body</dt>
-                                    <dd class="govuk-summary-list__value">@Model.CabUser.Cab.CabName</dd>
-                                </div>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            }
-            else
-            {
                 <div class="govuk-grid-column-full">
                     <table class="govuk-table">
                         <thead class="govuk-table__head">
@@ -68,20 +35,13 @@
                                     @Html.DisplayFor(model => model.Provider.TradingName)
                                 </td>
                                 <td class="govuk-table__cell">
-                                    @foreach (var item in Model.Provider.Services.Where(s => s.ServiceStatus != ServiceStatusEnum.Removed))
-                                    {
-                                        @item.ServiceName
-
-                                        <br />
-                                    }
+                                    @Model.ServiceName
                                 </td>
-                                <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.Provider.ModifiedTime)</td>
+                                <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.ModifiedTime ?? Model.CreatedTime)</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            }
-
             <div class="govuk-grid-column-three-quarters">
                 <h2 class="govuk-heading-m govuk-!-margin-top-6">Selected reason for removing this service</h2>
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-0" />
@@ -119,21 +79,11 @@
                         <button type="submit" class="govuk-button govuk-button--warning" data-module="govuk-button">
                             Request removal
                         </button>
-                        @if (ViewBag.IsProviderRemoval == true)
-                        {
-                            <a class="govuk-button govuk-button--secondary" href="provider-will-be-removed?serviceId=@Model.Id">
-                                Cancel
-                            </a>
-                        }
-                        else
-                        {
-                            <a class="govuk-button govuk-button--secondary" href="reason-for-removing?providerId=@Model.ProviderProfileId&serviceId=@Model.Id">
-                                Cancel
-                            </a>
-                        }
-
+                        <a class="govuk-button govuk-button--secondary" href="@ViewBag.RefererURL">
+                            Cancel and back
+                        </a>
                     </div>
-                }
+                 }
             </div>
         </div>
     </main>

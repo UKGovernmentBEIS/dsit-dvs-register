@@ -11,6 +11,7 @@ namespace DVSRegister.CommonUtility.Models.Enums
         [Description("Approved")]
         Approved = 2,
         [Description("Rejected")]
-        Rejected = 3
+        Rejected = 3,
+        AwaitingRemoval = 4 // internal status to handle removal of services under assignment
     }
 }

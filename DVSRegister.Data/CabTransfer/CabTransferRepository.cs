@@ -21,7 +21,8 @@ namespace DVSRegister.Data.CabTransfer
         {
             return await context.CabTransferRequest.Include(r=>r.RequestManagement).Include(r=>r.Service).ThenInclude(r=>r.Provider).Include(r => r.ToCab)
             .Include(r=>r.FromCabUser)
-           .Where(r=>r.ToCabId == cabId).OrderBy(r=>r.DecisionTime).ToListAsync();
+           .Where(r=>r.ToCabId == cabId && r.RequestManagement.RequestStatus!=RequestStatusEnum.AwaitingRemoval)
+           .OrderBy(r=>r.DecisionTime).ToListAsync();
         }
 
         public async Task<Service> GetServiceDetailsWithCabTransferDetails(int serviceId, int cabId)
