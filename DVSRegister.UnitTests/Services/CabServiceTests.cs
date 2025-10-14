@@ -16,8 +16,7 @@ namespace DVSRegister.UnitTests.Services
     {
 
         private readonly ICabRepository cabRepository;
-        private readonly IMapper automapper;
-        private readonly IBucketService bucketService;
+        private readonly IMapper automapper;        
         private readonly CabService cabService;
 
 
@@ -26,9 +25,8 @@ namespace DVSRegister.UnitTests.Services
         {
             this.cabRepository = Substitute.For<ICabRepository>();  
             var config = new MapperConfiguration(cfg => cfg.AddProfile<AutoMapperProfile>());
-            this.automapper = config.CreateMapper();
-            this.bucketService = Substitute.For<IBucketService>();
-            this.cabService = new CabService(this.cabRepository, this.automapper, this.bucketService);
+            this.automapper = config.CreateMapper();            
+            this.cabService = new CabService(this.cabRepository, this.automapper);
 
         }
 

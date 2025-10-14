@@ -31,5 +31,7 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("User")]
         public int? RemovedByUserId { get; set; }
         public User? RemovedByUser { get; set; }
+
+        public ICollection<ProviderRemovalRequestServiceMapping>? ProviderRemovalRequestServiceMapping { get; set; }
     }
 }

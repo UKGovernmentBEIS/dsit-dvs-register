@@ -64,8 +64,7 @@
                 </div>
 
                 @if (Model.Services?.Any() == true)
-                {
-                bool removeProvider = Model.Services.Count(s => s.IsInRegister == true) ==1; // if there is only one service which is published                
+                {                  
 
                     var orderedServices = Model.Services
                         .Where(s => s.IsCurrent)
@@ -88,21 +87,19 @@
                                 Service details: @(!String.IsNullOrEmpty(item?.ServiceName) ? item?.ServiceName : "Incomplete")
                                 </h2>
                                 <ul class="govuk-summary-card__actions">
-
-
-                                    @if (certificateUploadRequired)
+                                @if (certificateUploadRequired)
+                                {
+                                    <li class="govuk-summary-card__action">
+                                        <a class="govuk-link" href="@Url.Action("BeforeYouSubmitNewCertificate", "CabServiceReApplication", new { serviceKey = item.ServiceKey, providerProfileId = item.ProviderProfileId, currentServiceId = item.Id })">Upload a replacement certificate</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    @if (item?.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)
                                     {
                                         <li class="govuk-summary-card__action">
-                                        <a class="govuk-link" href="@Url.Action("BeforeYouSubmitNewCertificate", "CabServiceReApplication", new { serviceKey = item.ServiceKey, providerProfileId = item.ProviderProfileId, currentServiceId = item.Id })">Upload a replacement certificate</a>
+                                            <a class="govuk-link" href="/cab-service/amend/service-amendments?serviceId=@item.Id">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
                                         </li>
-                                    }
-                                    else
-                                    {
-                                        @if (item?.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)
-                                        {
-                                            <li class="govuk-summary-card__action">
-                                                <a class="govuk-link" href="/cab-service/amend/service-amendments?serviceId=@item.Id">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
-                                            </li>
 
                                         }
                                         else
@@ -111,16 +108,16 @@
                                                 <a class="govuk-link" href="/cab-service/service-details?serviceKey=@item?.ServiceKey">View service details <span class="govuk-visually-hidden"> of Service @item.ServiceName</span></a>
                                             </li>
                                         }
-                                        @if (item.ServiceStatus == ServiceStatusEnum.Published)
+                                       
+                                        @if (item.PublishedServiceVersion != null && item.PublishedServiceVersion.ServiceStatus == ServiceStatusEnum.Published)
                                         {                                       
                                             <li class="govuk-summary-card__action">
-                                            <a class="govuk-link" href="/cab-service/remove/reason-for-removing?providerId=@item.ProviderProfileId&serviceId=@item.Id">
+                                            <a class="govuk-link" href="/cab-service/remove/reason-for-removing?providerId=@item.ProviderProfileId&serviceId=@item.PublishedServiceVersion.Id">
                                                 Request service removal <span class="govuk-visually-hidden"> of service @item.ServiceName</span>
                                             </a>
-                                            </li>
-                                        }
+                                        </li>
                                     }
-                                    
+                                }
                                 </ul>
                             </div>
                             <div class="govuk-summary-card__content">

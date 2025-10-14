@@ -68,7 +68,7 @@ namespace DVSRegister.Controllers
             if (!IsValidCabId(CabId))
                 return HandleInvalidCabId(CabId);
 
-            ProviderProfileDto providerProfileDto = await cabService.GetProvider(providerId, CabId);
+            ProviderProfileDto providerProfileDto = await cabService.GetProviderAndAssignPublishedService(providerId, CabId);
             var (hasPendingRequests, uploadList) = await cabService.GetPendingReassignRequests(CabId);
             var pendingUploads =  uploadList.Where(x=>x.Service.Provider.Id == providerId).OrderBy(x=>x.Service.Provider.RegisteredName).ToList();
             if(pendingUploads?.Count>0)
