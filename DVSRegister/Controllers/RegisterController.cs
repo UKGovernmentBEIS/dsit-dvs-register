@@ -1,9 +1,12 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
+using DVSRegister.Models.Register;
+using DVSRegister.Models.UI;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
@@ -17,78 +20,125 @@ namespace DVSRegister.Controllers
         private readonly decimal TFVersionNumber = 0.4m;
 
         [Route("")]
-        [HttpGet("register-search")]
-        public async Task<IActionResult> Register(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, int RemoveRole = 0, int RemoveScheme = 0, string SearchAction = "", string SearchProvider = "")
+        #region All services
+        [HttpGet("all-services")]
+        public async Task<IActionResult> AllServices(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, List<int> SelectedTfVersionIds,
+            int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
         {
-            RegisterListViewModel registerListViewModel = new ();
+            AllServicesViewModel allServicesViewModel = new();
             Filters? filters = HttpContext?.Session.Get<Filters>("Filters");
-            if (SelectedRoleIds!= null && SelectedRoleIds.Count>0 && SelectedSupplementarySchemeIds!=null && SelectedSupplementarySchemeIds.Count>0 &&
-               string.IsNullOrEmpty(SearchAction) && string.IsNullOrEmpty(SearchProvider) &&RemoveRole == 0 && RemoveScheme == 0 && filters != null)
+            if (SelectedRoleIds != null && SelectedRoleIds.Count > 0 && SelectedSupplementarySchemeIds != null && SelectedSupplementarySchemeIds.Count > 0 && SelectedTfVersionIds != null && SelectedTfVersionIds.Count > 0 &&
+                string.IsNullOrEmpty(SearchAction) && string.IsNullOrEmpty(SearchText) && RemoveRole == 0 && RemoveScheme == 0 && RemoveTfVersion == 0 && filters != null)
             {
                 SelectedRoleIds = filters.SelectedRoleIds;
                 SelectedSupplementarySchemeIds = filters.SelectedSupplementarySchemeIds;
+                SelectedTfVersionIds = filters.SelectedTfVersionIds;
                 SearchAction = filters.SearchAction;
-                SearchProvider = filters.SearchProvider;                
+                SearchText = filters.SearchText;
                 RemoveRole = filters.RemoveRole;
                 RemoveScheme = filters.RemoveScheme;
+                RemoveTfVersion = filters.RemoveTfVersion;
             }
 
-            await SetRoles(SelectedRoleIds, RemoveRole, registerListViewModel);
-            await SetSchemes(SelectedSupplementarySchemeIds, RemoveScheme, registerListViewModel);
+            await SetRoles(SelectedRoleIds, RemoveRole, allServicesViewModel);
+            await SetSchemes(SelectedSupplementarySchemeIds, RemoveScheme, allServicesViewModel);
+            await SetTfVersion(SelectedTfVersionIds, RemoveTfVersion, allServicesViewModel);
 
-            if (SearchAction=="clearSearch")
+            if (SearchAction == "clearSearch")
             {
                 ModelState.Clear();
-                registerListViewModel.SearchProvider = null;
-                SearchProvider = string.Empty;
+                allServicesViewModel.SearchText = null;
+                SearchText = string.Empty;
             }
             else if (SearchAction == "clearFilter")
             {
                 ModelState.Clear();
-                registerListViewModel.SelectedRoleIds = [];
-                registerListViewModel.SelectedSupplementarySchemeIds = [];
-                registerListViewModel.SelectedRoles = [new RoleDto()];
-                registerListViewModel.SelectedSupplementarySchemes =   [new SupplementarySchemeDto()];
+                allServicesViewModel.SelectedRoleIds = [];
+                allServicesViewModel.SelectedSupplementarySchemeIds = [];
+                allServicesViewModel.SelectedTrustFrameworkVersionId = [];
+                allServicesViewModel.SelectedRoles = [new RoleDto()];
+                allServicesViewModel.SelectedSupplementarySchemes = [new SupplementarySchemeDto()];
+                allServicesViewModel.SelectedTrustFrameworkVersion = [new TrustFrameworkVersionDto()];
             }
-            registerListViewModel.Providers = await registerService.GetProviders(registerListViewModel.SelectedRoleIds, registerListViewModel.SelectedSupplementarySchemeIds, SearchProvider);
+
+            var results = await registerService.GetServices(allServicesViewModel.SelectedRoleIds, allServicesViewModel.SelectedSupplementarySchemeIds, allServicesViewModel.SelectedTrustFrameworkVersionId,
+                PageNum, SearchText, SortBy);
+            allServicesViewModel.PageNumber = PageNum;
+            allServicesViewModel.Services = results.Items;
+            allServicesViewModel.TotalResults = results.TotalCount;
+            allServicesViewModel.TotalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
+
             List<RegisterPublishLogDto> list = await registerService.GetRegisterPublishLogs();
-            if (list!=null && list.Count != 0)
+            if (list != null && list.Count != 0)
             {
-                registerListViewModel.LastUpdated =  list[0].CreatedTime.ToString("dd MMMM yyyy");
+                allServicesViewModel.LastUpdated = list[0].CreatedTime.ToString("dd MMMM yyyy");
             }
 
-            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, RemoveRole, RemoveScheme, SearchAction, SearchProvider);
-            return View("Register", registerListViewModel);
+            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, SelectedTfVersionIds, RemoveRole, RemoveScheme, RemoveTfVersion, SearchAction, SearchText);
+            return View(allServicesViewModel);
         }
+        #endregion
 
+        #region All providers
 
-        [HttpGet("provider-details")]
-        public async Task<IActionResult> ProviderDetails(int providerId)
+        [HttpGet("all-providers")]
+        public async Task<IActionResult> AllProviders(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, List<int> SelectedTfVersionIds,
+            int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
         {
-
-            ProviderProfileDto providerProfileDto = await registerService.GetProviderWithServiceDeatils(providerId);
-            if(providerProfileDto == null)
-                return RedirectToAction("RegisterPageNotFound", "Error");
-
-            ProviderDetailsViewModel providerDetailsViewModel = new()
+            AllProvidersViewModel allProvidersViewModel = new();
+            Filters? filters = HttpContext?.Session.Get<Filters>("Filters");
+            if (SelectedRoleIds != null && SelectedRoleIds.Count > 0 && SelectedSupplementarySchemeIds != null && SelectedSupplementarySchemeIds.Count > 0 &&
+               string.IsNullOrEmpty(SearchAction) && string.IsNullOrEmpty(SearchText) && RemoveRole == 0 && RemoveScheme == 0 && filters != null)
             {
-                Provider = providerProfileDto,
-            };
-            return View(providerDetailsViewModel);
+                SelectedRoleIds = filters.SelectedRoleIds;
+                SelectedSupplementarySchemeIds = filters.SelectedSupplementarySchemeIds;
+                SelectedTfVersionIds = filters.SelectedTfVersionIds;
+                SearchAction = filters.SearchAction;
+                SearchText = filters.SearchText;
+                RemoveRole = filters.RemoveRole;
+                RemoveScheme = filters.RemoveScheme;
+                RemoveTfVersion = filters.RemoveTfVersion;
+            }
+
+            await SetRoles(SelectedRoleIds, RemoveRole, allProvidersViewModel);
+            await SetSchemes(SelectedSupplementarySchemeIds, RemoveScheme, allProvidersViewModel);
+            await SetTfVersion(SelectedTfVersionIds, RemoveTfVersion, allProvidersViewModel);
+
+            if (SearchAction == "clearSearch")
+            {
+                ModelState.Clear();
+                allProvidersViewModel.SearchText = null;
+                SearchText = string.Empty;
+            }
+            else if (SearchAction == "clearFilter")
+            {
+                ModelState.Clear();
+                allProvidersViewModel.SelectedRoleIds = [];
+                allProvidersViewModel.SelectedSupplementarySchemeIds = [];
+                allProvidersViewModel.SelectedTrustFrameworkVersionId = [];
+                allProvidersViewModel.SelectedRoles = [new RoleDto()];
+                allProvidersViewModel.SelectedSupplementarySchemes = [new SupplementarySchemeDto()];
+                allProvidersViewModel.SelectedTrustFrameworkVersion = [new TrustFrameworkVersionDto()];
+            }
+            var results = await registerService.GetProviders(allProvidersViewModel.SelectedRoleIds, allProvidersViewModel.SelectedSupplementarySchemeIds, allProvidersViewModel.SelectedTrustFrameworkVersionId,
+                PageNum, SearchText, SortBy);
+            allProvidersViewModel.PageNumber = PageNum;
+            allProvidersViewModel.Providers = results.Items;
+            allProvidersViewModel.TotalResults = results.TotalCount;
+            allProvidersViewModel.TotalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
+            List<RegisterPublishLogDto> list = await registerService.GetRegisterPublishLogs();
+            if (list != null && list.Count != 0)
+            {
+                allProvidersViewModel.LastUpdated = list[0].CreatedTime.ToString("dd MMMM yyyy");
+            }
+
+            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, SelectedTfVersionIds, RemoveRole, RemoveScheme, RemoveTfVersion, SearchAction, SearchText);
+            return View(allProvidersViewModel);
         }
 
-        [HttpGet("underpinning-service-details")]
-        public async Task<IActionResult> UnderpinningServiceDetails(int serviceId, int previousProviderId)
-        {
-            ViewBag.PreviousProviderId = previousProviderId;
-            ServiceDto service = await registerService.GetServiceDetails(serviceId);
+        #endregion
 
-            if(service == null)
-                return RedirectToAction("RegisterPageNotFound", "Error");
-         
-            return View(service);
-        }
-
+        #region Updates
         [HttpGet("publish-logs")]
         public async Task<IActionResult> Updates()
         {
@@ -96,59 +146,103 @@ namespace DVSRegister.Controllers
             registerPublishLogsViewModel.RegisterPublishLog = await registerService.GetRegisterPublishLogs();
             return View("Updates", registerPublishLogsViewModel);
         }
+        #endregion
+
+
+        [HttpGet("provider-details")]
+        public async Task<IActionResult> ProviderDetails(int providerId)
+        {
+            ProviderProfileDto providerProfileDto = await registerService.GetProviderWithServiceDeatils(providerId);
+            if(providerProfileDto == null)
+                return RedirectToAction("RegisterPageNotFound", "Error");
+            return View(providerProfileDto);
+        }
+
+        [HttpGet("service-details")]
+        public async Task<IActionResult> ServiceDetails(int serviceId)
+        {
+            ServiceDto service = await registerService.GetServiceDetails(serviceId);
+            if (service == null)
+                return RedirectToAction("RegisterPageNotFound", "Error");
+            return View(service);
+        }
 
         #region Private methods
-        private void SetFiltersInSession(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds,  int RemoveRole, int RemoveScheme, string SearchAction, string SearchProvider)
+        private void SetFiltersInSession(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, List<int> SelectedTfVersionIds, 
+            int RemoveRole, int RemoveScheme, int RemoveTfVersion, string SearchAction, string SearchText)
         {
             Filters filters = new()
             {
                 SelectedRoleIds = SelectedRoleIds,
                 SelectedSupplementarySchemeIds = SelectedSupplementarySchemeIds,
+                SelectedTfVersionIds = SelectedTfVersionIds,
                 SearchAction = SearchAction,
-                SearchProvider = SearchProvider,
+                SearchText = SearchText,
                 RemoveRole = RemoveRole,
-                RemoveScheme = RemoveScheme
+                RemoveScheme = RemoveScheme,
+                RemoveTfVersion = RemoveTfVersion
             };
             HttpContext?.Session.Set("Filters", filters);
         }
-        private async Task SetSchemes(List<int>? SelectedSupplementarySchemeIds, int RemoveScheme, RegisterListViewModel registerListViewModel)
+        private async Task SetSchemes(List<int>? selectedIds, int removeId, PaginationAndFilteringParameters vm)
         {
-            registerListViewModel.AvailableSchemes =  await cabService.GetSupplementarySchemes();
+            vm.AvailableSchemes = await cabService.GetSupplementarySchemes();
 
-            if (SelectedSupplementarySchemeIds==null || SelectedSupplementarySchemeIds.Count == 0)
+            if (selectedIds == null || selectedIds.Count == 0)
             {
-                registerListViewModel.SelectedSupplementarySchemeIds = [];
+                vm.SelectedSupplementarySchemeIds = [];
             }
             else
             {
-                if (RemoveScheme>0)
-                    SelectedSupplementarySchemeIds.Remove(RemoveScheme);
-                registerListViewModel.SelectedSupplementarySchemeIds = SelectedSupplementarySchemeIds;
+                if (removeId > 0)
+                    selectedIds.Remove(removeId);
+                vm.SelectedSupplementarySchemeIds = selectedIds;
             }
 
-            if (registerListViewModel.SelectedSupplementarySchemeIds.Count > 0)
-                registerListViewModel.SelectedSupplementarySchemes =  registerListViewModel.AvailableSchemes.Where(c => registerListViewModel.SelectedSupplementarySchemeIds.Contains(c.Id)).ToList();
-        }
-
-        private async Task SetRoles(List<int>? SelectedRoleIds, int RemoveRole, RegisterListViewModel registerListViewModel)
-        {
-            registerListViewModel.AvailableRoles = await cabService.GetRoles(TFVersionNumber);
-            if (SelectedRoleIds==null || SelectedRoleIds.Count == 0)
+            if (vm.SelectedSupplementarySchemeIds.Count > 0)
             {
-                registerListViewModel.SelectedRoleIds = [];
+                vm.SelectedSupplementarySchemes = vm.AvailableSchemes.Where(c => vm.SelectedSupplementarySchemeIds.Contains(c.Id)).ToList();
+            }
+        }
+        private async Task SetRoles(List<int>? selectedIds, int removeId, PaginationAndFilteringParameters vm)
+        {
+            vm.AvailableRoles = await cabService.GetRoles(TFVersionNumber);
+            if (selectedIds == null || selectedIds.Count == 0)
+            {
+                vm.SelectedRoleIds = [];
             }
             else
             {
-                if (RemoveRole>0)
-                    SelectedRoleIds.Remove(RemoveRole);
-                registerListViewModel.SelectedRoleIds = SelectedRoleIds;
+                if (removeId > 0)
+                    selectedIds.Remove(removeId);
+                vm.SelectedRoleIds = selectedIds;
             }
-            if (registerListViewModel?.SelectedRoleIds?.Count > 0)
-                registerListViewModel.SelectedRoles =  registerListViewModel.AvailableRoles.Where(c => registerListViewModel.SelectedRoleIds.Contains(c.Id)).ToList();
+
+            if (vm.SelectedRoleIds?.Count > 0)
+            {
+                vm.SelectedRoles = vm.AvailableRoles.Where(c => vm.SelectedRoleIds.Contains(c.Id)).ToList();
+            }
         }
 
-       
+        private async Task SetTfVersion(List<int>? selectedIds, int removeId, PaginationAndFilteringParameters vm)
+        {
+            vm.AvailableTrustFrameworkVersion = await cabService.GetTfVersion();
+            if (selectedIds == null || selectedIds.Count == 0)
+            {
+                vm.SelectedTrustFrameworkVersionId = [];
+            }
+            else
+            {
+                if (removeId > 0)
+                    selectedIds.Remove(removeId);
+                vm.SelectedTrustFrameworkVersionId = selectedIds;
+            }
 
+            if (vm.SelectedTrustFrameworkVersionId?.Count > 0)
+            {
+                vm.SelectedTrustFrameworkVersion = vm.AvailableTrustFrameworkVersion.Where(c => vm.SelectedTrustFrameworkVersionId.Contains(c.Id)).ToList();
+            }
+        }
 
         #endregion
     }
