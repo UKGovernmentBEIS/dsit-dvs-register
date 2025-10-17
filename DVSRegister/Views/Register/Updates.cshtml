@@ -4,9 +4,7 @@
 @{
     ViewData["Title"] = "Updates : Register of digital identity and attribute services";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
-    ViewData["ActiveUpdates"] = "govuk-header__navigation-item--active";
-    
-    
+    ViewData["ActiveNav"] = "Updates";    
 }
 <div class="govuk-width-container">
     @await Html.PartialAsync("~/Views/Register/PartialViews/_RegisterBreadCrumbsView.cshtml", "Updates")
