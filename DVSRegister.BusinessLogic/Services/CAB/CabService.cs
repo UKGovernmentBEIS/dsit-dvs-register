@@ -19,14 +19,12 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         {
             this.cabRepository = cabRepository;
             this.automapper = automapper;            
-        }
-     
+        }     
         public async Task<List<RoleDto>> GetRoles(decimal tfVersion)
         {
             var list = await cabRepository.GetRoles(tfVersion);
             return automapper.Map<List<RoleDto>>(list);
         }
-
         public async Task<List<SupplementarySchemeDto>> GetSupplementarySchemes()
         {
             var list = await cabRepository.GetSupplementarySchemes();
@@ -36,8 +34,12 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         {
             var list = await cabRepository.GetIdentityProfiles();
             return automapper.Map<List<IdentityProfileDto>>(list);
-        }      
-
+        }        
+        public async Task<List<TrustFrameworkVersionDto>> GetTfVersion()
+        {
+            var list = await cabRepository.GetTfVersion();
+            return automapper.Map<List<TrustFrameworkVersionDto>>(list);
+        }
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto)
         {
             return providerProfileDto.Services == null || providerProfileDto.Services.Count==0 || // services not added ie certificate info not submitted yet
