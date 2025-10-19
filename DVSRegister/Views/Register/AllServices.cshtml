@@ -55,64 +55,117 @@
                 </div>
             </div>
             
+            <!-- Filter and Sort Component -->
+            <div class="govuk-!-margin-bottom-6">
+                <details class="govuk-details" data-module="govuk-details">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">
+                            Filter and sort
+                        </span>
+                    </summary>
+                    <div class="govuk-details__text">
+                        <div class="govuk-grid-row">
+                            <div class="govuk-grid-column-one-half">
+                                <h3 class="govuk-heading-s govuk-!-margin-bottom-2">
+                                    @if (Model.Providers != null && Model.Providers.Any())
+                                    {
+                                        @Model.Providers.Count() @(Model.Providers.Count() == 1 ? "result" : "results")
+                                    }
+                                    else
+                                    {
+                                        <text>0 results</text>
+                                    }
+                                </h3>
+                            </div>
+                        </div>
+                        
+                        <div class="govuk-grid-row">
+                            <div class="govuk-grid-column-one-third">
+                                <!-- Sort by section -->
+                                <div class="govuk-form-group">
+                                    <fieldset class="govuk-fieldset">
+                                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                            <h4 class="govuk-fieldset__heading">Sort by</h4>
+                                        </legend>
+                                        <div class="govuk-radios govuk-radios--small">
+                                            <div class="govuk-radios__item">
+                                                <input type="radio" name="SortOrder" id="sort-relevance" value="relevance" class="govuk-radios__input" checked="">
+                                                <label for="sort-relevance" class="govuk-label govuk-radios__label">Relevance</label>
+                                            </div>
+                                            <div class="govuk-radios__item">
+                                                <input type="radio" name="SortOrder" id="sort-updated-newest" value="updated-newest" class="govuk-radios__input">
+                                                <label for="sort-updated-newest" class="govuk-label govuk-radios__label">Updated (newest)</label>
+                                            </div>
+                                            <div class="govuk-radios__item">
+                                                <input type="radio" name="SortOrder" id="sort-updated-oldest" value="updated-oldest" class="govuk-radios__input">
+                                                <label for="sort-updated-oldest" class="govuk-label govuk-radios__label">Updated (oldest)</label>
+                                            </div>
+                                            <div class="govuk-radios__item">
+                                                <input type="radio" name="SortOrder" id="sort-alphabetical" value="alphabetical" class="govuk-radios__input">
+                                                <label for="sort-alphabetical" class="govuk-label govuk-radios__label">Alphabetical</label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            
+                            <div class="govuk-grid-column-one-third">
+                                <!-- Role types section -->
+                                <div class="govuk-form-group">
+                                    <fieldset class="govuk-fieldset">
+                                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                            <h4 class="govuk-fieldset__heading">Role types</h4>
+                                        </legend>
+                                        <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                                            @foreach (var role in Model.AvailableRoles)
+                                            {
+                                                <div class="govuk-checkboxes__item">
+                                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id"
+                                                           @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "")/>
+                                                    <label class="govuk-label govuk-checkboxes__label" for="role_@role.Id">@Enum.GetName((RoleEnum)@role.Id)</label>
+                                                </div>
+                                            }
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            
+                            <div class="govuk-grid-column-one-third">
+                                <!-- Supplementary codes section -->
+                                <div class="govuk-form-group">
+                                    <fieldset class="govuk-fieldset">
+                                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                            <h4 class="govuk-fieldset__heading">Supplementary codes</h4>
+                                        </legend>
+                                        <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                                            @foreach (var item in Model.AvailableSchemes)
+                                            {
+                                                <div class="govuk-checkboxes__item">
+                                                    <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id" id="scheme_@item.Id"
+                                                           @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "")/>
+                                                    <label class="govuk-label govuk-checkboxes__label" for="scheme_@item.Id">@item.SchemeName</label>
+                                                </div>
+                                            }
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button" name="SearchAction" value="filter">
+                                Apply filters
+                            </button>
+                            <button type="submit" class="govuk-button govuk-button--secondary" name="SearchAction" value="clearFilter">
+                                Clear filters
+                            </button>
+                        </div>
+                    </div>
+                </details>
+            </div>
+            
             <div class="govuk-grid-row">
-                <div class="govuk-grid-column-one-third">
-
-                    <h2 class="govuk-heading-m">Filters</h2>
-                    <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible">
-
-                    <div class="govuk-form-group">
-                        <fieldset class="govuk-fieldset">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                <h3 class="govuk-fieldset__heading">
-                                    Role types
-                                </h3>
-                            </legend>
-                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                @foreach (var role in Model.AvailableRoles)
-                                {
-                                    <div class="govuk-checkboxes__item">
-                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id"
-                                               @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "")/>
-                                        <label class="govuk-label govuk-checkboxes__label" for="role_@role.Id">@Enum.GetName((RoleEnum)@role.Id) </label>
-                                    </div>
-                                }
-                            </div>
-                        </fieldset>
-                    </div>
-
-                    <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible">
-                    <div class="govuk-form-group">
-                        <fieldset class="govuk-fieldset">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                <h3 class="govuk-fieldset__heading">
-                                    Supplementary codes
-                                </h3>
-                            </legend>
-                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-
-                                @foreach (var item in Model.AvailableSchemes)
-                                {
-                                    <div class="govuk-checkboxes__item">
-                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id" id="scheme_@item.Id"
-                                               @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "")/>
-                                        <label class="govuk-label govuk-checkboxes__label" for="scheme_@item.Id">@item.SchemeName</label>
-                                    </div>
-                                }
-
-                            </div>
-                        </fieldset>
-                    </div>
-                    <div class="govuk-button-group">
-                        <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="filter">
-                            Apply filters
-                        </button>
-                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearFilter">
-                            Clear filters
-                        </button>
-                    </div>
-                </div>
-                <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-grid-column-full">
 
 
                     @if (Model.Providers != null && Model.Providers.Any())
@@ -197,7 +250,6 @@
                     }
 
                 </div>
-
             </div>
             <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible">
             <p class="govuk-body govuk-!-margin-bottom-4">Last updated @Model.LastUpdated — @Html.ActionLink("See all updates", "Updates", "Register", null, new { @class = "govuk-link" })</p>
