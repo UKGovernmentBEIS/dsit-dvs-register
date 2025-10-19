@@ -1,0 +1,208 @@
+// Filter Panel Component Styles
+// Based on GOV.UK Design System patterns
+
+.app-c-filter-panel {
+  border-top: 1px solid govuk-colour("mid-grey");
+  border-bottom: 1px solid govuk-colour("mid-grey");
+  padding: govuk-spacing(4) 0;
+  margin-bottom: govuk-spacing(6);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: govuk-spacing(2);
+  }
+
+  &__button {
+    @include govuk-font(19);
+    @include govuk-link-common;
+    @include govuk-link-style-default;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    text-align: left;
+    -webkit-appearance: none;
+
+    &::-moz-focus-inner {
+      border: 0;
+      padding: 0;
+    }
+
+    &:focus {
+      @include govuk-focused-text;
+    }
+
+    &:hover {
+      @include govuk-link-hover-decoration;
+    }
+
+    // Arrow indicator
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -25px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+      border-width: 7px 0 7px 12.124px;
+      border-color: transparent transparent transparent govuk-colour("black");
+      transition: transform 0.2s ease-in-out;
+    }
+
+    &[aria-expanded="true"]::before {
+      transform: rotate(90deg);
+      transform-origin: 33% 50%;
+    }
+  }
+
+  &__button-inner {
+    @include govuk-font(19, $weight: bold);
+    display: block;
+    margin-left: 30px;
+  }
+
+  &__count {
+    @include govuk-font(19);
+    margin: 0;
+    font-weight: 400;
+  }
+
+  &__content {
+    margin-top: govuk-spacing(4);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: govuk-spacing(3);
+    margin-top: govuk-spacing(4);
+    padding-top: govuk-spacing(4);
+    border-top: 1px solid govuk-colour("mid-grey");
+  }
+
+  &__action {
+    margin-bottom: 0;
+
+    &--submit {
+      // Primary submit button style
+    }
+  }
+}
+
+// Filter Section Styles
+.app-c-filter-section {
+  border-bottom: 1px solid govuk-colour("mid-grey");
+  margin-bottom: 0;
+
+  &:last-of-type {
+    border-bottom: 0;
+  }
+
+  // Override default details styling
+  & > summary {
+    margin-bottom: 0;
+  }
+
+  &[open] > summary {
+    margin-bottom: govuk-spacing(2);
+  }
+
+  &__summary {
+    padding: govuk-spacing(3) 0;
+    cursor: pointer;
+    list-style: none;
+    
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:focus {
+      outline: $govuk-focus-width solid $govuk-focus-colour;
+      outline-offset: 0;
+      background-color: $govuk-focus-colour;
+      
+      .app-c-filter-section__summary-heading {
+        color: govuk-colour("black");
+      }
+    }
+
+    &:hover {
+      .app-c-filter-section__summary-heading {
+        text-decoration: underline;
+        text-decoration-thickness: max(1px, 0.0625rem);
+        text-underline-offset: 0.1578em;
+      }
+    }
+  }
+
+  &__summary-heading {
+    @include govuk-font(19, $weight: bold);
+    margin: 0;
+    display: inline-block;
+    position: relative;
+    padding-left: 30px;
+
+    // Arrow indicator
+    &::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+      border-width: 7px 0 7px 12.124px;
+      border-color: transparent transparent transparent govuk-colour("black");
+      transition: transform 0.2s ease-in-out;
+    }
+
+    details[open] > .app-c-filter-section__summary & {
+      &::before {
+        transform: rotate(90deg);
+        transform-origin: 33% 50%;
+      }
+    }
+  }
+
+  &__content {
+    padding: 0 0 govuk-spacing(3) 0;
+
+    .govuk-form-group:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Mobile responsive adjustments
+@include govuk-media-query($until: tablet) {
+  .app-c-filter-panel {
+    &__header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &__count {
+      margin-left: 30px;
+    }
+
+    &__actions {
+      flex-direction: column;
+      gap: govuk-spacing(2);
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}
+
