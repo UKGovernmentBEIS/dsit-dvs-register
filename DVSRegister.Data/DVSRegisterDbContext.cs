@@ -40,8 +40,7 @@ namespace DVSRegister.Data
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
         public DbSet<TrustmarkNumber> TrustmarkNumber { get; set; }
         public DbSet<Event> EventLogs { get; set; }
-        //public DbSet<RemoveProviderToken> RemoveProviderToken { get; set; }
-      //  public DbSet<RemoveTokenServiceMapping> RemoveTokenServiceMapping { get; set; }
+     
 
         public DbSet<ProviderProfileDraft> ProviderProfileDraft { get; set; }
         public DbSet<ProviderDraftToken> ProviderDraftToken { get; set; }
@@ -66,6 +65,10 @@ namespace DVSRegister.Data
         public DbSet<ManualUnderPinningServiceDraft> ManualUnderPinningServiceDraft { get; set; }
         public DbSet<ProviderRemovalRequest> ProviderRemovalRequest { get; set; }
         public DbSet<ServiceRemovalRequest> ServiceRemovalRequest { get; set; }
+
+        public DbSet<ActionCategory> ActionCategory { get; set; }
+        public DbSet<ActionDetails> ActionDetails { get; set; }
+        public DbSet<ActionLogs> ActionLogs { get; set; }
 
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
@@ -133,6 +136,19 @@ namespace DVSRegister.Data
         {
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             Console.WriteLine(environment);
+
+            modelBuilder.Entity<ActionCategory>()
+            .HasIndex(p => new { p.ActionKey })
+            .IsUnique(true);
+
+            modelBuilder.Entity<ActionDetails>()
+            .HasIndex(p => new { p.ActionDetailsKey })
+            .IsUnique(true);
+
+            modelBuilder.Entity<ActionLogs>(entity =>
+            {
+                entity.Property(e => e.LogDate).HasColumnType("date");
+            });
 
 
             modelBuilder.Entity<ServiceDraft>(b =>
@@ -258,9 +274,35 @@ namespace DVSRegister.Data
                 new SupplementaryScheme { Id =2, SchemeName = "Right to Rent", Order = 2 },
                 new SupplementaryScheme { Id =3, SchemeName = "Disclosure and Barring Service", Order =3 });
 
-            modelBuilder.Entity<TrustFrameworkVersion>().HasData(
+                modelBuilder.Entity<TrustFrameworkVersion>().HasData(
                 new TrustFrameworkVersion { Id = 1, TrustFrameworkName = "0.4 gamma", Order = 1 },
                 new TrustFrameworkVersion { Id = 2, TrustFrameworkName = "0.3 beta", Order = 2 });
+
+                modelBuilder.Entity<ActionCategory>().HasData(
+                new ActionCategory { Id = 1, ActionKey = nameof(ActionCategoryEnum.CR), ActionName = "Certificate review" },
+                new ActionCategory { Id = 2, ActionKey = nameof(ActionCategoryEnum.PI), ActionName = "Public interest checks" },
+                new ActionCategory { Id = 3, ActionKey = nameof(ActionCategoryEnum.ServiceUpdates), ActionName = "Service updates" },
+                new ActionCategory { Id = 4, ActionKey = nameof(ActionCategoryEnum.ProviderUpdates), ActionName = "Provider updates" });
+
+                modelBuilder.Entity<ActionDetails>().HasData(
+                new ActionDetails { Id = 1, ActionDetailsKey = nameof(ActionDetailsEnum.CR_APR), ActionDescription = "Passed", ActionCategoryId = 1},
+                new ActionDetails { Id = 2, ActionDetailsKey = nameof(ActionDetailsEnum.CR_Rej), ActionDescription = "Rejected", ActionCategoryId = 1 },
+                new ActionDetails { Id = 3, ActionDetailsKey = nameof(ActionDetailsEnum.CR_Restore), ActionDescription = "Restored", ActionCategoryId = 1 },
+                new ActionDetails { Id = 4, ActionDetailsKey = nameof(ActionDetailsEnum.CR_SentBack), ActionDescription = "Sent back to CAB", ActionCategoryId = 1},
+                new ActionDetails { Id = 5, ActionDetailsKey = nameof(ActionDetailsEnum.CR_DeclinedByProvider), ActionDescription = "Declined by provider", ActionCategoryId = 1 },
+                new ActionDetails { Id = 6, ActionDetailsKey = nameof(ActionDetailsEnum.PI_Primary_Pass), ActionDescription = "Primary check passed", ActionCategoryId = 2 },
+                new ActionDetails { Id = 7, ActionDetailsKey = nameof(ActionDetailsEnum.PI_SentBack), ActionDescription = "Sent back by second reviewer", ActionCategoryId = 2 },
+                new ActionDetails { Id = 8, ActionDetailsKey = nameof(ActionDetailsEnum.PI_Primary_Fail), ActionDescription = "Primary check failed", ActionCategoryId = 2 },
+                new ActionDetails { Id = 9, ActionDetailsKey = nameof(ActionDetailsEnum.PI_Fail), ActionDescription = "Application rejected", ActionCategoryId = 2 },
+                new ActionDetails { Id = 10, ActionDetailsKey = nameof(ActionDetailsEnum.PI_ProviderPublish), ActionDescription = "Publication of provider", ActionCategoryId = 2 },
+                new ActionDetails { Id = 11, ActionDetailsKey = nameof(ActionDetailsEnum.PI_ServicePublish), ActionDescription = "Service published", ActionCategoryId = 2 },
+                new ActionDetails { Id = 12, ActionDetailsKey = nameof(ActionDetailsEnum.PI_ServiceRePublish), ActionDescription = "Service updated", ActionCategoryId = 2 },
+                new ActionDetails { Id = 13, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceNameUpdate), ActionDescription = "Service name changed", ActionCategoryId = 3 },
+                new ActionDetails { Id = 14, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceUpdates), ActionDescription = "Updates published", ActionCategoryId = 3 },
+                new ActionDetails { Id = 15, ActionDetailsKey = nameof(ActionDetailsEnum.ProviderContactUpdate), ActionDescription = "Contact details changed", ActionCategoryId = 4 },
+                new ActionDetails { Id = 16, ActionDetailsKey = nameof(ActionDetailsEnum.BusinessDetailsUpdate), ActionDescription = "Business details changed", ActionCategoryId = 4 }             
+
+            );
 
         }
     }
