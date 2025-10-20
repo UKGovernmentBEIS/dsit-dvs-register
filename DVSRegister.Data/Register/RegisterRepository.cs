@@ -3,7 +3,6 @@ using DVSRegister.Data.Entities;
 using DVSRegister.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Linq.Expressions;
 
 namespace DVSRegister.Data
 {
@@ -16,34 +15,53 @@ namespace DVSRegister.Data
             this.context = context;
         }
 
-        public async Task<PaginatedResult<ProviderProfile>> GetProviders(List<int> roles, List<int> schemes, List<int> tfVersions, int pageNum, string searchText = "", string sortBy = "")
+        public async Task<PaginatedResult<ProviderProfile>> GetProviders(
+    List<int> roles, List<int> schemes, List<int> tfVersions,
+    int pageNum, string searchText = "", string sortBy = "")
         {
-            var trimmedSearchText = searchText?.Trim();
+            var trimmedSearchText = searchText?.Trim().ToUpper();
 
-            var filteredServicesQuery =
+            var filteredServices =
                 from s in context.Service.AsNoTracking()
                 where s.IsInRegister
                     && (!roles.Any() || s.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))
                     && (!schemes.Any() || s.ServiceSupSchemeMapping.Any(sc => schemes.Contains(sc.SupplementarySchemeId)))
                     && (!tfVersions.Any() || tfVersions.Contains(s.TrustFrameworkVersionId))
-                    && (
-                    string.IsNullOrEmpty(trimmedSearchText) || s.ServiceName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase) ||
-                    s.Provider.RegisteredName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase) || s.Provider.TradingName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase))
                 select new
                 {
                     Service = s,
+                    s.Provider,
                     RoleIds = s.ServiceRoleMapping.Select(r => r.RoleId).ToList(),
-                    SchemeIds = s.ServiceSupSchemeMapping.Select(sc => sc.SupplementarySchemeId).ToList()
+                    SchemeIds = s.ServiceSupSchemeMapping.Select(sc => sc.SupplementarySchemeId).ToList(),
+                    NameMatch = string.IsNullOrEmpty(trimmedSearchText)
+                        || s.ServiceName.ToUpper().Contains(trimmedSearchText),
+                    ProviderMatch = string.IsNullOrEmpty(trimmedSearchText)
+                        || s.Provider.RegisteredName.ToUpper().Contains(trimmedSearchText)
+                        || (s.Provider.TradingName != null
+                            && s.Provider.TradingName.ToUpper().Contains(trimmedSearchText))
                 };
 
             var providerQuery =
-                from p in context.ProviderProfile.AsNoTracking()
-                join fs in filteredServicesQuery on p.Id equals fs.Service.ProviderProfileId into serviceGroup
-                where p.IsInRegister && serviceGroup.Any()
+                from s in filteredServices
+                where s.NameMatch || s.ProviderMatch
+                group s by s.Provider into g
                 select new
                 {
-                    Provider = p,
-                    Services = serviceGroup
+                    Provider = g.Key,
+                    Services = g.Any(x => x.ProviderMatch)
+                        ? g.Select(x => new
+                        {
+                            x.Service,
+                            x.RoleIds,
+                            x.SchemeIds
+                        })
+                        : g.Where(x => x.NameMatch)
+                            .Select(x => new
+                            {
+                                x.Service,
+                                x.RoleIds,
+                                x.SchemeIds
+                            })
                 };
 
             var sortedProviders = sortBy switch
@@ -65,14 +83,15 @@ namespace DVSRegister.Data
             {
                 var provider = x.Provider;
                 provider.Services = [.. x.Services.Select(s => new Service
-                {
-                    Id = s.Service.Id,
-                    ServiceName = s.Service.ServiceName,
-                    IsInRegister = s.Service.IsInRegister,
-                    TrustFrameworkVersionId = s.Service.TrustFrameworkVersionId,
-                    ServiceRoleMapping = [.. s.RoleIds.Select(rid => new ServiceRoleMapping { RoleId = rid })],
-                    ServiceSupSchemeMapping = [.. s.SchemeIds.Select(sid => new ServiceSupSchemeMapping { SupplementarySchemeId = sid })]
-                })];
+        {
+            Id = s.Service.Id,
+            ServiceName = s.Service.ServiceName,
+            IsInRegister = s.Service.IsInRegister,
+            TrustFrameworkVersionId = s.Service.TrustFrameworkVersionId,
+            ServiceRoleMapping = [.. s.RoleIds.Select(rid => new ServiceRoleMapping { RoleId = rid })],
+            ServiceSupSchemeMapping = [.. s.SchemeIds.Select(sid =>
+                new ServiceSupSchemeMapping { SupplementarySchemeId = sid })]
+        })];
 
                 return provider;
             }).ToList();
@@ -82,17 +101,18 @@ namespace DVSRegister.Data
                 Items = items,
                 TotalCount = totalCount
             };
-
         }
+
 
         public async Task<PaginatedResult<Service>> GetServices(List<int> roles, List<int> schemes, List<int> tfVersions, int pageNum, string searchText = "", string sortBy = "")
         {
-            var trimmedSearchText = searchText.Trim();
+            var trimmedSearchText = searchText.Trim().ToUpper();
 
             var query = context.Service
+                .Include(s => s.Provider)
                 .Where(s => s.IsInRegister)
-                .Where(s => string.IsNullOrEmpty(searchText) || s.ServiceName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase) || 
-                s.Provider.RegisteredName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase) || s.Provider.TradingName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase))
+                .Where(s => string.IsNullOrEmpty(searchText) || s.ServiceName.ToUpper().Contains(trimmedSearchText) ||
+                s.Provider.RegisteredName.ToUpper().Contains(trimmedSearchText))
                 .Where(s => !roles.Any() || s.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))
                 .Where(s => !schemes.Any() || s.ServiceSupSchemeMapping.Any(sc => schemes.Contains(sc.SupplementarySchemeId)))
                 .Where(s => !tfVersions.Any() || tfVersions.Contains(s.TrustFrameworkVersionId));
