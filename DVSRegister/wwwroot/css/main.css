@@ -7917,4 +7917,9 @@ x:-moz-any-link {
   color: #505a5f;
 }
 
+.visible-column {
+    border-left: 1px solid #b1b4b6;
+    padding-left: 20px;
+}
+
 /*# sourceMappingURL=main.css.map */

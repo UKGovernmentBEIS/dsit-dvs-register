@@ -1,7 +1,9 @@
-﻿using DVSRegister.Data.Entities;
+﻿using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data.Entities;
+using DVSRegister.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using DVSRegister.CommonUtility.Models.Enums;
+using System.Linq.Expressions;
 
 namespace DVSRegister.Data
 {
@@ -14,29 +16,113 @@ namespace DVSRegister.Data
             this.context = context;
         }
 
-        public async Task<List<ProviderProfile>> GetProviders(List<int> roles, List<int> schemes, string searchText = "")
+        public async Task<PaginatedResult<ProviderProfile>> GetProviders(List<int> roles, List<int> schemes, List<int> tfVersions, int pageNum, string searchText = "", string sortBy = "")
         {
-            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile;
-            var lowerSearchText = searchText.Trim().ToLower();
-            providerQuery = providerQuery.Where(p => p.IsInRegister == true && (string.IsNullOrEmpty(searchText)
-                     || p.RegisteredName.ToLower().Contains(lowerSearchText)
-                     || p.TradingName!.ToLower().Contains(lowerSearchText))
-                     || p.Services.Any(ci => ci.IsInRegister == true && ci.ServiceName.ToLower().Contains(lowerSearchText)))
-                .Include(p => p.Services).ThenInclude(ci => ci.ServiceRoleMapping)
-                .Include(p => p.Services).ThenInclude(ci => ci.ServiceSupSchemeMapping)
-                .OrderByDescending(p => p.PublishedTime)
-                .ThenBy(p => p.RegisteredName)
-                .AsSplitQuery();
-            
-            // Include roles and schemes filters
-            providerQuery = providerQuery.Include(p => p.Services
-            .Where(ci => ci.IsInRegister == true &&
-               (string.IsNullOrEmpty(searchText) || ci.ServiceName.ToLower().Contains(lowerSearchText) ||
-               ci.Provider.RegisteredName.ToLower().Contains(lowerSearchText) || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)) &&
-              (!roles.Any() || (ci.ServiceRoleMapping != null && ci.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))) &&
-             (!schemes.Any() || (ci.ServiceSupSchemeMapping != null && ci.ServiceSupSchemeMapping.Any(s => schemes.Contains(s.SupplementarySchemeId))))
-             ));
-            return await providerQuery.ToListAsync();
+            var trimmedSearchText = searchText?.Trim();
+
+            var filteredServicesQuery =
+                from s in context.Service.AsNoTracking()
+                where s.IsInRegister
+                    && (!roles.Any() || s.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))
+                    && (!schemes.Any() || s.ServiceSupSchemeMapping.Any(sc => schemes.Contains(sc.SupplementarySchemeId)))
+                    && (!tfVersions.Any() || tfVersions.Contains(s.TrustFrameworkVersionId))
+                    && (
+                    string.IsNullOrEmpty(trimmedSearchText) || s.ServiceName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase) ||
+                    s.Provider.RegisteredName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase) || s.Provider.TradingName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase))
+                select new
+                {
+                    Service = s,
+                    RoleIds = s.ServiceRoleMapping.Select(r => r.RoleId).ToList(),
+                    SchemeIds = s.ServiceSupSchemeMapping.Select(sc => sc.SupplementarySchemeId).ToList()
+                };
+
+            var providerQuery =
+                from p in context.ProviderProfile.AsNoTracking()
+                join fs in filteredServicesQuery on p.Id equals fs.Service.ProviderProfileId into serviceGroup
+                where p.IsInRegister && serviceGroup.Any()
+                select new
+                {
+                    Provider = p,
+                    Services = serviceGroup
+                };
+
+            var sortedProviders = sortBy switch
+            {
+                "Time" => providerQuery.OrderByDescending(p => p.Provider.ModifiedTime),
+                "Alphabet" => providerQuery.OrderBy(p => p.Provider.RegisteredName),
+                "ReverseAlphabet" => providerQuery.OrderByDescending(p => p.Provider.RegisteredName),
+                _ => providerQuery.OrderByDescending(p => p.Provider.PublishedTime)
+                                  .ThenBy(p => p.Provider.RegisteredName)
+            };
+
+            var totalCount = await sortedProviders.CountAsync();
+            var pageItems = await sortedProviders
+                .Skip((pageNum - 1) * 10)
+                .Take(10)
+                .ToListAsync();
+
+            var items = pageItems.Select(x =>
+            {
+                var provider = x.Provider;
+                provider.Services = [.. x.Services.Select(s => new Service
+                {
+                    Id = s.Service.Id,
+                    ServiceName = s.Service.ServiceName,
+                    IsInRegister = s.Service.IsInRegister,
+                    TrustFrameworkVersionId = s.Service.TrustFrameworkVersionId,
+                    ServiceRoleMapping = [.. s.RoleIds.Select(rid => new ServiceRoleMapping { RoleId = rid })],
+                    ServiceSupSchemeMapping = [.. s.SchemeIds.Select(sid => new ServiceSupSchemeMapping { SupplementarySchemeId = sid })]
+                })];
+
+                return provider;
+            }).ToList();
+
+            return new PaginatedResult<ProviderProfile>
+            {
+                Items = items,
+                TotalCount = totalCount
+            };
+
+        }
+
+        public async Task<PaginatedResult<Service>> GetServices(List<int> roles, List<int> schemes, List<int> tfVersions, int pageNum, string searchText = "", string sortBy = "")
+        {
+            var trimmedSearchText = searchText.Trim();
+
+            var query = context.Service
+                .Where(s => s.IsInRegister)
+                .Where(s => string.IsNullOrEmpty(searchText) || s.ServiceName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase) || 
+                s.Provider.RegisteredName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase) || s.Provider.TradingName.Contains(trimmedSearchText, StringComparison.OrdinalIgnoreCase))
+                .Where(s => !roles.Any() || s.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))
+                .Where(s => !schemes.Any() || s.ServiceSupSchemeMapping.Any(sc => schemes.Contains(sc.SupplementarySchemeId)))
+                .Where(s => !tfVersions.Any() || tfVersions.Contains(s.TrustFrameworkVersionId));
+
+            query = sortBy switch
+            {
+                "Time" => query.OrderByDescending(s => s.ModifiedTime),
+                "Alphabet" => query.OrderBy(s => s.ServiceName),
+                "ReverseAlphabet" => query.OrderByDescending(s => s.ServiceName),
+                "IssueDate" => query.OrderByDescending(s => s.ConformityIssueDate),
+                "ExpiryDate" => query.OrderByDescending(s => s.ConformityExpiryDate),
+                _ => query.OrderByDescending(s => s.PublishedTime).ThenBy(s => s.ServiceName)
+            };
+
+            query = query
+                .Include(s => s.Provider)
+                .Include(s => s.ServiceRoleMapping)
+                .Include(s => s.ServiceSupSchemeMapping);
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .Skip((pageNum - 1) * 10)
+                .Take(10)
+                .ToListAsync();
+
+            return new PaginatedResult<Service>
+            {
+                Items = items,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<List<RegisterPublishLog>> GetRegisterPublishLogs()
@@ -62,19 +148,46 @@ namespace DVSRegister.Data
            .OrderBy(c => c.ModifiedTime).FirstOrDefaultAsync(p => p.Id == providerId && p.IsInRegister == true);
             return providerProfile;
         }
-
         public async Task<Service> GetServiceDetails(int serviceId)
         {
-            Service service = new();
-            service = await context.Service
-                .Include(s => s.ServiceSupSchemeMapping).ThenInclude(s => s.SupplementaryScheme)
-                .Include(x => x.ServiceRoleMapping).ThenInclude(p => p.Role)
-                .Include(x => x.ServiceIdentityProfileMapping).ThenInclude(p => p.IdentityProfile)
-                .Include(x => x.ServiceQualityLevelMapping).ThenInclude(p => p.QualityLevel)
-                .Include(p => p.TrustFrameworkVersion)
-                .Include(x => x.Provider).AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == serviceId && s.ServiceType == ServiceTypeEnum.UnderPinning && s.IsInRegister == true );
+            var baseQuery = context.Service
+             .Where(p => p.Id == serviceId)
+             .Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
+              .Include(p => p.Provider)
+              .Include(p => p.TrustFrameworkVersion)
+             .Include(p => p.ServiceRoleMapping)
+             .ThenInclude(s => s.Role);
+
+            IQueryable<Service> queryWithOptionalIncludes = baseQuery;
+            if (await baseQuery.AnyAsync(p => p.ServiceQualityLevelMapping != null && p.ServiceQualityLevelMapping.Any()))
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)
+                    .ThenInclude(sq => sq.QualityLevel);
+            }
+            if (await baseQuery.AnyAsync(p => p.ServiceSupSchemeMapping != null && p.ServiceSupSchemeMapping.Any()))
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                    .ThenInclude(ssm => ssm.SupplementaryScheme);
+
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                    .ThenInclude(ssm => ssm.SchemeGPG44Mapping).ThenInclude(ssm => ssm.QualityLevel);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping).ThenInclude(ssm => ssm.IdentityProfile);
+            }
+            if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)
+                    .ThenInclude(ssm => ssm.IdentityProfile);
+            }
+            if (await baseQuery.AnyAsync(p => p.ServiceType == ServiceTypeEnum.WhiteLabelled))
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.UnderPinningService).ThenInclude(p => p.Provider)
+             .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
+             .Include(p => p.ManualUnderPinningService).ThenInclude(ms => ms.Cab);
+            }
+
+            var service = await queryWithOptionalIncludes.SingleOrDefaultAsync() ?? new Service();
             return service;
         }
-    }
+    } 
 }

@@ -1,21 +1,21 @@
-﻿@using DVSRegister.CommonUtility.Models.Enums;
-@using DVSRegister.Extensions;
-
-@model RegisterListViewModel
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models.Enums
+@using DVSRegister.Extensions
+@using DVSRegister.Models.Register
+@using DVSRegister.Models.UI
+@model AllServicesViewModel
 @{
-    ViewData["Title"] = " Register of digital identity and attribute services";
+    ViewData["Title"] = " All services";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
-    ViewData["ActiveRegister"] = "govuk-header__navigation-item--active";
-    
-   
+    ViewData["ActiveNav"] = "AllServices";
 }
 
 <div class="govuk-width-container">
-    @using (Html.BeginForm("Register", "Register", FormMethod.Get))
+    @using (Html.BeginForm("AllServices", "Register", FormMethod.Get))
     {
         <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
             <h1 class="govuk-heading-xl">
-                Register of digital identity and attribute services
+                All services
             </h1>
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
             <p class="govuk-body govuk-!-margin-bottom-7">
@@ -23,16 +23,16 @@
                 @Html.ActionLink("See all updates", "Updates", "Register", null, new { @class = "govuk-link" })
             </p>
             <div class="govuk-grid-row">
-                <div class="govuk-grid-column-one-third">
+                <div class="govuk-grid-column-full">
 
                     <div class="govuk-form-group">
                         <h2 class="govuk-label-wrapper">
-                            <label class="govuk-label govuk-label--m" for="SearchProvider">
+                            <label class="govuk-label govuk-label--m" for="Search">
                                 Search for a service provider or service
                             </label>
                         </h2>
 
-                        @Html.TextBoxFor(m => m.SearchProvider, new { @class = "govuk-input govuk-!-margin-bottom-4", id = "SearchProvider", name = "search-provider" })
+                        @Html.TextBoxFor(m => m.SearchText, new { @class = "govuk-input govuk-!-margin-bottom-4", id = "Search", name = "search" })
 
                         <div class="govuk-button-group">
                             <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="search">
@@ -90,6 +90,27 @@
                             </div>
                         </fieldset>
                     </div>
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                <h3 class="govuk-fieldset__heading">
+                                    Trust framework version
+                                </h3>
+                            </legend>
+                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+
+                                @foreach (var item in Model.AvailableTrustFrameworkVersion)
+                                {
+                                    <div class="govuk-checkboxes__item">
+                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedTfVersionIds" value="@item.Id" id="tfVersion_@item.Id"
+                                               @(Model.SelectedTrustFrameworkVersionId.Contains(item.Id) ? "checked" : "") />
+                                        <label class="govuk-label govuk-checkboxes__label" for="tfVersion_@item.Id">@item.TrustFrameworkName</label>
+                                    </div>
+                                }
+
+                            </div>
+                        </fieldset>
+                    </div>
                     <div class="govuk-button-group">
                         <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="filter">
                             Apply filters
@@ -98,16 +119,12 @@
                             Clear filters
                         </button>
                     </div>
-                </div>
-                <div class="govuk-grid-column-two-thirds">
 
-
-                    @if (Model.Providers != null && Model.Providers.Any())
+                    @if (Model.Services != null && Model.Services.Any())
                     {
-
-                        if ((Model.SelectedRoleIds != null && Model.SelectedRoleIds.Any()) || (Model.SelectedSupplementarySchemeIds != null && Model.SelectedSupplementarySchemeIds.Any()))
+                        if ((Model.SelectedRoleIds != null && Model.SelectedRoleIds.Any()) || (Model.SelectedSupplementarySchemeIds != null && Model.SelectedSupplementarySchemeIds.Any()) ||
+                        (Model.SelectedTrustFrameworkVersionId != null && Model.SelectedTrustFrameworkVersionId.Any()))
                         {
-
                             <div class="dsit-search-filter-box">
                                 <h3 class="govuk-heading-s govuk-!-margin-right-3">Containing <span class="govuk-visually-hidden">the following filters:</span></h3>
                                 <ul class="dsit-search-filter-box__tags">
@@ -117,14 +134,19 @@
                                         {
                                             <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveRole" value="@role.Id"><span class="govuk-visually-hidden">Remove this filter</span> @Enum.GetName((RoleEnum)@role.Id)</button></li>
                                         }
-
                                     }
-
                                     @if (Model.SelectedSupplementarySchemes != null && Model.SelectedSupplementarySchemes.Any())
                                     {
                                         @foreach (var scheme in Model.SelectedSupplementarySchemes)
                                         {
                                             <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveScheme" value="@scheme.Id"><span class="govuk-visually-hidden">Remove this filter</span> @scheme.SchemeName</button></li>
+                                        }
+                                    }
+                                    @if (Model.SelectedTrustFrameworkVersion != null && Model.SelectedTrustFrameworkVersion.Any())
+                                    {
+                                        @foreach (var tfVersion in Model.SelectedTrustFrameworkVersion)
+                                        {
+                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveTfVersion" value="@tfVersion.Id"><span class="govuk-visually-hidden">Remove this filter</span> @tfVersion.TrustFrameworkName</button></li>
                                         }
                                     }
                                 </ul>
@@ -133,40 +155,43 @@
 
                         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                         <ul role="list" class="govuk-list govuk-!-margin-bottom-7">
-
-                            @foreach (var provider in Model.Providers)
+                            @foreach (var service in Model.Services)
                             {
-                                <li>
-                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-2"><a href="provider-details?providerId=@provider.Id" class="govuk-link">@provider.RegisteredName</a></h3>
-                                    <p class="govuk-body govuk-!-margin-bottom-2">Trading name: @Html.DisplayFor(model => provider.TradingName)</p>
-                                    <p class="govuk-body govuk-!-margin-bottom-4">Registered name: @provider.RegisteredName</p>
-
-
-                                    <ul role="list" class="govuk-list">
-
-                                        @foreach (var service in provider.Services)
+                                <li class="govuk-grid-row govuk-!-margin-bottom-6">
+                                    <div class="govuk-grid-column-one-half">
+                                        <h3 class="govuk-heading-m govuk-!-margin-bottom-2">
+                                            <a href="@Url.Action("ServiceDetails", "Register", new { serviceId = service.Id})" class="govuk-link">
+                                                @service.ServiceName
+                                            </a>
+                                        </h3>
+                                        <p class="govuk-body govuk-!-margin-bottom-2">
+                                            Service provider: <a href="provider-details?providerId=@service.ProviderProfileId" class="govuk-link">
+                                                @service.Provider.RegisteredName
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <div class="govuk-grid-column-one-half visible-column dsit-secondary-text-colour govuk-body-s">
+                                        <span>Role types: @string.Join(", ", service.ServiceRoleMapping.Select(x => Enum.GetName(typeof(RoleEnum), x.RoleId)))</span><br />
+                                        @if (service.ServiceSupSchemeMapping != null && service.ServiceSupSchemeMapping.Any())
                                         {
-                                            <li>
-                                                <p class="govuk-body govuk-!-margin-bottom-2 govuk-!-font-weight-bold">Service: @service.ServiceName</p>
-
-                                                <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Role types: @string.Join(", ", service.ServiceRoleMapping.Select(x => Enum.GetName(typeof(RoleEnum), x.RoleId)).ToList())</p>
-                                                @if (@service.ServiceSupSchemeMapping != null && @service.ServiceSupSchemeMapping.Any())
-                                                {
-                                                    <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-2">Supplementary codes:   @string.Join(", ", service.ServiceSupSchemeMapping.Select(x => x.SupplementaryScheme.SchemeName).ToList())</p>
-                                                }
-                                                <p class="govuk-body-s dsit-secondary-text-colour">Address: @service.CompanyAddress</p>
-                                            </li>
-
+                                            <span> Supplementary codes: @string.Join(", ", service.ServiceSupSchemeMapping.Select(x => x.SupplementaryScheme.SchemeName))
+                                            </span> <br />
                                         }
+                                        else
+                                        {
+                                            <span>Supplementary codes: @Constants.NullFieldsDisplay</span>                            
+                                            <br />
+                                        }
+                                        <span>Date of certification: @DateTimeExtensions.FormatDateTime(service.ConformityIssueDate, "dd MMMM yyyy") </span><br />
+                                        <span>Date of expiry: @DateTimeExtensions.FormatDateTime(service.ConformityExpiryDate, "dd MMMM yyyy")</span>                 
+                                    </div>
 
 
-                                    </ul>
-
-                                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                                 </li>
+                                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                             }
-
                         </ul>
+
                     }
                     else
                     {
@@ -183,18 +208,45 @@
                         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                     }
 
-                </div>
+                    @if (Model?.TotalPages > 1)
+                    {
+                        const int pageSize = 10;
+                        int resultMin = ((Model.PageNumber - 1) * pageSize) + 1;
+                        int resultMax = Math.Min(Model.PageNumber * pageSize, Model.TotalResults);
 
+                        <p class="govuk-body govuk-!-font-weight-bold">
+                            Showing @resultMin - @resultMax of @Model.TotalResults
+                        </p>
+
+                        PaginationViewModel paginationViewModel = new PaginationViewModel
+                        {
+                            Action = "AllServices",
+                            CurrentPage = Model.PageNumber,
+                            TotalPages = Model.TotalPages,
+                            SortBy = Model.SortBy,
+                            SearchText = Model.SearchText,
+                            SelectedRoleIds = Model.SelectedRoleIds,
+                            SelectedSupplementarySchemeIds = Model.SelectedSupplementarySchemeIds,
+                            SelectedTfVersionIds = Model.SelectedTrustFrameworkVersionId
+                        };
+                        @await Html.PartialAsync("~/Views/PartialViews/_PaginationView.cshtml", paginationViewModel)
+                    }
+                </div>               
             </div>
+
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
             <p class="govuk-body govuk-!-margin-bottom-4">Last updated @Model.LastUpdated —  @Html.ActionLink("See all updates", "Updates", "Register", null, new { @class = "govuk-link" })</p>
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-7">
-            <h3 class="govuk-heading-m">Explore the topic</h3>
-            <ul class="govuk-list">
-                <li><a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role type</a></li>
-                <li><a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a></li>
-                <li><a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary codes</a></li>
-            </ul>
+            <h3 class="govuk-heading-m">Explore the Topic</h3>
+                <p class="govuk-body">
+                    <strong><a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role Type</a></strong>
+                </p>
+                <p class="govuk-body">
+                    <strong><a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a></strong>
+                </p>
+                <p class="govuk-body">
+                    <strong><a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary Schemes</a></strong>
+                </p>
         </main>
     }
 </div>
