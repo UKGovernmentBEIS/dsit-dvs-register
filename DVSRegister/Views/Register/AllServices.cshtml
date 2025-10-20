@@ -60,9 +60,9 @@
                                 <span class="app-c-filter-panel__button-inner">Filter and sort</span>
                             </button>
                             <h2 id="js-result-count" class="app-c-filter-panel__count">
-                                @if (Model.Services != null && Model.Services.Any())
+                                @if (Model.TotalResults != 0)
                                 {
-                                    @Model.Services.Count() @(Model.Services.Count() == 1 ? " result" : " results")
+                                    @Model.TotalResults @(Model.TotalResults == 1 ? " result" : " results")
                                 }
                                 else
                                 {
