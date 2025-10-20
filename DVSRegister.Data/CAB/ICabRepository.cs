@@ -8,6 +8,7 @@ namespace DVSRegister.Data.CAB
         public Task<List<Role>> GetRoles(decimal tfVersion);
         public Task<List<IdentityProfile>> GetIdentityProfiles();
         public Task<List<SupplementaryScheme>> GetSupplementarySchemes();
+        public Task<List<TrustFrameworkVersion>> GetTfVersion();
         public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
         public Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId);       
         public Task<List<ProviderProfile>> GetProviders(int cabId,string searchText = "");
