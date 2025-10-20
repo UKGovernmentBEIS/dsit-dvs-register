@@ -8219,4 +8219,28 @@ details[open] > .app-c-filter-section__summary .app-c-filter-section__summary-he
     padding-left: 20px;
 }
 
+/* Blue variant of govuk-button */
+.govuk-button--blue {
+    background-color: #1d70b8 !important;
+    box-shadow: 0 2px 0 #1d70b8 !important;
+}
+
+.govuk-button--blue:link,
+.govuk-button--blue:visited,
+.govuk-button--blue:active,
+.govuk-button--blue:hover {
+    color: #ffffff !important;
+}
+
+.govuk-button--blue:hover {
+    background-color: #003078 !important;
+}
+
+.govuk-button--blue:focus:not(:active):not(:hover) {
+    border-color: #ffdd00 !important;
+    color: #0b0c0c !important;
+    background-color: #ffdd00 !important;
+    box-shadow: 0 2px 0 #0b0c0c !important;
+}
+
 /*# sourceMappingURL=main.css.map */
