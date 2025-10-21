@@ -127,6 +127,9 @@ namespace DVSRegister.BusinessLogic
 
             CreateMap<ServiceRemovalRequest, ServiceRemovalRequestDto>();
             CreateMap<ServiceRemovalRequestDto, ServiceRemovalRequest>();
+
+            CreateMap<ActionLogs, ActionLogsDto>();
+            
         }
     }
 }
