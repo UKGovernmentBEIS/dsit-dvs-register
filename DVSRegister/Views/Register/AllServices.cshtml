@@ -26,7 +26,7 @@
                     </h1>
                     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                     <p class="govuk-body govuk-!-margin-bottom-7">
-                        Last updated @Model.LastUpdated
+                        Last updated @Model.LastUpdated —  
                         @Html.ActionLink("See all updates", "Updates", "Register", null, new { @class = "govuk-link" })
                     </p>
                     
@@ -262,14 +262,14 @@
                         <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                     }
 
-                    @if (Model?.TotalPages > 1)
+                    @if (Model?.TotalPages >= 1)
                     {
                         const int pageSize = 10;
                         int resultMin = ((Model.PageNumber - 1) * pageSize) + 1;
                         int resultMax = Math.Min(Model.PageNumber * pageSize, Model.TotalResults);
 
                         <p class="govuk-body govuk-!-font-weight-bold">
-                            Showing @resultMin - @resultMax of @Model.TotalResults
+                            Showing @resultMin - @resultMax of @Model.TotalResults results
                         </p>
 
                         PaginationViewModel paginationViewModel = new PaginationViewModel
