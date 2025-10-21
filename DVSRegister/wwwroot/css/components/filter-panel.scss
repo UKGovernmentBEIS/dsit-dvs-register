@@ -26,6 +26,9 @@
     position: relative;
     text-align: left;
     -webkit-appearance: none;
+    appearance: none;
+    color: $govuk-link-colour;
+    text-decoration: none;
 
     &::-moz-focus-inner {
       border: 0;
@@ -38,33 +41,33 @@
 
     &:hover {
       @include govuk-link-hover-decoration;
+      color: $govuk-link-hover-colour;
     }
 
-    // Arrow indicator
+    // Chevron indicator (down when collapsed, up when expanded)
     &::before {
       content: "";
       position: absolute;
-      top: 0;
-      left: -25px;
-      width: 0;
-      height: 0;
-      border-style: solid;
-      clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
-      border-width: 7px 0 7px 12.124px;
-      border-color: transparent transparent transparent govuk-colour("black");
+      top: 5px;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      border-bottom: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      transform: rotate(45deg);
       transition: transform 0.2s ease-in-out;
     }
 
     &[aria-expanded="true"]::before {
-      transform: rotate(90deg);
-      transform-origin: 33% 50%;
+      transform: rotate(-135deg);
     }
   }
 
   &__button-inner {
-    @include govuk-font(19, $weight: bold);
+    @include govuk-font(19);
     display: block;
-    margin-left: 30px;
+    margin-left: 25px;
+    color: inherit;
   }
 
   &__count {
@@ -75,6 +78,8 @@
 
   &__content {
     margin-top: govuk-spacing(4);
+    background-color: govuk-colour("light-grey");
+    padding: govuk-spacing(4);
 
     &[hidden] {
       display: none;
@@ -83,28 +88,21 @@
 
   &__actions {
     display: flex;
-    gap: govuk-spacing(3);
-    margin-top: govuk-spacing(4);
-    padding-top: govuk-spacing(4);
-    border-top: 1px solid govuk-colour("mid-grey");
+    padding-top: 0;
   }
 
   &__action {
     margin-bottom: 0;
-
-    &--submit {
-      // Primary submit button style
-    }
+    width: 100%;
   }
 }
 
 // Filter Section Styles
 .app-c-filter-section {
-  border-bottom: 1px solid govuk-colour("mid-grey");
   margin-bottom: 0;
 
-  &:last-of-type {
-    border-bottom: 0;
+  &:not(:last-of-type) {
+    border-bottom: 1px solid govuk-colour("mid-grey");
   }
 
   // Override default details styling
@@ -113,11 +111,11 @@
   }
 
   &[open] > summary {
-    margin-bottom: govuk-spacing(2);
+    margin-bottom: govuk-spacing(3);
   }
 
   &__summary {
-    padding: govuk-spacing(3) 0;
+    padding: govuk-spacing(4) 0;
     cursor: pointer;
     list-style: none;
     
@@ -126,11 +124,12 @@
     }
 
     &:focus {
-      outline: $govuk-focus-width solid $govuk-focus-colour;
-      outline-offset: 0;
-      background-color: $govuk-focus-colour;
+      outline: none;
       
       .app-c-filter-section__summary-heading {
+        outline: $govuk-focus-width solid $govuk-focus-colour;
+        outline-offset: 0;
+        background-color: $govuk-focus-colour;
         color: govuk-colour("black");
       }
     }
@@ -149,33 +148,31 @@
     margin: 0;
     display: inline-block;
     position: relative;
-    padding-left: 30px;
+    padding-left: 25px;
 
-    // Arrow indicator
+    // Chevron indicator (down when collapsed, up when expanded)
     &::before {
       content: "";
       position: absolute;
-      top: 4px;
+      top: 7px;
       left: 0;
-      width: 0;
-      height: 0;
-      border-style: solid;
-      clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
-      border-width: 7px 0 7px 12.124px;
-      border-color: transparent transparent transparent govuk-colour("black");
+      width: 8px;
+      height: 8px;
+      border-bottom: 2px solid govuk-colour("black");
+      border-right: 2px solid govuk-colour("black");
+      transform: rotate(45deg);
       transition: transform 0.2s ease-in-out;
     }
 
     details[open] > .app-c-filter-section__summary & {
       &::before {
-        transform: rotate(90deg);
-        transform-origin: 33% 50%;
+        transform: rotate(-135deg);
       }
     }
   }
 
   &__content {
-    padding: 0 0 govuk-spacing(3) 0;
+    padding: 0 0 govuk-spacing(4) 0;
 
     .govuk-form-group:last-child {
       margin-bottom: 0;

@@ -47,8 +47,6 @@
                             <div class="govuk-button-group">
                                 <button class="govuk-button govuk-button--blue" type="submit" data-module="govuk-button" name="SearchAction" value="search">
                                     <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" viewBox="0 0 20 20">
-                                        @* <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" stroke-width="2" fill="none"></circle> *@
-                                        @* <line x1="13.5" y1="13.5" x2="18" y2="18" stroke="currentColor" stroke-width="2"></line> *@
                                         <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"></circle>
                                         <line x1="16" y1="16" x2="20" y2="20" stroke="currentColor" stroke-width="2"></line>
                                     </svg>
@@ -76,7 +74,7 @@
                             </h2>
                         </div>
 
-                        <div class="app-c-filter-panel__content" id="filter-panel" role="region" aria-labelledby="filter-button" hidden>
+                        <div class="app-c-filter-panel__content" id="filter-panel" role="region" aria-labelledby="filter-button" hidden style="width: 60%;">
                             
                             <!-- Sort by section -->
                             <details class="app-c-filter-section" data-module="filter-section">
@@ -174,86 +172,9 @@
                                 <button type="submit" class="govuk-button app-c-filter-panel__action app-c-filter-panel__action--submit" name="SearchAction" value="filter">
                                     Apply
                                 </button>
-                                <button type="submit" class="govuk-button govuk-button--secondary" name="SearchAction" value="clearFilter">
-                                    Clear filters
-                                </button>
                             </div>
                         </div>
                     </div>
-
-                    @* <h2 class="govuk-heading-m">Filters</h2> *@
-                    @* *@
-                    @* <div class="govuk-form-group"> *@
-                    @*     <fieldset class="govuk-fieldset"> *@
-                    @*         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s"> *@
-                    @*             <h3 class="govuk-fieldset__heading"> *@
-                    @*                 Role types *@
-                    @*             </h3> *@
-                    @*         </legend> *@
-                    @*         <div class="govuk-checkboxes" data-module="govuk-checkboxes"> *@
-                    @*             @foreach (var role in Model.AvailableRoles) *@
-                    @*             { *@
-                    @*                 <div class="govuk-checkboxes__item"> *@
-                    @*                     <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id" *@
-                    @*                            @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "") /> *@
-                    @*                     <label class="govuk-label govuk-checkboxes__label" for="role_@role.Id">@Enum.GetName((RoleEnum)@role.Id) </label> *@
-                    @*                 </div> *@
-                    @*             } *@
-                    @*         </div> *@
-                    @*     </fieldset> *@
-                    @* </div> *@
-                    @* *@
-                    @* <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible"> *@
-                    @* <div class="govuk-form-group"> *@
-                    @*     <fieldset class="govuk-fieldset"> *@
-                    @*         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s"> *@
-                    @*             <h3 class="govuk-fieldset__heading"> *@
-                    @*                 Supplementary codes *@
-                    @*             </h3> *@
-                    @*         </legend> *@
-                    @*         <div class="govuk-checkboxes" data-module="govuk-checkboxes"> *@
-                    @* *@
-                    @*             @foreach (var item in Model.AvailableSchemes) *@
-                    @*             { *@
-                    @*                 <div class="govuk-checkboxes__item"> *@
-                    @*                     <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id" id="scheme_@item.Id" *@
-                    @*                            @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") /> *@
-                    @*                     <label class="govuk-label govuk-checkboxes__label" for="scheme_@item.Id">@item.SchemeName</label> *@
-                    @*                 </div> *@
-                    @*             } *@
-                    @* *@
-                    @*         </div> *@
-                    @*     </fieldset> *@
-                    @* </div> *@
-                    @* <div class="govuk-form-group"> *@
-                    @*     <fieldset class="govuk-fieldset"> *@
-                    @*         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s"> *@
-                    @*             <h3 class="govuk-fieldset__heading"> *@
-                    @*                 Trust framework version *@
-                    @*             </h3> *@
-                    @*         </legend> *@
-                    @*         <div class="govuk-checkboxes" data-module="govuk-checkboxes"> *@
-                    @* *@
-                    @*             @foreach (var item in Model.AvailableTrustFrameworkVersion) *@
-                    @*             { *@
-                    @*                 <div class="govuk-checkboxes__item"> *@
-                    @*                     <input class="govuk-checkboxes__input" type="checkbox" name="SelectedTfVersionIds" value="@item.Id" id="tfVersion_@item.Id" *@
-                    @*                            @(Model.SelectedTrustFrameworkVersionId.Contains(item.Id) ? "checked" : "") /> *@
-                    @*                     <label class="govuk-label govuk-checkboxes__label" for="tfVersion_@item.Id">@item.TrustFrameworkName</label> *@
-                    @*                 </div> *@
-                    @*             } *@
-                    @* *@
-                    @*         </div> *@
-                    @*     </fieldset> *@
-                    @* </div> *@
-                    @* <div class="govuk-button-group"> *@
-                    @*     <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="filter"> *@
-                    @*         Apply filters *@
-                    @*     </button> *@
-                    @*     <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearFilter"> *@
-                    @*         Clear filters *@
-                    @*     </button> *@
-                    @* </div> *@
 
                     @if (Model.Services != null && Model.Services.Any())
                     {
