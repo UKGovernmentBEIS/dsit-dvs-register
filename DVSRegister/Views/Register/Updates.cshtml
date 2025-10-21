@@ -7,19 +7,22 @@
     ViewData["ActiveNav"] = "Updates";    
 }
 <div class="govuk-width-container">
-    @await Html.PartialAsync("~/Views/Register/PartialViews/_RegisterBreadCrumbsView.cshtml", "Updates")
-    <main class="govuk-main-wrapper">
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        @await Html.PartialAsync("~/Views/Register/PartialViews/_RegisterBreadCrumbsView.cshtml", "Updates")
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl">Updates : Register of digital identity and attribute services</h1>
-                @foreach (var item in Model.RegisterPublishLog)
-                {
-                    <h2 class="govuk-heading-m">@DateTimeExtensions.FormatDateTime(@item.CreatedTime)</h2>
-                    <p class="govuk-body">@item.Description</p>
-                }
-
+                <div class="dwp-timeline">
+                    <h1 class="govuk-heading-xl">Updates: Register of digital identity and attribute services</h1>
+                    <h2 class="govuk-heading-m">Last updated</h2>
+                    <ol class="dwp-timeline__items">
+                        <li class="dwp-timeline__item">
+                            <p class="govuk-body dwp-timeline__datetime">28 May 2025</p>
+                            <h2 class="govuk-heading-m govuk-!-margin-bottom-0 govuk-!-margin-top-5">Registered name changed</h2>
+                            <p class="govuk-hint govuk-!-margin-top-0">CompanyName</p>
+                        </li>
+                    </ol>
+                </div>
             </div>
         </div>
     </main>
 </div>
-
