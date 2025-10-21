@@ -20,6 +20,7 @@ public abstract class ControllerTestBase<TController>
     protected IUserService UserService  { get; private set; }
 
     protected IBucketService BucketService { get; private set; }
+    protected IActionLogService ActionLogService { get; private set; }
     protected IMapper Mapper { get; private set; }
     protected ILogger<TController> Logger { get; private set; }
 
