@@ -34,8 +34,10 @@
     color: #0b0c0c;
     display: inline-block;
     margin-top: 5px;
-    padding: 5px;
+    margin-right: 10px;
+    padding: 5px 8px;
     text-decoration: none;
+    cursor: pointer;
 }
 @media print {
     .dsit-search-filter-box__tag {
@@ -60,6 +62,8 @@
 .dsit-search-filter-box__tag:focus {
     color: #0b0c0c;
     background-color: #ffdd00;
+    outline: 3px solid #ffdd00;
+    outline-offset: 0;
 }
 .dsit-search-filter-box__tag:hover {
     background-color: #0b0c0c;
