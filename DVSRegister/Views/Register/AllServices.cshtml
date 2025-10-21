@@ -167,6 +167,33 @@
                                     </div>
                                 </div>
                             </details>
+                            
+                            <!-- Trust Framework Version -->
+                            <details class="app-c-filter-section" data-module="filter-section">
+                                <summary class="app-c-filter-section__summary">
+                                    <h2 class="app-c-filter-section__summary-heading">
+                                        <span class="govuk-visually-hidden">Filter by</span>
+                                        Trust framework version
+                                    </h2>
+                                </summary>
+                                <div class="app-c-filter-section__content">
+                                    <div class="govuk-form-group govuk-!-margin-bottom-2">
+                                        <fieldset class="govuk-fieldset">
+                                            <legend class="govuk-fieldset__legend govuk-visually-hidden">Trust Framework Version</legend>
+                                            <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                                                @foreach (var version in Model.AvailableTrustFrameworkVersion)
+                                                {
+                                                    <div class="govuk-checkboxes__item">
+                                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedTfVersionIds" value="@version.Id" id="version_@version.Id"
+                                                               @(Model.SelectedTrustFrameworkVersionId.Contains(version.Id) ? "checked" : "")/>
+                                                        <label class="govuk-label govuk-checkboxes__label" for="version_@version.Id">@version.TrustFrameworkName</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </details>
 
                             <div class="app-c-filter-panel__actions">
                                 <button type="submit" class="govuk-button app-c-filter-panel__action app-c-filter-panel__action--submit" name="SearchAction" value="filter">
