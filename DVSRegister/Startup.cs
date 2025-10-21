@@ -114,6 +114,8 @@ namespace DVSRegister
             services.AddScoped<ITrustFrameworkRepository, TrustFrameworkRepository>();
             services.AddScoped<ITrustFrameworkService, TrustFrameworkService>();
             services.AddScoped<ICsvDownloadService, CsvDownloadService>();
+            services.AddScoped<IActionLogService, ActionLogService>();
+            services.AddScoped<IActionLogRepository, ActionLogRepository>();
             services.AddTransient<LoginEmailSender>();
             services.AddTransient<CabEmailSender>();
             services.AddTransient<Removal2iCheckEmailSender>();
