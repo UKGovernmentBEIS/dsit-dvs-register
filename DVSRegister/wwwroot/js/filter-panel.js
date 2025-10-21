@@ -18,9 +18,10 @@
       return;
     }
 
-    // Set initial state
+    // Set initial state - hide panel when JS is enabled (progressive enhancement)
     this.filterContent.setAttribute("hidden", "");
     this.filterButton.setAttribute("aria-expanded", "false");
+    this.isOpen = false;
 
     // Bind events
     this.filterButton.addEventListener("click", this.togglePanel.bind(this));
