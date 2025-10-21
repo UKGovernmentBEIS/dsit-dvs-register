@@ -13,10 +13,11 @@ namespace DVSRegister.Controllers
 {
     [Route("")]
     [Route("register")]
-    public class RegisterController(IRegisterService registerService, ICabService cabService) : Controller
+    public class RegisterController(IRegisterService registerService, ICabService cabService, ICsvDownloadService csvDownloadService) : Controller
     {         
         private readonly IRegisterService registerService = registerService;
         private readonly ICabService cabService = cabService;
+        private readonly ICsvDownloadService csvDownloadService = csvDownloadService;
         private readonly decimal TFVersionNumber = 0.4m;
 
         [Route("")]
@@ -137,6 +138,24 @@ namespace DVSRegister.Controllers
             if (service == null)
                 return RedirectToAction("RegisterPageNotFound", "Error");
             return View(service);
+        }
+
+        [HttpGet("download-register")]
+        public async Task<IActionResult> DownloadRegister()
+        {
+            try
+            {
+                var result = await csvDownloadService.DownloadAsync();
+                return File(result.FileContent, result.ContentType, result.FileName);
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new InvalidOperationException("No data available for download", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("An error occurred while attempting to download the register.", ex);
+            }
         }
 
         #region Private methods

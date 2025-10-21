@@ -209,5 +209,15 @@ namespace DVSRegister.Data
             var service = await queryWithOptionalIncludes.SingleOrDefaultAsync() ?? new Service();
             return service;
         }
+
+        public async Task<List<Service>> GetPublishedServices()
+        {
+            return await context.Service.AsNoTracking()//Read only, so no need for tracking query
+             .Include(service => service.Provider).AsNoTracking()
+             .Include(service => service.CabUser).ThenInclude(cabUser => cabUser.Cab).AsNoTracking()
+             .Include(service => service.ServiceSupSchemeMapping).ThenInclude(ssm => ssm.SupplementaryScheme).AsNoTracking()
+             .Where(ci => ci.IsInRegister == true).OrderBy(ci => ci.Provider.RegisteredName)
+             .ToListAsync();
+        }
     } 
 }

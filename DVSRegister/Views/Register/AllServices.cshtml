@@ -14,16 +14,21 @@
     @using (Html.BeginForm("AllServices", "Register", FormMethod.Get))
     {
         <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
-            <h1 class="govuk-heading-xl">
-                All services
-            </h1>
-            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-            <p class="govuk-body govuk-!-margin-bottom-7">
-                Last updated @Model.LastUpdated
-                @Html.ActionLink("See all updates", "Updates", "Register", null, new { @class = "govuk-link" })
-            </p>
+          
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-full">
+                    <h1 class="govuk-heading-xl">
+                        All services
+
+                        <a href="@Url.Action("DownloadRegister", "Register")" class="govuk-button govuk-button--secondary" style="float:right!important">
+                                Download register CSV
+                        </a>
+                    </h1>
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                    <p class="govuk-body govuk-!-margin-bottom-7">
+                        Last updated @Model.LastUpdated
+                        @Html.ActionLink("See all updates", "Updates", "Register", null, new { @class = "govuk-link" })
+                    </p>
                     
                     <!-- Search bar -->
                     <div class="govuk-form-group" style="width: 50%;">
