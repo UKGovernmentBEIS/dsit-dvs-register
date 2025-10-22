@@ -49,5 +49,26 @@
         public const string NotGpg44SubsetError = "The quality of authenticator and quality of protection levels you have selected for this service must align to the options you select for any supplementary codes it is certified against";
         public const string ServiceGpg44SelectedNo = "The identity profiles you have selected for this service must align to the options you select for any supplementary codes it is also certified against";
 
+        public const string RegisteredName = "Registered name";
+        public const string TradingName = "Trading name";
+        public const string CompanyRegistrationNumber = "Companies House or charity registration number";
+        public const string DUNSNumber = "D U-N-S number";
+        public const string ParentCompanyRegisteredName = "Registered name of parent company";
+        public const string ParenyCompanyLocation = "Location of parent company";
+
+        public const string PrimaryContactName = "Primary contact full name";
+        public const string PrimaryContactEmail = "Primary contact email";
+        public const string PrimaryContactJobTitle = "Primary contact job title";
+        public const string PrimaryContactTelephone = "Primary contact telephone number";
+
+        public const string SecondaryContactName = "Secondary contact full name";
+        public const string SecondaryContactEmail = "Secondary contact email";
+        public const string SecondaryContactJobTitle = "Secondary contact job title";
+        public const string SecondaryContactTelephone = "Secondary contact telephone number";
+
+        public const string ProviderWebsiteAddress = "Provider website address";
+        public const string PublicContactEmail = "Public contact email";
+        public const string ProviderTelephoneNumber = "Provider telephone number";
+
     }
 }

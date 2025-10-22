@@ -91,4 +91,59 @@
 /* Remove box-shadow from search button to eliminate border under search button */
 .govuk-input__wrapper .govuk-button {
     box-shadow: none;
+  
+}
+.dwp-timeline {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.dwp-timeline__items {
+    padding: 0;
+    list-style-type: none;
+    border-left: 3px solid #1d70b8;
+}
+
+.dwp-timeline__item {
+    position: relative;
+    top: -8px;
+    margin: 15px 0;
+    padding: 0 0 15px 18px;
+}
+
+    .dwp-timeline__item::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: -1px;
+        width: 11px;
+        border-top: 3px solid #1d70b8;
+    }
+
+@media (max-width: 48.0525em) {
+    .dwp-timeline__item {
+        padding-top: 2px;
+    }
+}
+
+.dwp-timeline__datetime {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 0.875rem;
+    line-height: 1.1428571429;
+    margin-bottom: 5px;
+}
+
+@media (min-width: 40.0625em) {
+    .dwp-timeline__datetime {
+        font-size: 1rem;
+        line-height: 1.25;
+    }
+}
+
+@media print {
+    .dwp-timeline__datetime {
+        font-size: 14pt;
+        line-height: 1.2;
+    }
 }
