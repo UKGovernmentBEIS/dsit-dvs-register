@@ -17,6 +17,13 @@ namespace DVSRegister.Extensions
             string output = input?.Replace("\r", "<br>")??string.Empty;
             return new HtmlString(output);
         }
+
+        public static HtmlString ToStringWithNewLineBreaks(string input)
+        {
+
+            string output = input?.Replace("\n", "<br>") ?? string.Empty;
+            return new HtmlString(output);
+        }
         private static string GetTagClass<TEnum>(TEnum value) where TEnum : struct, Enum
         {
 
