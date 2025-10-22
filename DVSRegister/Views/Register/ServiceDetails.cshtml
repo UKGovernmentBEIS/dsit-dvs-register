@@ -12,7 +12,18 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "AllServices", "Register", null, new { @class = "govuk-back-link" })
+    @if (ViewBag.PreviousServiceId != null)
+    {
+        <a href="@Url.Action("ServiceDetails", "Register", new { serviceId = ViewBag.PreviousServiceId })" class="govuk-back-link">Back</a>
+    }
+    else if (ViewBag.FromProviderPage == true)
+    {
+        <a href="@Url.Action("ProviderDetails", "Register", new { providerId = Model.ProviderProfileId })" class="govuk-back-link">Back</a>
+    }
+    else
+    {
+        <a href="@Url.Action("AllServices", "Register", null)" class="govuk-back-link">Back</a>        
+    }
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
@@ -28,8 +39,8 @@
                         </h2>
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
-                                <a class="govuk-link" href="@Url.Action("ProviderDetails", "Register", new { providerId = Model.ProviderProfileId })">
-                                    View profile details <span class="govuk-visually-hidden"> of Provider @Model.Provider.RegisteredName</span>
+                                <a class="govuk-link" href="@Url.Action("ProviderDetails", "Register", new { providerId = Model.ProviderProfileId, fromServicePage = true,
+                                previousServiceId = Model.Id })">View profile details <span class="govuk-visually-hidden"> of Provider @Model.Provider.RegisteredName</span>
                                 </a>
                             </li>
                         </ul>
@@ -357,7 +368,7 @@
                                 </p>
                                 <p class="govuk-body">
                                     <a class="govuk-link"
-                                       href="@Url.Action("ServiceDetails", "Register", new { serviceId = Model.UnderPinningServiceId })">
+                                       href="@Url.Action("ServiceDetails", "Register", new { serviceId = Model.UnderPinningServiceId,  previousServiceId = Model.Id })">
                                         View the underpinning service details
                                         <span class="govuk-visually-hidden">
                                             of Service @Model.UnderPinningService.ServiceName

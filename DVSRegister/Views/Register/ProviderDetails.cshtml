@@ -9,7 +9,21 @@
 }                                                       
 
 <div class="govuk-width-container">
-    <a href="@Url.Action("AllProviders", "Register", null)" class="govuk-back-link">Back</a>
+    @if (ViewBag.FromServicePage == true )
+    {
+        @if (ViewBag.PreviousServiceId != null)
+        {       
+            <a href = "@Url.Action("ServiceDetails", "Register", new { serviceId = ViewBag.PreviousServiceId })" class= "govuk-back-link" > Back </a>
+        }
+        else
+        {
+            <a href="@Url.Action("AllServices", "Register", null)" class="govuk-back-link"> Back </a>
+        }       
+    }
+    else 
+    {
+        <a href="@Url.Action("AllProviders", "Register", null)" class="govuk-back-link">Back</a>
+    }
     <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
@@ -52,7 +66,7 @@
                                     <dt class="govuk-summary-list__key">Service Name</dt>
                                     <dd class="govuk-summary-list__value">@service.ServiceName</dd>
                                     <dd class="govuk-summary-list__actions">
-                                        <a class="govuk-link" href="@Url.Action("ServiceDetails", "Register", new { serviceId = service.Id })">View Details</a>
+                                        <a class="govuk-link" href="@Url.Action("ServiceDetails", "Register", new { serviceId = service.Id, fromProviderPage = true })">View Details</a>
                                     </dd>
                                 </div>
                             }                            

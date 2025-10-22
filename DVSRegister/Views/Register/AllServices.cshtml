@@ -169,7 +169,7 @@
                                             </a>
                                         </h3>
                                         <p class="govuk-body govuk-!-margin-bottom-2">
-                                            Service provider: <a href="provider-details?providerId=@service.ProviderProfileId" class="govuk-link">
+                                            Service provider: <a href="@Url.Action("ProviderDetails", "Register", new { providerId = service.ProviderProfileId, fromServicePage = true})" class="govuk-link">
                                                 @service.Provider.RegisteredName
                                             </a>
                                         </p>
