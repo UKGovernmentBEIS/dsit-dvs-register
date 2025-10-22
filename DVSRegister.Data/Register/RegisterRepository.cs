@@ -1,4 +1,5 @@
-﻿using DVSRegister.CommonUtility.Models.Enums;
+﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using DVSRegister.Data.Models;
 using Microsoft.EntityFrameworkCore;
@@ -145,9 +146,41 @@ namespace DVSRegister.Data
             };
         }
 
-        public async Task<List<RegisterPublishLog>> GetRegisterPublishLogs()
+        public async Task<PaginatedResult<GroupedResult<ActionLogs>>> GetUpdateLogs(int pageNumber)
         {
-            return await context.RegisterPublishLog.OrderByDescending(p => p.CreatedTime).ToListAsync();
+
+            var query = context.ActionLogs.Include(x => x.ActionDetails).Include(x => x.ProviderProfile).Include(x => x.Service)
+                .Where(x => x.ShowInRegisterUpdates == true && x.ProviderProfile.IsInRegister == true && (x.Service == null || (x.Service != null && x.Service.IsInRegister == true)));
+
+            int totalCount = await query.Select(x => x.LogDate) .Distinct().CountAsync();       
+            int totalPages = (int)Math.Ceiling(totalCount / (double)10);
+            DateTime? latestLogDate = await query.MaxAsync(x => (DateTime?)x.LogDate);
+
+            var groupedLogs = await query
+                .GroupBy(x => x.LogDate)
+                .OrderByDescending(g => g.Key)
+                .Skip((pageNumber - 1) * 10)
+                .Take(10)
+                .Select(g => new GroupedResult<ActionLogs>
+                {
+                    LogDate = g.Key,
+                    Items = g.OrderByDescending(l => l.LoggedTime).ToList()
+                }).ToListAsync();
+
+            return new PaginatedResult<GroupedResult<ActionLogs>>
+            {
+                Items = groupedLogs,
+                TotalCount = totalCount,
+                LastUpdated = latestLogDate
+            };
+        }
+        public async Task<DateTime> GetLastUpdatedDate()
+        {
+            var query = context.ActionLogs.Include(x => x.ActionDetails).Include(x => x.ProviderProfile).Include(x => x.Service)
+            .Where(x => x.ShowInRegisterUpdates == true && x.ProviderProfile.IsInRegister == true && (x.Service == null || (x.Service != null && x.Service.IsInRegister == true)));
+            DateTime latestUpdateDate = await query.MaxAsync(x => x.LogDate);
+            return latestUpdateDate;
+
         }
 
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
