@@ -151,8 +151,13 @@ namespace DVSRegister.Controllers
 
 
         [HttpGet("provider-details")]
-        public async Task<IActionResult> ProviderDetails(int providerId)
+        public async Task<IActionResult> ProviderDetails(int providerId, bool? fromServicePage, int? previousServiceId)
         {
+            if (fromServicePage == true)
+            {
+                ViewBag.FromServicePage = fromServicePage;
+                ViewBag.PreviousServiceId = previousServiceId;
+            }
             ProviderProfileDto providerProfileDto = await registerService.GetProviderWithServiceDeatils(providerId);
             if(providerProfileDto == null)
                 return RedirectToAction("RegisterPageNotFound", "Error");
@@ -160,8 +165,16 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("service-details")]
-        public async Task<IActionResult> ServiceDetails(int serviceId)
+        public async Task<IActionResult> ServiceDetails(int serviceId, bool? fromProviderPage, int? previousServiceId)
         {
+            if (fromProviderPage == true)
+            {
+                ViewBag.FromProviderPage = true;
+            }
+            if (previousServiceId != null)
+            {
+                ViewBag.PreviousServiceId = previousServiceId;
+            }
             ServiceDto service = await registerService.GetServiceDetails(serviceId);
             if (service == null)
                 return RedirectToAction("RegisterPageNotFound", "Error");
