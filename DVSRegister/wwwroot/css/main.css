@@ -7774,154 +7774,6 @@ x:-moz-any-link {
   padding: 20px 0;
   margin-bottom: 30px;
 }
-.app-c-filter-panel__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.app-c-filter-panel__button {
-  font-family: "GDS Transport", arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.25;
-  font-family: "GDS Transport", arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-decoration: underline;
-  text-decoration-thickness: max(1px, .0625rem);
-  text-underline-offset: 0.1578em;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  padding: 0;
-  position: relative;
-  text-align: left;
-  -webkit-appearance: none;
-  appearance: none;
-  color: #1d70b8;
-  text-decoration: none;
-}
-@media print {
-  .app-c-filter-panel__button {
-    font-family: sans-serif;
-  }
-}
-@media (min-width: 40.0625em) {
-  .app-c-filter-panel__button {
-    font-size: 1.1875rem;
-    line-height: 1.3157894737;
-  }
-}
-@media print {
-  .app-c-filter-panel__button {
-    font-size: 14pt;
-    line-height: 1.15;
-  }
-}
-@media print {
-  .app-c-filter-panel__button {
-    font-family: sans-serif;
-  }
-}
-.app-c-filter-panel__button:hover {
-  text-decoration-thickness: max(3px, .1875rem, .12em);
-  -webkit-text-decoration-skip-ink: none;
-  text-decoration-skip-ink: none;
-  -webkit-text-decoration-skip: none;
-  text-decoration-skip: none;
-}
-.app-c-filter-panel__button:focus {
-  outline: 3px solid transparent;
-  color: #0b0c0c;
-  background-color: #ffdd00;
-  box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
-  text-decoration: none;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-.app-c-filter-panel__button:link {
-  color: #1d70b8;
-}
-.app-c-filter-panel__button:visited {
-  color: #4c2c92;
-}
-.app-c-filter-panel__button:hover {
-  color: #003078;
-}
-.app-c-filter-panel__button:active {
-  color: #0b0c0c;
-}
-.app-c-filter-panel__button:focus {
-  color: #0b0c0c;
-}
-.app-c-filter-panel__button::-moz-focus-inner {
-  border: 0;
-  padding: 0;
-}
-.app-c-filter-panel__button:focus {
-  outline: 3px solid transparent;
-  color: #0b0c0c;
-  background-color: #ffdd00;
-  box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
-  text-decoration: none;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
-.app-c-filter-panel__button:hover {
-  text-decoration-thickness: max(3px, .1875rem, .12em);
-  -webkit-text-decoration-skip-ink: none;
-  text-decoration-skip-ink: none;
-  -webkit-text-decoration-skip: none;
-  text-decoration-skip: none;
-  color: #003078;
-}
-.app-c-filter-panel__button::before {
-  content: "";
-  position: absolute;
-  top: 5px;
-  left: 0;
-  width: 8px;
-  height: 8px;
-  border-bottom: 2px solid currentColor;
-  border-right: 2px solid currentColor;
-  transform: rotate(45deg);
-  transition: transform 0.2s ease-in-out;
-}
-.app-c-filter-panel__button[aria-expanded=true]::before {
-  transform: rotate(-135deg);
-}
-.app-c-filter-panel__button-inner {
-  font-family: "GDS Transport", arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.25;
-  display: block;
-  margin-left: 25px;
-  color: inherit;
-}
-@media print {
-  .app-c-filter-panel__button-inner {
-    font-family: sans-serif;
-  }
-}
-@media (min-width: 40.0625em) {
-  .app-c-filter-panel__button-inner {
-    font-size: 1.1875rem;
-    line-height: 1.3157894737;
-  }
-}
-@media print {
-  .app-c-filter-panel__button-inner {
-    font-size: 14pt;
-    line-height: 1.15;
-  }
-}
 .app-c-filter-panel__count {
   font-family: "GDS Transport", arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -7967,6 +7819,101 @@ x:-moz-any-link {
   margin-bottom: 0;
   width: 100%;
   padding: 10px 15px;
+}
+
+/* Styles for details-based filter panel */
+.app-c-filter-panel > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.app-c-filter-panel > summary::-webkit-details-marker {
+  display: none;
+}
+
+.app-c-filter-panel > summary.app-c-filter-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  position: relative;
+}
+
+.app-c-filter-panel > summary .app-c-filter-panel__button-inner {
+  font-family: "GDS Transport", arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.25;
+  text-decoration: underline;
+  text-decoration-thickness: max(1px, .0625rem);
+  text-underline-offset: 0.1578em;
+  color: #1d70b8;
+  display: block;
+  margin-left: 25px;
+  position: relative;
+}
+
+@media print {
+  .app-c-filter-panel > summary .app-c-filter-panel__button-inner {
+    font-family: sans-serif;
+  }
+}
+
+@media (min-width: 40.0625em) {
+  .app-c-filter-panel > summary .app-c-filter-panel__button-inner {
+    font-size: 1.1875rem;
+    line-height: 1.3157894737;
+  }
+}
+
+@media print {
+  .app-c-filter-panel > summary .app-c-filter-panel__button-inner {
+    font-size: 14pt;
+    line-height: 1.15;
+  }
+}
+
+.app-c-filter-panel > summary .app-c-filter-panel__button-inner::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: -25px;
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 0.2s ease-in-out;
+}
+
+.app-c-filter-panel[open] > summary .app-c-filter-panel__button-inner::before {
+  transform: rotate(-135deg);
+}
+
+.app-c-filter-panel > summary:hover .app-c-filter-panel__button-inner {
+  text-decoration-thickness: max(3px, .1875rem, .12em);
+  -webkit-text-decoration-skip-ink: none;
+  text-decoration-skip-ink: none;
+  -webkit-text-decoration-skip: none;
+  text-decoration-skip: none;
+  color: #003078;
+}
+
+.app-c-filter-panel > summary:focus {
+  outline: none;
+}
+
+.app-c-filter-panel > summary:focus .app-c-filter-panel__button-inner {
+  outline: 3px solid transparent;
+  color: #0b0c0c;
+  background-color: #ffdd00;
+  box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
+  text-decoration: none;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .app-c-filter-section {

@@ -192,7 +192,6 @@ await Html.RenderPartialAsync("_CookieBanner");
 <script nonce="@Context.GetScriptNonce()" type="module">
         import { initAll } from "/js/govuk.js";
             initAll();</script>
-<script nonce="@Context.GetScriptNonce()" src="~/js/filter-panel.js"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
