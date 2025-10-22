@@ -43,6 +43,7 @@ namespace DVSRegister.BusinessLogic.Services
         public async Task<ProviderProfileDto> GetProviderWithServiceDeatils(int providerId)
         {
             var provider = await registerRepository.GetProviderDetails(providerId);
+            if (provider == null) return null!;
             ProviderProfileDto providerProfileDto = automapper.Map<ProviderProfileDto>(provider);
             return providerProfileDto;
         }
