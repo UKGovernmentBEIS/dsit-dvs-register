@@ -41,7 +41,7 @@ namespace DVSRegister.BusinessLogic.Services
                     actionLog.LoggedTime = DateTime.UtcNow;                    
                     var previousData = actionLogsDto.PreviousData;
                     var updatedData = actionLogsDto.UpdatedData;
-                    if (previousData != null && updatedData != null)
+                    if (previousData != null && updatedData != null && previousData.Count>0 && updatedData.Count>0)
                     {
                         actionLog.OldValues = JsonDocument.Parse(JsonSerializer.Serialize(previousData));
                         actionLog.NewValues = JsonDocument.Parse(JsonSerializer.Serialize(updatedData));
@@ -63,6 +63,10 @@ namespace DVSRegister.BusinessLogic.Services
                             }
                             displayMessage = providerName;
                         }
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Previous data or updated data null");
                     }
                 }               
 

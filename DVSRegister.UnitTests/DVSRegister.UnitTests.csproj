@@ -40,8 +40,4 @@
     <ProjectReference Include="..\DVSRegister\DVSRegister.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>
