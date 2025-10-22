@@ -58,12 +58,10 @@
                     </div>
                     
                     <!-- Filter and Sort Component -->
-                    <div class="app-c-filter-panel" data-module="filter-panel">
-                        <div class="app-c-filter-panel__header">
-                            <button id="filter-button" class="app-c-filter-panel__button govuk-link" aria-expanded="false" aria-controls="filter-panel" type="button">
-                                <span class="app-c-filter-panel__button-inner">Filter and sort</span>
-                            </button>
-                            <h2 id="js-result-count" class="app-c-filter-panel__count">
+                    <details class="app-c-filter-panel">
+                        <summary class="app-c-filter-panel__header">
+                            <span class="app-c-filter-panel__button-inner">Filter and sort</span>
+                            <h2 class="app-c-filter-panel__count">
                                 @if (Model.TotalResults != 0)
                                 {
                                     @Model.TotalResults @(Model.TotalResults == 1 ? " result" : " results")
@@ -73,9 +71,9 @@
                                     <text>0 results</text>
                                 }
                             </h2>
-                        </div>
+                        </summary>
 
-                        <div class="app-c-filter-panel__content" id="filter-panel" role="region" aria-labelledby="filter-button" style="width: 60%;">
+                        <div class="app-c-filter-panel__content" style="width: 60%;">
                             
                             <!-- Sort by section -->
                             <details class="app-c-filter-section" data-module="filter-section">
@@ -194,7 +192,7 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </details>
 
                     @if (Model.Providers != null && Model.Providers.Any())
                     {
