@@ -58,8 +58,6 @@ namespace DVSRegister.Controllers
             allServicesViewModel.TotalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
             var lastUpdatedDate = await registerService.GetLastUpdatedDate();
             allServicesViewModel.LastUpdated = lastUpdatedDate?.ToString("dd MMMM yyyy");
-
-            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, SelectedTfVersionIds, RemoveRole, RemoveScheme, RemoveTfVersion, SearchAction, SearchText);
             return View(allServicesViewModel);
         }
         #endregion
@@ -101,7 +99,6 @@ namespace DVSRegister.Controllers
             
             var lastUpdatedDate = await registerService.GetLastUpdatedDate();
             allProvidersViewModel.LastUpdated = lastUpdatedDate?.ToString("dd MMMM yyyy");
-            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, SelectedTfVersionIds, RemoveRole, RemoveScheme, RemoveTfVersion, SearchAction, SearchText);
             return View(allProvidersViewModel);
         }
 

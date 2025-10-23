@@ -7879,18 +7879,18 @@ x:-moz-any-link {
 .app-c-filter-panel > summary .app-c-filter-panel__button-inner::before {
   content: "";
   position: absolute;
-  top: 5px;
+  top: 2px;
   left: -25px;
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   border-bottom: 2px solid currentColor;
   border-right: 2px solid currentColor;
   transform: rotate(45deg);
-  transition: transform 0.2s ease-in-out;
 }
 
 .app-c-filter-panel[open] > summary .app-c-filter-panel__button-inner::before {
-  transform: rotate(-135deg);
+    top: 10px;
+    transform: rotate(-135deg);
 }
 
 .app-c-filter-panel > summary:hover .app-c-filter-panel__button-inner {
@@ -7982,17 +7982,17 @@ x:-moz-any-link {
 .app-c-filter-section__summary-heading::before {
   content: "";
   position: absolute;
-  top: 7px;
+  top: 2px;
   left: 0;
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   border-bottom: 2px solid #0b0c0c;
   border-right: 2px solid #0b0c0c;
   transform: rotate(45deg);
-  transition: transform 0.2s ease-in-out;
 }
 details[open] > .app-c-filter-section__summary .app-c-filter-section__summary-heading::before {
-  transform: rotate(-135deg);
+    top: 10px;
+    transform: rotate(-135deg);
 }
 .app-c-filter-section__content {
   padding: 0 0 20px 0;
