@@ -91,8 +91,8 @@ await Html.RenderPartialAsync("_CookieBanner");
                                     All providers
                                 </a>
                             </li>
-                            <li class="govuk-service-navigation__item">
-                                <a class="govuk-service-navigation__link" href="#">
+                            <li class="govuk-service-navigation__item @(ViewData["ActiveNav"]?.ToString() == "Guidance" ? "govuk-service-navigation__item--active" : "")">
+                                <a class="govuk-service-navigation__link" href="https://www.gov.uk/guidance/find-registered-digital-identity-and-attribute-services">
                                     Guidance
                                 </a>
                             </li>
