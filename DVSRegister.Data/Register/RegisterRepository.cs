@@ -140,13 +140,20 @@ namespace DVSRegister.Data
                 LastUpdated = latestLogDate
             };
         }
-        public async Task<DateTime> GetLastUpdatedDate()
+        public async Task<DateTime?> GetLastUpdatedDate()
         {
+            DateTime? latestUpdateDate;
             var query = context.ActionLogs.Include(x => x.ActionDetails).Include(x => x.ProviderProfile).Include(x => x.Service)
-            .Where(x => x.ShowInRegisterUpdates == true && x.ProviderProfile.IsInRegister == true && (x.Service == null || (x.Service != null && x.Service.IsInRegister == true)));
-            DateTime latestUpdateDate = await query.MaxAsync(x => x.LogDate);
+           .Where(x => x.ShowInRegisterUpdates == true && x.ProviderProfile.IsInRegister == true && (x.Service == null || (x.Service != null && x.Service.IsInRegister == true)));
+            if (await query.AnyAsync())
+            {
+                latestUpdateDate = await query.MaxAsync(x => x.LogDate);
+            }
+            else
+            {
+                latestUpdateDate = await context.ProviderProfile.Where(p => p.IsInRegister == true).MaxAsync(p => p.PublishedTime);
+            }
             return latestUpdateDate;
-
         }
 
         public async Task<ProviderProfile> GetProviderDetails(int providerId)

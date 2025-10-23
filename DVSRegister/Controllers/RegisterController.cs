@@ -1,6 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.Extensions;
@@ -69,7 +68,7 @@ namespace DVSRegister.Controllers
             allServicesViewModel.TotalResults = results.TotalCount;
             allServicesViewModel.TotalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
             var lastUpdatedDate = await registerService.GetLastUpdatedDate();
-            allServicesViewModel.LastUpdated = lastUpdatedDate.ToString("dd MMMM yyyy");
+            allServicesViewModel.LastUpdated = lastUpdatedDate?.ToString("dd MMMM yyyy");
 
             SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, SelectedTfVersionIds, RemoveRole, RemoveScheme, RemoveTfVersion, SearchAction, SearchText);
             return View(allServicesViewModel);
@@ -125,7 +124,7 @@ namespace DVSRegister.Controllers
             allProvidersViewModel.TotalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
             
             var lastUpdatedDate = await registerService.GetLastUpdatedDate();
-            allProvidersViewModel.LastUpdated = lastUpdatedDate.ToString("dd MMMM yyyy");
+            allProvidersViewModel.LastUpdated = lastUpdatedDate?.ToString("dd MMMM yyyy");
             SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, SelectedTfVersionIds, RemoveRole, RemoveScheme, RemoveTfVersion, SearchAction, SearchText);
             return View(allProvidersViewModel);
         }

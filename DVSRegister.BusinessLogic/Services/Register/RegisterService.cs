@@ -72,7 +72,7 @@ namespace DVSRegister.BusinessLogic.Services
         }
 
 
-        public async Task<DateTime> GetLastUpdatedDate()
+        public async Task<DateTime?> GetLastUpdatedDate()
         {
             return await registerRepository.GetLastUpdatedDate();
         }
