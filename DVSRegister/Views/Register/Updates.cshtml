@@ -1,27 +1,74 @@
 ﻿@using DVSRegister.CommonUtility.Models.Enums;
 @using DVSRegister.Extensions
-@model RegisterPublishLogsViewModel
+@using DVSRegister.Models.UI;
+@model RegisterUpdatesLogsViewModel
 @{
     ViewData["Title"] = "Updates : Register of digital identity and attribute services";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
-    ViewData["ActiveNav"] = "Updates";    
+    ViewData["ActiveNav"] = "Updates";   
+    bool hasUpdates = Model.RegisterUpdatesLog != null && Model.RegisterUpdatesLog.Count > 0;
 }
 <div class="govuk-width-container">
     <main id="main-content" class="govuk-main-wrapper" role="main">
         @await Html.PartialAsync("~/Views/Register/PartialViews/_RegisterBreadCrumbsView.cshtml", "Updates")
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-grid-column-three-quarters">
+                <h1 class="govuk-heading-xl">Updates: Register of digital identity and attribute services</h1>
+            
+                @if (hasUpdates)
+                {
+                    <table class="govuk-table">
+                        <tbody class="govuk-table__body">
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">Last updated</th>
+                                <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.LastUpdated, "dd MMMM yyyy")</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+                            
+
                 <div class="dwp-timeline">
-                    <h1 class="govuk-heading-xl">Updates: Register of digital identity and attribute services</h1>
-                    <h2 class="govuk-heading-m">Last updated</h2>
-                    <ol class="dwp-timeline__items">
-                        <li class="dwp-timeline__item">
-                            <p class="govuk-body dwp-timeline__datetime">28 May 2025</p>
-                            <h2 class="govuk-heading-m govuk-!-margin-bottom-0 govuk-!-margin-top-5">Registered name changed</h2>
-                            <p class="govuk-hint govuk-!-margin-top-0">CompanyName</p>
-                        </li>
-                    </ol>
+                    @if (hasUpdates)
+                    {
+                        @foreach (var group in Model.RegisterUpdatesLog)
+                        {
+                            <ol class="dwp-timeline__items">
+                                <li class="dwp-timeline__item">
+                                    <p class="govuk-body dwp-timeline__datetime">@DateTimeExtensions.FormatDateTime(group.LogDate, "dd MMMM yyyy")</p>
+
+                                    @foreach (var item in group.Items)
+                                    {
+                                        <h2 class="govuk-heading-m govuk-!-margin-bottom-0 govuk-!-margin-top-5">@item.ActionDetails.ActionDescription</h2>
+                                        <p class="govuk-hint govuk-!-margin-top-0">@HtmlExtensions.ToStringWithNewLineBreaks(item.DisplayMessage)</p>
+                                    }
+
+                                </li>
+                            </ol>
+                        }
+                    }
+                    
+
                 </div>
+
+                @if (Model?.TotalPages > 1)
+                {
+                    const int pageSize = 10;
+                    int resultMin = ((Model.PageNumber - 1) * pageSize) + 1;
+                    int resultMax = Math.Min(Model.PageNumber * pageSize, Model.TotalResults);
+
+                    <p class="govuk-body govuk-!-font-weight-bold">
+                        Showing @resultMin - @resultMax of @Model.TotalResults
+                    </p>
+
+                PaginationViewModel paginationViewModel = new PaginationViewModel
+                {
+                    Action = "Updates",
+                    CurrentPage = Model.PageNumber,
+                    TotalPages = Model.TotalPages                  
+                };
+                    @await Html.PartialAsync("~/Views/PartialViews/_PaginationView.cshtml", paginationViewModel)
+                }
             </div>
         </div>
     </main>

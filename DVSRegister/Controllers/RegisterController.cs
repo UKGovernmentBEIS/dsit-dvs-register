@@ -1,6 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.Extensions;
@@ -57,12 +56,10 @@ namespace DVSRegister.Controllers
             allServicesViewModel.Services = results.Items;
             allServicesViewModel.TotalResults = results.TotalCount;
             allServicesViewModel.TotalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
+            var lastUpdatedDate = await registerService.GetLastUpdatedDate();
+            allServicesViewModel.LastUpdated = lastUpdatedDate?.ToString("dd MMMM yyyy");
 
-            List<RegisterPublishLogDto> list = await registerService.GetRegisterPublishLogs();
-            if (list != null && list.Count != 0)
-            {
-                allServicesViewModel.LastUpdated = list[0].CreatedTime.ToString("dd MMMM yyyy");
-            }
+            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, SelectedTfVersionIds, RemoveRole, RemoveScheme, RemoveTfVersion, SearchAction, SearchText);
             return View(allServicesViewModel);
         }
         #endregion
@@ -101,30 +98,41 @@ namespace DVSRegister.Controllers
             allProvidersViewModel.Providers = results.Items;
             allProvidersViewModel.TotalResults = results.TotalCount;
             allProvidersViewModel.TotalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
-            List<RegisterPublishLogDto> list = await registerService.GetRegisterPublishLogs();
-            if (list != null && list.Count != 0)
-            {
-                allProvidersViewModel.LastUpdated = list[0].CreatedTime.ToString("dd MMMM yyyy");
-            }
+            
+            var lastUpdatedDate = await registerService.GetLastUpdatedDate();
+            allProvidersViewModel.LastUpdated = lastUpdatedDate?.ToString("dd MMMM yyyy");
+            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, SelectedTfVersionIds, RemoveRole, RemoveScheme, RemoveTfVersion, SearchAction, SearchText);
             return View(allProvidersViewModel);
         }
 
         #endregion
 
         #region Updates
-        [HttpGet("publish-logs")]
-        public async Task<IActionResult> Updates()
+        [HttpGet("update-logs")]
+        public async Task<IActionResult> Updates(int PageNum = 1)
         {
-            RegisterPublishLogsViewModel registerPublishLogsViewModel = new RegisterPublishLogsViewModel();
-            registerPublishLogsViewModel.RegisterPublishLog = await registerService.GetRegisterPublishLogs();
+            var updateLogs= await registerService.GetUpdateLogs(PageNum);
+            RegisterUpdatesLogsViewModel registerPublishLogsViewModel = new();         
+
+            registerPublishLogsViewModel.PageNumber = PageNum;
+            registerPublishLogsViewModel.RegisterUpdatesLog = updateLogs.Items;
+            registerPublishLogsViewModel.TotalResults = updateLogs.TotalCount;
+            registerPublishLogsViewModel.TotalPages = (int)Math.Ceiling((double)updateLogs.TotalCount / 10);
+
+            registerPublishLogsViewModel.LastUpdated = updateLogs.LastUpdated;
             return View("Updates", registerPublishLogsViewModel);
         }
         #endregion
 
 
         [HttpGet("provider-details")]
-        public async Task<IActionResult> ProviderDetails(int providerId)
+        public async Task<IActionResult> ProviderDetails(int providerId, bool? fromServicePage, int? previousServiceId)
         {
+            if (fromServicePage == true)
+            {
+                ViewBag.FromServicePage = fromServicePage;
+                ViewBag.PreviousServiceId = previousServiceId;
+            }
             ProviderProfileDto providerProfileDto = await registerService.GetProviderWithServiceDeatils(providerId);
             if(providerProfileDto == null)
                 return RedirectToAction("RegisterPageNotFound", "Error");
@@ -132,8 +140,16 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("service-details")]
-        public async Task<IActionResult> ServiceDetails(int serviceId)
+        public async Task<IActionResult> ServiceDetails(int serviceId, bool? fromProviderPage, int? previousServiceId)
         {
+            if (fromProviderPage == true)
+            {
+                ViewBag.FromProviderPage = true;
+            }
+            if (previousServiceId != null)
+            {
+                ViewBag.PreviousServiceId = previousServiceId;
+            }
             ServiceDto service = await registerService.GetServiceDetails(serviceId);
             if (service == null)
                 return RedirectToAction("RegisterPageNotFound", "Error");

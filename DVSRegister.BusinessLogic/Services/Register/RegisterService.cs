@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Models.Register;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data;
 
 namespace DVSRegister.BusinessLogic.Services
@@ -43,6 +43,7 @@ namespace DVSRegister.BusinessLogic.Services
         public async Task<ProviderProfileDto> GetProviderWithServiceDeatils(int providerId)
         {
             var provider = await registerRepository.GetProviderDetails(providerId);
+            if (provider == null) return null!;
             ProviderProfileDto providerProfileDto = automapper.Map<ProviderProfileDto>(provider);
             return providerProfileDto;
         }
@@ -52,12 +53,30 @@ namespace DVSRegister.BusinessLogic.Services
             ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
             return serviceDto;
         }
-        public async Task<List<RegisterPublishLogDto>> GetRegisterPublishLogs()
+        public async Task<PaginatedResult<GroupedResult<ActionLogsDto>>> GetUpdateLogs(int pageNumber)
         {
-            var list = await registerRepository.GetRegisterPublishLogs();
-            return automapper.Map<List<RegisterPublishLogDto>>(list);
+            var list = await registerRepository.GetUpdateLogs(pageNumber);
+      
+            var groupedDtos = list.Items.Select(group => new GroupedResult<ActionLogsDto>
+            {
+                LogDate = group.LogDate,
+                Items = automapper.Map<List<ActionLogsDto>>(group.Items)
+            }).ToList();
+
+            return new PaginatedResult<GroupedResult<ActionLogsDto>>
+            {
+                Items = groupedDtos,
+                TotalCount = list.TotalCount,
+                LastUpdated = list.LastUpdated
+            };
         }
 
-       
+
+        public async Task<DateTime?> GetLastUpdatedDate()
+        {
+            return await registerRepository.GetLastUpdatedDate();
+        }
+
+
     }
 }

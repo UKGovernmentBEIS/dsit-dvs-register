@@ -1,4 +1,5 @@
-﻿using DVSRegister.CommonUtility.Models.Enums;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 
 namespace DVSRegister.BusinessLogic.Models
@@ -7,6 +8,9 @@ namespace DVSRegister.BusinessLogic.Models
     {
         public ActionCategoryEnum ActionCategoryEnum { get; set; }
         public ActionDetailsEnum ActionDetailsEnum { get; set; }
+        public ActionDetailsDto ActionDetails { get; set; }
+        public ProviderProfileDto ProviderProfile { get; set; }
+        public ServiceDto Service { get; set; }
         public int RequestedUserId { get; set; }
         public string LoggedInUserEmail { get; set; }
         public int? ServiceId { get; set; }
@@ -16,5 +20,9 @@ namespace DVSRegister.BusinessLogic.Models
         public Dictionary<string, List<string>>? PreviousData { get; set; }
         public Dictionary<string, List<string>>? UpdatedData { get; set; }
         public DateTime? UpdateRequestedTime { get; set; }
+        public DateTime LogDate { get; set; } // Date only
+        public DateTime LoggedTime { get; set; } // Date + time
+        public string DisplayMessage { get; set; }
+        public bool ShowInRegisterUpdates { get; set; }
     }
 }
