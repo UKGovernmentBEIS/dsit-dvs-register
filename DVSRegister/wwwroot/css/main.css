@@ -8013,11 +8013,11 @@ details[open] > .app-c-filter-section__summary .app-c-filter-section__summary-he
 
 @media (max-width: 40.0525em) {
   .app-c-filter-panel__header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
   }
   .app-c-filter-panel__count {
-    margin-left: 30px;
+    margin-left: 15px;
   }
   .app-c-filter-panel__actions {
     flex-direction: column;
@@ -8026,6 +8026,20 @@ details[open] > .app-c-filter-section__summary .app-c-filter-section__summary-he
   .app-c-filter-panel__actions button {
     width: 100%;
   }
+  .app-c-filter-panel > summary .app-c-filter-panel__button-inner::before {
+    top: 0px;
+  }
+  .app-c-filter-panel[open] > summary .app-c-filter-panel__button-inner::before {
+    top: 7px;
+  }
+
+    .app-c-filter-section__summary-heading::before {
+        top: 0px;
+    }
+
+    details[open] > .app-c-filter-section__summary .app-c-filter-section__summary-heading::before {
+        top: 7px;
+    }
 }
 .dsit-search-filter-box {
   display: flex;
