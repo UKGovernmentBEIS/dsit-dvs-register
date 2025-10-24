@@ -10,7 +10,6 @@
 }
 <div class="govuk-width-container">
     <main id="main-content" class="govuk-main-wrapper" role="main">
-        @await Html.PartialAsync("~/Views/Register/PartialViews/_RegisterBreadCrumbsView.cshtml", "Updates")
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-three-quarters">
                 <h1 class="govuk-heading-xl">Updates: Register of digital identity and attribute services</h1>
@@ -29,13 +28,13 @@
                             
 
                 <div class="dwp-timeline">
-                    @if (hasUpdates)
-                    {
-                        @foreach (var group in Model.RegisterUpdatesLog)
+                    <ol class="dwp-timeline__items">
+                        @if (hasUpdates)
                         {
-                            <ol class="dwp-timeline__items">
+                            @foreach (var group in Model.RegisterUpdatesLog)
+                            {
                                 <li class="dwp-timeline__item">
-                                    <p class="govuk-body dwp-timeline__datetime">@DateTimeExtensions.FormatDateTime(group.LogDate, "dd MMMM yyyy")</p>
+                                    <p class="dwp-timeline__datetime">@DateTimeExtensions.FormatDateTime(group.LogDate, "dd MMMM yyyy")</p>
 
                                     @foreach (var item in group.Items)
                                     {
@@ -44,11 +43,9 @@
                                     }
 
                                 </li>
-                            </ol>
+                            }
                         }
-                    }
-                    
-
+                    </ol>
                 </div>
 
                 @if (Model?.TotalPages > 1)
