@@ -60,7 +60,8 @@ namespace DVSRegister.Data.Repositories
                     }
                     else
                     {
-                        service.CertificateReview.CertificateReviewStatus = CertificateReviewEnum.DeclinedByProvider;
+                        var certificateReview = service.CertificateReview.Where(x => x.IsLatestReviewVersion).SingleOrDefault();
+                        certificateReview.CertificateReviewStatus = CertificateReviewEnum.DeclinedByProvider;
                     }
                     service.ModifiedTime = DateTime.UtcNow;
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.OpeningLoop, providerEmail);

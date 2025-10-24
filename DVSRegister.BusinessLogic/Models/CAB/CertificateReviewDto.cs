@@ -23,5 +23,7 @@ namespace DVSRegister.BusinessLogic.Models
         public DateTime ModifiedDate { get; set; }
         public CertificateReviewEnum CertificateReviewStatus { get; set; }
         public string? Amendments { get; set; }
+        public bool IsLatestReviewVersion { get; set; }
+        public int ReviewVersion { get; set; }
     }
 }

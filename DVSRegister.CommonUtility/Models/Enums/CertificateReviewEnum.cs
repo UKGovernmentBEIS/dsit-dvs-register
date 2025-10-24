@@ -16,6 +16,10 @@ namespace DVSRegister.CommonUtility.Models.Enums
         [Description("Amendments needed")]
         AmendmentsRequired = 5,
         [Description("Passed")]
-        DeclinedByProvider = 6
+        DeclinedByProvider = 6,
+        [Description("Invitation cancelled")]
+        InvitationCancelled = 7,
+        [Description("Application restored")]
+        Restored = 8
     }
 }

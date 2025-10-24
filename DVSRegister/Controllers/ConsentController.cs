@@ -95,7 +95,7 @@ namespace DVSRegister.Controllers
             {
                 return View("ProceedApplicationAlreadyAgreed");
             }
-            else if (serviceDto?.ServiceStatus == ServiceStatusEnum.Received || serviceDto?.CertificateReview?.CertificateReviewStatus != CertificateReviewEnum.Approved)
+            else if (serviceDto?.ServiceStatus == ServiceStatusEnum.Received || serviceDto?.CertificateReview.Where(x=>x.IsLatestReviewVersion).SingleOrDefault()?.CertificateReviewStatus != CertificateReviewEnum.Approved)
             {//keep this condition for old tokens without a token status
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Opening loop:Already consented"));
                 return View("ProceedApplicationAlreadyAgreed");

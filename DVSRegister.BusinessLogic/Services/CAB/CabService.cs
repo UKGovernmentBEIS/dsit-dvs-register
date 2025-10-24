@@ -46,7 +46,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return providerProfileDto.Services == null || providerProfileDto.Services.Count==0 || // services not added ie certificate info not submitted yet
             providerProfileDto.Services.All(service => service.CertificateReview == null && service.ServiceStatus == ServiceStatusEnum.Submitted) || //certificate info submitted but review not started
             providerProfileDto.Services.All(service => service.CertificateReview == null
-            || service.CertificateReview.CertificateReviewStatus != CertificateReviewEnum.Approved); //none of the services has an Approved status;
+            || service.CertificateReview.Where(x=>x.IsLatestReviewVersion).SingleOrDefault()?.CertificateReviewStatus != CertificateReviewEnum.Approved); //none of the services has an Approved status;
         }
         public async Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId=0)
         {

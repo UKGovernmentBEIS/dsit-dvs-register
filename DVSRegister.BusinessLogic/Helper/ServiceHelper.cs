@@ -9,11 +9,12 @@ namespace DVSRegister.BusinessLogic
         
         public static int GetServicePriority(ServiceDto service)
         {
-            if (service.CertificateReview != null)
+            var certificateReview = service.CertificateReview.Where(s => s.IsLatestReviewVersion).SingleOrDefault();
+            if (certificateReview != null)
             {
-                if (service.CertificateReview.CertificateReviewStatus == CertificateReviewEnum.AmendmentsRequired)
+                if (certificateReview.CertificateReviewStatus == CertificateReviewEnum.AmendmentsRequired)
                     return 0;
-                if (service.CertificateReview.CertificateReviewStatus == CertificateReviewEnum.Rejected)
+                if (certificateReview.CertificateReviewStatus == CertificateReviewEnum.Rejected)
                     return 5;
             }
 

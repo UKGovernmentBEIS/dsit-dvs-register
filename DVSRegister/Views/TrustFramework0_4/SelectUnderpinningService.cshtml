@@ -152,7 +152,7 @@
                                                 </td>
                                                 <td class="govuk-table__cell">@item.ManualUnderPinningService.ProviderName</td>
                                                 <td class="govuk-table__cell">@item.ManualUnderPinningService.Cab.CabName</td>
-                                                <td class="govuk-table__cell">@HtmlExtensions.GetStyledStatusTag(item.CertificateReview, item.PublicInterestCheck, item.ServiceStatus, item?.serviceDraft?.PreviousServiceStatus)</td>
+                                                <td class="govuk-table__cell">@HtmlExtensions.GetStyledStatusTag(item.CertificateReview.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), item.PublicInterestCheck.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), item.ServiceStatus, item?.serviceDraft?.PreviousServiceStatus)</td>
                                             </tr>
                                         }
                                     }

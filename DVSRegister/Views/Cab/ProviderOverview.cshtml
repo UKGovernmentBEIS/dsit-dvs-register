@@ -159,7 +159,7 @@
                                             Status
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @HtmlExtensions.GetStyledStatusTag(item.CertificateReview,item.PublicInterestCheck, item.ServiceStatus, previousStatus)
+                                        @HtmlExtensions.GetStyledStatusTag(item.CertificateReview.Where(x => x.IsLatestReviewVersion == true).SingleOrDefault(), item.PublicInterestCheck.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), item.ServiceStatus, previousStatus)
                                         </dd>
                                     </div>
                                 </dl>
