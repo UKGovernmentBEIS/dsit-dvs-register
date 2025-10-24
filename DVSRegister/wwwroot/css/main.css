@@ -7944,15 +7944,18 @@ x:-moz-any-link {
   outline: none;
 }
 .app-c-filter-section__summary:focus .app-c-filter-section__summary-heading {
-  outline: 3px solid #ffdd00;
-  outline-offset: 0;
-  background-color: #ffdd00;
-  color: #0b0c0c;
+    outline: 3px solid transparent;
+    color: #0b0c0c;
+    background-color: #ffdd00;
+    box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
+    text-decoration: none;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
 }
 .app-c-filter-section__summary:hover .app-c-filter-section__summary-heading {
   text-decoration: underline;
   text-decoration-thickness: max(1px, 0.0625rem);
-  text-underline-offset: 0.1578em;
+  text-underline-offset: 0.3156em;
 }
 .app-c-filter-section__summary-heading {
   font-family: "GDS Transport", arial, sans-serif;
@@ -7961,10 +7964,8 @@ x:-moz-any-link {
   font-weight: 700;
   font-size: 1rem;
   line-height: 1.25;
-  text-decoration: underline;
-  text-decoration-thickness: max(1px, .0625rem);
+  margin: 0;
   text-underline-offset: 0.1578em;
-  color: #1d70b8;
   display: inline-block;
   padding: 0px 10px 0px 25px;
   position: relative;
@@ -7992,7 +7993,7 @@ x:-moz-any-link {
   content: "";
   position: absolute;
   top: 2px;
-  left: 0;
+  left: 3px;
   width: 12px;
   height: 12px;
   border-bottom: 2px solid #0b0c0c;
