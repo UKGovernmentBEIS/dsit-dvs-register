@@ -7825,6 +7825,7 @@ x:-moz-any-link {
 .app-c-filter-panel > summary {
   list-style: none;
   cursor: pointer;
+  pointer-events: none;
 }
 
 .app-c-filter-panel > summary::-webkit-details-marker {
@@ -7851,9 +7852,11 @@ x:-moz-any-link {
   text-decoration-thickness: max(1px, .0625rem);
   text-underline-offset: 0.1578em;
   color: #1d70b8;
-  display: block;
-  padding-left: 25px;
+  display: inline-block;
+  padding: 0px 10px 0px 25px;
   position: relative;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 @media print {
@@ -7932,6 +7935,7 @@ x:-moz-any-link {
   padding: 20px 0;
   cursor: pointer;
   list-style: none;
+  pointer-events: none;
 }
 .app-c-filter-section__summary::-webkit-details-marker {
   display: none;
@@ -7957,10 +7961,15 @@ x:-moz-any-link {
   font-weight: 700;
   font-size: 1rem;
   line-height: 1.25;
-  margin: 0;
+  text-decoration: underline;
+  text-decoration-thickness: max(1px, .0625rem);
+  text-underline-offset: 0.1578em;
+  color: #1d70b8;
   display: inline-block;
+  padding: 0px 10px 0px 25px;
   position: relative;
-  padding-left: 25px;
+  pointer-events: auto;
+  cursor: pointer;
 }
 @media print {
   .app-c-filter-section__summary-heading {
