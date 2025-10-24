@@ -23,7 +23,7 @@ namespace DVSRegister.Controllers
         #region All services
         [HttpGet("all-services")]
         public async Task<IActionResult> AllServices(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, List<int> SelectedTfVersionIds,
-            int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
+            int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, bool RemoveSort = false, string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
         {
             AllServicesViewModel allServicesViewModel = new();
 
@@ -31,13 +31,7 @@ namespace DVSRegister.Controllers
             await SetSchemes(SelectedSupplementarySchemeIds, RemoveScheme, allServicesViewModel);
             await SetTfVersion(SelectedTfVersionIds, RemoveTfVersion, allServicesViewModel);
 
-            if (SearchAction == "clearSearch")
-            {
-                ModelState.Clear();
-                allServicesViewModel.SearchText = null;
-                SearchText = string.Empty;
-            }
-            else if (SearchAction == "clearFilter")
+            if (SearchAction == "clearFilter")
             {
                 ModelState.Clear();
                 allServicesViewModel.SortBy = "";
@@ -51,7 +45,7 @@ namespace DVSRegister.Controllers
 
             var results = await registerService.GetServices(allServicesViewModel.SelectedRoleIds, allServicesViewModel.SelectedSupplementarySchemeIds, allServicesViewModel.SelectedTrustFrameworkVersionId,
                 PageNum, SearchText, SortBy);
-            allServicesViewModel.SortBy = SortBy;
+            allServicesViewModel.SortBy = RemoveSort ? "" : SortBy;
             allServicesViewModel.PageNumber = PageNum;
             allServicesViewModel.Services = results.Items;
             allServicesViewModel.TotalResults = results.TotalCount;
@@ -66,7 +60,7 @@ namespace DVSRegister.Controllers
 
         [HttpGet("all-providers")]
         public async Task<IActionResult> AllProviders(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, List<int> SelectedTfVersionIds,
-            int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
+            int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, bool RemoveSort = false, string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
         {
             AllProvidersViewModel allProvidersViewModel = new();
             await SetRoles(SelectedRoleIds, RemoveRole, allProvidersViewModel);
@@ -91,7 +85,7 @@ namespace DVSRegister.Controllers
             }
             var results = await registerService.GetProviders(allProvidersViewModel.SelectedRoleIds, allProvidersViewModel.SelectedSupplementarySchemeIds, allProvidersViewModel.SelectedTrustFrameworkVersionId,
                 PageNum, SearchText, SortBy);
-            allProvidersViewModel.SortBy = SortBy;
+            allProvidersViewModel.SortBy = RemoveSort ? "" : SortBy;
             allProvidersViewModel.PageNumber = PageNum;
             allProvidersViewModel.Providers = results.Items;
             allProvidersViewModel.TotalResults = results.TotalCount;
@@ -231,7 +225,6 @@ namespace DVSRegister.Controllers
                 vm.SelectedTrustFrameworkVersion = vm.AvailableTrustFrameworkVersion.Where(c => vm.SelectedTrustFrameworkVersionId.Contains(c.Id)).ToList();
             }
         }
-
         #endregion
     }
 }

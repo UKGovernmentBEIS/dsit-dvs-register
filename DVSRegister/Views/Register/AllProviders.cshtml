@@ -9,6 +9,13 @@
     ViewData["Title"] = "All providers";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
     ViewData["ActiveNav"] = "AllProviders";
+
+    var sortOptions = new Dictionary<string, string>
+    {
+        { "Time", "Last updated" },
+        { "Alphabet", "A to Z" },
+        { "ReverseAlphabet", "Z to A" },
+    };
 }
 
 <div class="govuk-width-container">
@@ -87,18 +94,15 @@
                                                 <span class="govuk-fieldset__heading">Sort By</span>
                                             </legend>
                                             <div class="govuk-radios govuk-radios--small">
-                                                <div class="govuk-radios__item">
-                                                    <input type="radio" name="SortBy" id="sort-updated" value="Time" class="govuk-radios__input" checked="">
-                                                    <label for="sort-updated" class="govuk-label govuk-radios__label">Last updated</label>
-                                                </div>
-                                                <div class="govuk-radios__item">
-                                                    <input type="radio" name="SortBy" id="sort-alphabet" value="Alphabet" class="govuk-radios__input">
-                                                    <label for="sort-alphabet" class="govuk-label govuk-radios__label">A to Z</label>
-                                                </div>
-                                                <div class="govuk-radios__item">
-                                                    <input type="radio" name="SortBy" id="sort-reverse-alphabet" value="ReverseAlphabet" class="govuk-radios__input">
-                                                    <label for="sort-reverse-alphabet" class="govuk-label govuk-radios__label">Z to A</label>
-                                                </div>
+                                                @foreach (var option in sortOptions)
+                                                {
+                                                    var id = "sort-" + option.Key.ToLower();
+                                                    var isChecked = option.Key == Model.SortBy ? "checked" : "";
+                                                    <div class="govuk-radios__item">
+                                                        <input class="govuk-radios__input" id="@id" name="SortBy" type="radio" value="@option.Key" @isChecked>
+                                                        <label class="govuk-label govuk-radios__label" for="@id">@option.Value</label>
+                                                    </div>
+                                                }
                                             </div>
                                         </fieldset>
                                     </div>
@@ -205,10 +209,12 @@
                                 <ul class="dsit-search-filter-box__tags">
                                     @if (!string.IsNullOrEmpty(Model.SortBy))
                                     {
-                                        <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveSort" value="true" aria-label="Remove sort filter: @(Model.SortBy == "asc" ? "A to Z" : "Z to A")">
-                                            <span aria-hidden="true">Sort by: @(Model.SortBy == "asc" ? "A to Z" : "Z to A")</span>
-                                            <span class="govuk-visually-hidden">Remove this filter</span>
-                                        </button></li>
+                                        <li>
+                                            <button type="submit" class="dsit-search-filter-box__tag" name="RemoveSort" value="true" aria-label="Remove sort filter: @Model.SortBy">
+                                                <span aria-hidden="true">Sort by: @sortOptions.GetValueOrDefault(Model.SortBy)</span>
+                                                <span class="govuk-visually-hidden">Remove this filter</span>
+                                            </button>
+                                        </li>
                                     }
                                     @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
                                     {
