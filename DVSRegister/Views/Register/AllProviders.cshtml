@@ -59,9 +59,9 @@
                     
                     <!-- Filter and Sort Component -->
                     <details class="app-c-filter-panel">
-                        <summary class="app-c-filter-panel__header">
+                        <summary class="app-c-filter-panel__header" aria-label="Filter and sort options">
                             <span class="app-c-filter-panel__button-inner">Filter and sort</span>
-                            <h2 class="app-c-filter-panel__count">
+                            <h2 class="app-c-filter-panel__count" aria-live="polite">
                                 @if (Model.TotalResults != 0)
                                 {
                                     @Model.TotalResults @(Model.TotalResults == 1 ? " result" : " results")
@@ -77,10 +77,10 @@
                             
                             <!-- Sort by section -->
                             <details class="app-c-filter-section" data-module="filter-section">
-                                <summary class="app-c-filter-section__summary">
+                                <summary class="app-c-filter-section__summary" aria-expanded="false" aria-controls="sort-section">
                                     <h2 class="app-c-filter-section__summary-heading">Sort by</h2>
                                 </summary>
-                                <div class="app-c-filter-section__content">
+                                <div class="app-c-filter-section__content" id="sort-section">
                                     <div class="govuk-form-group">
                                         <fieldset class="govuk-fieldset">
                                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m govuk-visually-hidden">
@@ -107,13 +107,13 @@
 
                             <!-- Role types section -->
                             <details class="app-c-filter-section" data-module="filter-section">
-                                <summary class="app-c-filter-section__summary">
+                                <summary class="app-c-filter-section__summary" aria-expanded="false" aria-controls="role-types-section">
                                     <h2 class="app-c-filter-section__summary-heading">
                                         <span class="govuk-visually-hidden">Filter by</span>
                                         Role types
                                     </h2>
                                 </summary>
-                                <div class="app-c-filter-section__content">
+                                <div class="app-c-filter-section__content" id="role-types-section">
                                     <div class="govuk-form-group govuk-!-margin-bottom-2">
                                         <fieldset class="govuk-fieldset">
                                             <legend class="govuk-fieldset__legend govuk-visually-hidden">Role types</legend>
@@ -134,13 +134,13 @@
 
                             <!-- Supplementary codes section -->
                             <details class="app-c-filter-section" data-module="filter-section">
-                                <summary class="app-c-filter-section__summary">
+                                <summary class="app-c-filter-section__summary" aria-expanded="false" aria-controls="supplementary-codes-section">
                                     <h2 class="app-c-filter-section__summary-heading">
                                         <span class="govuk-visually-hidden">Filter by</span>
                                         Supplementary codes
                                     </h2>
                                 </summary>
-                                <div class="app-c-filter-section__content">
+                                <div class="app-c-filter-section__content" id="supplementary-codes-section">
                                     <div class="govuk-form-group govuk-!-margin-bottom-2">
                                         <fieldset class="govuk-fieldset">
                                             <legend class="govuk-fieldset__legend govuk-visually-hidden">Supplementary codes</legend>
@@ -161,13 +161,13 @@
                             
                             <!-- Trust Framework Version -->
                             <details class="app-c-filter-section" data-module="filter-section">
-                                <summary class="app-c-filter-section__summary">
+                                <summary class="app-c-filter-section__summary" aria-expanded="false" aria-controls="trust-framework-section">
                                     <h2 class="app-c-filter-section__summary-heading">
                                         <span class="govuk-visually-hidden">Filter by</span>
                                         Trust framework version
                                     </h2>
                                 </summary>
-                                <div class="app-c-filter-section__content">
+                                <div class="app-c-filter-section__content" id="trust-framework-section">
                                     <div class="govuk-form-group">
                                         <fieldset class="govuk-fieldset">
                                             <legend class="govuk-fieldset__legend govuk-visually-hidden">Trust Framework Version</legend>
@@ -187,7 +187,7 @@
                             </details>
 
                             <div class="app-c-filter-panel__actions">
-                                <button type="submit" class="govuk-button app-c-filter-panel__action app-c-filter-panel__action--submit" name="SearchAction" value="filter">
+                                <button type="submit" class="govuk-button app-c-filter-panel__action app-c-filter-panel__action--submit" name="SearchAction" value="filter" aria-describedby="filter-help">
                                     Apply
                                 </button>
                             </div>
@@ -205,27 +205,39 @@
                                 <ul class="dsit-search-filter-box__tags">
                                     @if (!string.IsNullOrEmpty(Model.SortBy))
                                     {
-                                        <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveSort" value="true">Sort by: @(Model.SortBy == "asc" ? "A to Z" : "Z to A")<span class="govuk-visually-hidden">Remove this filter</span></button></li>
+                                        <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveSort" value="true" aria-label="Remove sort filter: @(Model.SortBy == "asc" ? "A to Z" : "Z to A")">
+                                            <span aria-hidden="true">Sort by: @(Model.SortBy == "asc" ? "A to Z" : "Z to A")</span>
+                                            <span class="govuk-visually-hidden">Remove this filter</span>
+                                        </button></li>
                                     }
                                     @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
                                     {
                                         @foreach (var role in Model.SelectedRoles)
                                         {
-                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveRole" value="@role.Id"><span class="govuk-visually-hidden">Remove this filter</span> Role types: @Enum.GetName((RoleEnum)@role.Id)</button></li>
+                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveRole" value="@role.Id" aria-label="Remove role filter: @Enum.GetName((RoleEnum)@role.Id)">
+                                                <span aria-hidden="true">Role types: @Enum.GetName((RoleEnum)@role.Id)</span>
+                                                <span class="govuk-visually-hidden">Remove this filter</span>
+                                            </button></li>
                                         }
                                     }
                                     @if (Model.SelectedSupplementarySchemes != null && Model.SelectedSupplementarySchemes.Any())
                                     {
                                         @foreach (var scheme in Model.SelectedSupplementarySchemes)
                                         {
-                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveScheme" value="@scheme.Id"><span class="govuk-visually-hidden">Remove this filter</span> Supplementary codes: @scheme.SchemeName</button></li>
+                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveScheme" value="@scheme.Id" aria-label="Remove supplementary code filter: @scheme.SchemeName">
+                                                <span aria-hidden="true">Supplementary codes: @scheme.SchemeName</span>
+                                                <span class="govuk-visually-hidden">Remove this filter</span>
+                                            </button></li>
                                         }
                                     }
                                     @if (Model.SelectedTrustFrameworkVersion != null && Model.SelectedTrustFrameworkVersion.Any())
                                     {
                                         @foreach (var tfVersion in Model.SelectedTrustFrameworkVersion)
                                         {
-                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveTfVersion" value="@tfVersion.Id"><span class="govuk-visually-hidden">Remove this filter</span> Trust framework version: @tfVersion.TrustFrameworkName</button></li>
+                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveTfVersion" value="@tfVersion.Id" aria-label="Remove trust framework version filter: @tfVersion.TrustFrameworkName">
+                                                <span aria-hidden="true">Trust framework version: @tfVersion.TrustFrameworkName</span>
+                                                <span class="govuk-visually-hidden">Remove this filter</span>
+                                            </button></li>
                                         }
                                     }
                                 </ul>
