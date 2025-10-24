@@ -7768,6 +7768,7 @@ x:-moz-any-link {
   }
 }
 
+
 .dsit-search-filter-box {
   display: flex;
   align-items: center;
@@ -7791,7 +7792,7 @@ x:-moz-any-link {
   font-weight: 400;
   font-size: 0.875rem;
   line-height: 1.1428571429;
-  background-color: #ffffff;
+  background-color: #F3F2F1;
   border: 1px solid #0b0c0c;
   color: #0b0c0c;
   display: inline-block;

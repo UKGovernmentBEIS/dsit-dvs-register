@@ -26,19 +26,6 @@ namespace DVSRegister.Controllers
             int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
         {
             AllServicesViewModel allServicesViewModel = new();
-            Filters? filters = HttpContext?.Session.Get<Filters>("Filters");
-            if (SelectedRoleIds != null && SelectedRoleIds.Count > 0 && SelectedSupplementarySchemeIds != null && SelectedSupplementarySchemeIds.Count > 0 && SelectedTfVersionIds != null && SelectedTfVersionIds.Count > 0 &&
-                string.IsNullOrEmpty(SearchAction) && string.IsNullOrEmpty(SearchText) && RemoveRole == 0 && RemoveScheme == 0 && RemoveTfVersion == 0 && filters != null)
-            {
-                SelectedRoleIds = filters.SelectedRoleIds;
-                SelectedSupplementarySchemeIds = filters.SelectedSupplementarySchemeIds;
-                SelectedTfVersionIds = filters.SelectedTfVersionIds;
-                SearchAction = filters.SearchAction;
-                SearchText = filters.SearchText;
-                RemoveRole = filters.RemoveRole;
-                RemoveScheme = filters.RemoveScheme;
-                RemoveTfVersion = filters.RemoveTfVersion;
-            }
 
             await SetRoles(SelectedRoleIds, RemoveRole, allServicesViewModel);
             await SetSchemes(SelectedSupplementarySchemeIds, RemoveScheme, allServicesViewModel);
@@ -53,6 +40,7 @@ namespace DVSRegister.Controllers
             else if (SearchAction == "clearFilter")
             {
                 ModelState.Clear();
+                allServicesViewModel.SortBy = "";
                 allServicesViewModel.SelectedRoleIds = [];
                 allServicesViewModel.SelectedSupplementarySchemeIds = [];
                 allServicesViewModel.SelectedTrustFrameworkVersionId = [];
@@ -63,14 +51,13 @@ namespace DVSRegister.Controllers
 
             var results = await registerService.GetServices(allServicesViewModel.SelectedRoleIds, allServicesViewModel.SelectedSupplementarySchemeIds, allServicesViewModel.SelectedTrustFrameworkVersionId,
                 PageNum, SearchText, SortBy);
+            allServicesViewModel.SortBy = SortBy;
             allServicesViewModel.PageNumber = PageNum;
             allServicesViewModel.Services = results.Items;
             allServicesViewModel.TotalResults = results.TotalCount;
             allServicesViewModel.TotalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
             var lastUpdatedDate = await registerService.GetLastUpdatedDate();
             allServicesViewModel.LastUpdated = lastUpdatedDate?.ToString("dd MMMM yyyy");
-
-            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, SelectedTfVersionIds, RemoveRole, RemoveScheme, RemoveTfVersion, SearchAction, SearchText);
             return View(allServicesViewModel);
         }
         #endregion
@@ -82,20 +69,6 @@ namespace DVSRegister.Controllers
             int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
         {
             AllProvidersViewModel allProvidersViewModel = new();
-            Filters? filters = HttpContext?.Session.Get<Filters>("Filters");
-            if (SelectedRoleIds != null && SelectedRoleIds.Count > 0 && SelectedSupplementarySchemeIds != null && SelectedSupplementarySchemeIds.Count > 0 &&
-               string.IsNullOrEmpty(SearchAction) && string.IsNullOrEmpty(SearchText) && RemoveRole == 0 && RemoveScheme == 0 && filters != null)
-            {
-                SelectedRoleIds = filters.SelectedRoleIds;
-                SelectedSupplementarySchemeIds = filters.SelectedSupplementarySchemeIds;
-                SelectedTfVersionIds = filters.SelectedTfVersionIds;
-                SearchAction = filters.SearchAction;
-                SearchText = filters.SearchText;
-                RemoveRole = filters.RemoveRole;
-                RemoveScheme = filters.RemoveScheme;
-                RemoveTfVersion = filters.RemoveTfVersion;
-            }
-
             await SetRoles(SelectedRoleIds, RemoveRole, allProvidersViewModel);
             await SetSchemes(SelectedSupplementarySchemeIds, RemoveScheme, allProvidersViewModel);
             await SetTfVersion(SelectedTfVersionIds, RemoveTfVersion, allProvidersViewModel);
@@ -118,6 +91,7 @@ namespace DVSRegister.Controllers
             }
             var results = await registerService.GetProviders(allProvidersViewModel.SelectedRoleIds, allProvidersViewModel.SelectedSupplementarySchemeIds, allProvidersViewModel.SelectedTrustFrameworkVersionId,
                 PageNum, SearchText, SortBy);
+            allProvidersViewModel.SortBy = SortBy;
             allProvidersViewModel.PageNumber = PageNum;
             allProvidersViewModel.Providers = results.Items;
             allProvidersViewModel.TotalResults = results.TotalCount;
@@ -125,7 +99,6 @@ namespace DVSRegister.Controllers
             
             var lastUpdatedDate = await registerService.GetLastUpdatedDate();
             allProvidersViewModel.LastUpdated = lastUpdatedDate?.ToString("dd MMMM yyyy");
-            SetFiltersInSession(SelectedRoleIds, SelectedSupplementarySchemeIds, SelectedTfVersionIds, RemoveRole, RemoveScheme, RemoveTfVersion, SearchAction, SearchText);
             return View(allProvidersViewModel);
         }
 
@@ -199,22 +172,6 @@ namespace DVSRegister.Controllers
         }
 
         #region Private methods
-        private void SetFiltersInSession(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, List<int> SelectedTfVersionIds, 
-            int RemoveRole, int RemoveScheme, int RemoveTfVersion, string SearchAction, string SearchText)
-        {
-            Filters filters = new()
-            {
-                SelectedRoleIds = SelectedRoleIds,
-                SelectedSupplementarySchemeIds = SelectedSupplementarySchemeIds,
-                SelectedTfVersionIds = SelectedTfVersionIds,
-                SearchAction = SearchAction,
-                SearchText = SearchText,
-                RemoveRole = RemoveRole,
-                RemoveScheme = RemoveScheme,
-                RemoveTfVersion = RemoveTfVersion
-            };
-            HttpContext?.Session.Set("Filters", filters);
-        }
         private async Task SetSchemes(List<int>? selectedIds, int removeId, PaginationAndFilteringParameters vm)
         {
             vm.AvailableSchemes = await cabService.GetSupplementarySchemes();

@@ -34,8 +34,10 @@
     color: #0b0c0c;
     display: inline-block;
     margin-top: 5px;
-    padding: 5px;
+    margin-right: 10px;
+    padding: 5px 8px;
     text-decoration: none;
+    cursor: pointer;
 }
 @media print {
     .dsit-search-filter-box__tag {
@@ -60,6 +62,8 @@
 .dsit-search-filter-box__tag:focus {
     color: #0b0c0c;
     background-color: #ffdd00;
+    outline: 3px solid #ffdd00;
+    outline-offset: 0;
 }
 .dsit-search-filter-box__tag:hover {
     background-color: #0b0c0c;
@@ -83,6 +87,11 @@
     border-left: 1px solid #b1b4b6;
     padding-left: 20px;
 }
+
+/* Remove box-shadow from search button to eliminate border under search button */
+.govuk-input__wrapper .govuk-button {
+    box-shadow: none;
+  
 }
 .dwp-timeline {
     font-family: GDS Transport,arial,sans-serif;
@@ -137,5 +146,312 @@
     .dwp-timeline__datetime {
         font-size: 14pt;
         line-height: 1.2;
+    }
+}
+
+/* Blue variant of govuk-button for search bar */
+.govuk-button--blue {
+    background-color: #1d70b8 !important;
+    box-shadow: 0 2px 0 #1d70b8 !important;
+}
+
+.govuk-button--blue:link,
+.govuk-button--blue:visited,
+.govuk-button--blue:active,
+.govuk-button--blue:hover {
+    color: #ffffff !important;
+}
+
+.govuk-button--blue:hover {
+    background-color: #003078 !important;
+}
+
+.govuk-button--blue:focus:not(:active):not(:hover) {
+    border-color: #ffdd00 !important;
+    color: #0b0c0c !important;
+    background-color: #ffdd00 !important;
+}
+
+.search-bar-width {
+    width: 50%;
+}
+
+/* Filter panel */
+
+.app-c-filter-panel {
+    border-top: 1px solid #b1b4b6;
+    border-bottom: 1px solid #b1b4b6;
+    padding: 20px 0;
+    margin-bottom: 30px;
+}
+.app-c-filter-panel__count {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25;
+    margin: 0;
+    font-weight: 400;
+}
+@media print {
+    .app-c-filter-panel__count {
+        font-family: sans-serif;
+    }
+}
+@media (min-width: 40.0625em) {
+    .app-c-filter-panel__count {
+        font-size: 1.1875rem;
+        line-height: 1.3157894737;
+    }
+}
+@media print {
+    .app-c-filter-panel__count {
+        font-size: 14pt;
+        line-height: 1.15;
+    }
+}
+.app-c-filter-panel__content {
+    margin-top: 20px;
+    background-color: #f3f2f1;
+    padding: 0 20px 20px 20px;
+}
+.app-c-filter-panel__content[hidden] {
+    display: none;
+}
+.app-c-filter-panel__actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 0;
+}
+.app-c-filter-panel__action {
+    margin-bottom: 0;
+    width: 100%;
+    padding: 10px 15px;
+}
+
+/* Styles for details-based filter panel */
+.app-c-filter-panel > summary {
+    list-style: none;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.app-c-filter-panel > summary::-webkit-details-marker {
+    display: none;
+}
+
+.app-c-filter-panel > summary.app-c-filter-panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: relative;
+}
+
+.app-c-filter-panel > summary .app-c-filter-panel__button-inner {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25;
+    text-decoration: underline;
+    text-decoration-thickness: max(1px, .0625rem);
+    text-underline-offset: 0.1578em;
+    color: #1d70b8;
+    display: inline-block;
+    padding: 0px 10px 0px 25px;
+    position: relative;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+@media print {
+    .app-c-filter-panel > summary .app-c-filter-panel__button-inner {
+        font-family: sans-serif;
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .app-c-filter-panel > summary .app-c-filter-panel__button-inner {
+        font-size: 1.1875rem;
+        line-height: 1.3157894737;
+    }
+}
+
+@media print {
+    .app-c-filter-panel > summary .app-c-filter-panel__button-inner {
+        font-size: 14pt;
+        line-height: 1.15;
+    }
+}
+
+.app-c-filter-panel > summary .app-c-filter-panel__button-inner::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    width: 12px;
+    height: 12px;
+    border-bottom: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(45deg);
+}
+
+.app-c-filter-panel[open] > summary .app-c-filter-panel__button-inner::before {
+    top: 10px;
+    transform: rotate(-135deg);
+}
+
+.app-c-filter-panel > summary:hover .app-c-filter-panel__button-inner {
+    text-decoration-thickness: max(3px, .1875rem, .12em);
+    -webkit-text-decoration-skip-ink: none;
+    text-decoration-skip-ink: none;
+    -webkit-text-decoration-skip: none;
+    text-decoration-skip: none;
+    color: #003078;
+}
+
+.app-c-filter-panel > summary:focus {
+    outline: none;
+}
+
+.app-c-filter-panel > summary:focus .app-c-filter-panel__button-inner {
+    outline: 3px solid transparent;
+    color: #0b0c0c;
+    background-color: #ffdd00;
+    box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
+    text-decoration: none;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+
+.app-c-filter-section {
+    margin-bottom: 0;
+}
+.app-c-filter-section:not(:last-of-type) {
+    border-bottom: 1px solid #b1b4b6;
+}
+.app-c-filter-section > summary {
+    margin-bottom: 0;
+}
+.app-c-filter-section[open] > summary {
+    margin-bottom: 15px;
+}
+.app-c-filter-section__summary {
+    padding: 20px 0;
+    cursor: pointer;
+    list-style: none;
+    pointer-events: none;
+}
+.app-c-filter-section__summary::-webkit-details-marker {
+    display: none;
+}
+.app-c-filter-section__summary:focus {
+    outline: none;
+}
+.app-c-filter-section__summary:focus .app-c-filter-section__summary-heading {
+    outline: 3px solid transparent;
+    color: #0b0c0c;
+    background-color: #ffdd00;
+    box-shadow: 0 -2px #ffdd00, 0 4px #0b0c0c;
+    text-decoration: none;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+}
+.app-c-filter-section__summary:hover .app-c-filter-section__summary-heading {
+    text-decoration: underline;
+    text-decoration-thickness: max(1px, 0.0625rem);
+    text-underline-offset: 0.3156em;
+}
+.app-c-filter-section__summary-heading {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.25;
+    margin: 0;
+    text-underline-offset: 0.1578em;
+    display: inline-block;
+    padding: 0px 10px 0px 25px;
+    position: relative;
+    pointer-events: auto;
+    cursor: pointer;
+}
+@media print {
+    .app-c-filter-section__summary-heading {
+        font-family: sans-serif;
+    }
+}
+@media (min-width: 40.0625em) {
+    .app-c-filter-section__summary-heading {
+        font-size: 1.1875rem;
+        line-height: 1.3157894737;
+    }
+}
+@media print {
+    .app-c-filter-section__summary-heading {
+        font-size: 14pt;
+        line-height: 1.15;
+    }
+}
+.app-c-filter-section__summary-heading::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    width: 12px;
+    height: 12px;
+    border-bottom: 2px solid #0b0c0c;
+    border-right: 2px solid #0b0c0c;
+    transform: rotate(45deg);
+}
+details[open] > .app-c-filter-section__summary .app-c-filter-section__summary-heading::before {
+    top: 10px;
+    transform: rotate(-135deg);
+}
+.app-c-filter-section__content {
+    padding: 0 0 20px 0;
+}
+.app-c-filter-section__content .govuk-form-group:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 40.0525em) {
+    .app-c-filter-panel__header {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .app-c-filter-panel__count {
+        margin-left: 15px;
+    }
+    .app-c-filter-panel__actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .app-c-filter-panel__actions button {
+        width: 100%;
+    }
+    .app-c-filter-panel > summary .app-c-filter-panel__button-inner::before {
+        top: 0px;
+    }
+    .app-c-filter-panel[open] > summary .app-c-filter-panel__button-inner::before {
+        top: 7px;
+    }
+
+    .app-c-filter-section__summary-heading::before {
+        top: 0px;
+    }
+
+    details[open] > .app-c-filter-section__summary .app-c-filter-section__summary-heading::before {
+        top: 7px;
+    }
+
+    .search-bar-width {
+        width: 100%;
     }
 }
