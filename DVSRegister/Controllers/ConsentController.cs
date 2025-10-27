@@ -1,4 +1,5 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.JWT;
@@ -10,11 +11,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("consent")]
-    public class ConsentController(IJwtService jwtService, IConsentService consentService, ILogger<ConsentController> logger) : Controller
+    public class ConsentController(IJwtService jwtService, IConsentService consentService, IActionLogService actionLogService, ILogger<ConsentController> logger) : Controller
     {
         private readonly IJwtService jwtService = jwtService;        
         private readonly IConsentService consentService = consentService;
         private readonly ILogger<ConsentController> _logger = logger;
+        private readonly IActionLogService actionLogService = actionLogService;
 
 
         #region Opening Loop
@@ -61,7 +63,21 @@ namespace DVSRegister.Controllers
                 if (genericResponse.Success)
                 {
                     await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
-                    return View(agree == "accept" ? "ProceedApplicationConsentSuccess" : "ProceedApplicationConsentDeclined");
+                    if(agree == "accept")
+                    {
+                        return View("ProceedApplicationConsentSuccess");
+                    }
+                    else if(agree == "decline")
+                    {
+                        await AddActionLog(serviceDto, ActionDetailsEnum.CR_DeclinedByProvider, genericResponse.InstanceId, Constants.InvitationDeclined);
+                        return View("ProceedApplicationConsentDeclined");
+                    }
+                    else
+                    {
+                        _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("ProceedApplicationGiveConsent failed: Invalid action"));
+                        return View("ProceedApplicationConsentError");
+                    }
+                   
                 }
                 else
                 {
@@ -106,11 +122,31 @@ namespace DVSRegister.Controllers
             }
         }
 
-       
+        private async Task AddActionLog(ServiceDto serviceDto, ActionDetailsEnum actionDetails, int reviewId, string displayMessage)
+        {
+
+            ActionLogsDto actionLogsDto = new()
+            {
+                
+                ActionCategoryEnum = ActionCategoryEnum.CR,
+                ActionDetailsEnum = actionDetails,
+                ServiceId = serviceDto.Id,
+                ProviderId = serviceDto.Provider.Id,
+                ServiceName = serviceDto.ServiceName,
+                ProviderName = serviceDto.Provider.RegisteredName,
+                DisplayMessage = displayMessage,
+                CertificateReviewId = reviewId
+            };
+
+
+            actionLogsDto.ActionDetailsEnum = actionDetails;
+            await actionLogService.SaveActionLogs(actionLogsDto);
+        }
+
         #endregion
 
 
-  
+
 
 
 

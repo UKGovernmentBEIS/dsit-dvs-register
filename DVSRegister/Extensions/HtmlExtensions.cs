@@ -82,7 +82,8 @@ namespace DVSRegister.Extensions
         {
             // Check for Certificate Review whilst public interest has not become complete
             if (certificateReview != null && publicInterestCheck == null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received 
-             || (serviceStatus == ServiceStatusEnum.Resubmitted && certificateReview.CertificateReviewStatus!=CertificateReviewEnum.AmendmentsRequired && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Restored)))
+             || (serviceStatus == ServiceStatusEnum.Resubmitted && certificateReview.CertificateReviewStatus!=CertificateReviewEnum.AmendmentsRequired && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Restored)
+             && (certificateReview.CertificateReviewStatus != CertificateReviewEnum.DeclinedByProvider && certificateReview.CertificateReviewStatus != CertificateReviewEnum.InvitationCancelled)))
             {
                 return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
             }

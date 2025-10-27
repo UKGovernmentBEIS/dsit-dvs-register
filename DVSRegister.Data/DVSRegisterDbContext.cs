@@ -300,7 +300,8 @@ namespace DVSRegister.Data
                 new ActionDetails { Id = 13, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceNameUpdate), ActionDescription = "Service name changed", ActionCategoryId = 3 },
                 new ActionDetails { Id = 14, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceUpdates), ActionDescription = "Updates published", ActionCategoryId = 3 },
                 new ActionDetails { Id = 15, ActionDetailsKey = nameof(ActionDetailsEnum.ProviderContactUpdate), ActionDescription = "Contact details changed", ActionCategoryId = 4 },
-                new ActionDetails { Id = 16, ActionDetailsKey = nameof(ActionDetailsEnum.BusinessDetailsUpdate), ActionDescription = "Business details changed", ActionCategoryId = 4 }             
+                new ActionDetails { Id = 16, ActionDetailsKey = nameof(ActionDetailsEnum.BusinessDetailsUpdate), ActionDescription = "Business details changed", ActionCategoryId = 4 },
+                new ActionDetails { Id = 17, ActionDetailsKey = nameof(ActionDetailsEnum.CR_InvitationCancelled), ActionDescription = "Invitation cancelled", ActionCategoryId = 1 }
 
             );
 
