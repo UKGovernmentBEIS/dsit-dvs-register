@@ -51,20 +51,37 @@ namespace DVSRegister.Data.Repositories
             using var transaction = context.Database.BeginTransaction();
             try
             {
-                var service = await context.Service.FirstOrDefaultAsync(e => e.Id == serviceId);
+                var service = await context.Service.Include(x => x.CertificateReview).ThenInclude(x => x.CertificateReviewRejectionReasonMapping)
+                .Where(x => x.Id == serviceId).FirstOrDefaultAsync();
                 if (service != null)
                 {
+                    service.ModifiedTime = DateTime.UtcNow;
                     if (agree == "accept")
                     {
                         service.ServiceStatus = ServiceStatusEnum.Received;
+                        await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.OpeningLoop, providerEmail);
                     }
                     else
                     {
-                        var certificateReview = service.CertificateReview.Where(x => x.IsLatestReviewVersion).SingleOrDefault();
-                        certificateReview.CertificateReviewStatus = CertificateReviewEnum.DeclinedByProvider;
-                    }
-                    service.ModifiedTime = DateTime.UtcNow;
-                    await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.OpeningLoop, providerEmail);
+                        var currentLatestReview = service.CertificateReview.FirstOrDefault(r => r.IsLatestReviewVersion);
+                        currentLatestReview.IsLatestReviewVersion = false;
+                        context.CertificateReview.Update(currentLatestReview);
+
+                        CertificateReview newVersion = new()
+                        {
+                            IsLatestReviewVersion = true,
+                            ReviewVersion = currentLatestReview.ReviewVersion + 1,
+                            ServiceId = serviceId,
+                            ProviProviderProfileId = service.ProviderProfileId,                            
+                            CertificateReviewStatus = CertificateReviewEnum.DeclinedByProvider,
+                            CreatedDate = DateTime.UtcNow,
+                            ModifiedDate = DateTime.UtcNow                            
+                        };
+                        var entity = await context.CertificateReview.AddAsync(newVersion);
+                        await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.OpeningLoop, providerEmail);
+                        genericResponse.InstanceId = entity.Entity.Id;
+                    }                  
+                 
                     transaction.Commit();
                     genericResponse.Success = true;
                 }

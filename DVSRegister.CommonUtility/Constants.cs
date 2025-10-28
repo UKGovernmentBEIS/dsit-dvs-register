@@ -70,5 +70,7 @@
         public const string PublicContactEmail = "Public contact email";
         public const string ProviderTelephoneNumber = "Provider telephone number";
 
+        public const string InvitationDeclined = "Invitation declined";
+
     }
 }

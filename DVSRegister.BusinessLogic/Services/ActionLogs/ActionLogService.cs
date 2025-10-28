@@ -27,9 +27,8 @@ namespace DVSRegister.BusinessLogic.Services
         {
             try
             {
-                ActionLogs actionLog = await InitializeActionLogs(actionLogsDto.ActionCategoryEnum, actionLogsDto.ActionDetailsEnum, actionLogsDto.ProviderId);
-                CabUser user = await userRepository.GetUser(actionLogsDto.LoggedInUserEmail);
-                actionLog.CabUserId = user.Id;
+                ActionLogs actionLog = await InitializeActionLogs(actionLogsDto.ActionCategoryEnum, actionLogsDto.ActionDetailsEnum, actionLogsDto.ProviderId, actionLogsDto.ServiceId);
+           
                 string displayMessage = string.Empty;
                 var actionDetailsEnum = actionLogsDto.ActionDetailsEnum;
                 string providerName = actionLogsDto.ProviderName;               
@@ -37,7 +36,9 @@ namespace DVSRegister.BusinessLogic.Services
               
                 if (actionLogsDto.ActionCategoryEnum == ActionCategoryEnum.ProviderUpdates)
                 {
-                 
+                    CabUser user = await userRepository.GetUser(actionLogsDto.LoggedInUserEmail);
+                    actionLog.CabUserId = user.Id;
+
                     actionLog.LoggedTime = DateTime.UtcNow;                    
                     var previousData = actionLogsDto.PreviousData;
                     var updatedData = actionLogsDto.UpdatedData;
@@ -68,9 +69,16 @@ namespace DVSRegister.BusinessLogic.Services
                     {
                         throw new InvalidOperationException("Previous data or updated data null");
                     }
-                }               
+                }      
+                else if(actionLogsDto.ActionCategoryEnum == ActionCategoryEnum.CR)
+                {
+                   
+                    actionLog.ShowInRegisterUpdates = false;
+                    actionLog.CertificateReviewId = actionLogsDto.CertificateReviewId;
+                    displayMessage = actionLogsDto.DisplayMessage;
+                }
 
-                actionLog.DisplayMessage = displayMessage;              
+                    actionLog.DisplayMessage = displayMessage;              
                 await actionLogRepository.SaveActionLogs(actionLog);
             
             }
@@ -87,7 +95,7 @@ namespace DVSRegister.BusinessLogic.Services
         
 
         #region Private methods
-        private async Task<ActionLogs> InitializeActionLogs(ActionCategoryEnum actionCategoryEnum, ActionDetailsEnum actionDetailsEnum, int providerId)
+        private async Task<ActionLogs> InitializeActionLogs(ActionCategoryEnum actionCategoryEnum, ActionDetailsEnum actionDetailsEnum, int providerId, int? serviceId)
         {
             ActionCategory actionCategory = await actionLogRepository.GetActionCategory(actionCategoryEnum);
             ActionDetails actionDetails = await actionLogRepository.GetActionDetails(actionDetailsEnum);
@@ -102,7 +110,8 @@ namespace DVSRegister.BusinessLogic.Services
                 LoggedTime = DateTime.UtcNow,                
                 OldValues = null,
                 NewValues = null,
-                ShowInRegisterUpdates = true
+                ShowInRegisterUpdates = true,
+                ServiceId = serviceId
             };
             return actionLog;
         }
