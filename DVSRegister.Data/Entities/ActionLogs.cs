@@ -51,5 +51,17 @@ namespace DVSRegister.Data.Entities
         public DateTime LoggedTime { get; set; } // Date + time
         public bool ShowInRegisterUpdates { get; set; }
 
+
+        [ForeignKey("PublicInterestCheck")]
+        public int? PublicInterestCheckId{ get; set; }
+        public PublicInterestCheck? PublicInterestCheck { get; set; }
+
+        [ForeignKey("CertificateReview")]
+        public int? CertificateReviewId { get; set; }
+        public CertificateReview? CertificateReview { get; set; }
+
+
+
+
     }
 }

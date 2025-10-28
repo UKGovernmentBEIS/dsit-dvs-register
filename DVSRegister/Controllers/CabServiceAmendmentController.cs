@@ -31,20 +31,21 @@ namespace DVSRegister.Controllers
         {
             SetRefererURL();
             ServiceDto service = await cabService.GetServiceDetails(serviceId, CabId);
+            var latestReview = service.CertificateReview.SingleOrDefault(x => x.IsLatestReviewVersion)!;
             SetServiceDataToSession(CabId, service);
             AmendmentViewModel amendmentViewModel = new()
             {
-                CertificateReview = service.CertificateReview,
+                CertificateReview = latestReview,
                 ServiceSummary = GetServiceSummary()
             };
 
-            HttpContext?.Session.Set("CertificateReviewDetails", service.CertificateReview);
+            HttpContext?.Session.Set("CertificateReviewDetails", latestReview);
             return View(amendmentViewModel);
 
-        }
+            }
 
 
-        [HttpGet("service-amendments-summary")]
+            [HttpGet("service-amendments-summary")]
         public IActionResult ServiceAmendmentsSummary()
         {
             SetRefererURL();

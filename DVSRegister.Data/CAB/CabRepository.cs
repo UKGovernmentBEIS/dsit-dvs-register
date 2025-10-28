@@ -419,7 +419,7 @@ namespace DVSRegister.Data.CAB
                     {                       
                         existingService.ResubmissionTime = DateTime.UtcNow;
                         UpdateExistingServiceRecord(service, existingService);
-                        context.CertificateReview.Remove(existingService.CertificateReview);
+                       // context.CertificateReview.Remove(existingService.CertificateReview);
                         genericResponse.InstanceId = existingService.ServiceKey;
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ServiceAmendments, loggedInUserEmail);
                         genericResponse.InstanceId = existingService.Id;

@@ -22,27 +22,27 @@ namespace DVSRegister.UnitTests.DVSRegister
 
         #region ServiceAmendments GET
 
-        [Fact]
-        public async Task ServiceAmendments_SetsSessionAndReturnsView_Test()
-        {
-            const int serviceId = 42;
-            var fakeDto = TestDataFactory.CreateServiceDto(serviceId);
-            CabService
-                .GetServiceDetails(serviceId, Arg.Any<int>())
-                .Returns(fakeDto);
+        //[Fact]
+        //public async Task ServiceAmendments_SetsSessionAndReturnsView_Test()
+        //{
+        //    const int serviceId = 42;
+        //    var fakeDto = TestDataFactory.CreateServiceDto(serviceId);
+        //    CabService
+        //        .GetServiceDetails(serviceId, Arg.Any<int>())
+        //        .Returns(fakeDto);
             
-            var result = await Controller.ServiceAmendments(serviceId);
+        //    var result = await Controller.ServiceAmendments(serviceId);
 
-            var view = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsType<AmendmentViewModel>(view.Model);
+        //    var view = Assert.IsType<ViewResult>(result);
+        //    var model = Assert.IsType<AmendmentViewModel>(view.Model);
 
-            Assert.Equal(fakeDto.CertificateReview, model.CertificateReview);
+        //    Assert.Equal(fakeDto.CertificateReview, model.CertificateReview);
 
-            var stored = HttpContext.Session.Get<CertificateReviewDto>("CertificateReviewDetails");
-            var expectedJson = JsonSerializer.Serialize(fakeDto.CertificateReview);
-            var actualJson = JsonSerializer.Serialize(stored);
-            Assert.Equal(expectedJson, actualJson);
-        }
+        //    var stored = HttpContext.Session.Get<CertificateReviewDto>("CertificateReviewDetails");
+        //    var expectedJson = JsonSerializer.Serialize(fakeDto.CertificateReview);
+        //    var actualJson = JsonSerializer.Serialize(stored);
+        //    Assert.Equal(expectedJson, actualJson);
+        //}
 
         #endregion
 

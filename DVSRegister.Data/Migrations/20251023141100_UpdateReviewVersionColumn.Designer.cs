@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251023141100_UpdateReviewVersionColumn")]
+    partial class UpdateReviewVersionColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -233,9 +236,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int?>("CabUserId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("CertificateReviewId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("DisplayMessage")
                         .IsRequired()
                         .HasColumnType("text");
@@ -253,9 +253,6 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("jsonb");
 
                     b.Property<int>("ProviderProfileId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("PublicInterestCheckId")
                         .HasColumnType("integer");
 
                     b.Property<int?>("ServiceId")
@@ -287,11 +284,7 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasIndex("CabUserId");
 
-                    b.HasIndex("CertificateReviewId");
-
                     b.HasIndex("ProviderProfileId");
-
-                    b.HasIndex("PublicInterestCheckId");
 
                     b.HasIndex("ServiceId");
 
@@ -2414,19 +2407,11 @@ namespace DVSRegister.Data.Migrations
                         .WithMany()
                         .HasForeignKey("CabUserId");
 
-                    b.HasOne("DVSRegister.Data.Entities.CertificateReview", "CertificateReview")
-                        .WithMany()
-                        .HasForeignKey("CertificateReviewId");
-
                     b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "ProviderProfile")
                         .WithMany()
                         .HasForeignKey("ProviderProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("DVSRegister.Data.Entities.PublicInterestCheck", "PublicInterestCheck")
-                        .WithMany()
-                        .HasForeignKey("PublicInterestCheckId");
 
                     b.HasOne("DVSRegister.Data.Entities.Service", "Service")
                         .WithMany()
@@ -2450,11 +2435,7 @@ namespace DVSRegister.Data.Migrations
 
                     b.Navigation("CabUser");
 
-                    b.Navigation("CertificateReview");
-
                     b.Navigation("ProviderProfile");
-
-                    b.Navigation("PublicInterestCheck");
 
                     b.Navigation("Service");
 
