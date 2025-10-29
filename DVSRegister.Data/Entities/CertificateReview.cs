@@ -47,6 +47,8 @@ namespace DVSRegister.Data.Entities
         public DateTime ModifiedDate { get; set; }
         public CertificateReviewEnum CertificateReviewStatus { get; set; }
         public ICollection<CertificateReviewRejectionReasonMapping>? CertificateReviewRejectionReasonMapping { get; set; }
+        public bool IsLatestReviewVersion { get; set; }
+        public int ReviewVersion { get; set; }
 
     }
 }

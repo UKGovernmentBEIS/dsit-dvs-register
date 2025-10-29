@@ -17,6 +17,13 @@ namespace DVSRegister.Extensions
             string output = input?.Replace("\r", "<br>")??string.Empty;
             return new HtmlString(output);
         }
+
+        public static HtmlString ToStringWithNewLineBreaks(string input)
+        {
+
+            string output = input?.Replace("\n", "<br>") ?? string.Empty;
+            return new HtmlString(output);
+        }
         private static string GetTagClass<TEnum>(TEnum value) where TEnum : struct, Enum
         {
 
@@ -74,12 +81,14 @@ namespace DVSRegister.Extensions
         public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview,PublicInterestCheckDto publicInterestCheck, ServiceStatusEnum serviceStatus, ServiceStatusEnum? previousServiceStatus)
         {
             // Check for Certificate Review whilst public interest has not become complete
-            if (certificateReview != null && publicInterestCheck == null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received || serviceStatus == ServiceStatusEnum.Resubmitted))
+            if (certificateReview != null && publicInterestCheck == null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received 
+             || (serviceStatus == ServiceStatusEnum.Resubmitted && certificateReview.CertificateReviewStatus!=CertificateReviewEnum.AmendmentsRequired && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Restored)
+             && (certificateReview.CertificateReviewStatus != CertificateReviewEnum.DeclinedByProvider && certificateReview.CertificateReviewStatus != CertificateReviewEnum.InvitationCancelled)))
             {
                 return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
             }
             // Check for publicInterestCheck whilst service is not ready to publish
-            else if (publicInterestCheck != null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received || serviceStatus == ServiceStatusEnum.Resubmitted))
+            else if (publicInterestCheck != null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received || serviceStatus== ServiceStatusEnum.Resubmitted))
             {
                 if ( publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckFailed
                      || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckPassed

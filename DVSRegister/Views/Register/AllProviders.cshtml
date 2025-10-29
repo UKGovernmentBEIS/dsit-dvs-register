@@ -1,0 +1,343 @@
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models.Enums;
+@using DVSRegister.Extensions;
+@using DVSRegister.Models.Register
+@using DVSRegister.Models.UI
+
+@model AllProvidersViewModel
+@{
+    ViewData["Title"] = "All providers";
+    Layout = "~/Views/Shared/_Layout_Register.cshtml";
+    ViewData["ActiveNav"] = "AllProviders";
+
+    var sortOptions = new Dictionary<string, string>
+    {
+        { "Time", "Last updated" },
+        { "Alphabet", "A to Z" },
+        { "ReverseAlphabet", "Z to A" },
+    };
+}
+
+<div class="govuk-width-container">
+    @using (Html.BeginForm("AllProviders", "Register", FormMethod.Get))
+    {
+        <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+          
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    <h1 class="govuk-heading-xl">
+                        All providers
+                    </h1>
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                    <p class="govuk-body govuk-!-margin-bottom-7">
+                        Last updated @Model.LastUpdated —  
+                        @Html.ActionLink("See all updates", "Updates", "Register", null, new { @class = "govuk-link" })
+                    </p>
+                    
+                    <!-- Search bar -->
+                    <div class="govuk-form-group search-bar-width">
+                        <h2 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--s" for="Search">
+                                Search for a service provider or service
+                            </label>
+                        </h2>
+                        <div class="govuk-input__wrapper" style="display:flex;">
+                            @Html.TextBoxFor(m => m.SearchText, new
+                            {
+                                @class = "govuk-input",
+                                id = "Search",
+                                type = "search"
+                            })
+                            <div class="govuk-button-group">
+                                <button class="govuk-button govuk-button--blue" type="submit" data-module="govuk-button" name="SearchAction" value="search">
+                                    <svg width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" viewBox="0 0 20 20">
+                                        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"></circle>
+                                        <line x1="16" y1="16" x2="20" y2="20" stroke="currentColor" stroke-width="2"></line>
+                                    </svg>
+                                    <span class="govuk-visually-hidden">Search</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filter and Sort Component -->
+                    <details class="app-c-filter-panel">
+                        <summary class="app-c-filter-panel__header" aria-label="Filter and sort options">
+                            <span class="app-c-filter-panel__button-inner">Filter and sort</span>
+                            <h2 class="app-c-filter-panel__count" aria-live="polite">
+                                @if (Model.TotalResults != 0)
+                                {
+                                    @Model.TotalResults @(Model.TotalResults == 1 ? " result" : " results")
+                                }
+                                else
+                                {
+                                    <text>0 results</text>
+                                }
+                            </h2>
+                        </summary>
+
+                        <div class="app-c-filter-panel__content" style="width: 60%;">
+                            
+                            <!-- Sort by section -->
+                            <details class="app-c-filter-section" data-module="filter-section">
+                                <summary class="app-c-filter-section__summary" aria-expanded="false" aria-controls="sort-section">
+                                    <h2 class="app-c-filter-section__summary-heading">Sort by</h2>
+                                </summary>
+                                <div class="app-c-filter-section__content" id="sort-section">
+                                    <div class="govuk-form-group">
+                                        <fieldset class="govuk-fieldset">
+                                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m govuk-visually-hidden">
+                                                <span class="govuk-fieldset__heading">Sort By</span>
+                                            </legend>
+                                            <div class="govuk-radios govuk-radios--small">
+                                                @foreach (var option in sortOptions)
+                                                {
+                                                    var id = "sort-" + option.Key.ToLower();
+                                                    var isChecked = option.Key == Model.SortBy ? "checked" : "";
+                                                    <div class="govuk-radios__item">
+                                                        <input class="govuk-radios__input" id="@id" name="SortBy" type="radio" value="@option.Key" @isChecked>
+                                                        <label class="govuk-label govuk-radios__label" for="@id">@option.Value</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <!-- Role types section -->
+                            <details class="app-c-filter-section" data-module="filter-section">
+                                <summary class="app-c-filter-section__summary" aria-expanded="false" aria-controls="role-types-section">
+                                    <h2 class="app-c-filter-section__summary-heading">
+                                        <span class="govuk-visually-hidden">Filter by</span>
+                                        Role types
+                                    </h2>
+                                </summary>
+                                <div class="app-c-filter-section__content" id="role-types-section">
+                                    <div class="govuk-form-group govuk-!-margin-bottom-2">
+                                        <fieldset class="govuk-fieldset">
+                                            <legend class="govuk-fieldset__legend govuk-visually-hidden">Role types</legend>
+                                            <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                                                @foreach (var role in Model.AvailableRoles)
+                                                {
+                                                    <div class="govuk-checkboxes__item">
+                                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedRoleIds" value="@role.Id" id="role_@role.Id"
+                                                               @(Model.SelectedRoleIds.Contains(role.Id) ? "checked" : "")/>
+                                                        <label class="govuk-label govuk-checkboxes__label" for="role_@role.Id">@Enum.GetName((RoleEnum)@role.Id)</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <!-- Supplementary codes section -->
+                            <details class="app-c-filter-section" data-module="filter-section">
+                                <summary class="app-c-filter-section__summary" aria-expanded="false" aria-controls="supplementary-codes-section">
+                                    <h2 class="app-c-filter-section__summary-heading">
+                                        <span class="govuk-visually-hidden">Filter by</span>
+                                        Supplementary codes
+                                    </h2>
+                                </summary>
+                                <div class="app-c-filter-section__content" id="supplementary-codes-section">
+                                    <div class="govuk-form-group govuk-!-margin-bottom-2">
+                                        <fieldset class="govuk-fieldset">
+                                            <legend class="govuk-fieldset__legend govuk-visually-hidden">Supplementary codes</legend>
+                                            <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                                                @foreach (var item in Model.AvailableSchemes)
+                                                {
+                                                    <div class="govuk-checkboxes__item">
+                                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id" id="scheme_@item.Id"
+                                                               @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "")/>
+                                                        <label class="govuk-label govuk-checkboxes__label" for="scheme_@item.Id">@item.SchemeName</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </details>
+                            
+                            <!-- Trust Framework Version -->
+                            <details class="app-c-filter-section" data-module="filter-section">
+                                <summary class="app-c-filter-section__summary" aria-expanded="false" aria-controls="trust-framework-section">
+                                    <h2 class="app-c-filter-section__summary-heading">
+                                        <span class="govuk-visually-hidden">Filter by</span>
+                                        Trust framework version
+                                    </h2>
+                                </summary>
+                                <div class="app-c-filter-section__content" id="trust-framework-section">
+                                    <div class="govuk-form-group">
+                                        <fieldset class="govuk-fieldset">
+                                            <legend class="govuk-fieldset__legend govuk-visually-hidden">Trust Framework Version</legend>
+                                            <div class="govuk-checkboxes govuk-checkboxes--small" data-module="govuk-checkboxes">
+                                                @foreach (var version in Model.AvailableTrustFrameworkVersion)
+                                                {
+                                                    <div class="govuk-checkboxes__item">
+                                                        <input class="govuk-checkboxes__input" type="checkbox" name="SelectedTfVersionIds" value="@version.Id" id="version_@version.Id"
+                                                               @(Model.SelectedTrustFrameworkVersionId.Contains(version.Id) ? "checked" : "")/>
+                                                        <label class="govuk-label govuk-checkboxes__label" for="version_@version.Id">@version.TrustFrameworkName</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <div class="app-c-filter-panel__actions">
+                                <button type="submit" class="govuk-button app-c-filter-panel__action app-c-filter-panel__action--submit" name="SearchAction" value="filter" aria-describedby="filter-help">
+                                    Apply
+                                </button>
+                            </div>
+                        </div>
+                    </details>
+
+                    @if (Model.Providers != null && Model.Providers.Any())
+                    {
+                        if ((Model.SelectedRoleIds != null && Model.SelectedRoleIds.Any()) || (Model.SelectedSupplementarySchemeIds != null && Model.SelectedSupplementarySchemeIds.Any()) ||
+                            (Model.SelectedTrustFrameworkVersionId != null && Model.SelectedTrustFrameworkVersionId.Any()) || !string.IsNullOrEmpty(Model.SortBy))
+                        {
+                            <div>
+                                <h3 class="govuk-heading-s govuk-!-margin-bottom-3 govuk-!-font-weight-regular">Active filters</h3>
+                                
+                                <ul class="dsit-search-filter-box__tags">
+                                    @if (!string.IsNullOrEmpty(Model.SortBy))
+                                    {
+                                        <li>
+                                            <button type="submit" class="dsit-search-filter-box__tag" name="RemoveSort" value="true" aria-label="Remove sort filter: @Model.SortBy">
+                                                <span aria-hidden="true">Sort by: @sortOptions.GetValueOrDefault(Model.SortBy)</span>
+                                                <span class="govuk-visually-hidden">Remove this filter</span>
+                                            </button>
+                                        </li>
+                                    }
+                                    @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
+                                    {
+                                        @foreach (var role in Model.SelectedRoles)
+                                        {
+                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveRole" value="@role.Id" aria-label="Remove role filter: @Enum.GetName((RoleEnum)@role.Id)">
+                                                <span aria-hidden="true">Role types: @Enum.GetName((RoleEnum)@role.Id)</span>
+                                                <span class="govuk-visually-hidden">Remove this filter</span>
+                                            </button></li>
+                                        }
+                                    }
+                                    @if (Model.SelectedSupplementarySchemes != null && Model.SelectedSupplementarySchemes.Any())
+                                    {
+                                        @foreach (var scheme in Model.SelectedSupplementarySchemes)
+                                        {
+                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveScheme" value="@scheme.Id" aria-label="Remove supplementary code filter: @scheme.SchemeName">
+                                                <span aria-hidden="true">Supplementary codes: @scheme.SchemeName</span>
+                                                <span class="govuk-visually-hidden">Remove this filter</span>
+                                            </button></li>
+                                        }
+                                    }
+                                    @if (Model.SelectedTrustFrameworkVersion != null && Model.SelectedTrustFrameworkVersion.Any())
+                                    {
+                                        @foreach (var tfVersion in Model.SelectedTrustFrameworkVersion)
+                                        {
+                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveTfVersion" value="@tfVersion.Id" aria-label="Remove trust framework version filter: @tfVersion.TrustFrameworkName">
+                                                <span aria-hidden="true">Trust framework version: @tfVersion.TrustFrameworkName</span>
+                                                <span class="govuk-visually-hidden">Remove this filter</span>
+                                            </button></li>
+                                        }
+                                    }
+                                </ul>
+                                
+                                <a href="@Url.Action("AllProviders", "Register")" class="govuk-link govuk-link--no-visited-state">Clear all filters</a>
+                                
+                                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                            </div>
+                        }
+
+                        <ul role="list" class="govuk-list govuk-!-margin-bottom-7">
+                            @foreach (var provider in Model.Providers)
+                            {
+                                <li class="govuk-grid-row govuk-!-margin-bottom-6">
+                                    <div class="govuk-grid-column-one-half">
+                                        <h3 class="govuk-heading-m govuk-!-margin-bottom-2">
+                                            <a href="provider-details?providerId=@provider.Id" class="govuk-link">
+                                                @provider.RegisteredName
+                                            </a>
+                                        </h3>
+                                        <p class="govuk-body govuk-!-margin-bottom-2">
+                                            Trading name: @(String.IsNullOrEmpty(provider.TradingName) ? Constants.NullFieldsDisplay : provider.TradingName)
+                                        </p>
+                                    </div>
+                                    <div class="govuk-grid-column-one-half visible-column">
+                                        <ul role="list" class="govuk-list">
+                                            @foreach (var service in provider.Services)
+                                            {
+                                                <li class="govuk-!-margin-bottom-3">
+                                                    <p class="govuk-body govuk-!-font-weight-bold">
+                                                        Service: @service.ServiceName
+                                                    </p>
+                                                    <p class="govuk-body-s dsit-secondary-text-colour">
+                                                        Role types: @string.Join(", ", service.ServiceRoleMapping.Select(x => Enum.GetName(typeof(RoleEnum), x.RoleId)))
+                                                    </p>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>                                    
+                                </li>
+                                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                            }
+                        </ul>
+
+                    }
+                    else
+                    {
+                        <h2 class="govuk-heading-s govuk-!-margin-bottom-2"><span class="govuk-visually-hidden">Search results</span> Showing 0 results</h2>
+                        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+                        <p class="govuk-body">There are no matching results. Please try:</p>
+                        <ul class="govuk-list govuk-list--bullet">
+                            <li>removing filters</li>
+                            <li>double checking your spelling</li>
+                            <li>using fewer keywords</li>
+                            <li>searching for a trading name, registered name or service name</li>
+                        </ul>
+                        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                    }
+                    @if (Model?.TotalPages >= 1)
+                    {
+                        const int pageSize = 10;
+                        int resultMin = ((Model.PageNumber - 1) * pageSize) + 1;
+                        int resultMax = Math.Min(Model.PageNumber * pageSize, Model.TotalResults);
+
+                        <p class="govuk-body govuk-!-font-weight-bold">
+                            Showing @resultMin - @resultMax of @Model.TotalResults results
+                        </p>
+
+                        PaginationViewModel paginationViewModel = new PaginationViewModel
+                        {
+                            Action = "AllProviders",
+                            CurrentPage = Model.PageNumber,
+                            TotalPages = Model.TotalPages,
+                            SortBy = Model.SortBy,
+                            SearchText = Model.SearchText,
+                            SelectedRoleIds = Model.SelectedRoleIds,
+                            SelectedSupplementarySchemeIds = Model.SelectedSupplementarySchemeIds,
+                            SelectedTfVersionIds = Model.SelectedTrustFrameworkVersionId
+                        };
+                        @await Html.PartialAsync("~/Views/PartialViews/_PaginationView.cshtml", paginationViewModel)
+                    }
+                </div>                
+            </div>
+
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+            <p class="govuk-body govuk-!-margin-bottom-4">Last updated @Model.LastUpdated —  @Html.ActionLink("See all updates", "Updates", "Register", null, new { @class = "govuk-link" })</p>
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-7">
+            <h3 class="govuk-heading-m">Explore the Topic</h3>
+            <p class="govuk-body">
+                <strong><a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role Type</a></strong>
+            </p>
+            <p class="govuk-body">
+                <strong><a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a></strong>
+            </p>
+            <p class="govuk-body">
+                <strong><a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary Schemes</a></strong>
+            </p>
+        </main>
+    }
+</div>

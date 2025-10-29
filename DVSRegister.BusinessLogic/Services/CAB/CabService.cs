@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CAB;
@@ -19,14 +20,12 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         {
             this.cabRepository = cabRepository;
             this.automapper = automapper;            
-        }
-     
+        }     
         public async Task<List<RoleDto>> GetRoles(decimal tfVersion)
         {
             var list = await cabRepository.GetRoles(tfVersion);
             return automapper.Map<List<RoleDto>>(list);
         }
-
         public async Task<List<SupplementarySchemeDto>> GetSupplementarySchemes()
         {
             var list = await cabRepository.GetSupplementarySchemes();
@@ -36,14 +35,18 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         {
             var list = await cabRepository.GetIdentityProfiles();
             return automapper.Map<List<IdentityProfileDto>>(list);
-        }      
-
+        }        
+        public async Task<List<TrustFrameworkVersionDto>> GetTfVersion()
+        {
+            var list = await cabRepository.GetTfVersion();
+            return automapper.Map<List<TrustFrameworkVersionDto>>(list);
+        }
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto)
         {
             return providerProfileDto.Services == null || providerProfileDto.Services.Count==0 || // services not added ie certificate info not submitted yet
             providerProfileDto.Services.All(service => service.CertificateReview == null && service.ServiceStatus == ServiceStatusEnum.Submitted) || //certificate info submitted but review not started
             providerProfileDto.Services.All(service => service.CertificateReview == null
-            || service.CertificateReview.CertificateReviewStatus != CertificateReviewEnum.Approved); //none of the services has an Approved status;
+            || service.CertificateReview.Where(x=>x.IsLatestReviewVersion).SingleOrDefault()?.CertificateReviewStatus != CertificateReviewEnum.Approved); //none of the services has an Approved status;
         }
         public async Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId=0)
         {
@@ -127,7 +130,143 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return (pendingRequestCount>0?true:false, automapper.Map<List<CabTransferRequestDto>>(requestList));
         }
 
-       
+
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetCompanyValueUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData)
+        {
+            var currentDataDictionary = new Dictionary<string, List<string>>();
+            var previousDataDictionary = new Dictionary<string, List<string>>();
+
+
+            if (currentData.RegisteredName !=  previousData.RegisteredName)
+            {
+                previousDataDictionary.Add(Constants.RegisteredName, [previousData.RegisteredName]);
+                currentDataDictionary.Add(Constants.RegisteredName, [currentData.RegisteredName]);
+            }
+            if (currentData.TradingName != previousData.TradingName)
+            {
+                previousDataDictionary.Add(Constants.TradingName, [string.IsNullOrEmpty(previousData.TradingName) ? Constants.NullFieldsDisplay : previousData.TradingName]);
+                currentDataDictionary.Add(Constants.TradingName, [string.IsNullOrEmpty(currentData.TradingName) ? Constants.NullFieldsDisplay : currentData.TradingName]);
+            }
+          
+            if (previousData.HasRegistrationNumber == true && currentData.CompanyRegistrationNumber!= previousData.CompanyRegistrationNumber)
+            {               
+                currentDataDictionary.Add(Constants.CompanyRegistrationNumber, [currentData.CompanyRegistrationNumber]); 
+                previousDataDictionary.Add(Constants.CompanyRegistrationNumber, [previousData.CompanyRegistrationNumber]);
+            }
+            if (previousData.HasRegistrationNumber == false && currentData.DUNSNumber!= previousData.DUNSNumber)
+            {             
+              
+                currentDataDictionary.Add(Constants.DUNSNumber, [currentData.DUNSNumber]);
+                previousDataDictionary.Add(Constants.DUNSNumber, [previousData.DUNSNumber]);
+            }
+            
+            if (previousData.HasParentCompany == true )
+            {      
+                if (currentData.ParentCompanyRegisteredName != previousData.ParentCompanyRegisteredName)
+                {
+                    currentDataDictionary.Add(Constants.ParentCompanyRegisteredName, [currentData.ParentCompanyRegisteredName]);
+                    previousDataDictionary.Add(Constants.ParentCompanyRegisteredName, [previousData.ParentCompanyRegisteredName]);
+                }
+                if(currentData.ParentCompanyLocation != previousData.ParentCompanyLocation)
+                {
+                    currentDataDictionary.Add(Constants.ParenyCompanyLocation, [currentData.ParentCompanyLocation]);
+                    previousDataDictionary.Add(Constants.ParenyCompanyLocation, [previousData.ParentCompanyLocation]);
+                }                
+            }            
+
+            return (currentDataDictionary, previousDataDictionary);
+         
+        }
+
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetPrimaryContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData)
+        {
+            var currentDataDictionary = new Dictionary<string, List<string>>();
+            var previousDataDictionary = new Dictionary<string, List<string>>();
+
+
+            if (currentData.PrimaryContactFullName != previousData.PrimaryContactFullName)
+            {
+                previousDataDictionary.Add(Constants.PrimaryContactName, [previousData.PrimaryContactFullName]);
+                currentDataDictionary.Add(Constants.PrimaryContactName, [currentData.PrimaryContactFullName]);
+            }
+            if (currentData.PrimaryContactEmail != previousData.PrimaryContactEmail)
+            {
+                previousDataDictionary.Add(Constants.PrimaryContactEmail, [previousData.PrimaryContactEmail]);
+                currentDataDictionary.Add(Constants.PrimaryContactEmail, [currentData.PrimaryContactEmail]);
+            }
+            if (currentData.PrimaryContactJobTitle != previousData.PrimaryContactJobTitle)
+            {
+                previousDataDictionary.Add(Constants.PrimaryContactJobTitle, [previousData.PrimaryContactJobTitle]);
+                currentDataDictionary.Add(Constants.PrimaryContactJobTitle, [currentData.PrimaryContactJobTitle]);
+            }
+            if (currentData.PrimaryContactTelephoneNumber != previousData.PrimaryContactTelephoneNumber)
+            {
+                previousDataDictionary.Add(Constants.PrimaryContactTelephone, [previousData.PrimaryContactTelephoneNumber]);
+                currentDataDictionary.Add(Constants.PrimaryContactTelephone, [currentData.PrimaryContactTelephoneNumber]);
+            }
+
+            return (currentDataDictionary, previousDataDictionary);
+
+        }
+
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetSecondaryContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData)
+        {
+            var currentDataDictionary = new Dictionary<string, List<string>>();
+            var previousDataDictionary = new Dictionary<string, List<string>>();
+
+
+            if (currentData.SecondaryContactFullName != previousData.SecondaryContactFullName)
+            {
+                previousDataDictionary.Add(Constants.SecondaryContactName, [previousData.SecondaryContactFullName]);
+                currentDataDictionary.Add(Constants.SecondaryContactName, [currentData.SecondaryContactFullName]);
+            }
+            if (currentData.SecondaryContactEmail != previousData.SecondaryContactEmail)
+            {
+                previousDataDictionary.Add(Constants.SecondaryContactEmail, [previousData.SecondaryContactEmail]);
+                currentDataDictionary.Add(Constants.SecondaryContactEmail, [currentData.SecondaryContactEmail]);
+            }
+            if (currentData.SecondaryContactJobTitle != previousData.SecondaryContactJobTitle)
+            {
+                previousDataDictionary.Add(Constants.SecondaryContactJobTitle, [previousData.SecondaryContactJobTitle]);
+                currentDataDictionary.Add(Constants.SecondaryContactJobTitle, [currentData.SecondaryContactJobTitle]);
+            }
+            if (currentData.SecondaryContactTelephoneNumber != previousData.SecondaryContactTelephoneNumber)
+            {
+                previousDataDictionary.Add(Constants.SecondaryContactTelephone, [previousData.SecondaryContactTelephoneNumber]);
+                currentDataDictionary.Add(Constants.SecondaryContactTelephone, [currentData.SecondaryContactTelephoneNumber]);
+            }
+
+            return (currentDataDictionary, previousDataDictionary);
+
+        }
+
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetPublicContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData)
+        {
+            var currentDataDictionary = new Dictionary<string, List<string>>();
+            var previousDataDictionary = new Dictionary<string, List<string>>();
+
+
+            if (currentData.ProviderWebsiteAddress != previousData.ProviderWebsiteAddress)
+            {
+                previousDataDictionary.Add(Constants.ProviderWebsiteAddress, [previousData.ProviderWebsiteAddress]);
+                currentDataDictionary.Add(Constants.ProviderWebsiteAddress, [currentData.ProviderWebsiteAddress]);
+            }
+            if (currentData.PublicContactEmail != previousData.PublicContactEmail)
+            {
+                previousDataDictionary.Add(Constants.PublicContactEmail, [string.IsNullOrEmpty(previousData.PublicContactEmail) ? Constants.NullFieldsDisplay : previousData.PublicContactEmail]);
+                currentDataDictionary.Add(Constants.PublicContactEmail, [string.IsNullOrEmpty(currentData.PublicContactEmail) ? Constants.NullFieldsDisplay : currentData.PublicContactEmail]);
+            }
+            if (currentData.ProviderTelephoneNumber != previousData.ProviderTelephoneNumber)
+            {
+                previousDataDictionary.Add(Constants.ProviderTelephoneNumber, [string.IsNullOrEmpty(previousData.ProviderTelephoneNumber) ? Constants.NullFieldsDisplay : previousData.ProviderTelephoneNumber]);
+                currentDataDictionary.Add(Constants.ProviderTelephoneNumber, [string.IsNullOrEmpty(currentData.ProviderTelephoneNumber) ? Constants.NullFieldsDisplay : currentData.ProviderTelephoneNumber]);
+            }
+            
+
+            return (currentDataDictionary, previousDataDictionary);
+
+        }
+
 
         #region Save/ update
         public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto, string loggedInUserEmail)

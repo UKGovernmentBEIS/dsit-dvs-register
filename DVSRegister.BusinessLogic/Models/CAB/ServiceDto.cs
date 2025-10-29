@@ -34,8 +34,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
         public DateTime? PublishedTime { get; set; }
-        public CertificateReviewDto CertificateReview { get; set; }
-        public PublicInterestCheckDto PublicInterestCheck { get; set; }
+        public ICollection<CertificateReviewDto> CertificateReview { get; set; }
+        public ICollection<PublicInterestCheckDto> PublicInterestCheck { get; set; }
         [JsonIgnore]
         public ProceedApplicationConsentTokenDto ProceedApplicationConsentToken { get; set; }   
       

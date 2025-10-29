@@ -1,470 +1,92 @@
-﻿@model ProviderDetailsViewModel
-@using DVSRegister.CommonUtility
-@using DVSRegister.Extensions;
-@using DVSRegister.CommonUtility.Models.Enums;
-@using DVSRegister.CommonUtility.Models;
+﻿@using DVSRegister.BusinessLogic.Models.CAB
+@using DVSRegister.Extensions
+@model ProviderProfileDto
+
 @{
-    ViewData["Title"] = "Provider details";
+    ViewData["Title"] = "Provider Page";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
-    
-    
-}
+    ViewData["ActiveNav"] = "AllProviders";
+}                                                       
 
 <div class="govuk-width-container">
-    @await Html.PartialAsync("~/Views/Register/PartialViews/_RegisterBreadCrumbsView.cshtml", "Provider information")
-
-    <main id="main-content" class="govuk-main-wrapper" role="main">
+    @if (ViewBag.FromServicePage == true )
+    {
+        @if (ViewBag.PreviousServiceId != null)
+        {       
+            <a href = "@Url.Action("ServiceDetails", "Register", new { serviceId = ViewBag.PreviousServiceId })" class= "govuk-back-link" > Back </a>
+        }
+        else
+        {
+            <a href="@Url.Action("AllServices", "Register", null)" class="govuk-back-link"> Back </a>
+        }       
+    }
+    else 
+    {
+        <a href="@Url.Action("AllProviders", "Register", null)" class="govuk-back-link">Back</a>
+    }
+    <main class="govuk-main-wrapper">
         <div class="govuk-grid-row">
-
             <div class="govuk-grid-column-full">
-                <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
-                    @Model.Provider.RegisteredName
-                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.Provider.PublishedTime) (GMT)</span>
+                <h1 class="govuk-heading-xl">
+                    @Model.RegisteredName
+                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.PublishedTime) (GMT)</span>
                 </h1>
-                @if (!string.IsNullOrEmpty(Model.Provider.TradingName))
-                {
-                    <p class="govuk-body-l govuk-!-margin-bottom-7">Trading name: @Model.Provider.TradingName</p>
-                }
-                                                      
-                <h2 class="govuk-heading-m">Provider information</h2>
-                <hr class="govuk-section-break govuk-section-break--visible">
-                <dl class="govuk-summary-list govuk-!-margin-bottom-8">
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Public email address
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @Html.DisplayFor(model => model.Provider.PublicContactEmail)
-                        </dd>
+                <p class="govuk-body-l">Trading name: @Html.DisplayFor(model => model.TradingName)</p>
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">Provider Information</h2>
                     </div>
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Public telephone number
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @Html.DisplayFor(model => model.Provider.ProviderTelephoneNumber)
-                        </dd>
-                    </div>
-                    <div class="govuk-summary-list__row">
-                        <dt class="govuk-summary-list__key">
-                            Website address
-                        </dt>
-                        <dd class="govuk-summary-list__value">
-                            @Model.Provider.ProviderWebsiteAddress
-                        </dd>
-                    </div>
-                </dl>
-
-
-                @foreach (var service in Model.Provider.Services)
-                {
-                    bool is0_4GammaVersion = service?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
-
-                    <h2 class="govuk-heading-l">Service details: @service.ServiceName</h2>
-                    <hr class="govuk-section-break govuk-section-break--visible">
-                    <dl class="govuk-summary-list govuk-!-margin-bottom-8">
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Trust framework version
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @service?.TrustFrameworkVersion?.TrustFrameworkName
-                            </dd>
-                        </div>                        
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Name of service
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @service.ServiceName
-                            </dd>
-                        </div>
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Company address details
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @HtmlExtensions.ToStringWithLineBreaks(@service.CompanyAddress)
-                            </dd>
-                        </div>
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Roles certified against
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @foreach (var item in service.ServiceRoleMapping)
-                                {
-                                    <div>@Enum.GetName(typeof(RoleEnum), item.RoleId)</div>
-                                }
-                            </dd>
-                        </div>
-                        @if (is0_4GammaVersion)
-                        {
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Underpinning or white-labelled service
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @ViewModelHelper.GetServiceType(service.ServiceType)
-                                </dd>
+                                <dt class="govuk-summary-list__key">Public Email Address</dt>
+                                <dd class="govuk-summary-list__value">@Html.DisplayFor(model => model.PublicContactEmail)</dd>
                             </div>
-
                             <div class="govuk-summary-list__row">
-                                <dt class="govuk-summary-list__key">
-                                    Identity profiles
-                                </dt>
-                                <dd class="govuk-summary-list__value">
-                                    @if (service?.ServiceIdentityProfileMapping?.Count > 0)
-                                    {
-                                        var groupedProfiles = service.ServiceIdentityProfileMapping
-                                        .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
-                                        .ToDictionary(group => group.Key, group => group.ToList())
-                                        .OrderBy(g => g.Key);
-
-                                        foreach (var group in groupedProfiles)
-                                        {
-                                            <strong>@group.Key</strong>
-                                            <br>
-                                            foreach (var item in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
-                                            {
-                                                @item.IdentityProfile.IdentityProfileName
-                                                <br>
-                                            }
-                                            <br>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <div>@Constants.NullFieldsDisplay</div>
-                                    }
-                                </dd>                                
+                                <dt class="govuk-summary-list__key">Public Telephone Number</dt>
+                                <dd class="govuk-summary-list__value">@Html.DisplayFor(model => model.ProviderTelephoneNumber)</dd>
                             </div>
-                        }
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Quality of authenticator
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @if (service.ServiceQualityLevelMapping != null && service.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
-                                {
-                                    foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
-                                    {
-                                        <div>@item.QualityLevel.Level</div>
-                                    }
-                                }
-                                else
-                                {
-                                    <div>@Constants.NullFieldsDisplay</div>
-                                }
-                            </dd>
-                        </div>
-
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Quality of protection
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @if (service.ServiceQualityLevelMapping != null && service.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
-                                {
-                                    @foreach (var item in service.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
-                                    {
-                                        <div>@item.QualityLevel.Level</div>
-                                    }
-                                }
-                                else
-                                {
-                                    <div>@Constants.NullFieldsDisplay</div>
-                                }
-                            </dd>
-                        </div>
-
-                        @if(!is0_4GammaVersion)
-                        { 
                             <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Identity profiles
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @if (service.ServiceIdentityProfileMapping != null && service.ServiceIdentityProfileMapping.Any()) 
-                                { 
-                                    @foreach (var item in service.ServiceIdentityProfileMapping) 
-                                    { 
-                                        <div>@item.IdentityProfile.IdentityProfileName</div> 
-                                    }
-                                }
-                                else
-                                { 
-                                    <div>@Constants.NullFieldsDisplay</div>
-                                }
-                            </dd>
-                        </div>                            
-                        }                    
+                                <dt class="govuk-summary-list__key">Website Address</dt>
+                                <dd class="govuk-summary-list__value">@Model.ProviderWebsiteAddress</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
 
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Supplementary codes
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @if (service.ServiceSupSchemeMapping.Any())
-                                {
-                                    @foreach (var item in service.ServiceSupSchemeMapping)
-                                    {
-                                        <div>@item.SupplementaryScheme.SchemeName</div>
-                                    }
-                                }
-                                else
-                                {
-                                    <div>@Constants.NullFieldsDisplay</div>
-                                }
-                            </dd>
-                        </div>
-
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Certificate of conformity's date of issue
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @DateTimeExtensions.FormatDateTime(@service.ConformityIssueDate, "dd MMMM yyyy")
-                            </dd>
-                        </div>
-
-                        <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Certificate of conformity's date of expiry
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @DateTimeExtensions.FormatDateTime(@service.ConformityExpiryDate, "dd MMMM yyyy")
-                            </dd>
-                        </div>
-                    </dl>
-
-                    @if (is0_4GammaVersion)
-                    {
-                        @if (service?.ServiceSupSchemeMapping != null && service.ServiceSupSchemeMapping.Count > 0)
-                        {
-                            <h3 class="govuk-heading-m">Supplementary codes: @service.ServiceName</h3>
-
-                            @foreach (var item in service.ServiceSupSchemeMapping)
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">Services</h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <dl class="govuk-summary-list">
+                            @foreach(var service in Model.Services)
                             {
-                                <h3 class="govuk-heading-s">@item.SupplementaryScheme.SchemeName</h3>
-                                <dl class="govuk-summary-list govuk-!-margin-bottom-8">
-
-                                    <div class="govuk-summary-list__row">
-                                        <dt class="govuk-summary-list__key">
-                                            GPG 45 identity profiles
-                                        </dt>
-
-                                        <dd class="govuk-summary-list__value">
-                                            @if (item.SchemeGPG45Mapping != null && item.SchemeGPG45Mapping.Count > 0)
-                                            {
-                                                var groupedProfiles = item.SchemeGPG45Mapping
-                                                .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
-                                                .ToDictionary(group => group.Key, group => group.ToList())
-                                                .OrderBy(g => g.Key);
-
-                                                foreach (var group in groupedProfiles)
-                                                {
-                                                    <strong>@group.Key</strong>
-                                                    <br>
-                                                    foreach (var identity in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
-                                                    {
-                                                        @identity.IdentityProfile.IdentityProfileName
-                                                        <br>
-                                                    }
-                                                    <br>
-                                                }
-                                            }
-                                            else
-                                            {
-                                                @Constants.NullFieldsDisplay
-                                            }
-                                        </dd>
-                                    </div>
-
-                                    <div class="govuk-summary-list__row">
-                                        <dt class="govuk-summary-list__key">
-                                            GPG 44 quality of authenticator
-                                        </dt>
-
-                                        <dd class="govuk-summary-list__value">
-                                            @if (item.SchemeGPG44Mapping != null && item.HasGpg44Mapping == true)
-                                            {
-                                                @foreach (var gpg44Mapping in item.SchemeGPG44Mapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
-                                                {
-                                                    @gpg44Mapping.QualityLevel.Level
-                                                    <br>
-                                                }
-                                            }
-                                            else
-                                            {
-                                                @Constants.NullFieldsDisplay
-                                            }
-                                        </dd>
-                                    </div>
-
-                                    <div class="govuk-summary-list__row">
-                                        <dt class="govuk-summary-list__key">
-                                            GPG 44 quality of protection
-                                        </dt>
-
-                                        <dd class="govuk-summary-list__value">
-                                            @if (item.SchemeGPG44Mapping != null && item.HasGpg44Mapping == true)
-                                            {
-                                                @foreach (var gpg44Mapping in item.SchemeGPG44Mapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
-                                                {
-                                                    @gpg44Mapping.QualityLevel.Level
-                                                    <br>
-                                                }
-                                            }
-                                            else
-                                            {
-                                                @Constants.NullFieldsDisplay
-                                            }
-                                        </dd>
-                                    </div>
-
-                                </dl>
-
-
-                            }
-                        }
-
-                        @if (service.ServiceType == ServiceTypeEnum.WhiteLabelled)
-                        {
-                            @if (service.UnderPinningService != null)
-                            {
-                                <h3 class="govuk-heading-m">Underpinning service: @service.UnderPinningService.ServiceName</h3>
-                                <div class="govuk-inset-text">
-                                    This service relies on an underpinning service from another provider. You can view the details for this underpinning service on the register. <br /> <br />
-                                    @Html.ActionLink("View the underpinning service", "UnderpinningServiceDetails", "Register", new { serviceId = service.UnderPinningServiceId, previousProviderId = Model.Provider.Id }, new { @class = "govuk-link" }).
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">Service Name</dt>
+                                    <dd class="govuk-summary-list__value">@service.ServiceName</dd>
+                                    <dd class="govuk-summary-list__actions">
+                                        <a class="govuk-link" href="@Url.Action("ServiceDetails", "Register", new { serviceId = service.Id, fromProviderPage = true })">View Details</a>
+                                    </dd>
                                 </div>
+                            }                            
+                        </dl>
+                    </div>
+                </div>         
+                
+                <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
 
-                                <div class="govuk-summary-card">
-                                    <div class="govuk-summary-card__title-wrapper">
-                                        <h2 class="govuk-summary-card__title">
-                                            Underpinning service
-                                        </h2>
-
-                                    </div>
-                                    <div class="govuk-summary-card__content">
-                                        <dl class="govuk-summary-list">
-
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    Service name
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    @service.UnderPinningService.ServiceName
-                                                </dd>
-                                            </div>
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    Service provider
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    @service.UnderPinningService.Provider.RegisteredName
-                                                </dd>
-                                            </div>
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    CAB of underpinning service
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    @service?.UnderPinningService.CabUser.Cab.CabName
-                                                </dd>
-                                            </div>
-
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    Underpinning service <br /> certificate expiry date
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    @DateTimeExtensions.FormatDateTime(service?.UnderPinningService.ConformityExpiryDate, "dd MMM yyyy")
-                                                </dd>
-                                            </div>
-
-                                        </dl>
-                                    </div>
-                                </div>
-                            }
-                            else if (service.ManualUnderPinningService != null)
-                            {
-                                <h3 class="govuk-heading-m">Underpinning service:  @service.ManualUnderPinningService.ServiceName</h3>
-                                <div class="govuk-inset-text">
-                                    The underpinning service used by this white-labelled service is not listed on this register. For more information about the underpinning service, please contact the white-labelled service provider directly.
-                                </div>
-
-                                <div class="govuk-summary-card">
-                                    <div class="govuk-summary-card__title-wrapper">
-                                        <h2 class="govuk-summary-card__title">
-                                            Underpinning service
-                                        </h2>
-                                    </div>
-                                    <div class="govuk-summary-card__content">
-                                        <dl class="govuk-summary-list">
-
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    Service name
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    @service.ManualUnderPinningService.ServiceName
-                                                </dd>
-                                            </div>
-
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    Service provider
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    @service.ManualUnderPinningService.ProviderName
-                                                </dd>
-                                            </div>
-
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    CAB of underpinning service
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    @service?.ManualUnderPinningService?.Cab?.CabName
-                                                </dd>
-                                            </div>
-
-                                            <div class="govuk-summary-list__row">
-                                                <dt class="govuk-summary-list__key">
-                                                    Underpinning service <br /> certificate expiry date
-                                                </dt>
-                                                <dd class="govuk-summary-list__value">
-                                                    @DateTimeExtensions.FormatDateTime(service?.ManualUnderPinningService.CertificateExpiryDate, "dd MMM yyyy")
-                                                </dd>
-                                            </div>
-
-                                        </dl>
-                                    </div>
-                                </div>
-                            }
-
-
-                        }
-                    }
-                }
-
-                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-7">
-                <h3 class="govuk-heading-m">Explore the topic</h3>
-                <ul class="govuk-list">
-                    <li>
-                        <a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role type</a>
-                    </li>
-                    <li>
-                        <a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a>
-                    </li>
-                    <li>
-                        <a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary codes</a>
-                    </li>
-                </ul>
-
+                <h3 class="govuk-heading-m">Explore the Topic</h3>
+                <p class="govuk-body">
+                    <strong><a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role Type</a></strong>
+                </p>
+                <p class="govuk-body">
+                    <strong><a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a></strong>
+                </p>
+                <p class="govuk-body">
+                    <strong><a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary Schemes</a></strong>
+                </p>
             </div>
         </div>
     </main>
-
 </div>

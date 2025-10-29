@@ -23,6 +23,294 @@ namespace DVSRegister.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ActionCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActionKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ActionName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActionKey")
+                        .IsUnique();
+
+                    b.ToTable("ActionCategory");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ActionKey = "CR",
+                            ActionName = "Certificate review"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ActionKey = "PI",
+                            ActionName = "Public interest checks"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ActionKey = "ServiceUpdates",
+                            ActionName = "Service updates"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ActionKey = "ProviderUpdates",
+                            ActionName = "Provider updates"
+                        });
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ActionDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActionCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ActionDescription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ActionDetailsKey")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActionCategoryId");
+
+                    b.HasIndex("ActionDetailsKey")
+                        .IsUnique();
+
+                    b.ToTable("ActionDetails");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ActionCategoryId = 1,
+                            ActionDescription = "Passed",
+                            ActionDetailsKey = "CR_APR"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ActionCategoryId = 1,
+                            ActionDescription = "Rejected",
+                            ActionDetailsKey = "CR_Rej"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ActionCategoryId = 1,
+                            ActionDescription = "Restored",
+                            ActionDetailsKey = "CR_Restore"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ActionCategoryId = 1,
+                            ActionDescription = "Sent back to CAB",
+                            ActionDetailsKey = "CR_SentBack"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ActionCategoryId = 1,
+                            ActionDescription = "Declined by provider",
+                            ActionDetailsKey = "CR_DeclinedByProvider"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ActionCategoryId = 2,
+                            ActionDescription = "Primary check passed",
+                            ActionDetailsKey = "PI_Primary_Pass"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ActionCategoryId = 2,
+                            ActionDescription = "Sent back by second reviewer",
+                            ActionDetailsKey = "PI_SentBack"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ActionCategoryId = 2,
+                            ActionDescription = "Primary check failed",
+                            ActionDetailsKey = "PI_Primary_Fail"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ActionCategoryId = 2,
+                            ActionDescription = "Application rejected",
+                            ActionDetailsKey = "PI_Fail"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ActionCategoryId = 2,
+                            ActionDescription = "Publication of provider",
+                            ActionDetailsKey = "PI_ProviderPublish"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ActionCategoryId = 2,
+                            ActionDescription = "Service published",
+                            ActionDetailsKey = "PI_ServicePublish"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ActionCategoryId = 2,
+                            ActionDescription = "Service updated",
+                            ActionDetailsKey = "PI_ServiceRePublish"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ActionCategoryId = 3,
+                            ActionDescription = "Service name changed",
+                            ActionDetailsKey = "ServiceNameUpdate"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ActionCategoryId = 3,
+                            ActionDescription = "Updates published",
+                            ActionDetailsKey = "ServiceUpdates"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ActionCategoryId = 4,
+                            ActionDescription = "Contact details changed",
+                            ActionDetailsKey = "ProviderContactUpdate"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ActionCategoryId = 4,
+                            ActionDescription = "Business details changed",
+                            ActionDetailsKey = "BusinessDetailsUpdate"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            ActionCategoryId = 1,
+                            ActionDescription = "Invitation cancelled",
+                            ActionDetailsKey = "CR_InvitationCancelled"
+                        });
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ActionLogs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActionCategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ActionDetailsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CabUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("CertificateReviewId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("DisplayMessage")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LogDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime>("LoggedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<JsonDocument>("NewValues")
+                        .HasColumnType("jsonb");
+
+                    b.Property<JsonDocument>("OldValues")
+                        .HasColumnType("jsonb");
+
+                    b.Property<int>("ProviderProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("PublicInterestCheckId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("ShowInRegisterUpdates")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("UpdateApprovedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("UpdateApprovedUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdateRequestedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("UpdateRequestedUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UpdatedByUserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActionCategoryId");
+
+                    b.HasIndex("ActionDetailsId");
+
+                    b.HasIndex("CabUserId");
+
+                    b.HasIndex("CertificateReviewId");
+
+                    b.HasIndex("ProviderProfileId");
+
+                    b.HasIndex("PublicInterestCheckId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("UpdateApprovedUserId");
+
+                    b.HasIndex("UpdateRequestedUserId");
+
+                    b.HasIndex("UpdatedByUserId");
+
+                    b.ToTable("ActionLogs");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.Cab", b =>
                 {
                     b.Property<int>("Id")
@@ -214,6 +502,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool?>("IsGPG45Correct")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsLatestReviewVersion")
+                        .HasColumnType("boolean");
+
                     b.Property<bool?>("IsLocationCorrect")
                         .HasColumnType("boolean");
 
@@ -244,6 +535,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<string>("RejectionComments")
                         .HasColumnType("text");
 
+                    b.Property<int>("ReviewVersion")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ServiceId")
                         .HasColumnType("integer");
 
@@ -254,8 +548,7 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasIndex("ProviProviderProfileId");
 
-                    b.HasIndex("ServiceId")
-                        .IsUnique();
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("CertificateReview");
                 });
@@ -1102,6 +1395,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool?>("IsECCheckApproved")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsLatestReviewVersion")
+                        .HasColumnType("boolean");
+
                     b.Property<bool?>("IsProvidersWebpageApproved")
                         .HasColumnType("boolean");
 
@@ -1141,6 +1437,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<string>("RejectionReasons")
                         .HasColumnType("text");
 
+                    b.Property<int>("ReviewVersion")
+                        .HasColumnType("integer");
+
                     b.Property<string>("SecondaryCheckComment")
                         .HasColumnType("text");
 
@@ -1161,8 +1460,7 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasIndex("SecondaryCheckUserId");
 
-                    b.HasIndex("ServiceId")
-                        .IsUnique();
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("PublicInterestCheck");
                 });
@@ -2094,6 +2392,86 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("DataProtectionKeys");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.ActionDetails", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.ActionCategory", "ActionCategory")
+                        .WithMany()
+                        .HasForeignKey("ActionCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ActionCategory");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.ActionLogs", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.ActionCategory", "ActionCategory")
+                        .WithMany()
+                        .HasForeignKey("ActionCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.ActionDetails", "ActionDetails")
+                        .WithMany()
+                        .HasForeignKey("ActionDetailsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.CabUser", "CabUser")
+                        .WithMany()
+                        .HasForeignKey("CabUserId");
+
+                    b.HasOne("DVSRegister.Data.Entities.CertificateReview", "CertificateReview")
+                        .WithMany()
+                        .HasForeignKey("CertificateReviewId");
+
+                    b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "ProviderProfile")
+                        .WithMany()
+                        .HasForeignKey("ProviderProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DVSRegister.Data.Entities.PublicInterestCheck", "PublicInterestCheck")
+                        .WithMany()
+                        .HasForeignKey("PublicInterestCheckId");
+
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId");
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "UpdateApprovedUser")
+                        .WithMany()
+                        .HasForeignKey("UpdateApprovedUserId");
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "UpdateRequestedUser")
+                        .WithMany()
+                        .HasForeignKey("UpdateRequestedUserId");
+
+                    b.HasOne("DVSRegister.Data.Entities.User", "UpdatedByUser")
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId");
+
+                    b.Navigation("ActionCategory");
+
+                    b.Navigation("ActionDetails");
+
+                    b.Navigation("CabUser");
+
+                    b.Navigation("CertificateReview");
+
+                    b.Navigation("ProviderProfile");
+
+                    b.Navigation("PublicInterestCheck");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("UpdateApprovedUser");
+
+                    b.Navigation("UpdateRequestedUser");
+
+                    b.Navigation("UpdatedByUser");
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.CabTransferRequest", b =>
                 {
                     b.HasOne("DVSRegister.Data.Entities.CabUser", "FromCabUser")
@@ -2149,8 +2527,8 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("DVSRegister.Data.Entities.Service", "Service")
-                        .WithOne("CertificateReview")
-                        .HasForeignKey("DVSRegister.Data.Entities.CertificateReview", "ServiceId")
+                        .WithMany("CertificateReview")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2347,8 +2725,8 @@ namespace DVSRegister.Data.Migrations
                         .HasForeignKey("SecondaryCheckUserId");
 
                     b.HasOne("DVSRegister.Data.Entities.Service", "PreRegistration")
-                        .WithOne("PublicInterestCheck")
-                        .HasForeignKey("DVSRegister.Data.Entities.PublicInterestCheck", "ServiceId")
+                        .WithMany("PublicInterestCheck")
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2810,14 +3188,12 @@ namespace DVSRegister.Data.Migrations
                 {
                     b.Navigation("CabTransferRequest");
 
-                    b.Navigation("CertificateReview")
-                        .IsRequired();
+                    b.Navigation("CertificateReview");
 
                     b.Navigation("ProceedApplicationConsentToken")
                         .IsRequired();
 
-                    b.Navigation("PublicInterestCheck")
-                        .IsRequired();
+                    b.Navigation("PublicInterestCheck");
 
                     b.Navigation("ServiceDraft")
                         .IsRequired();

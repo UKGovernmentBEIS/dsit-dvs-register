@@ -1,27 +1,72 @@
 ﻿@using DVSRegister.CommonUtility.Models.Enums;
 @using DVSRegister.Extensions
-@model RegisterPublishLogsViewModel
+@using DVSRegister.Models.UI;
+@model RegisterUpdatesLogsViewModel
 @{
     ViewData["Title"] = "Updates : Register of digital identity and attribute services";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
-    ViewData["ActiveUpdates"] = "govuk-header__navigation-item--active";
-    
-    
+    ViewData["ActiveNav"] = "Updates";   
+    bool hasUpdates = Model.RegisterUpdatesLog != null && Model.RegisterUpdatesLog.Count > 0;
 }
 <div class="govuk-width-container">
-    @await Html.PartialAsync("~/Views/Register/PartialViews/_RegisterBreadCrumbsView.cshtml", "Updates")
-    <main class="govuk-main-wrapper">
+    <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl">Updates : Register of digital identity and attribute services</h1>
-                @foreach (var item in Model.RegisterPublishLog)
+            <div class="govuk-grid-column-three-quarters">
+                <h1 class="govuk-heading-xl">Updates: Register of digital identity and attribute services</h1>
+            
+                @if (hasUpdates)
                 {
-                    <h2 class="govuk-heading-m">@DateTimeExtensions.FormatDateTime(@item.CreatedTime)</h2>
-                    <p class="govuk-body">@item.Description</p>
+                    <table class="govuk-table">
+                        <tbody class="govuk-table__body">
+                            <tr class="govuk-table__row">
+                                <th scope="row" class="govuk-table__header">Last updated</th>
+                                <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(Model.LastUpdated, "dd MMMM yyyy")</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 }
+                            
 
+                <div class="dwp-timeline">
+                    <ol class="dwp-timeline__items">
+                        @if (hasUpdates)
+                        {
+                            @foreach (var group in Model.RegisterUpdatesLog)
+                            {
+                                <li class="dwp-timeline__item">
+                                    <p class="dwp-timeline__datetime">@DateTimeExtensions.FormatDateTime(group.LogDate, "dd MMMM yyyy")</p>
+
+                                    @foreach (var item in group.Items)
+                                    {
+                                        <h2 class="govuk-heading-m govuk-!-margin-bottom-0 govuk-!-margin-top-5">@item.ActionDetails.ActionDescription</h2>
+                                        <p class="govuk-hint govuk-!-margin-top-0">@HtmlExtensions.ToStringWithNewLineBreaks(item.DisplayMessage)</p>
+                                    }
+
+                                </li>
+                            }
+                        }
+                    </ol>
+                </div>
+
+                @if (Model?.TotalPages > 1)
+                {
+                    const int pageSize = 10;
+                    int resultMin = ((Model.PageNumber - 1) * pageSize) + 1;
+                    int resultMax = Math.Min(Model.PageNumber * pageSize, Model.TotalResults);
+
+                    <p class="govuk-body govuk-!-font-weight-bold">
+                        Showing @resultMin - @resultMax of @Model.TotalResults
+                    </p>
+
+                PaginationViewModel paginationViewModel = new PaginationViewModel
+                {
+                    Action = "Updates",
+                    CurrentPage = Model.PageNumber,
+                    TotalPages = Model.TotalPages                  
+                };
+                    @await Html.PartialAsync("~/Views/PartialViews/_PaginationView.cshtml", paginationViewModel)
+                }
             </div>
         </div>
     </main>
 </div>
-

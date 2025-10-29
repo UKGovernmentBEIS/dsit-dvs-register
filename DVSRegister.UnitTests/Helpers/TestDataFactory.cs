@@ -6,7 +6,7 @@ namespace DVSRegister.UnitTests.Helpers
 {
     public static class TestDataFactory
     {
-        public static ServiceDto CreateServiceDto(int serviceId, int cabId = 123, CertificateReviewDto review = null! )
+        public static ServiceDto CreateServiceDto(int serviceId, int cabId = 123, List<CertificateReviewDto> review = null! )
         {
             return new ServiceDto
             {
@@ -16,15 +16,19 @@ namespace DVSRegister.UnitTests.Helpers
             };
         }
 
-        public static CertificateReviewDto CreateCertificateReviewDto(CertificateReviewEnum status = CertificateReviewEnum.AmendmentsRequired,string comments = null!
+        public static List<CertificateReviewDto> CreateCertificateReviewDto(CertificateReviewEnum status = CertificateReviewEnum.AmendmentsRequired,string comments = null!
             ,string commentsForIncorrect = null!)
         {
-            return new CertificateReviewDto
-            {
-                CertificateReviewStatus = status,
-                Comments = comments,
-                CommentsForIncorrect = commentsForIncorrect
-            };
+            List< CertificateReviewDto> certReview =
+            [
+                new CertificateReviewDto
+                {
+                    CertificateReviewStatus = status,
+                    Comments = comments,
+                    CommentsForIncorrect = commentsForIncorrect
+                },
+            ];
+            return certReview;
         }
 
         public static ServiceSummaryViewModel CreateServiceSummaryViewModel(int serviceId, bool isAmendment = true)
