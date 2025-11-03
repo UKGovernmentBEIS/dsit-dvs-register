@@ -51,16 +51,21 @@ namespace DVSRegister.BusinessLogic.Services
                             StringBuilder stringBuilder = new();
                             foreach (var item in previousData)
                             {
-                                stringBuilder.Append(item.Key + " "+ previousData[item.Key].FirstOrDefault() + " to " + updatedData[item.Key].FirstOrDefault());
+                                stringBuilder.Append(previousData[item.Key].FirstOrDefault() + " to " + updatedData[item.Key].FirstOrDefault() + " (" + item.Key + ")");
                                 stringBuilder.AppendLine();
                             }
                             displayMessage = stringBuilder.ToString();
+                            actionLog.ShowInRegisterUpdates = actionLogsDto.IsProviderPreviouslyPublished ? true : false;
                         }
                         else if (actionDetailsEnum == ActionDetailsEnum.ProviderContactUpdate)
                         {
                             if (!previousData.ContainsKey(Constants.PublicContactEmail) && !previousData.ContainsKey(Constants.ProviderWebsiteAddress) && !previousData.ContainsKey(Constants.ProviderTelephoneNumber))
                             {
                                 actionLog.ShowInRegisterUpdates = false;
+                            }
+                            else
+                            {
+                                actionLog.ShowInRegisterUpdates = actionLogsDto.IsProviderPreviouslyPublished ? true : false;
                             }
                             displayMessage = providerName;
                         }
