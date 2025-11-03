@@ -114,9 +114,9 @@ namespace DVSRegister.Data
 
         public async Task<PaginatedResult<GroupedResult<ActionLogs>>> GetUpdateLogs(int pageNumber)
         {
-
-            var query = context.ActionLogs.Include(x => x.ActionDetails).Include(x => x.ProviderProfile).Include(x => x.Service)
-                .Where(x => x.ShowInRegisterUpdates == true && x.ProviderProfile.IsInRegister == true && (x.Service == null || (x.Service != null && x.Service.IsInRegister == true)));
+            var query = context.ActionLogs.Include(x => x.ActionDetails).Include(x => x.ProviderProfile).ThenInclude(x => x.Services).Include(x => x.Service)
+                .Where(x => x.ShowInRegisterUpdates == true && x.ProviderProfile.IsInRegister == true && 
+                (x.Service == null || x.ProviderProfile.Services.Any(s => s.ServiceKey == x.Service.ServiceKey && s.IsInRegister)));
 
             int totalCount = await query.Select(x => x.LogDate) .Distinct().CountAsync();       
             int totalPages = (int)Math.Ceiling(totalCount / (double)10);
@@ -144,7 +144,8 @@ namespace DVSRegister.Data
         {
             DateTime? latestUpdateDate;
             var query = context.ActionLogs.Include(x => x.ActionDetails).Include(x => x.ProviderProfile).Include(x => x.Service)
-           .Where(x => x.ShowInRegisterUpdates == true && x.ProviderProfile.IsInRegister == true && (x.Service == null || (x.Service != null && x.Service.IsInRegister == true)));
+           .Where(x => x.ShowInRegisterUpdates == true && x.ProviderProfile.IsInRegister == true &&
+           (x.Service == null || x.ProviderProfile.Services.Any(s => s.ServiceKey == x.Service.ServiceKey && s.IsInRegister)));
             if (await query.AnyAsync())
             {
                 latestUpdateDate = await query.MaxAsync(x => x.LogDate);

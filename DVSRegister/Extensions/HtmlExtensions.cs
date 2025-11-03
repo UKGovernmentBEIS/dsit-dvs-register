@@ -106,6 +106,10 @@ namespace DVSRegister.Extensions
             {
                 return HtmlExtensions.ToStyledStrongTag((ServiceStatusEnum)previousServiceStatus);               
             }
+            else if (serviceStatus == ServiceStatusEnum.UpdatesRequested)
+            {
+                return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Published);
+            }
             // Default to displaying the actual ServiceStatus
             return HtmlExtensions.ToStyledStrongTag(serviceStatus);
         }

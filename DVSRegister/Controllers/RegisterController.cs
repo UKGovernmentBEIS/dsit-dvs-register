@@ -30,6 +30,7 @@ namespace DVSRegister.Controllers
             await SetRoles(SelectedRoleIds, RemoveRole, allServicesViewModel);
             await SetSchemes(SelectedSupplementarySchemeIds, RemoveScheme, allServicesViewModel);
             await SetTfVersion(SelectedTfVersionIds, RemoveTfVersion, allServicesViewModel);
+            allServicesViewModel.SortBy = RemoveSort ? "" : SortBy;
 
             if (SearchAction == "clearFilter")
             {
@@ -44,8 +45,7 @@ namespace DVSRegister.Controllers
             }
 
             var results = await registerService.GetServices(allServicesViewModel.SelectedRoleIds, allServicesViewModel.SelectedSupplementarySchemeIds, allServicesViewModel.SelectedTrustFrameworkVersionId,
-                PageNum, SearchText, SortBy);
-            allServicesViewModel.SortBy = RemoveSort ? "" : SortBy;
+                PageNum, SearchText, allServicesViewModel.SortBy);            
             allServicesViewModel.PageNumber = PageNum;
             allServicesViewModel.Services = results.Items;
             allServicesViewModel.TotalResults = results.TotalCount;
@@ -66,6 +66,7 @@ namespace DVSRegister.Controllers
             await SetRoles(SelectedRoleIds, RemoveRole, allProvidersViewModel);
             await SetSchemes(SelectedSupplementarySchemeIds, RemoveScheme, allProvidersViewModel);
             await SetTfVersion(SelectedTfVersionIds, RemoveTfVersion, allProvidersViewModel);
+            allProvidersViewModel.SortBy = RemoveSort ? "" : SortBy;
 
             if (SearchAction == "clearSearch")
             {
@@ -84,8 +85,7 @@ namespace DVSRegister.Controllers
                 allProvidersViewModel.SelectedTrustFrameworkVersion = [new TrustFrameworkVersionDto()];
             }
             var results = await registerService.GetProviders(allProvidersViewModel.SelectedRoleIds, allProvidersViewModel.SelectedSupplementarySchemeIds, allProvidersViewModel.SelectedTrustFrameworkVersionId,
-                PageNum, SearchText, SortBy);
-            allProvidersViewModel.SortBy = RemoveSort ? "" : SortBy;
+                PageNum, SearchText, allProvidersViewModel.SortBy);            
             allProvidersViewModel.PageNumber = PageNum;
             allProvidersViewModel.Providers = results.Items;
             allProvidersViewModel.TotalResults = results.TotalCount;
