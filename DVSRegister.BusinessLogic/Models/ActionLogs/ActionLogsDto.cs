@@ -26,5 +26,6 @@ namespace DVSRegister.BusinessLogic.Models
         public bool ShowInRegisterUpdates { get; set; }
         public int? CertificateReviewId { get; set; }
         public CertificateReviewDto? CertificateReview { get; set; }
+        public bool IsProviderPreviouslyPublished { get; set; }
     }
 }
