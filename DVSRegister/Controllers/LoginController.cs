@@ -240,7 +240,7 @@ namespace DVSRegister.Controllers
                 {
                     HttpContext?.Session.Set("IdToken", mfaResponse.IdToken);
                     HttpContext?.Session.Set("AccessToken", mfaResponse.AccessToken);
-                    return RedirectToAction("LandingPage", "Cab");
+                    return RedirectToAction("DraftApplications", "Home");
                 }
                 else
                 {

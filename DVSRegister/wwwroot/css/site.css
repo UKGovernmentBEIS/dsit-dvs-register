@@ -1,10 +1,176 @@
-.govuk-header__container {
+﻿.govuk-header__container {
     display: flex;
     align-items: baseline;
     white-space: nowrap
 }
 .govuk-header__container > .govuk-service-navigation__wrapper {
     margin-left: auto;
+}
+.sortable-table [aria-sort] {
+    color: #1d70b8;
+    cursor: pointer;
+    font: inherit;
+    padding: 0 10px 0 0;
+    position: relative;
+    text-align: inherit;
+    margin: 0;
+}
+
+    .sortable-table [aria-sort] a,
+    .sortable-table [aria-sort] button {
+        display: inline-flex;
+        align-items: center;
+        color: inherit;
+        text-decoration: none;
+    }
+
+/* Glyphs */
+.sortable-table [aria-sort="none"] a::after,
+.sortable-table [aria-sort="none"] button::after {
+    content: "▲\A▼";
+    white-space: pre;
+    font-size: .5em;
+    margin-left: .3em;
+    line-height: 1;
+    display: inline-block;
+}
+
+.sortable-table [aria-sort="ascending"] a::after,
+.sortable-table [aria-sort="ascending"] button::after {
+    content: "▲";
+    font-size: .8em;
+    margin-left: .3em;
+}
+
+.sortable-table [aria-sort="descending"] a::after,
+.sortable-table [aria-sort="descending"] button::after {
+    content: "▼";
+    font-size: .8em;
+    margin-left: .3em;
+}
+
+.sortable-table [aria-sort] a::before,
+.sortable-table [aria-sort] button::before {
+    content: none;
+}
+
+.sortable-table [aria-sort] a:focus,
+.sortable-table [aria-sort] a:focus-visible,
+.sortable-table [aria-sort] button:focus,
+.sortable-table [aria-sort] button:focus-visible {
+    outline: 3px solid #fd0;
+    outline-offset: 0;
+    box-shadow: 0 -2px #0b0c0c, 0 4px #fd0;
+    text-decoration: none;
+}
+
+:root {
+    --brand: #1d70b8;
+    --white: #fff;
+    --grey: #505a5f; /* GOV.UK grey */
+    --focus: #fd0;
+}
+
+.dashboard-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(221px, 1fr));
+    gap: 20px;
+    margin: 10px 0 30px;
+}
+
+.dashboard-summary__card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    min-height: 160px;
+    background: var(--white);
+    border: 3px solid var(--brand);
+    color: var(--brand);
+    text-decoration: none;
+    transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+}
+
+.dashboard-summary__card--emphasised {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: var(--white);
+}
+
+.dashboard-summary .dashboard-summary__count,
+.dashboard-summary .dashboard-summary__label,
+.dashboard-summary .dashboard-summary__arrow {
+    color: inherit;
+}
+
+    .dashboard-summary .dashboard-summary__arrow path {
+        fill: currentColor;
+    }
+
+.dashboard-summary__count {
+    font-family: "GDS Transport", Arial, sans-serif;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 1.05;
+}
+
+.dashboard-summary__label {
+    font-family: "GDS Transport", Arial, sans-serif;
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 25px;
+    margin-top: 8px;
+    margin-bottom: auto;
+}
+
+.dashboard-summary__gap {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-summary__arrow {
+    width: 20px;
+    height: 18px;
+    display: block;
+}
+
+.dashboard-summary__card .govuk-link,
+.dashboard-summary__card .govuk-link:hover,
+.dashboard-summary__card .govuk-link:focus {
+    color: inherit;
+    text-decoration: none;
+}
+
+.dashboard-summary__card:not(.dashboard-summary__card--emphasised):hover,
+.dashboard-summary__card:not(.dashboard-summary__card--emphasised):focus {
+    color: var(--grey);
+    border-color: var(--brand);
+    text-decoration: none;
+}
+
+.dashboard-summary__card--emphasised:hover,
+.dashboard-summary__card--emphasised:focus {
+    background: var(--brand);
+    color: var(--white);
+    border-color: var(--brand);
+    text-decoration: none;
+}
+
+.dashboard-summary__card:focus-visible {
+    outline: 3px solid var(--focus);
+    box-shadow: 0 -2px #0b0c0c, 0 4px var(--focus);
+}
+
+    .dashboard-summary__card:focus-visible .dashboard-summary__label {
+        text-decoration: underline;
+        text-decoration-thickness: .1875rem;
+        text-underline-offset: .15em;
+    }
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard-summary__card {
+        transition: none;
+    }
 }
 .dsit-search-filter-box {
     display: flex;
