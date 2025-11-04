@@ -608,8 +608,9 @@ namespace DVSRegister.Controllers
                 GenericResponse genericResponse = await cabService.UpdateCompanyInfo(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
+                    var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
                     var (current, previous) = cabService.GetCompanyValueUpdates(providerProfileDto, previousData);
-                    await SaveActionLogs(ActionDetailsEnum.BusinessDetailsUpdate, previousData, current, previous);
+                    await SaveActionLogs(ActionDetailsEnum.BusinessDetailsUpdate, previousData, current, previous, isProviderPublishedBefore);
                     return RedirectToAction("ProviderProfileDetails", "Cab",new { providerId = providerProfileDto.Id });
                 }
                 else
@@ -699,8 +700,9 @@ namespace DVSRegister.Controllers
                 GenericResponse genericResponse = await cabService.UpdatePrimaryContact(providerProfileDto, UserEmail); 
                 if (genericResponse.Success)
                 {
+                    var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
                     var (current, previous) = cabService.GetPrimaryContactUpdates(providerProfileDto, previousData);
-                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous);
+                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
                     return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
                 }
                 else
@@ -789,8 +791,9 @@ namespace DVSRegister.Controllers
                 GenericResponse genericResponse = await cabService.UpdateSecondaryContact(providerProfileDto, UserEmail); 
                 if (genericResponse.Success) 
                 {
+                    var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
                     var (current, previous) = cabService.GetSecondaryContactUpdates(providerProfileDto, previousData);
-                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous);
+                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
                     return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id }); 
                 }
                 else
@@ -847,8 +850,9 @@ namespace DVSRegister.Controllers
                     await cabService.UpdatePublicProviderInformation(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
+                    var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
                     var (current, previous) = cabService.GetPublicContactUpdates(providerProfileDto, previousData);
-                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous);
+                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
                     return RedirectToAction("ProviderProfileDetails", "Cab",  new { providerId = providerProfileDto.Id });
                 }
                 else
@@ -867,7 +871,8 @@ namespace DVSRegister.Controllers
 
         #region Private methods
 
-        private async Task SaveActionLogs(ActionDetailsEnum actionDetailsEnum, ProviderProfileDto providerProfileDto, Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous)
+        private async Task SaveActionLogs(ActionDetailsEnum actionDetailsEnum, ProviderProfileDto providerProfileDto, 
+            Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, bool isProviderPublishedBefore)
         {
             ActionLogsDto actionLogsDto = new()
             {
@@ -877,7 +882,8 @@ namespace DVSRegister.Controllers
                 ProviderId = providerProfileDto.Id,
                 ProviderName = providerProfileDto.RegisteredName,
                 PreviousData = previous,
-                UpdatedData = current
+                UpdatedData = current,
+                IsProviderPreviouslyPublished = isProviderPublishedBefore
             };
             await actionLogService.SaveActionLogs(actionLogsDto);
         }
