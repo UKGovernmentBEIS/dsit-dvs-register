@@ -58,6 +58,7 @@ app.UseCookiePolicy();
 app.UseRouting();
 app.UseAuthorization();
 app.UseSession();
+app.UseRateLimiter();
 app.MapControllers();
 app.Run();
 

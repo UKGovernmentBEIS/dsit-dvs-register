@@ -2,11 +2,11 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.Register;
 using DVSRegister.Models.UI;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace DVSRegister.Controllers
 {
@@ -147,6 +147,7 @@ namespace DVSRegister.Controllers
             return View(service);
         }
 
+        [EnableRateLimiting("DownloadRequestLimit")]
         [HttpGet("download-register")]
         public async Task<IActionResult> DownloadRegister()
         {
