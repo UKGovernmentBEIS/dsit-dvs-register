@@ -1,14 +1,14 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.Data;
-using DVSRegister.Data.Entities;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 
 namespace DVSRegister.BusinessLogic.Services
 {
-    public sealed class PfrCsvMap : ClassMap<Service>
+    public sealed class PfrCsvMap : ClassMap<ServiceDto>
     {
         public PfrCsvMap()
         {
