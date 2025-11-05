@@ -21,6 +21,8 @@ namespace DVSRegister.Controllers
         private readonly ICabService cabService = cabService;
         private readonly ICsvDownloadService csvDownloadService = csvDownloadService;
         private readonly decimal TFVersionNumber = 0.4m;
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10);
+
 
         [Route("")]
         #region All services
@@ -152,8 +154,13 @@ namespace DVSRegister.Controllers
 
         [EnableRateLimiting("DownloadRequestLimit")]
         [HttpGet("download-register")]
-        public async Task<IActionResult> DownloadRegister()
-        {
+        public async Task<IActionResult> DownloadRegister(CancellationToken cancellationToken)
+        {         
+            if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), cancellationToken))
+            {
+                return StatusCode(StatusCodes.Status429TooManyRequests, "Too many concurrent downloads. Please try again later.");
+            }
+
             try
             {
                 var services = await registerService.GetPublishedServices();
@@ -171,7 +178,7 @@ namespace DVSRegister.Controllers
                     ShouldQuote = args => args.Row.Index == 0 || args.Field.Contains(",")
                 });
                 csv.Context.RegisterClassMap<PfrCsvMap>();
-                await csv.WriteRecordsAsync(services);
+                await csv.WriteRecordsAsync(services, cancellationToken);
                 await writer.FlushAsync().ConfigureAwait(false);
                 return new EmptyResult();
             }
@@ -183,6 +190,12 @@ namespace DVSRegister.Controllers
             {
                 throw new InvalidOperationException("An error occurred while attempting to download the register.", ex);
             }
+
+            finally
+            {
+                _semaphore.Release();
+            }
+
         }
 
         #region Private methods
