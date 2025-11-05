@@ -1,12 +1,15 @@
-﻿using DVSRegister.BusinessLogic.Models;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.Register;
 using DVSRegister.Models.UI;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Globalization;
 
 namespace DVSRegister.Controllers
 {
@@ -18,6 +21,8 @@ namespace DVSRegister.Controllers
         private readonly ICabService cabService = cabService;
         private readonly ICsvDownloadService csvDownloadService = csvDownloadService;
         private readonly decimal TFVersionNumber = 0.4m;
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10);
+
 
         [Route("")]
         #region All services
@@ -147,13 +152,35 @@ namespace DVSRegister.Controllers
             return View(service);
         }
 
+        [EnableRateLimiting("DownloadRequestLimit")]
         [HttpGet("download-register")]
-        public async Task<IActionResult> DownloadRegister()
-        {
+        public async Task<IActionResult> DownloadRegister(CancellationToken cancellationToken)
+        {         
+            if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), cancellationToken))
+            {
+                return StatusCode(StatusCodes.Status429TooManyRequests, "Too many concurrent downloads. Please try again later.");
+            }
+
             try
             {
-                var result = await csvDownloadService.DownloadAsync();
-                return File(result.FileContent, result.ContentType, result.FileName);
+                var services = await registerService.GetPublishedServices();
+                if (services == null || services.Count == 0)
+                    throw new InvalidOperationException("No data to export");
+                Response.ContentType = "text/csv";
+                Response.Headers["Content-Disposition"] = $"attachment; filename=dvs-register_{DateTime.Now:ddMMyyyy}.csv";
+
+                await using var writer = new StreamWriter(Response.Body);
+                await using var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    Delimiter = ",",
+                    HasHeaderRecord = true,
+                    Quote = '"',
+                    ShouldQuote = args => args.Row.Index == 0 || args.Field.Contains(",")
+                });
+                csv.Context.RegisterClassMap<PfrCsvMap>();
+                await csv.WriteRecordsAsync(services, cancellationToken);
+                await writer.FlushAsync().ConfigureAwait(false);
+                return new EmptyResult();
             }
             catch (InvalidOperationException ex)
             {
@@ -163,6 +190,12 @@ namespace DVSRegister.Controllers
             {
                 throw new InvalidOperationException("An error occurred while attempting to download the register.", ex);
             }
+
+            finally
+            {
+                _semaphore.Release();
+            }
+
         }
 
         #region Private methods

@@ -18,8 +18,10 @@ using DVSRegister.Data.TrustFramework;
 using DVSRegister.Middleware;
 using DVSRegister.Services.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
+using System.Threading.RateLimiting;
 
 namespace DVSRegister
 {
@@ -39,7 +41,7 @@ namespace DVSRegister
 
             services.Configure<BasicAuthMiddlewareConfiguration>(
             configuration.GetSection(BasicAuthMiddlewareConfiguration.ConfigSection));
-            services.AddControllersWithViews();
+            services.AddControllersWithViews();        
             //Adding strict transport security header
             services.AddHsts(options =>
             {
@@ -52,7 +54,7 @@ namespace DVSRegister
                 opt.UseNpgsql(connectionString));
             // This allows encrypted cookies to be understood across multiple web server instances
             services.AddDataProtection().PersistKeysToDbContext<DVSRegisterDbContext>();
-
+            ConfigureRateLimiting(services);
             ConfigureGovUkNotify(services);
             ConfigureSession(services);
             ConfigureDvsRegisterServices(services);
@@ -88,6 +90,35 @@ namespace DVSRegister
                 options.Cookie.IsEssential = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;               
             });
+        }
+
+        private void ConfigureRateLimiting(IServiceCollection services)
+        {
+
+            services.AddRateLimiter(options =>
+            {
+                options.AddFixedWindowLimiter("DownloadRequestLimit", limiterOptions =>
+                {
+                    limiterOptions.PermitLimit = 50;
+                    limiterOptions.Window = TimeSpan.FromMinutes(1);
+                    limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    limiterOptions.QueueLimit = 2;
+
+                });
+
+
+                // Custom response when rate limit exceeded
+                options.OnRejected = async (context, token) =>
+                {
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    context.HttpContext.Response.ContentType = "application/json";
+
+                    await context.HttpContext.Response.WriteAsync(
+                        "{\"error\":\"Custom 429: Too many requests. Please try again later.\"}", token);
+                };
+
+            });
+
         }
 
         public void ConfigureDvsRegisterServices(IServiceCollection services)
