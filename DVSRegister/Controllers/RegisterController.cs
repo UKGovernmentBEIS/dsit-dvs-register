@@ -15,11 +15,10 @@ namespace DVSRegister.Controllers
 {
     [Route("")]
     [Route("register")]
-    public class RegisterController(IRegisterService registerService, ICabService cabService, ICsvDownloadService csvDownloadService) : Controller
+    public class RegisterController(IRegisterService registerService, ICabService cabService) : Controller
     {         
         private readonly IRegisterService registerService = registerService;
-        private readonly ICabService cabService = cabService;
-        private readonly ICsvDownloadService csvDownloadService = csvDownloadService;
+        private readonly ICabService cabService = cabService;        
         private readonly decimal TFVersionNumber = 0.4m;
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10);
 
