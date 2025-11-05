@@ -76,7 +76,13 @@ namespace DVSRegister.BusinessLogic.Services
         {
             return await registerRepository.GetLastUpdatedDate();
         }
+        public async Task<List<ServiceDto>> GetPublishedServices()
+        {
+            var services = await registerRepository.GetPublishedServices();
+            List<ServiceDto> serviceDtos = automapper.Map<List<ServiceDto>>(services);
+            return serviceDtos;
 
+        }
 
     }
 }

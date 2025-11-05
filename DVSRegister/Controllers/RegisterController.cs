@@ -1,4 +1,6 @@
-﻿using DVSRegister.BusinessLogic.Models;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
+using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
@@ -7,6 +9,7 @@ using DVSRegister.Models.Register;
 using DVSRegister.Models.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Globalization;
 
 namespace DVSRegister.Controllers
 {
@@ -153,8 +156,24 @@ namespace DVSRegister.Controllers
         {
             try
             {
-                var result = await csvDownloadService.DownloadAsync();
-                return File(result.FileContent, result.ContentType, result.FileName);
+                var services = await registerService.GetPublishedServices();
+                if (services == null || services.Count == 0)
+                    throw new InvalidOperationException("No data to export");
+                Response.ContentType = "text/csv";
+                Response.Headers["Content-Disposition"] = $"attachment; filename=dvs-register_{DateTime.Now:ddMMyyyy}.csv";
+
+                await using var writer = new StreamWriter(Response.Body);
+                await using var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    Delimiter = ",",
+                    HasHeaderRecord = true,
+                    Quote = '"',
+                    ShouldQuote = args => args.Row.Index == 0 || args.Field.Contains(",")
+                });
+                csv.Context.RegisterClassMap<PfrCsvMap>();
+                await csv.WriteRecordsAsync(services);
+                await writer.FlushAsync().ConfigureAwait(false);
+                return new EmptyResult();
             }
             catch (InvalidOperationException ex)
             {
