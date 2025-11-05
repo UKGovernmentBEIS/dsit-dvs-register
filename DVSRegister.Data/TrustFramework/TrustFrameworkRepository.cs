@@ -74,7 +74,7 @@ namespace DVSRegister.Data.TrustFramework
             .Where(x => x.ServiceType == ServiceTypeEnum.WhiteLabelled
                         && x.ManualUnderPinningServiceId != null
                         && x.ManualUnderPinningServiceId > 0
-                        && x.CertificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved)
+                        && x.CertificateReview.Where(x=>x.IsLatestReviewVersion).SingleOrDefault().CertificateReviewStatus == CertificateReviewEnum.Approved)
             .AsNoTracking()
             .GroupBy(x => x.ManualUnderPinningServiceId)
             .Select(g => g.FirstOrDefault())

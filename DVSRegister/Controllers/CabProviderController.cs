@@ -14,10 +14,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/create-profile")] 
-    public class CabProviderController(ICabService cabService, IUserService userService, ILogger<CabProviderController> logger) : BaseController(logger)
+    public class CabProviderController(ICabService cabService, IUserService userService, IActionLogService actionLogService, ILogger<CabProviderController> logger) : BaseController(logger)
     {
         private readonly ICabService cabService = cabService;
         private readonly IUserService userService = userService;
+        private readonly IActionLogService actionLogService = actionLogService;
 
         [HttpGet("before-you-start")]
         public IActionResult BeforeYouStart() => View();
@@ -592,6 +593,7 @@ namespace DVSRegister.Controllers
 
             if (ModelState.IsValid)
             {
+                ProviderProfileDto previousData = await cabService.GetProvider(companyViewModel.ProviderId, CabId);
                 ProviderProfileDto providerProfileDto = new()
                 {
                     Id = companyViewModel.ProviderId,
@@ -606,8 +608,10 @@ namespace DVSRegister.Controllers
                 GenericResponse genericResponse = await cabService.UpdateCompanyInfo(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
-                    return RedirectToAction("ProviderProfileDetails", "Cab",
-                        new { providerId = providerProfileDto.Id });
+                    var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
+                    var (current, previous) = cabService.GetCompanyValueUpdates(providerProfileDto, previousData);
+                    await SaveActionLogs(ActionDetailsEnum.BusinessDetailsUpdate, previousData, current, previous, isProviderPublishedBefore);
+                    return RedirectToAction("ProviderProfileDetails", "Cab",new { providerId = providerProfileDto.Id });
                 }
                 else
                 {
@@ -658,15 +662,15 @@ namespace DVSRegister.Controllers
                 throw new ArgumentException("Invalid ProviderId.");
 
             // Fetch the latest provider data from the database
-            ProviderProfileDto providerProfileDto = await cabService.GetProvider(primaryContactViewModel.ProviderId, CabId); 
-            if (providerProfileDto == null)
+            ProviderProfileDto previousData = await cabService.GetProvider(primaryContactViewModel.ProviderId, CabId); 
+            if (previousData == null)
                 throw new InvalidOperationException("ProviderProfile not found for the given ProviderId and CabId."); 
             
             
             ValidationHelper.ValidateDuplicateFields(
                 ModelState, 
                 primaryValue: primaryContactViewModel.PrimaryContactEmail,
-                secondaryValue: providerProfileDto.SecondaryContactEmail,
+                secondaryValue: previousData.SecondaryContactEmail,
                 new ValidationHelper.FieldComparisonConfig(
                     "PrimaryContactEmail",
                     "SecondaryContactEmail",
@@ -677,7 +681,7 @@ namespace DVSRegister.Controllers
             ValidationHelper.ValidateDuplicateFields(
                 ModelState, 
                 primaryValue: primaryContactViewModel.PrimaryContactTelephoneNumber,
-                secondaryValue: providerProfileDto.SecondaryContactTelephoneNumber,
+                secondaryValue: previousData.SecondaryContactTelephoneNumber,
                 new ValidationHelper.FieldComparisonConfig(
                     "PrimaryContactTelephoneNumber",
                     "SecondaryContactTelephoneNumber",
@@ -687,15 +691,19 @@ namespace DVSRegister.Controllers
             
             if (ModelState.IsValid) 
             {
+                ProviderProfileDto providerProfileDto = new();
                 providerProfileDto.PrimaryContactFullName = primaryContactViewModel.PrimaryContactFullName; 
                 providerProfileDto.PrimaryContactEmail = primaryContactViewModel.PrimaryContactEmail; 
                 providerProfileDto.PrimaryContactJobTitle = primaryContactViewModel.PrimaryContactJobTitle; 
-                providerProfileDto.PrimaryContactTelephoneNumber = primaryContactViewModel.PrimaryContactTelephoneNumber; 
-                
+                providerProfileDto.PrimaryContactTelephoneNumber = primaryContactViewModel.PrimaryContactTelephoneNumber;
+                providerProfileDto.Id = previousData.Id;
                 GenericResponse genericResponse = await cabService.UpdatePrimaryContact(providerProfileDto, UserEmail); 
-                if (genericResponse.Success) 
-                { 
-                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id }); 
+                if (genericResponse.Success)
+                {
+                    var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
+                    var (current, previous) = cabService.GetPrimaryContactUpdates(providerProfileDto, previousData);
+                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
+                    return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id });
                 }
                 else
                 {
@@ -707,8 +715,8 @@ namespace DVSRegister.Controllers
             {
                 return View("EditPrimaryContact", primaryContactViewModel);
             }
-        }
-        
+        }     
+
         #endregion
 
         #region Edit secondary contact
@@ -746,13 +754,13 @@ namespace DVSRegister.Controllers
                 throw new ArgumentException("Invalid ProviderId.");
             
             // Fetch the latest provider data from the database
-            ProviderProfileDto providerProfileDto = await cabService.GetProvider(secondaryContactViewModel.ProviderId, CabId); 
-            if (providerProfileDto == null)
+            ProviderProfileDto previousData = await cabService.GetProvider(secondaryContactViewModel.ProviderId, CabId); 
+            if (previousData == null)
                 throw new InvalidOperationException("ProviderProfile not found for the given ProviderId and CabId.");
             
             ValidationHelper.ValidateDuplicateFields(
                 ModelState, 
-                primaryValue: providerProfileDto.PrimaryContactEmail,
+                primaryValue: previousData.PrimaryContactEmail,
                 secondaryValue: secondaryContactViewModel.SecondaryContactEmail,
                 new ValidationHelper.FieldComparisonConfig(
                     "PrimaryContactEmail",
@@ -763,7 +771,7 @@ namespace DVSRegister.Controllers
             
             ValidationHelper.ValidateDuplicateFields(
                 ModelState, 
-                primaryValue: providerProfileDto.PrimaryContactTelephoneNumber,
+                primaryValue: previousData.PrimaryContactTelephoneNumber,
                 secondaryValue: secondaryContactViewModel.SecondaryContactTelephoneNumber,
                 new ValidationHelper.FieldComparisonConfig(
                     "PrimaryContactTelephoneNumber",
@@ -773,15 +781,19 @@ namespace DVSRegister.Controllers
                 );
             
             if (ModelState.IsValid) 
-            { 
+            {
+                ProviderProfileDto providerProfileDto = new();
                 providerProfileDto.SecondaryContactFullName = secondaryContactViewModel.SecondaryContactFullName; 
                 providerProfileDto.SecondaryContactEmail = secondaryContactViewModel.SecondaryContactEmail; 
                 providerProfileDto.SecondaryContactJobTitle = secondaryContactViewModel.SecondaryContactJobTitle; 
-                providerProfileDto.SecondaryContactTelephoneNumber = secondaryContactViewModel.SecondaryContactTelephoneNumber; 
-                
+                providerProfileDto.SecondaryContactTelephoneNumber = secondaryContactViewModel.SecondaryContactTelephoneNumber;
+                providerProfileDto.Id = previousData.Id;
                 GenericResponse genericResponse = await cabService.UpdateSecondaryContact(providerProfileDto, UserEmail); 
                 if (genericResponse.Success) 
-                { 
+                {
+                    var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
+                    var (current, previous) = cabService.GetSecondaryContactUpdates(providerProfileDto, previousData);
+                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
                     return RedirectToAction("ProviderProfileDetails", "Cab", new { providerId = providerProfileDto.Id }); 
                 }
                 else
@@ -825,6 +837,7 @@ namespace DVSRegister.Controllers
         {
             if (ModelState.IsValid)
             {
+                ProviderProfileDto previousData = await cabService.GetProvider(publicContactViewModel.ProviderId, CabId);
                 ProviderProfileDto providerProfileDto = new()
                 {
                     PublicContactEmail = publicContactViewModel.PublicContactEmail,
@@ -837,8 +850,10 @@ namespace DVSRegister.Controllers
                     await cabService.UpdatePublicProviderInformation(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
-                    return RedirectToAction("ProviderProfileDetails", "Cab",
-                        new { providerId = providerProfileDto.Id });
+                    var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
+                    var (current, previous) = cabService.GetPublicContactUpdates(providerProfileDto, previousData);
+                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
+                    return RedirectToAction("ProviderProfileDetails", "Cab",  new { providerId = providerProfileDto.Id });
                 }
                 else
                 {
@@ -855,6 +870,23 @@ namespace DVSRegister.Controllers
 
 
         #region Private methods
+
+        private async Task SaveActionLogs(ActionDetailsEnum actionDetailsEnum, ProviderProfileDto providerProfileDto, 
+            Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, bool isProviderPublishedBefore)
+        {
+            ActionLogsDto actionLogsDto = new()
+            {
+                ActionCategoryEnum = ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum = actionDetailsEnum,
+                LoggedInUserEmail = UserEmail,
+                ProviderId = providerProfileDto.Id,
+                ProviderName = providerProfileDto.RegisteredName,
+                PreviousData = previous,
+                UpdatedData = current,
+                IsProviderPreviouslyPublished = isProviderPublishedBefore
+            };
+            await actionLogService.SaveActionLogs(actionLogsDto);
+        }
 
         private ProfileSummaryViewModel GetProfileSummary()
         {
@@ -911,7 +943,8 @@ namespace DVSRegister.Controllers
 
             return providerDto;
         }
+           
 
-        #endregion
-    }
+    #endregion
+}
 }

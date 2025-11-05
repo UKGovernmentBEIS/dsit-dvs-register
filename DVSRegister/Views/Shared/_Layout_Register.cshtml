@@ -70,46 +70,44 @@ await Html.RenderPartialAsync("_CookieBanner");
         </div>
     </div>
 </header>
-<div class="govuk-service-navigation"
-     data-module="govuk-service-navigation">
-    <div class="govuk-width-container">
-        <div class="govuk-service-navigation__container">
-            <nav aria-label="Menu" class="govuk-service-navigation__wrapper">
-                <button type="button" class="govuk-service-navigation__toggle govuk-js-service-navigation-toggle" aria-controls="navigation" hidden>
-                    Menu
-                </button>
-                @{
-                    var path = Context.Request.Path.Value?.ToLowerInvariant() ?? "";
-                    var isSearchActive =
-                        path == "/"
-                        || path == "/register/register-search";
-
-                    // only true when you really are on Updates
-                    var isUpdatesActive = path.StartsWith("/register/publish-logs");
-                }
-                <ul class="govuk-service-navigation__list" id="navigation">
-                    <li class="govuk-service-navigation__item @(isSearchActive ? "govuk-service-navigation__item--active" : "")">
-                        <a
-                            class="govuk-service-navigation__link"
-                            href="/register/register-search"
-                            @(isSearchActive ? "aria-current=\"page\"" : "")>
-                            Search
-                        </a>
-                    </li>
-                    <li class="govuk-service-navigation__item @(isUpdatesActive ? "govuk-service-navigation__item--active" : "")">
-                        <a
-                            class="govuk-service-navigation__link"
-                            href="/register/publish-logs"
-                            @(isUpdatesActive ? "aria-current=\"page\"" : "")>
-                            Updates
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+@if (!String.IsNullOrEmpty(ViewData["ActiveNav"]?.ToString()))
+    {
+        <div class="govuk-service-navigation"
+        data-module="govuk-service-navigation">
+            <div class="govuk-width-container">
+                <div class="govuk-service-navigation__container">
+                    <nav aria-label="Menu" class="govuk-service-navigation__wrapper">
+                        <button type="button" class="govuk-service-navigation__toggle govuk-js-service-navigation-toggle" aria-controls="navigation" hidden>
+                            Menu
+                        </button>
+                        <ul class="govuk-service-navigation__list" id="navigation">
+                            <li class="govuk-service-navigation__item @(ViewData["ActiveNav"]?.ToString() == "AllServices" ? "govuk-service-navigation__item--active" : "")">
+                                <a class="govuk-service-navigation__link" href="@Url.Action("AllServices", "Register")" aria-current="@(ViewData["ActiveNav"]?.ToString() == "AllServices" ? "true" : "false")">
+                                    All services
+                                </a>
+                            </li>
+                            <li class="govuk-service-navigation__item @(ViewData["ActiveNav"]?.ToString() == "AllProviders" ? "govuk-service-navigation__item--active" : "")">
+                                <a class="govuk-service-navigation__link" href="@Url.Action("AllProviders", "Register")" aria-current="@(ViewData["ActiveNav"]?.ToString() == "AllProviders" ? "true" : "false")">
+                                    All providers
+                                </a>
+                            </li>
+                            <li class="govuk-service-navigation__item @(ViewData["ActiveNav"]?.ToString() == "Guidance" ? "govuk-service-navigation__item--active" : "")">
+                                <a class="govuk-service-navigation__link" href="https://www.gov.uk/guidance/find-registered-digital-identity-and-attribute-services">
+                                    Guidance
+                                </a>
+                            </li>
+                            <li class="govuk-service-navigation__item @(ViewData["ActiveNav"]?.ToString() == "Updates" ? "govuk-service-navigation__item--active" : "")">
+                                <a class="govuk-service-navigation__link" href="@Url.Action("Updates", "Register")" aria-current="@(ViewData["ActiveNav"]?.ToString() == "Updates" ? "true" : "false")">
+                                    Updates
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-<div class="govuk-width-container">
+    }
+    <div class="govuk-width-container">
     <div class="govuk-phase-banner">
         <p class="govuk-phase-banner__content">
             <strong class="govuk-tag govuk-phase-banner__content__tag">

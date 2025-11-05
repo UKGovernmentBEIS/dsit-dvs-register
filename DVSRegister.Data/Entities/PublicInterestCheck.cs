@@ -43,6 +43,8 @@ namespace DVSRegister.Data.Entities
         public int? SecondaryCheckUserId { get; set; }
         public User? SecondaryCheckUser { get; set; }       
         public DateTime? SecondaryCheckTime { get; set; }
+        public bool IsLatestReviewVersion { get; set; }
+        public int ReviewVersion { get; set; }
     }
    
 }
