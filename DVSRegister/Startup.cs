@@ -143,8 +143,7 @@ namespace DVSRegister
             services.AddScoped<ICabTransferRepository, CabTransferRepository>();
             services.AddScoped<ICabTransferService, CabTransferService>();
             services.AddScoped<ITrustFrameworkRepository, TrustFrameworkRepository>();
-            services.AddScoped<ITrustFrameworkService, TrustFrameworkService>();
-            services.AddScoped<ICsvDownloadService, CsvDownloadService>();
+            services.AddScoped<ITrustFrameworkService, TrustFrameworkService>();          
             services.AddScoped<IActionLogService, ActionLogService>();
             services.AddScoped<IActionLogRepository, ActionLogRepository>();
             services.AddTransient<LoginEmailSender>();
