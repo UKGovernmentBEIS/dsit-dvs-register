@@ -30,6 +30,7 @@ namespace DVSRegister.Data.Entities
         public string? PublicContactEmail { get; set; }
         public string? ProviderTelephoneNumber { get; set; }
         public string ProviderWebsiteAddress { get; set; }
+        public string? LinkToContactPage { get; set; }
         public RemovalReasonsEnum? RemovalReason { get; set; }
        
         public ProviderStatusEnum ProviderStatus { get; set; }       
