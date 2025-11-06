@@ -119,6 +119,13 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
+        #region Guidance
+        [HttpGet("guidance")]
+        public IActionResult Guidance()
+        {
+            return View("Guidance");
+        }
+        #endregion
 
         [HttpGet("provider-details")]
         public async Task<IActionResult> ProviderDetails(int providerId, bool? fromServicePage, int? previousServiceId)
