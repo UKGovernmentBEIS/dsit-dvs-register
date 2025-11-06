@@ -1,5 +1,6 @@
 ﻿using DVSRegister.BusinessLogic.Services;
 using DVSRegister.Models.Home;
+using DVSRegister.Models.Register;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
@@ -134,3 +135,51 @@ namespace DVSRegister.Controllers
         }
     }
 }
+
+[HttpGet("all-providers")]
+public async Task<IActionResult> AllProviders(string currentSort = "date", string currentSortAction = "descending", string newSort = "", string searchText = "",
+string searchAction = "", int pageNumber = 1)
+{
+    if (!string.IsNullOrEmpty(newSort))
+    {
+        if (currentSort == newSort)
+        {
+            currentSortAction = currentSortAction == "ascending" ? "descending" : "ascending";
+        }
+        else
+        {
+            currentSort = newSort;
+            currentSortAction = "ascending";
+        }
+        pageNumber = 1;
+    }
+
+    if (searchAction == "clearSearch")
+    {
+        ModelState.Clear();
+        searchText = string.Empty;
+    }
+
+    if (pageNumber < 1)
+    {
+        pageNumber = 1;
+    }
+
+    var results = await homeService.GetAllProviders(pageNumber, currentSort, currentSortAction, searchText);
+    var totalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
+
+    var vm = new AllProvidersViewModel
+    {
+        Providers = results.Items,
+        CurrentSort = currentSort,
+        CurrentSortAction = currentSortAction,
+        SearchText = searchText,
+        TotalPages = totalPages
+    };
+
+    ViewBag.CurrentPage = pageNumber;
+
+    return View(vm);
+}
+
+
