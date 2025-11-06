@@ -36,7 +36,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? ProviderTelephoneNumber { get; set; }
         public string ProviderWebsiteAddress { get; set; }
-        public int CompanyId { get; set; }       
+        public string? LinkToContactPage { get; set; }    
         public ProviderStatusEnum ProviderStatus { get; set; }
 
         [JsonIgnore]
