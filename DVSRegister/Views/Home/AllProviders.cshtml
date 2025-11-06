@@ -8,7 +8,7 @@
 
 @{
     ViewData["Title"] = "All providers";
-    Layout = "~/Views/Shared/_Layout_Register.cshtml";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
     ViewData["ActiveNav"] = "AllProviders";
 }
 
@@ -78,13 +78,12 @@
                                 <td class="govuk-table__cell">
                                     @Html.ActionLink(
                                     provider.RegisteredName,
-                                                        "ProviderDetailsPage",
-                                                        "EditProvider",
-                                                        new { providerId = provider.Id },
-                                                        new { @class = "govuk-link" })
+                                    "#",
+                                    "#",
+                                    new { providerId = provider.Id },
+                                    new { @class = "govuk-link" })
                         </td>
                         <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(provider.ModifiedTime ?? provider.CreatedTime)</td>
-                        <td class="govuk-table__cell"> @HtmlExtensions.ToStyledStrongTag(provider.IsInRegister) </td>
                     </tr>
                         
                         }
@@ -103,7 +102,7 @@
 
             @if (Model?.TotalPages > 1)
             {
-               PaginationViewModel paginationViewModel = new paginationViewModel
+               PaginationViewModel paginationViewModel = new PaginationViewModel
                 {
                     Action = "AllProviders",
                     CurrentPage = ViewBag.CurrentPage,

@@ -133,53 +133,55 @@ namespace DVSRegister.Controllers
             ViewBag.CurrentPage = PageNum;
             return View(pendingListViewModel);
         }
+
+        [HttpGet("all-providers")]
+        public async Task<IActionResult> AllProviders(string CurrentSort = "date", string CurrentSortAction = "descending", string NewSort = "", string SearchText = "",
+            string searchAction = "", int PageNum = 1)
+        {
+            if (!string.IsNullOrEmpty(NewSort))
+            {
+                if (CurrentSort == NewSort)
+                {
+                    CurrentSortAction = CurrentSortAction == "ascending" ? "descending" : "ascending";
+                }
+                else
+                {
+                    CurrentSort = NewSort;
+                    CurrentSortAction = "ascending";
+                }
+                PageNum = 1;
+            }
+
+            if (searchAction == "clearSearch")
+            {
+                ModelState.Clear();
+                SearchText = string.Empty;
+            }
+
+            if (PageNum < 1)
+            {
+                PageNum = 1;
+            }
+
+            var results = await homeService.GetAllProviders(CabId, PageNum, CurrentSort, CurrentSortAction, SearchText);
+            var totalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
+
+            var vm = new AllProvidersViewModel
+            {
+                Providers = results.Items,
+                CurrentSort = CurrentSort,
+                CurrentSortAction = CurrentSortAction,
+                SearchText = SearchText,
+                TotalPages = totalPages
+            };
+
+            ViewBag.CurrentPage = PageNum;
+
+            return View(vm);
+        }
     }
 }
 
-[HttpGet("all-providers")]
-public async Task<IActionResult> AllProviders(string currentSort = "date", string currentSortAction = "descending", string newSort = "", string searchText = "",
-string searchAction = "", int pageNumber = 1)
-{
-    if (!string.IsNullOrEmpty(newSort))
-    {
-        if (currentSort == newSort)
-        {
-            currentSortAction = currentSortAction == "ascending" ? "descending" : "ascending";
-        }
-        else
-        {
-            currentSort = newSort;
-            currentSortAction = "ascending";
-        }
-        pageNumber = 1;
-    }
 
-    if (searchAction == "clearSearch")
-    {
-        ModelState.Clear();
-        searchText = string.Empty;
-    }
-
-    if (pageNumber < 1)
-    {
-        pageNumber = 1;
-    }
-
-    var results = await homeService.GetAllProviders(pageNumber, currentSort, currentSortAction, searchText);
-    var totalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
-
-    var vm = new AllProvidersViewModel
-    {
-        Providers = results.Items,
-        CurrentSort = currentSort,
-        CurrentSortAction = currentSortAction,
-        SearchText = searchText,
-        TotalPages = totalPages
-    };
-
-    ViewBag.CurrentPage = pageNumber;
-
-    return View(vm);
-}
 
 
