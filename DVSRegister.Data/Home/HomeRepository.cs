@@ -1,5 +1,4 @@
 ﻿using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Entities;
 using DVSRegister.Data.Models;
@@ -98,6 +97,36 @@ namespace DVSRegister.Data
             };
         }
 
+
+        public async Task<PaginatedResult<ProviderProfile>> GetAllProviders(int cabId, int pageNumber, string sort, string sortAction, string searchText)
+        {
+            IQueryable<ProviderProfile> baseQuery = context.ProviderProfile
+                .Include(p => p.ProviderProfileCabMapping)
+                .Where(p => (string.IsNullOrEmpty(searchText) || p.RegisteredName.ToLower().Contains(searchText.Trim().ToLower()))
+                && p.ProviderProfileCabMapping.Any(p => p.CabId == cabId))
+                .Include(p => p.Services);
+
+
+            Func<IQueryable<ProviderProfile>, IOrderedQueryable<ProviderProfile>> orderByFunc = sort switch
+            {
+                "provider" => s => sortAction == "descending" ? baseQuery.OrderByDescending(r => r.RegisteredName) : baseQuery.OrderBy(r => r.RegisteredName),
+                "date" => s => sortAction == "descending" ? baseQuery.OrderByDescending(r => r.ModifiedTime ?? r.CreatedTime) :
+                        baseQuery.OrderBy(r => r.ModifiedTime ?? r.CreatedTime)
+            };
+
+            var orderedQuery = orderByFunc(baseQuery);
+            var totalCount = await baseQuery.CountAsync();
+            var items = await orderedQuery
+                .Skip((pageNumber - 1) * 10)
+                .Take(10)
+                .ToListAsync();
+
+            return new PaginatedResult<ProviderProfile>
+            {
+                Items = items,
+                TotalCount = totalCount
+            };
+        }
         #region Private methods
 
         private static Task<PaginatedResult<Service>> SortAndPaginate(int pageNumber, string sort, string sortAction, IEnumerable<Service> baseQuery)

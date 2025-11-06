@@ -52,5 +52,15 @@ namespace DVSRegister.BusinessLogic.Services
         {
             return await homeRepository.GetPendingCounts(cabId);
         }
+
+        public async Task<PaginatedResult<ProviderProfileDto>> GetAllProviders(int cabId, int pageNumber, string sort, string sortAction, string searchText)
+        {
+            var page = await homeRepository.GetAllProviders(cabId, pageNumber, sort, sortAction, searchText);
+            return new PaginatedResult<ProviderProfileDto>
+            {
+                Items = automapper.Map<List<ProviderProfileDto>>(page.Items),
+                TotalCount = page.TotalCount
+            };
+        }
     }
 }
