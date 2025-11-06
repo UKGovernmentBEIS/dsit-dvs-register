@@ -102,6 +102,14 @@ namespace DVSRegister.Controllers
 
         #endregion
 
+        #region Guidance
+        [HttpGet("guidance-page")]
+        public IActionResult Guidance()
+        {
+            return View("Guidance");
+        }
+        #endregion
+
         #region Updates
         [HttpGet("update-logs")]
         public async Task<IActionResult> Updates(int PageNum = 1)
