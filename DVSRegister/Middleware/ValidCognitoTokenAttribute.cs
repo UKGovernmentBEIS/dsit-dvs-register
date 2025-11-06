@@ -1,10 +1,8 @@
-﻿using System.Net;
+﻿using DVSRegister.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using System.Security.Claims;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 public class ValidCognitoTokenAttribute : ActionFilterAttribute
 {   
@@ -12,38 +10,20 @@ public class ValidCognitoTokenAttribute : ActionFilterAttribute
     {
         try
         {
-            var cognitoClient = context.HttpContext.RequestServices.GetService<CognitoClient>();
             var sessionToken = context.HttpContext.Session.GetString("IdToken");
             if (string.IsNullOrEmpty(sessionToken))
             {
-               throw new UnauthorizedAccessException("Invalid token");
-
+                throw new UnauthorizedAccessException("Invalid token");
             }
-            sessionToken = sessionToken.Substring(1, sessionToken.Length - 2);       
-           
+            sessionToken = sessionToken.Substring(1, sessionToken.Length - 2);
 
-            string cognitoIssuer = $"https://cognito-idp.{cognitoClient._region}.amazonaws.com/{cognitoClient._userPoolId}";
-            string jwtKeySetUrl = $"{cognitoIssuer}/.well-known/jwks.json";
-            string cognitoAudience = cognitoClient._clientId;
-            
-            var validationParameters = new TokenValidationParameters
-            {
-                IssuerSigningKeyResolver = (s, securityToken, identifier, parameters) =>
-                {
-                    string json = new WebClient().DownloadString(jwtKeySetUrl);
+            var cognitoClient = context.HttpContext.RequestServices.GetService<CognitoClient>();
+            var userPoolId = cognitoClient._userPoolId;
+            var region = cognitoClient._region;
+            var clientId = cognitoClient._clientId;
 
-                    IList<JsonWebKey> keys = JsonConvert.DeserializeObject<JsonWebKeySet>(json).Keys;
+            Task<TokenValidationResult> result = TokenExtensions.ValidateToken(sessionToken, userPoolId, region, clientId);
 
-                    return (IEnumerable<SecurityKey>)keys;
-                },
-                ValidIssuer = cognitoIssuer,
-                ValidateIssuerSigningKey = true,
-                ValidateIssuer = true,
-                ValidateLifetime = true,
-                ValidAudience = cognitoAudience
-            };
-            var tokenHandler = new JsonWebTokenHandler();
-            var result = tokenHandler.ValidateTokenAsync(sessionToken, validationParameters);
             if (result.Result.IsValid)
             {
                 var claimsPrincipal = new ClaimsPrincipal(result.Result.ClaimsIdentity);
@@ -53,6 +33,7 @@ public class ValidCognitoTokenAttribute : ActionFilterAttribute
             {
                 throw new UnauthorizedAccessException("Invalid token");
             }
+
             base.OnActionExecuting(context);
         }
         catch (Exception ex)
