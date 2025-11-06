@@ -32,6 +32,8 @@
         public const string NullFieldsDisplay = "Not applicable";
 
         public const string RegisteredNameExistsError = "The registered name you have entered already exists";
+        public const string NewApplication = "New application";
+        public const string ReApplication = "Reapplication";
         public const decimal TFVersion0_4 = 0.4m;
         public const decimal TFVersion0_3 = 0.3m;
         public const string GPG44Authentication = "GPG 44 quality of authentication";

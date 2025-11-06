@@ -1,0 +1,136 @@
+﻿using DVSRegister.BusinessLogic.Services;
+using DVSRegister.Models.Home;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DVSRegister.Controllers
+{
+    [Route("home")]
+    public class HomeController(IHomeService homeService, ILogger<HomeController> logger) : BaseController(logger)
+    {
+        private readonly IHomeService homeService = homeService;
+
+        [HttpGet("")]
+        [HttpGet("draft-applications")]
+        public async Task<ActionResult> DraftApplications(string CurrentSort = "date", string CurrentSortAction = "ascending",int PageNum = 1, string NewSort = "")
+        {
+            if (NewSort != string.Empty)
+            {
+                if (CurrentSort == NewSort)
+                {
+                    CurrentSortAction = CurrentSortAction == "ascending" ? "descending" : "ascending";
+                }
+                else
+                {
+                    CurrentSort = NewSort;
+                    CurrentSortAction = "ascending";
+                }
+                PageNum = 1;
+            }
+
+            var results = await homeService.GetDraftApplications(CabId, PageNum, CurrentSort, CurrentSortAction);
+            var PendingCounts = await homeService.GetPendingCounts(CabId);
+            var totalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
+
+            OpenTaskCount openTaskCount = new()
+            {
+                DraftApplications = PendingCounts["DraftApplications"],
+                SentBackApplications = PendingCounts["SentBackApplications"],
+                PendingReassignmentRequests = PendingCounts["PendingReassignmentRequests"]
+            };
+
+            PendingListViewModel pendingListViewModel = new()
+            {
+                PendingRequests = results.Items,
+                TotalPages = totalPages,
+                CurrentSort = CurrentSort,
+                CurrentSortAction = CurrentSortAction,
+                OpenTaskCount = openTaskCount
+            };
+
+            ViewBag.CurrentPage = PageNum;
+            return View(pendingListViewModel);
+        }
+
+        [HttpGet("sent-back-applications")]
+        public async Task<ActionResult> SentBackApplications(string CurrentSort = "date", string CurrentSortAction = "ascending", int PageNum = 1, string NewSort = "")
+        {
+            if (NewSort != string.Empty)
+            {
+                if (CurrentSort == NewSort)
+                {
+                    CurrentSortAction = CurrentSortAction == "ascending" ? "descending" : "ascending";
+                }
+                else
+                {
+                    CurrentSort = NewSort;
+                    CurrentSortAction = "ascending";
+                }
+                PageNum = 1;
+            }
+
+            var results = await homeService.GetSentBackApplications(CabId, PageNum, CurrentSort, CurrentSortAction);
+            var PendingCounts = await homeService.GetPendingCounts(CabId);
+            var totalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
+
+            OpenTaskCount openTaskCount = new()
+            {
+                DraftApplications = PendingCounts["DraftApplications"],
+                SentBackApplications = PendingCounts["SentBackApplications"],
+                PendingReassignmentRequests = PendingCounts["PendingReassignmentRequests"]
+            };
+
+            PendingListViewModel pendingListViewModel = new()
+            {
+                PendingRequests = results.Items,
+                TotalPages = totalPages,
+                CurrentSort = CurrentSort,
+                CurrentSortAction = CurrentSortAction,
+                OpenTaskCount = openTaskCount
+            };
+
+            ViewBag.CurrentPage = PageNum;
+            return View(pendingListViewModel);
+        }
+
+        [HttpGet("pending-reassignment-requests")]
+        public async Task<ActionResult> PendingReassignmentRequests(string CurrentSort = "dateAfterPublish", string CurrentSortAction = "ascending", int PageNum = 1, string NewSort = "")
+        {
+            if (NewSort != string.Empty)
+            {
+                if (CurrentSort == NewSort)
+                {
+                    CurrentSortAction = CurrentSortAction == "ascending" ? "descending" : "ascending";
+                }
+                else
+                {
+                    CurrentSort = NewSort;
+                    CurrentSortAction = "ascending";
+                }
+                PageNum = 1;
+            }
+
+            var results = await homeService.GetPendingReassignmentRequests(CabId, PageNum, CurrentSort, CurrentSortAction);
+            var PendingCounts = await homeService.GetPendingCounts(CabId);
+            var totalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
+
+            OpenTaskCount openTaskCount = new()
+            {
+                DraftApplications = PendingCounts["DraftApplications"],
+                SentBackApplications = PendingCounts["SentBackApplications"],
+                PendingReassignmentRequests = PendingCounts["PendingReassignmentRequests"]
+            };
+
+            PendingListViewModel pendingListViewModel = new()
+            {
+                PendingRequests = results.Items,
+                TotalPages = totalPages,
+                CurrentSort = CurrentSort,
+                CurrentSortAction = CurrentSortAction,
+                OpenTaskCount = openTaskCount
+            };
+
+            ViewBag.CurrentPage = PageNum;
+            return View(pendingListViewModel);
+        }
+    }
+}
