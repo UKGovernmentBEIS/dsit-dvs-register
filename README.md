@@ -48,9 +48,8 @@ We store credentials for the dev site inside the UserSecrets of the project. Spe
 
 ## Database
 At the root of this repo -
-
-For adding migrations: run  `dotnet ef migrations add nameofmigration --project DVSRegister.Data  --startup-project DVSRegister`
-For updating changes to local dabase: run `dotnet ef database update --project DVSRegister.Data  --startup-project DVSRegister`
+1. For adding migrations: run  `dotnet ef migrations add nameofmigration --project DVSRegister.Data  --startup-project DVSRegister`
+2. For updating changes to local dabase: run `dotnet ef database update --project DVSRegister.Data  --startup-project DVSRegister`
 
 ## Running cab portal locally
 When running the CAB portal locally, you can bypass the login flow (username, password, MFA) by hardcoding values in the BaseController. This is useful for local development and testing.
@@ -58,17 +57,17 @@ When running the CAB portal locally, you can bypass the login flow (username, pa
 1. Open BaseController.
 2. Replace the following variables with appropriate values:
     // Hardcoded values for local testing
-     protected string UserEmail => "testemail@dsit.com"; // Replace with a valid user email
-     protected int CabId => 1233;                        // Replace with the CAB ID from the Cab table
-     protected string Cab => "TEST";                     // Replace with the CAB name from the Cab table linked to the user email
+     - protected string UserEmail => "testemail@dsit.com"; // Replace with a valid user email
+     - protected int CabId => 1233;                        // Replace with the CAB ID from the Cab table
+     - protected string Cab => "TEST";                     // Replace with the CAB name from the Cab table linked to the user email
 
 > Note: Ensure the UserEmail exists in your database and is mapped to the specified CAB.
         The CabId and Cab values must match the entries in the Cab table for the given user.
         This approach is for local development only. Do not use hardcoded credentials in production.
 
 ## Register
-The Register application is publicly accessible and does not require any modifications.
-It serves as the root of the solution and will load automatically when the solution is run.
+- The Register application is publicly accessible and does not require any modifications.
+- It serves as the root of the solution and will load automatically when the solution is run.
 
 
 
