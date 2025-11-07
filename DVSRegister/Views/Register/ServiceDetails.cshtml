@@ -30,7 +30,7 @@
                 <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
                     <span class="govuk-caption-l">Service</span>
                     @Model.ServiceName
-                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.LastUpdated) (GMT)</span>
+                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.LastUpdated, "d MMM yyyy, hh:mm tt") (GMT)</span>
                 </h1>
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
