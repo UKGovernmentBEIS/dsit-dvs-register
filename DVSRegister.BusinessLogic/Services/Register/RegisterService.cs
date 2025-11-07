@@ -3,6 +3,7 @@ using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data;
 
 namespace DVSRegister.BusinessLogic.Services
@@ -44,13 +45,34 @@ namespace DVSRegister.BusinessLogic.Services
         {
             var provider = await registerRepository.GetProviderDetails(providerId);
             if (provider == null) return null!;
-            ProviderProfileDto providerProfileDto = automapper.Map<ProviderProfileDto>(provider);
+            ProviderProfileDto providerProfileDto = automapper.Map<ProviderProfileDto>(provider);           
+             if (provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested &&
+                provider.ModifiedTime != null && provider.ModifiedTime != DateTime.MinValue)
+            {
+                providerProfileDto.LastUpdated = provider.ModifiedTime;
+            }
+            else
+            {
+                providerProfileDto.LastUpdated = provider.PublishedTime;
+            }
+
             return providerProfileDto;
         }
         public async Task<ServiceDto> GetServiceDetails(int serviceId)
         {
             var service = await registerRepository.GetServiceDetails(serviceId);
             ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
+        
+             if(service.IsCurrent &&  service.ServiceStatus!= ServiceStatusEnum.PublishedUnderReassign 
+                && service.ServiceStatus != ServiceStatusEnum.RemovedUnderReassign && service.ServiceStatus != ServiceStatusEnum.UpdatesRequested)
+            {
+                serviceDto.LastUpdated = service.ModifiedTime;
+            }
+            else
+            {
+                serviceDto.LastUpdated = service.PublishedTime;
+            }
+      
             return serviceDto;
         }
         public async Task<PaginatedResult<GroupedResult<ActionLogsDto>>> GetUpdateLogs(int pageNumber)
