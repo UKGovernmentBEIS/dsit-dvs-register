@@ -191,6 +191,20 @@ await Html.RenderPartialAsync("_CookieBanner");
 <script nonce="@Context.GetScriptNonce()" type="module">
         import { initAll } from "/js/govuk.js";
             initAll();</script>
+
+<script nonce="@Context.GetScriptNonce()">
+    (function () {
+        var btn = document.getElementById('printButton');
+        if (!btn || typeof window.print !== 'function') return;
+         btn.classList.remove('js-hidden');
+        btn.style.display = 'inline-flex';
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            window.print();
+        });
+    })();
+</script>
+
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
