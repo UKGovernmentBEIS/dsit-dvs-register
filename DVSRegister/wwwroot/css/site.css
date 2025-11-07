@@ -420,6 +420,9 @@ details[open] > .app-c-filter-section__summary .app-c-filter-section__summary-he
 .app-c-filter-section__content .govuk-form-group:last-child {
     margin-bottom: 0;
 }
+.js-hidden{
+    display:none
+}
 
 @media (max-width: 40.0525em) {
     .app-c-filter-panel__header {
@@ -453,5 +456,12 @@ details[open] > .app-c-filter-section__summary .app-c-filter-section__summary-he
 
     .search-bar-width {
         width: 100%;
+    }
+}
+
+
+@media print {
+    .govuk-button {
+        display: none !important;
     }
 }
