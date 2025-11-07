@@ -29,7 +29,7 @@
             <div class="govuk-grid-column-full">
                 <h1 class="govuk-heading-xl">
                     @Model.RegisteredName
-                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.LastUpdated) (GMT)</span>
+                    <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.LastUpdated, "d MMM yyyy, hh:mm tt") (GMT)</span>
                 </h1>
                 <p class="govuk-body-l">Trading name: @Html.DisplayFor(model => model.TradingName)</p>
                 <div class="govuk-summary-card">
