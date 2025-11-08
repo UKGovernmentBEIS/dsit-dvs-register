@@ -52,5 +52,6 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public bool HasPendingCertificateUpload { get; set; }
         public string ProviderServiceNames { get; set; }
         public bool IsInRegister { get; set; }
+        public DateTime? LastUpdated { get; set; }
     }
 }
