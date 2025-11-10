@@ -561,7 +561,8 @@ namespace DVSRegister.Data.CAB
                 {
                     existingProvider.PublicContactEmail= providerProfile.PublicContactEmail;
                     existingProvider.ProviderTelephoneNumber = providerProfile.ProviderTelephoneNumber;
-                    existingProvider.ProviderWebsiteAddress = providerProfile.ProviderWebsiteAddress;                  
+                    existingProvider.ProviderWebsiteAddress = providerProfile.ProviderWebsiteAddress;
+                    existingProvider.LinkToContactPage = providerProfile.LinkToContactPage;
                     existingProvider.CabEditedTime = DateTime.UtcNow;
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.PublicContactUpdate, loggedInUserEmail);
                     transaction.Commit();

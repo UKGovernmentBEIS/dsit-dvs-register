@@ -69,6 +69,7 @@
         public const string SecondaryContactTelephone = "Secondary contact telephone number";
 
         public const string ProviderWebsiteAddress = "Provider website address";
+        public const string LinkToContactPage = "Link to contact page";
         public const string PublicContactEmail = "Public contact email";
         public const string ProviderTelephoneNumber = "Provider telephone number";
 

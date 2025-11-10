@@ -74,6 +74,23 @@
 
                 @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", websiteViewmodel)
 
+                @{
+                bool linkToContactPageHasError = Html.ViewData.ModelState.ContainsKey("LinkToContactPage")
+                && Html?.ViewData?.ModelState["LinkToContactPage"]?.Errors.Count > 0;
+                var linkToContactPageViewModel = new TextBoxViewModel
+                {
+                PropertyName = "LinkToContactPage",
+                Label = "Link to Contact Page",
+                Value = Model?.LinkToContactPage ?? string.Empty,
+                Class = "govuk-input",
+                Hint = "For example, www.yourcompanyexpress.co.uk/contact",
+                HasError = linkToContactPageHasError,
+                ErrorMessage = linkToContactPageHasError ? Html.ViewData?.ModelState["LinkToContactPage"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                };
+                }
+
+                @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", linkToContactPageViewModel)
+
                 <div class="govuk-button-group">
                     <button type="submit" class="govuk-button" data-module="govuk-button">
                         Change

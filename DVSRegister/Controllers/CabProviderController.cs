@@ -827,6 +827,7 @@ namespace DVSRegister.Controllers
                 PublicContactEmail = providerProfileDto.PublicContactEmail,
                 ProviderTelephoneNumber = providerProfileDto.ProviderTelephoneNumber,
                 ProviderWebsiteAddress = providerProfileDto.ProviderWebsiteAddress,
+                LinkToContactPage = providerProfileDto.LinkToContactPage,
                 ProviderId = providerProfileDto.Id
             };
             return View(publicContactViewModel);
@@ -843,6 +844,7 @@ namespace DVSRegister.Controllers
                     PublicContactEmail = publicContactViewModel.PublicContactEmail,
                     ProviderTelephoneNumber = publicContactViewModel.ProviderTelephoneNumber,
                     ProviderWebsiteAddress = publicContactViewModel.ProviderWebsiteAddress,
+                    LinkToContactPage = publicContactViewModel.LinkToContactPage,
                     Id = publicContactViewModel.ProviderId
                 };
 
@@ -935,6 +937,7 @@ namespace DVSRegister.Controllers
                 providerDto.PublicContactEmail = model.PublicContactEmail;
                 providerDto.ProviderTelephoneNumber = model.ProviderTelephoneNumber;
                 providerDto.ProviderWebsiteAddress = model.ProviderWebsiteAddress;
+                providerDto.LinkToContactPage = model.LinkToContactPage;
                 providerDto.ProviderProfileCabMapping = [new ProviderProfileCabMappingDto { CabId = CabId }];
                 providerDto.ProviderStatus = ProviderStatusEnum.NA;
                 providerDto.CreatedTime = DateTime.UtcNow;
