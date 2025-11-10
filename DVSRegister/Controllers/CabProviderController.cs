@@ -502,6 +502,40 @@ namespace DVSRegister.Controllers
 
         #endregion
 
+        #region Providers Link To Contact Page
+
+        [HttpGet("providers-link-to-contact-page")]
+        public IActionResult ProvidersLinkToContactPage(bool fromSummaryPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            return View("ProvidersLinkToContactPage", profileSummaryViewModel);
+        }
+
+
+        [HttpPost("providers-link-to-contact-page")]
+        public IActionResult SaveProvidersLinkToContactPage(ProfileSummaryViewModel profileSummaryViewModel)
+        {
+            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            profileSummaryViewModel.FromSummaryPage = false;
+
+          
+            if (ModelState.IsValid)
+            {
+                
+                ProfileSummaryViewModel profileSummary = GetProfileSummary();
+                profileSummary.ProvidersLinkToContactPage = profileSummaryViewModel.ProvidersLinkToContactPage;
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+
+                return RedirectToAction("ProfileSummary");
+            }
+            else
+            {
+                return View("ProvidersLinkToContactPage", profileSummaryViewModel);
+            }
+        }
+
+        #endregion
 
         #region Summary
 
@@ -948,3 +982,4 @@ namespace DVSRegister.Controllers
     #endregion
 }
 }
+

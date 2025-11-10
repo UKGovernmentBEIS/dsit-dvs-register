@@ -57,5 +57,6 @@ namespace DVSRegister.Models.CAB
         public string? ProviderWebsiteAddress { get; set; }
 
         public bool FromSummaryPage { get; set; }
+        public object ProvidersLinkToContactPage { get; internal set; }
     }
 }
