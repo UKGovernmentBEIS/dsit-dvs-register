@@ -1,0 +1,122 @@
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models.Enums;
+@using DVSRegister.Extensions;
+@using DVSRegister.Models.Register
+@using DVSRegister.Models.UI
+
+@model AllProvidersViewModel
+
+@{
+    ViewData["Title"] = "All providers";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    ViewData["ActiveNav"] = "AllProviders";
+}
+
+<div class="govuk-width-container">
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">All providers</h1>
+                <p class="govuk-body">
+                    Submit a service for an existing provider, view information or make amendments.
+                </p>
+            </div>
+            @Html.ActionLink("Create a provider profile", "BeforeYouStart", "CabProvider", null, new { @class = "govuk-button" })
+            @using (Html.BeginForm("AllProviders", "Home", FormMethod.Get))
+            {
+                <div class="govuk-grid-column-two-thirds">
+                    @{
+                        var searchTextBoxViewModel = new TextBoxViewModel
+                        {
+                            PropertyName = "SearchText",
+                            Label = "Search for a service provider",
+                            Class = "govuk-input",
+                        };
+                    }
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
+
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="search">
+                            Search
+                        </button>
+                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearSearch">
+                            Clear search
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+
+
+        <div class="govuk-form-group" style="border: 1px solid #b1b4b6; padding: 20px; padding-bottom: 0px; margin-top: 20px;">
+            <table class="govuk-table govuk-table--small-text-until-tablet">
+                <caption class="govuk-table__caption govuk-table__caption--m govuk-!-margin-bottom-5">
+                    List of all providers
+                    <span class="govuk-visually-hidden">column headers with links are sortable</span>
+                </caption>
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row sortable-table">
+                        <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "provider") ? Model.CurrentSortAction : "none")"
+                            aria-label="sort by provider name">
+                            <a href="@Url.Action("AllProviders", "Home", new { CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "provider", searchText = Model.SearchText })">
+                                <b>Service provider</b>
+                            </a>
+                        </th>
+                        <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "date") ? Model.CurrentSortAction : "none")"
+                            aria-label="sort by last modified time">
+                            <a href="@Url.Action("AllProviders", "Home", new { CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "date", searchText = Model.SearchText })">
+                                <b>Date and time of last activity (GMT)</b>
+                            </a>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                    @if (Model?.Providers != null && Model.Providers.Count > 0)
+                    {
+                        foreach (var provider in Model.Providers)
+                        {
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">
+                                    @Html.ActionLink(
+                                    provider.RegisteredName,
+                                    "#",
+                                    "#",
+                                    new { providerId = provider.Id },
+                                    new { @class = "govuk-link" })
+                        </td>
+                        <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(provider.ModifiedTime ?? provider.CreatedTime)</td>
+                    </tr>
+                        
+                        }
+                    }
+
+                    else
+                    {
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell" colspan="2"> 
+                                <p class="govuk-body"><b>Showing 0 results</b></p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (Model?.TotalPages > 1)
+            {
+               PaginationViewModel paginationViewModel = new PaginationViewModel
+                {
+                    Action = "AllProviders",
+                    CurrentPage = ViewBag.CurrentPage,
+                    TotalPages = Model.TotalPages,
+                    Sort = Model.CurrentSort,
+                    SortAction = Model.CurrentSortAction,
+                    SearchText = Model.SearchText
+                };
+
+                @await Html.PartialAsync("~/Views/PartialViews/_PaginationView.cshtml", paginationViewModel)
+            
+             }
+
+           </div>    
+       </main>
+     </div>

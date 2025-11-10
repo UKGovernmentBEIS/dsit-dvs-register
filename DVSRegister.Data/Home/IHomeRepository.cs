@@ -9,5 +9,6 @@ namespace DVSRegister.Data
         public Task<PaginatedResult<Service>> GetSentBackApplications(int cabId, int pageNumber, string sort, string sortAction);
         public Task<PaginatedResult<Service>> GetPendingReassignmentRequests(int cabId, int pageNumber, string sort, string sortAction);
         public Task<Dictionary<string, int>> GetPendingCounts(int cabId);
+        public Task<PaginatedResult<ProviderProfile>> GetAllProviders(int cabId, int pageNumber, string sort, string sortAction, string searchText);
     }
 }
