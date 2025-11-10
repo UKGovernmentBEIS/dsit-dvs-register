@@ -21,6 +21,7 @@
                     Submit a service for an existing provider, view information or make amendments.
                 </p>
             </div>
+            @Html.ActionLink("Create a provider profile", "BeforeYouStart", "CabProvider", null, new { @class = "govuk-button" })
             @using (Html.BeginForm("AllProviders", "Home", FormMethod.Get))
             {
                 <div class="govuk-grid-column-two-thirds">
