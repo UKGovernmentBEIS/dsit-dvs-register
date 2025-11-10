@@ -37,10 +37,10 @@
                     @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
 
                     <div class="govuk-button-group">
-                        <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="search">
+                        <button type="submit" class="govuk-button" data-module="govuk-button" name="searchAction" value="search">
                             Search
                         </button>
-                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearSearch">
+                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="searchAction" value="clearSearch">
                             Clear search
                         </button>
                     </div>
@@ -79,8 +79,8 @@
                                 <td class="govuk-table__cell">
                                     @Html.ActionLink(
                                     provider.RegisteredName,
-                                    "#",
-                                    "#",
+                                    "ProviderDetails",
+                                    "Home",
                                     new { providerId = provider.Id },
                                     new { @class = "govuk-link" })
                         </td>
