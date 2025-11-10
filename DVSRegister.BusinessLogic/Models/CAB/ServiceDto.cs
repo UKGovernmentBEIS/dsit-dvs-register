@@ -64,6 +64,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         [JsonIgnore]
         public ServiceDto? PublishedServiceVersion { get; set; }
 
+        public DateTime? LastUpdated { get; set; }
+
 
     }
 }

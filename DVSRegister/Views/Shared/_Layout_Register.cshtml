@@ -92,7 +92,7 @@ await Html.RenderPartialAsync("_CookieBanner");
                                 </a>
                             </li>
                             <li class="govuk-service-navigation__item @(ViewData["ActiveNav"]?.ToString() == "Guidance" ? "govuk-service-navigation__item--active" : "")">
-                                <a class="govuk-service-navigation__link" href="https://www.gov.uk/guidance/find-registered-digital-identity-and-attribute-services">
+                                <a class="govuk-service-navigation__link" href="@Url.Action("Guidance", "Register")" aria-current="@(ViewData["ActiveNav"]?.ToString() == "Guidance" ? "true" : "false")">
                                     Guidance
                                 </a>
                             </li>
@@ -191,6 +191,20 @@ await Html.RenderPartialAsync("_CookieBanner");
 <script nonce="@Context.GetScriptNonce()" type="module">
         import { initAll } from "/js/govuk.js";
             initAll();</script>
+
+<script nonce="@Context.GetScriptNonce()">
+    (function () {
+        var btn = document.getElementById('printButton');
+        if (!btn || typeof window.print !== 'function') return;
+         btn.classList.remove('js-hidden');
+        btn.style.display = 'inline-flex';
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            window.print();
+        });
+    })();
+</script>
+
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
