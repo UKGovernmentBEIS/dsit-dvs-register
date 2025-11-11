@@ -72,21 +72,19 @@ namespace DVSRegister.Controllers
             }
             if (ModelState.IsValid)
             {
-                if (previousSelection?.Version == Constants.TFVersion0_4 && summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_3)
+                if (previousSelection?.Version != summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version)
                 {
                     ViewModelHelper.ClearTFVersion0_4Fields(summaryViewModel); // clear extra fields value changed from 0.4 to 0.3
-                }
-                else if (previousSelection?.Version == Constants.TFVersion0_3 && summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_4)
-                {
                     ViewModelHelper.ClearSchemes(summaryViewModel);
-                    if (fromSummaryPage)
-                    {                        
-                        summaryViewModel.HasSupplementarySchemes = null;
-                        summaryViewModel.FromSummaryPage = fromSummaryPage;
-                        summaryViewModel.FromDetailsPage = fromDetailsPage;
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return await HandleAmendActions(action, summaryViewModel, false, fromDetailsPage, false, false, "SelectServiceType");
-                    }
+                    ViewModelHelper.ClearGpg44(summaryViewModel);
+                    ViewModelHelper.ClearGpg45(summaryViewModel);
+                    summaryViewModel.RoleViewModel.SelectedRoles = [];
+                    summaryViewModel.HasSupplementarySchemes = null;
+                    summaryViewModel.HasGPG45 = null;
+                    summaryViewModel.HasGPG44 = null;
+                    summaryViewModel.IsTFVersionChanged = true;
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return await HandleActions(action, summaryViewModel, false, false, false, "ProviderRoles", "CabService");
                 }
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");                    
@@ -243,7 +241,6 @@ namespace DVSRegister.Controllers
             }
         }
         #endregion
-
     
 
         #region GPG44 - input
@@ -1021,7 +1018,7 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(summaryViewModel.HasGPG45))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("ServiceGPG45", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                        return RedirectToAction("ServiceGPG45", new {fromSummaryPage, fromDetailsPage });
                     }
                     else
                     {
@@ -1043,13 +1040,13 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(summaryViewModel.HasGPG45))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("ServiceGPG45");
+                        return RedirectToAction("ServiceGPG45", new { fromSummaryPage, fromDetailsPage });
                     }
                     else
                     {
                         ViewModelHelper.ClearGpg45(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("ServiceGPG44Input") : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:
@@ -1064,7 +1061,7 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(summaryViewModel.HasGPG44))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("ServiceGPG44", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                        return RedirectToAction("ServiceGPG44", new { fromSummaryPage, fromDetailsPage });
                     }
                     else
                     {
@@ -1093,7 +1090,7 @@ namespace DVSRegister.Controllers
                     {
                         ViewModelHelper.ClearGpg44(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("HasSupplementarySchemesInput", "CabService") :  RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:
@@ -1143,7 +1140,8 @@ namespace DVSRegister.Controllers
                         var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");
                         ViewModelHelper.ClearSchemeGpg44(summaryViewModel, schemeId);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return hasRemainingSchemes ? RedirectToAction("SchemeGPG45", new { schemeId = selectedSchemeIds[0] }) : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return hasRemainingSchemes ? RedirectToAction("SchemeGPG45", new { schemeId = selectedSchemeIds[0] }) : summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("CertificateUploadPage", "CabService"):
+                            RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:
@@ -1166,7 +1164,8 @@ namespace DVSRegister.Controllers
                     return await SaveAsDraftAndRedirect(serviceSummary);
 
                 case "amend":
-                    return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    return serviceSummary.IsTFVersionChanged.GetValueOrDefault() ? routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues) :
+                    RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
 
                 default:
                     throw new ArgumentException("Invalid action parameter");
@@ -1190,8 +1189,8 @@ namespace DVSRegister.Controllers
                     return await SaveAsDraftAndRedirect(serviceSummary);
 
                 case "amend":
-                    return routeValues == null ? RedirectToAction(nextPage, controller)
-                           : RedirectToAction(nextPage, controller, routeValues);
+                     return serviceSummary.IsTFVersionChanged.GetValueOrDefault() ? routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues) :
+                    RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
 
                 default:
                     throw new ArgumentException("Invalid action parameter");

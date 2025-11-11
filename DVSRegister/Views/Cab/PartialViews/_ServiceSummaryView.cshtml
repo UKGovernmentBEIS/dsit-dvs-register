@@ -27,11 +27,8 @@
                     @Model?.TFVersionViewModel?.SelectedTFVersion?.TrustFrameworkName
                 </dd>
                 <dd class="govuk-summary-list__actions">
-                    @if (Model.ServiceStatus != ServiceStatusEnum.AmendmentsRequired )
-                    { 
-                        @Html.ActionLink("Change", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model?.ProviderProfileId },
-                             new { @class = "govuk-link", @aria_label = "Change selected tf version" })
-                    }
+                    @Html.ActionLink("Change", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model?.ProviderProfileId },
+                    new { @class = "govuk-link", @aria_label = "Change selected tf version" })
                 </dd>
             </div>
 
