@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ServiceDetails", "CabTransfer", new { serviceId = Model.ServiceId, fromCabId  = Model.FromCabUser.CabId}, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "ServiceReassignmentDetails", "CabTransfer", new { serviceId = Model.ServiceId, fromCabId = Model.FromCabUser.CabId }, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -45,7 +45,7 @@
                         <button type="submit" class="govuk-button" data-module="govuk-button">
                             Accept reassignment request
                         </button>
-                        <a href="@Url.Action("ServiceManagementRequests", "CabTransfer")" class="govuk-button govuk-button--secondary" role="button">Cancel</a>
+                        <a href="@Url.Action("ServiceReassignmentDetails", "CabTransfer", new { serviceId = Model.ServiceId, fromCabId  = Model.FromCabUser.CabId})" class="govuk-button govuk-button--secondary" role="button">Cancel and back</a>
                     </div>
                 }
             </div>

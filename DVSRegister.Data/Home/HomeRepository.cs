@@ -2,6 +2,7 @@
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Entities;
 using DVSRegister.Data.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -58,10 +59,11 @@ namespace DVSRegister.Data
         {
             try
             {
-                var baseQuery = context.Service                    
-                    .Include(s => s.CabTransferRequest).ThenInclude(r => r.RequestManagement)
-                    .Where(s => (s.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || s.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign) && 
-                        s.CabTransferRequest.OrderByDescending(c => c.Id).FirstOrDefault().ToCabId == cabId)
+                var baseQuery = context.Service
+                    .Include(s => s.CabTransferRequest)!.ThenInclude(r => r.RequestManagement)
+                    .Where(s => (s.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || s.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
+                    && s.CabTransferRequest!.Where(c =>c.Id == s.CabTransferRequest!.Max(x=>x.Id)).FirstOrDefault()!.ToCabId == cabId 
+                    && s.CabTransferRequest!.Where(c => c.Id == s.CabTransferRequest!.Max(x => x.Id))!.FirstOrDefault()!.RequestManagement.RequestStatus == RequestStatusEnum.Pending)
                     .Include(s => s.Provider)
                     .Include(s => s.CabUser).ThenInclude(c => c.Cab);
                 return await SortAndPaginate(pageNumber, sort, sortAction, baseQuery);
@@ -84,8 +86,9 @@ namespace DVSRegister.Data
                 .Count();
 
             int reassignment = context.Service
-                .Where(s => (s.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || s.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign) &&
-                    s.CabTransferRequest.OrderByDescending(c => c.Id).FirstOrDefault().ToCabId == cabId)
+                .Where(s => (s.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || s.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign) 
+                   && s.CabTransferRequest!.Where(c => c.Id == s.CabTransferRequest!.Max(x => x.Id)).FirstOrDefault()!.ToCabId == cabId
+                    && s.CabTransferRequest!.Where(c => c.Id == s.CabTransferRequest!.Max(x => x.Id))!.FirstOrDefault()!.RequestManagement.RequestStatus == RequestStatusEnum.Pending)
                 .Count();
 
 

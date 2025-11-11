@@ -21,13 +21,7 @@ namespace DVSRegister.BusinessLogic.Services.CabTransfer
             this.automapper = automapper;            
         }
 
-
-        public async Task<List<CabTransferRequestDto>> GetServiceTransferRequests(int cabId)
-        {
-            var list = await cabTransferRepository.GetServiceTransferRequests(cabId);
-            return automapper.Map<List<CabTransferRequestDto>>(list);
-           
-        }
+      
 
         public async Task<ServiceDto> GetServiceDetailsWithCabTransferDetails(int serviceId, int cabId)
         {
