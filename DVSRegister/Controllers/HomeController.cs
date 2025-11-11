@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Services;
+using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.Models.Home;
 using DVSRegister.Models.Register;
 using Microsoft.AspNetCore.Mvc;
@@ -6,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("home")]
-    public class HomeController(IHomeService homeService, ILogger<HomeController> logger) : BaseController(logger)
+    public class HomeController(IHomeService homeService, ICabService cabService, ILogger<HomeController> logger) : BaseController(logger)
     {
         private readonly IHomeService homeService = homeService;
+        private readonly ICabService cabService = cabService;
 
         [HttpGet("")]
         [HttpGet("draft-applications")]

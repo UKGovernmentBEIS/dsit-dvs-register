@@ -261,6 +261,11 @@ namespace DVSRegister.BusinessLogic.Services.CAB
                 previousDataDictionary.Add(Constants.ProviderTelephoneNumber, [string.IsNullOrEmpty(previousData.ProviderTelephoneNumber) ? Constants.NullFieldsDisplay : previousData.ProviderTelephoneNumber]);
                 currentDataDictionary.Add(Constants.ProviderTelephoneNumber, [string.IsNullOrEmpty(currentData.ProviderTelephoneNumber) ? Constants.NullFieldsDisplay : currentData.ProviderTelephoneNumber]);
             }
+            if (currentData.LinkToContactPage != previousData.LinkToContactPage)
+            {
+                previousDataDictionary.Add(Constants.LinkToContactPage, [string.IsNullOrEmpty(previousData.LinkToContactPage) ? Constants.NullFieldsDisplay : previousData.LinkToContactPage]);
+                currentDataDictionary.Add(Constants.LinkToContactPage, [string.IsNullOrEmpty(currentData.LinkToContactPage) ? Constants.NullFieldsDisplay : currentData.LinkToContactPage]);
+            }
             
 
             return (currentDataDictionary, previousDataDictionary);

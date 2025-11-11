@@ -21,7 +21,9 @@
                     Submit a service for an existing provider, view information or make amendments.
                 </p>
             </div>
-            @Html.ActionLink("Create a provider profile", "BeforeYouStart", "CabProvider", null, new { @class = "govuk-button" })
+            <div class="govuk-grid-column-one-third govuk-!-text-align-right">
+                @Html.ActionLink("Create a provider profile", "BeforeYouStart", "CabProvider", null, new { @class = "govuk-button" })
+            </div>
             @using (Html.BeginForm("AllProviders", "Home", FormMethod.Get))
             {
                 <div class="govuk-grid-column-two-thirds">
@@ -37,10 +39,10 @@
                     @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", searchTextBoxViewModel)
 
                     <div class="govuk-button-group">
-                        <button type="submit" class="govuk-button" data-module="govuk-button" name="SearchAction" value="search">
+                        <button type="submit" class="govuk-button" data-module="govuk-button" name="searchAction" value="search">
                             Search
                         </button>
-                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="SearchAction" value="clearSearch">
+                        <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="searchAction" value="clearSearch">
                             Clear search
                         </button>
                     </div>
@@ -79,8 +81,8 @@
                                 <td class="govuk-table__cell">
                                     @Html.ActionLink(
                                     provider.RegisteredName,
-                                    "#",
-                                    "#",
+                                    "ProviderDetails",
+                                    "CabProvider",
                                     new { providerId = provider.Id },
                                     new { @class = "govuk-link" })
                         </td>
