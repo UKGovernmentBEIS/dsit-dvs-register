@@ -1,6 +1,8 @@
 @using DVSRegister.BusinessLogic.Models.CAB;
 @using DVSRegister.CommonUtility
-@model ProviderProfileDto
+@using DVSRegister.Extensions
+@using DVSRegister.Models.CAB.Provider
+@model ProviderDetailsViewModel
 
 @{
     ViewData["Title"] = "Provider Details";
@@ -16,11 +18,11 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl govuk-!-margin-bottom-3">
-                    @Model.RegisteredName
+                    @Model.Provider.RegisteredName
                 </h1>
             </div>
             <div class="govuk-grid-column-one-third" style="text-align: right;">
-                @Html.ActionLink("Add a new service", "BeforeYouStart", "CabService", new { providerProfileId = Model.Id},
+                @Html.ActionLink("Add a new service", "BeforeYouStart", "CabService", new { providerProfileId = Model.Provider.Id},
     new { @class = "govuk-button", role = "button", draggable = "false", data_module = "govuk-button" })
             </div>
             <div class="govuk-grid-column-full">
@@ -51,7 +53,7 @@
                         {
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditCompanyInformation", "CabProvider", new { providerId = Model.Id }, new { @class = "govuk-link",
+                                    @Html.ActionLink("Change", "EditCompanyInformation", "CabProvider", new { providerId = Model.Provider.Id }, new { @class = "govuk-link",
                                     @aria_label = "Change digital identity and attribute service provider's company information"})
                                 </li>
                             </ul>
@@ -61,38 +63,38 @@
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Registered name</dt>
-                                <dd class="govuk-summary-list__value">@Model.RegisteredName</dd>
+                                <dd class="govuk-summary-list__value">@Model.Provider.RegisteredName</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Trading names</dt>
-                                <dd class="govuk-summary-list__value">@Html.DisplayFor(p => p.TradingName)</dd>
+                                <dd class="govuk-summary-list__value">@Html.DisplayFor(p => p.Provider.TradingName)</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     Companies House or charity registration number
                                 </dt>
                                 <dd class="govuk-summary-list__value">
-                                    @(Model.HasRegistrationNumber ? Model.CompanyRegistrationNumber : Constants.NullFieldsDisplay)
+                                    @(Model.Provider.HasRegistrationNumber ? Model.Provider.CompanyRegistrationNumber : Constants.NullFieldsDisplay)
                                 </dd>
                             </div>
 
-                            @if (!Model.HasRegistrationNumber)
+                            @if (!Model.Provider.HasRegistrationNumber)
                             {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">D U-N-S number</dt>
-                                    <dd class="govuk-summary-list__value">@Model.DUNSNumber</dd>
+                                    <dd class="govuk-summary-list__value">@Model.Provider.DUNSNumber</dd>
                             </div>
                             }
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Registered name of parent company</dt>
                                 <dd class="govuk-summary-list__value">
-                                    @(string.IsNullOrEmpty(Model.ParentCompanyRegisteredName) ? Constants.NullFieldsDisplay : Model.ParentCompanyRegisteredName)
+                                    @(string.IsNullOrEmpty(Model.Provider.ParentCompanyRegisteredName) ? Constants.NullFieldsDisplay : Model.Provider.ParentCompanyRegisteredName)
                                 </dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Location of parent company</dt>
                                 <dd class="govuk-summary-list__value">
-                                    @(string.IsNullOrEmpty(Model.ParentCompanyLocation) ? Constants.NullFieldsDisplay : Model.ParentCompanyLocation)
+                                    @(string.IsNullOrEmpty(Model.Provider.ParentCompanyLocation) ? Constants.NullFieldsDisplay : Model.Provider.ParentCompanyLocation)
                                 </dd>
                             </div>
                         </dl>
@@ -105,7 +107,7 @@
                         {
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditPublicProviderInformation", "CabProvider", new { providerId = Model.Id }, new { @class = "govuk-link",
+                                    @Html.ActionLink("Change", "EditPublicProviderInformation", "CabProvider", new { providerId = Model.Provider.Id }, new { @class = "govuk-link",
                                         @aria_label = "Change digital identity and attribute service provider's company information"})
                                 </li>
                             </ul>
@@ -115,53 +117,74 @@
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Contact email</dt>
-                                <dd class="govuk-summary-list__value">@(string.IsNullOrEmpty(Model.PublicContactEmail) ? Constants.NullFieldsDisplay : Model.PublicContactEmail)</dd>
+                                <dd class="govuk-summary-list__value">@(string.IsNullOrEmpty(Model.Provider.PublicContactEmail) ? Constants.NullFieldsDisplay : Model.Provider.PublicContactEmail)</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Telephone number</dt>
-                                <dd class="govuk-summary-list__value">@Html.DisplayFor(p => p.ProviderTelephoneNumber)</dd>
+                                <dd class="govuk-summary-list__value">@Html.DisplayFor(p => p.Provider.ProviderTelephoneNumber)</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Website address</dt>
-                                <dd class="govuk-summary-list__value">@Model.ProviderWebsiteAddress</dd>
+                                <dd class="govuk-summary-list__value">@Model.Provider.ProviderWebsiteAddress</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Link to Contact Page</dt>
-                                <dd class="govuk-summary-list__value">@Html.DisplayFor(p => p.LinkToContactPage)</dd>
+                                <dd class="govuk-summary-list__value">@Html.DisplayFor(p => p.Provider.LinkToContactPage)</dd>
                             </div>
                         </dl>
                     </div>
                 </div>
             </div>
             <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="services">
-                <div class="govuk-summary-card">
-                    <div class="govuk-summary-card__title-wrapper">
-                        <h2 class="govuk-summary-card__title">Services</h2>
-                    </div>
-                    <div class="govuk-summary-card__content">
-                        @if (Model.Services != null && Model.Services.Any())
+                <h2 class="govuk-heading-m">Services</h2>
+                @if (Model.Provider.Services != null && Model.Provider.Services.Any())
+                {
+                    <table class="govuk-table">
+                        <thead class="govuk-table__head">
+                            <tr class="govuk-table__row sortable-table">
+                                <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "service") ? Model.CurrentSortAction : "none")"
+                                    aria-label="sort by service provider">
+                                    <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.Provider.Id, CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "service" })#services">
+                                        <b>Service provider</b>
+                                    </a>
+                                </th>
+                                <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "date") ? Model.CurrentSortAction : "none")"
+                                    aria-label="sort by time of last activity">
+                                    <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.Provider.Id, CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "status" })#services">
+                                        <b>Status</b>
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="govuk-table__body">
+                        @foreach (var service in Model.Provider.Services)
                         {
-                            <dl class="govuk-summary-list">
-                                @foreach (var service in Model.Services)
-                                {
-                                    <div class="govuk-summary-list__row">
-                                        <dt class="govuk-summary-list__key">Service Name</dt>
-                                        <dd class="govuk-summary-list__value">@service.ServiceName</dd>
-                                        <dd class="govuk-summary-list__actions">
-                                            <a class="govuk-link" href="@Url.Action("ServiceDetails", "CabService", new { serviceKey = service.ServiceKey })">
-                                                View Details<span class="govuk-visually-hidden"> of @service.ServiceName</span>
-                                            </a>
-                                        </dd>
-                                    </div>
-                                }
-                            </dl>
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">
+                                    @Html.ActionLink(
+                                        service.ServiceName,
+                                        "ProviderServiceDetails",
+                                        "Cab",
+                                        new { serviceKey = service.ServiceKey },
+                                        new { @class = "govuk-link" }
+                                    )
+                                </td>
+                                <td class="govuk-table__cell">
+                                    @HtmlExtensions.GetStyledStatusTag(
+                                        service.CertificateReview?.SingleOrDefault(x => x.IsLatestReviewVersion),
+                                        service.PublicInterestCheck?.SingleOrDefault(x => x.IsLatestReviewVersion),
+                                        service.ServiceStatus,
+                                        service.serviceDraft?.PreviousServiceStatus)
+                                </td>
+                            </tr>
                         }
-                        else
-                        {
-                            <p class="govuk-body">No services have been added yet.</p>
-                        }
-                    </div>
-                </div>
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="govuk-body govuk-!-font-weight-bold">No services have been added yet.</p>
+                }
             </div>
             <div class="govuk-tabs__panel govuk-tabs__panel--hidden govuk-!-padding-0" id="contact-information">
                 <div class="govuk-summary-card">
@@ -171,7 +194,7 @@
                         {
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditPrimaryContact", "CabProvider", new { providerId = Model.Id }, new { @class = "govuk-link",
+                                    @Html.ActionLink("Change", "EditPrimaryContact", "CabProvider", new { providerId = Model.Provider.Id }, new { @class = "govuk-link",
                                     @aria_label = "Change digital identity and attribute service provider's primary contact details"})
                                 </li>
                             </ul>
@@ -181,19 +204,19 @@
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Full name of primary contact</dt>
-                                <dd class="govuk-summary-list__value">@Model.PrimaryContactFullName</dd>
+                                <dd class="govuk-summary-list__value">@Model.Provider.PrimaryContactFullName</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Job title of primary contact</dt>
-                                <dd class="govuk-summary-list__value">@Model.PrimaryContactJobTitle</dd>
+                                <dd class="govuk-summary-list__value">@Model.Provider.PrimaryContactJobTitle</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Email address of primary contact</dt>
-                                <dd class="govuk-summary-list__value">@Model.PrimaryContactEmail</dd>
+                                <dd class="govuk-summary-list__value">@Model.Provider.PrimaryContactEmail</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Telephone number of primary contact</dt>
-                                <dd class="govuk-summary-list__value">@Model.PrimaryContactTelephoneNumber</dd>
+                                <dd class="govuk-summary-list__value">@Model.Provider.PrimaryContactTelephoneNumber</dd>
                             </div>
                         </dl>
                     </div>
@@ -206,7 +229,7 @@
                         {
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditSecondaryContact", "CabProvider", new { providerId = Model.Id }, new{ @class = "govuk-link",
+                                    @Html.ActionLink("Change", "EditSecondaryContact", "CabProvider", new { providerId = Model.Provider.Id }, new{ @class = "govuk-link",
                                     @aria_label = "Change digital identity and attribute service provider's secondary contact details"})
                                 </li>
                             </ul>
@@ -216,19 +239,19 @@
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Full name of secondary contact</dt>
-                                <dd class="govuk-summary-list__value">@Model.SecondaryContactFullName</dd>
+                                <dd class="govuk-summary-list__value">@Model.Provider.SecondaryContactFullName</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Job title of secondary contact</dt>
-                                <dd class="govuk-summary-list__value">@Model.SecondaryContactJobTitle</dd>
+                                <dd class="govuk-summary-list__value">@Model.Provider.SecondaryContactJobTitle</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Email address of secondary contact</dt>
-                                <dd class="govuk-summary-list__value">@Model.SecondaryContactEmail</dd>
+                                <dd class="govuk-summary-list__value">@Model.Provider.SecondaryContactEmail</dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Telephone number of secondary contact</dt>
-                                <dd class="govuk-summary-list__value">@Model.SecondaryContactTelephoneNumber</dd>
+                                <dd class="govuk-summary-list__value">@Model.Provider.SecondaryContactTelephoneNumber</dd>
                             </div>
                         </dl>
                     </div>
