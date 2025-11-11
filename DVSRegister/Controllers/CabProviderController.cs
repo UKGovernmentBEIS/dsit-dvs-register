@@ -547,6 +547,24 @@ namespace DVSRegister.Controllers
 
         #endregion
 
+        # region Provider Details
+        
+        [HttpGet("provider-details/{providerId}")]
+        public async Task<IActionResult> ProviderDetails(int providerId)
+        {
+            var provider = await cabService.GetProvider(providerId, CabId);
+            
+            if (provider == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.IsEditable = true;
+
+            return View(provider);
+        }
+        
+        # endregion
 
         #region Edit Company Information
 

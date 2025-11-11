@@ -181,22 +181,6 @@ namespace DVSRegister.Controllers
 
             return View(vm);
         }
-
-        [HttpGet("provider-details/{providerId}")]
-        public async Task<IActionResult> ProviderDetails(int providerId)
-        {
-            var provider = await cabService.GetProvider(providerId, CabId);
-            
-            if (provider == null)
-            {
-                return NotFound();
-            }
-
-            ViewBag.IsCompanyInfoEditable = cabService.CheckCompanyInfoEditable(provider);
-            ViewBag.IsEditable = true;
-
-            return View(provider);
-        }
     }
 }
 
