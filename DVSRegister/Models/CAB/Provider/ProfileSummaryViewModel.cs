@@ -60,6 +60,10 @@ namespace DVSRegister.Models.CAB
         [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? LinkToContactPage { get; set; }
 
+        [Required(ErrorMessage = "Enter the digital identity and attribute provider's link to contact page")]
+        [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]+)$", ErrorMessage = "Enter a valid public contact page link")]
+        public string? ProvidersLinkToContactPage { get; set; }
+
         public bool FromSummaryPage { get; set; }
     }
 }
