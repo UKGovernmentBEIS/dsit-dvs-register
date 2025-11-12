@@ -21,6 +21,7 @@ namespace DVSRegister.Data.CAB
         public Task<Service> GetServiceDetailsWithProvider(int serviceId, int cabId);
         public Task<(int, List<CabTransferRequest>)> GetPendingReassignRequestsCount(int cabId);
         public  Task<List<string>> GetCabEmailListForServices(List<int> serviceIds);
+        public Task<ProviderProfile> GetProviderWithLatestVersionServices(int providerId, int cabId);
 
         #region Save/update
         public Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile, string loggedInUserEmail);

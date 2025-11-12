@@ -6,7 +6,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ReasonForRemoval", "CabRemovalRequest", new { serviceId = Model.Id, providerId = Model.Provider.Id }, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "ReasonForRemoval", "CabRemovalRequest", new { providerId = Model.ProviderProfileId, serviceId = Model.Id, serviceKey = Model.ServiceKey }, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -44,10 +44,12 @@
                 <div class="govuk-button-group govuk-!-margin-top-6">
                     <a class="govuk-button" href="about-to-remove?serviceId=@Model.Id" role="button">
                         Continue
-                    </a>
-                    <a class="govuk-button govuk-button--secondary" href="reason-for-removing?providerId=@Model.Provider.Id&serviceId=@Model.Id" role="button">
+                    </a>               
+
+                    <a href="@Url.Action("ReasonForRemoval", "CabRemovalRequest", new { providerId = Model.ProviderProfileId, serviceId = Model.Id, serviceKey = Model.ServiceKey})"
+                       role="button" draggable="false" class="govuk-button govuk-button--secondary" aria-label="Return to removal reason">
                         Cancel and back
-                    </a>
+                    </a>                    
                 </div>
             </div>
         </div>

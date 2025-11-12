@@ -17,6 +17,24 @@
                 <h1 class="govuk-heading-xl">
                     Service details: @(String.IsNullOrEmpty(Model.CurrentServiceVersion.ServiceName) ? "Incomplete" : Model.CurrentServiceVersion.ServiceName)
                 </h1>
+                <div class="govuk-button-group" style="float:right!important">
+
+                    @if(Model.CanRemoveService)
+                    {
+                        <a href="@Url.Action("ReasonForRemoval", "CabRemovalRequest", new {providerId = Model.CurrentServiceVersion.ProviderProfileId,  serviceId = Model.PublishedServiceId, serviceKey = Model.CurrentServiceVersion.ServiceKey})"
+                           role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                            Remove service
+                        </a>
+                    }
+                    else if (Model.CanCancelRemovalRequest)
+                    {
+                        <a href="@Url.Action("CancelRemovalRequest", "CabRemovalRequest", new {serviceId = Model.PublishedServiceId})"
+                           role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                            Cancel removal request
+                        </a>
+                    }
+
+                </div>
             </div>
         </div>
         <div class="govuk-grid-row">

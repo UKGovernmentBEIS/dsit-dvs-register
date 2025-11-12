@@ -13,8 +13,9 @@
     @Html.HiddenFor(m => m.ServiceId)
     @Html.HiddenFor(m => m.ProviderId)
     @Html.HiddenFor(m => m.IsProviderRemoval)
+    @Html.HiddenFor(m => m.ServiceKey)
     <div class="govuk-width-container">
-        @Html.ActionLink("Back", "ProviderOverview", "Cab", new { @providerId = Model.ProviderId }, new { @class = "govuk-back-link" })
+        @Html.ActionLink("Back", "ProviderServiceDetails", "Cab", new { @serviceKey = Model.ServiceKey }, new { @class = "govuk-back-link" })
         <main id="main-content" class="govuk-main-wrapper" role="main">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -48,8 +49,10 @@
                         Continue
                     </button>
 
-                    <a href="/cab-service/profile-overview?providerId=@Model.ProviderId" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
-                        Cancel
+
+                    <a href="@Url.Action("ProviderServiceDetails", "Cab", new { serviceKey = Model.ServiceKey})"
+                       role="button" draggable="false" class="govuk-button govuk-button--secondary" aria-label="Return to service details">
+                        Cancel and back
                     </a>
                 </div>
             </div>

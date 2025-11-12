@@ -57,10 +57,11 @@ namespace DVSRegister.Data.CabRemovalRequest
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var service = await context.Service.Include(s => s.ServiceRemovalRequest).FirstOrDefaultAsync(s => s.Id == serviceId);
+                var service = await context.Service.Include(s => s.ServiceRemovalRequest).FirstOrDefaultAsync(s => s.Id == serviceId && s.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation);
 
-                if (service.ServiceRemovalRequest == null || service == null) { 
-                    genericResponse.Success = false; 
+                if (service == null ||service.ServiceRemovalRequest == null ) { 
+                    genericResponse.Success = false;
+                    genericResponse.ErrorType = ErrorTypeEnum.RequestAlreadyProcessed;
                     return genericResponse; 
                 }
 

@@ -227,6 +227,16 @@ namespace DVSRegister.Data.CAB
             return activeCabUserEmails;
         }
 
+        public async Task<ProviderProfile> GetProviderWithLatestVersionServices(int providerId, int cabId)
+        {
+            ProviderProfile provider = new();
+            provider = await context.ProviderProfile.Include(p => p.Services).ThenInclude(p => p.CertificateReview)
+            .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId && s.IsCurrent == true)).ThenInclude(p => p.CabUser)
+            .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
+            .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+            return provider;
+        }
+
         #region Save/update
         public async Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile, string loggedInUserEmail)
         {

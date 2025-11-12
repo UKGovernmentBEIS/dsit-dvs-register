@@ -1,4 +1,6 @@
-﻿namespace DVSRegister.CommonUtility.Models
+﻿using DVSRegister.CommonUtility.Models.Enums;
+
+namespace DVSRegister.CommonUtility.Models
 {
     public class GenericResponse
     {
@@ -9,5 +11,6 @@
 
         public string Data { get; set; }
         public string ErrorMessage { get; set; }
+        public ErrorTypeEnum ErrorType { get; set; }
     }
 }

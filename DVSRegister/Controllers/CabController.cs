@@ -135,6 +135,19 @@ namespace DVSRegister.Controllers
                 || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed;
 
             }
+            serviceVersions.CanRemoveService = serviceList?.Any(x => x.ServiceStatus == ServiceStatusEnum.Published) ?? false;
+            serviceVersions.CanCancelRemovalRequest = serviceList?.Any(x => x.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation) ?? false;
+            if (serviceVersions.CanRemoveService)
+            {
+                var publishedService = serviceList?.Where(s => s.ServiceStatus == ServiceStatusEnum.Published).FirstOrDefault();
+                serviceVersions.PublishedServiceId = publishedService?.Id ?? 0;
+            }
+            else if (serviceVersions.CanCancelRemovalRequest)
+            {
+                var removalRequestedService = serviceList?.Where(s => s.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation).FirstOrDefault();
+                serviceVersions.PublishedServiceId = removalRequestedService?.Id ?? 0; // the service is still published
+            }
+            
             if (currentServiceVersion?.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
             {
                 SetServiceDataToSession(CabId, currentServiceVersion);
