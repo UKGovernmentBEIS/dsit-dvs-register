@@ -493,7 +493,7 @@ namespace DVSRegister.Controllers
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.ProviderWebsiteAddress = profileSummaryViewModel.ProviderWebsiteAddress;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return RedirectToAction("ProfileSummary");
+                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("LinkToContactPage");
             }
             else
             {
@@ -502,38 +502,36 @@ namespace DVSRegister.Controllers
         }
 
         #endregion
+        
+        #region Link To Contact Page
 
-
-        #region Providers Link To Contact Page
-
-        [HttpGet("providers-link-to-contact-page")]
-        public IActionResult ProvidersLinkToContactPage(bool fromSummaryPage)
+        [HttpGet("link-to-contact-page")]
+        public IActionResult LinkToContactPage(bool fromSummaryPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
-            return View("ProvidersLinkToContactPage", profileSummaryViewModel);
+            return View("LinkToContactPage", profileSummaryViewModel);
         }
 
 
-        [HttpPost("providers-link-to-contact-page")]
-        public IActionResult SaveProvidersLinkToContactPage(ProfileSummaryViewModel profileSummaryViewModel)
+        [HttpPost("link-to-contact-page")]
+        public IActionResult SaveLinkToContactPage(ProfileSummaryViewModel profileSummaryViewModel)
         {
             bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
             profileSummaryViewModel.FromSummaryPage = false;
 
-
-            if (ModelState.IsValid)
+            if (ModelState["LinkToContactPage"]?.Errors.Count == 0 || !ModelState.ContainsKey("LinkToContactPage"))
             {
 
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
-                profileSummary.ProvidersLinkToContactPage = profileSummaryViewModel.ProvidersLinkToContactPage;
+                profileSummary.LinkToContactPage = profileSummaryViewModel.LinkToContactPage;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
 
                 return RedirectToAction("ProfileSummary");
             }
             else
             {
-                return View("ProvidersLinkToContactPage", profileSummaryViewModel);
+                return View("LinkToContactPage", profileSummaryViewModel);
             }
         }
 
