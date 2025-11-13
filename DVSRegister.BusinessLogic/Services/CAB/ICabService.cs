@@ -26,6 +26,8 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetPrimaryContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData);
         public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetSecondaryContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData);
         public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetPublicContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData);
+        public Task<ProviderProfileDto> GetProviderWithLatestVersionServices(int providerId, int cabId);
+
         #region Save/update
         public Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfile, string loggedInUserEmail);
         public Task<GenericResponse> SaveService(ServiceDto serviceDto, string loggedInUserEmail);

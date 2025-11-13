@@ -39,8 +39,9 @@
                     </table>
 
                 <p class="govuk-body govuk-!-margin-bottom-5">You will receive an email confirming that you have requested the removal.</p>
-                <a class="govuk-button govuk-!-margin-bottom-9" href="/cab-service/profile-overview?providerId=@Model.ProviderProfileId">
-                    Go back to service provider
+                <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.ProviderProfileId})"
+                   role="button" draggable="false" class="govuk-button" data-module="govuk-button" aria-label="Return to provider overview">
+                    Go back to provider overview
                 </a>
             </div>
         </div>

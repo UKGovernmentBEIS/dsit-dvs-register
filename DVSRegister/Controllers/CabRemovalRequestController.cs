@@ -3,7 +3,9 @@ using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Models.CAB;
+using DVSRegister.CommonUtility.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
+using DVSRegister.CommonUtility;
 
 namespace DVSRegister.Controllers
 {
@@ -15,15 +17,16 @@ namespace DVSRegister.Controllers
         private readonly ILogger<CabRemovalRequestController> logger = logger;
 
 
-        [HttpGet("reason-for-removing")]
-        public async Task<IActionResult> ReasonForRemoval(int providerId, int serviceId)
-        {
+        [HttpGet("reason-for-removing/{providerId}/{serviceId}/{serviceKey}")]
+        public async Task<IActionResult> ReasonForRemoval(int providerId, int serviceId, int serviceKey)
+        { 
             string reasonForRemoval = HttpContext.Session.GetString("ReasonForRemoval") ?? string.Empty;
             bool isProviderRemoval = await cabRemovalRequestService.IsLastService(serviceId, providerId);
             RemovalRequestViewModel removalRequestViewModel = new()
             {
                 ProviderId = providerId,
                 ServiceId = serviceId,
+                ServiceKey = serviceKey,
                 RemovalReasonByCab = !string.IsNullOrEmpty(reasonForRemoval) ? reasonForRemoval : string.Empty,
                 IsProviderRemoval = isProviderRemoval
                
@@ -34,7 +37,7 @@ namespace DVSRegister.Controllers
 
 
         [HttpPost("reason-for-removing")]
-        public async Task<IActionResult> SaveReasonForRemoval(RemovalRequestViewModel removalRequestViewModel)
+        public IActionResult SaveReasonForRemoval(RemovalRequestViewModel removalRequestViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -120,6 +123,8 @@ namespace DVSRegister.Controllers
             }
             else
             {
+                if(genericResponse.ErrorType == ErrorTypeEnum.RequestAlreadyProcessed)
+                    return Redirect(Constants.ActionNotCompletedErrorPath);
                 throw new InvalidOperationException("CancelRemovalRequest failed: Unable to cancel removal request.");
             }
         }

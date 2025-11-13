@@ -272,6 +272,14 @@ namespace DVSRegister.BusinessLogic.Services.CAB
 
         }
 
+        public async Task<ProviderProfileDto> GetProviderWithLatestVersionServices(int providerId, int cabId)
+        {
+            var provider = await cabRepository.GetProviderWithLatestVersionServices(providerId, cabId);
+            ProviderProfileDto providerDto = automapper.Map<ProviderProfileDto>(provider);
+            return providerDto;
+        }
+
+
 
         #region Save/ update
         public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto, string loggedInUserEmail)

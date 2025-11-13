@@ -600,8 +600,8 @@ namespace DVSRegister.Controllers
                 }
             }
 
-            var provider = await cabService.GetProvider(providerId, CabId);
-            
+            var provider = await cabService.GetProviderWithLatestVersionServices(providerId, CabId);
+
             if (provider == null)
             {
                 return NotFound();
