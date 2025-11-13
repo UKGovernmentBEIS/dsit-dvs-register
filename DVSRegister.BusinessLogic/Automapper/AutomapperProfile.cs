@@ -139,6 +139,10 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ActionCategoryDto, ActionCategory>();
             CreateMap<ActionCategoryDto, ActionCategory>();
 
+            CreateMap<ProviderProfileDraft, ProviderProfileDraftDto>();
+            CreateMap<ProviderProfileDraftDto, ProviderProfileDraft>();
+
+
         }
     }
 }

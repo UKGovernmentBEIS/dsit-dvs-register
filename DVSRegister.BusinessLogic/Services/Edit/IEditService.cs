@@ -6,7 +6,7 @@ namespace DVSRegister.BusinessLogic.Services.Edit
 {
     public interface IEditService
     {
-        public Task<GenericResponse> SaveProviderDraft(ProviderProfileDraftDto draftDto, string loggedInUserEmail, List<string> dsitUserEmails);
+        public Task<GenericResponse> SaveProviderDraft(ProviderProfileDraftDto draftDto, string loggedInUserEmail);
         public Task<ProviderProfileDto> GetProviderDetails(int providerId);
         public Task<(Dictionary<string, List<string>>, Dictionary<string, List<string>>)> GetProviderKeyValue(ProviderProfileDraftDto changedProvider, ProviderProfileDto currentProvider);
     }

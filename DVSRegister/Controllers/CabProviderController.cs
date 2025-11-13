@@ -36,7 +36,7 @@ namespace DVSRegister.Controllers
         {          
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             profileSummaryViewModel.SourcePage = sourcePage;
-            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary 
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
                 || sourcePage == SourcePageEnum.ProfileEditSummary 
                 || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/before-you-start";
             return View("RegisteredName", profileSummaryViewModel);
@@ -87,7 +87,7 @@ namespace DVSRegister.Controllers
             
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             profileSummaryViewModel.SourcePage = sourcePage;
-            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
              || sourcePage == SourcePageEnum.ProfileEditSummary
              || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/reg-name";
             return View("TradingName", profileSummaryViewModel);
@@ -126,7 +126,7 @@ namespace DVSRegister.Controllers
         {           
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
             summaryViewModel.SourcePage = sourcePage;
-            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
              || sourcePage == SourcePageEnum.ProfileEditSummary
              || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/trading-name";
             return View(summaryViewModel);
@@ -171,8 +171,8 @@ namespace DVSRegister.Controllers
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
             summaryViewModel.SourcePage = sourcePage;
             summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
-            || sourcePage == SourcePageEnum.ProfileEditSummary
-            || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/trading-name";
+            || sourcePage == SourcePageEnum.ProfileSummary
+            || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/company-number";
             return View(summaryViewModel);
         }
 
@@ -207,7 +207,7 @@ namespace DVSRegister.Controllers
         {
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
             summaryViewModel.SourcePage = sourcePage;
-            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
              || sourcePage == SourcePageEnum.ProfileEditSummary
              || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/company-number";
             return View(summaryViewModel);
@@ -244,7 +244,7 @@ namespace DVSRegister.Controllers
         {
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
             summaryViewModel.SourcePage = sourcePage;
-            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary
             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() 
             : summaryViewModel.HasRegistrationNumber == true? "/cab-service/create-profile/company-number-input": "/cab-service/create-profile/duns-number";
@@ -287,7 +287,7 @@ namespace DVSRegister.Controllers
         {           
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
             summaryViewModel.SourcePage = sourcePage;
-            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary|| sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
             : "/cab-service/create-profile/parent-company";
             return View(summaryViewModel);
@@ -326,7 +326,7 @@ namespace DVSRegister.Controllers
         {          
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
             summaryViewModel.SourcePage = sourcePage;
-            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
             : "/cab-service/create-profile/parent-company-registered-name-input";
             return View(summaryViewModel);
@@ -359,11 +359,13 @@ namespace DVSRegister.Controllers
         #region Primary Contact
 
         [HttpGet("primary-contact-information")]
-        public IActionResult PrimaryContact(SourcePageEnum sourcePage)
+        public IActionResult PrimaryContact(SourcePageEnum? sourcePage)
         {         
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
-            profileSummaryViewModel.SourcePage = sourcePage;
+            profileSummaryViewModel.PrimaryContact.SourcePage = sourcePage;
             ViewBag.hasParentCompany = profileSummaryViewModel.HasParentCompany;
+            profileSummaryViewModel.PrimaryContact.RefererURL = sourcePage == SourcePageEnum.ProfileSummary? GetRefererURL()
+           : profileSummaryViewModel.HasParentCompany == true? "/cab-service/create-profile/parent-company-location-input" : "/cab-service/create-profile/parent-company";
             return View(profileSummaryViewModel.PrimaryContact);
         }
 
@@ -411,10 +413,12 @@ namespace DVSRegister.Controllers
         #region Secondary Contact
 
         [HttpGet("secondary-contact-information")]
-        public IActionResult SecondaryContact(SourcePageEnum sourcePage)
+        public IActionResult SecondaryContact(SourcePageEnum? sourcePage)
         {
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
-            profileSummaryViewModel.SourcePage = sourcePage;
+            profileSummaryViewModel.SecondaryContact.SourcePage = sourcePage;
+            profileSummaryViewModel.SecondaryContact.RefererURL = sourcePage == SourcePageEnum.ProfileSummary ? GetRefererURL()
+            : "/cab-service/create-profile/primary-contact-information";
             return View(profileSummaryViewModel.SecondaryContact);
         }
 
@@ -468,7 +472,7 @@ namespace DVSRegister.Controllers
         {
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             profileSummaryViewModel.SourcePage = sourcePage;
-            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
             : "/cab-service/create-profile/secondary-contact-information";
             return View("PublicContactEmail", profileSummaryViewModel);
@@ -478,7 +482,7 @@ namespace DVSRegister.Controllers
         public IActionResult SavePublicContactEmail(ProfileSummaryViewModel profileSummaryViewModel)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
-            profileSummaryViewModel.FromSummaryPage = false;
+          
             if (ModelState["PublicContactEmail"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
@@ -506,7 +510,7 @@ namespace DVSRegister.Controllers
         {            
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             profileSummaryViewModel.SourcePage = sourcePage;
-            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
             : "/cab-service/create-profile/public-email";
             return View("TelephoneNumber", profileSummaryViewModel);
@@ -543,7 +547,7 @@ namespace DVSRegister.Controllers
         {
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             profileSummaryViewModel.SourcePage = sourcePage;
-            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
            || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
           : "/cab-service/create-profile/public-telephone";
             return View("WebsiteAddress", profileSummaryViewModel);
@@ -580,7 +584,7 @@ namespace DVSRegister.Controllers
         {
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             profileSummaryViewModel.SourcePage = sourcePage;
-            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
             : "/cab-service/create-profile/public-website";
             return View("LinkToContactPage", profileSummaryViewModel);
@@ -1111,11 +1115,11 @@ namespace DVSRegister.Controllers
 
         protected void SetProviderDataToSession(ProviderProfileDto providerProfileDto)
         {
-            ProfileSummaryViewModel profileSummaryViewModel = new(); 
+            ProfileSummaryViewModel profileSummaryViewModel = new();
+            profileSummaryViewModel.ProviderId = providerProfileDto.Id;
             profileSummaryViewModel.RegisteredName = providerProfileDto.RegisteredName;
             profileSummaryViewModel.TradingName = providerProfileDto?.TradingName;
-            profileSummaryViewModel.HasRegistrationNumber = providerProfileDto?.HasRegistrationNumber;
-
+            profileSummaryViewModel.HasRegistrationNumber = providerProfileDto?.HasRegistrationNumber;            
             profileSummaryViewModel.CompanyRegistrationNumber = providerProfileDto.CompanyRegistrationNumber;
             profileSummaryViewModel.DUNSNumber = providerProfileDto.DUNSNumber;
             profileSummaryViewModel.HasParentCompany = providerProfileDto.HasParentCompany;

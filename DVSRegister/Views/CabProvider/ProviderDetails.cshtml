@@ -214,7 +214,7 @@
                                 <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "service") ? Model.CurrentSortAction : "none")"
                                     aria-label="sort by service provider">
                                     <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.Provider.Id, CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "service" })#services">
-                                        <b>Service provider</b>
+                                        <b>Service name</b>
                                     </a>
                                 </th>
                                 <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "date") ? Model.CurrentSortAction : "none")"

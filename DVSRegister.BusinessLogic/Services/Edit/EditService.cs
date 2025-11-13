@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Edit;
 using DVSRegister.Data.Entities;
@@ -14,10 +15,12 @@ namespace DVSRegister.BusinessLogic.Services.Edit
         private readonly IEditRepository editRepository;    
         private readonly IMapper mapper;
         private readonly ILogger<EditService> logger;
-        public EditService(IEditRepository editRepository, IMapper mapper, ILogger<EditService> logger)
+        private readonly ProviderEditEmailSender emailSender;
+        public EditService(IEditRepository editRepository, IMapper mapper, ProviderEditEmailSender emailSender, ILogger<EditService> logger)
         {
           this.editRepository = editRepository;
           this.mapper = mapper;
+          this.emailSender = emailSender;
           this.logger = logger;
           
         }
@@ -28,16 +31,39 @@ namespace DVSRegister.BusinessLogic.Services.Edit
             ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(provider);
             return providerProfileDto;
         }
-        public async Task<GenericResponse> SaveProviderDraft(ProviderProfileDraftDto draftDto, string loggedInUserEmail, List<string> dsitUserEmails)
+        public async Task<GenericResponse> SaveProviderDraft(ProviderProfileDraftDto draftDto, string loggedInUserEmail)
         {
 
             var draftEntity = mapper.Map<ProviderProfileDraft>(draftDto);
             var response = await editRepository.SaveProviderDraft(draftEntity, loggedInUserEmail);
             if (response.Success)
             {
-                //response = await SendProviderUpdateEmail(draftDto, loggedInUserEmail, dsitUserEmails);
+                await SendProviderEditRequestSubmittedEmail(draftDto, loggedInUserEmail);
             }
             return response;
+        }
+
+        private async Task SendProviderEditRequestSubmittedEmail(ProviderProfileDraftDto draftDto, string loggedInUserEmail)
+        { 
+          
+            try
+            {
+                ProviderProfile providerProfile = await editRepository.GetProviderDetails(draftDto.ProviderProfileId);
+                ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(providerProfile);
+                var currentDataDictionary = new Dictionary<string, List<string>>();
+                var previousDataDictionary = new Dictionary<string, List<string>>();
+                GetProviderKeyValueMappings(draftDto, providerProfileDto, currentDataDictionary, previousDataDictionary);
+                string newData = Helper.ConcatenateKeyValuePairs(currentDataDictionary);
+                string previousData = Helper.ConcatenateKeyValuePairs(previousDataDictionary);
+                await emailSender.SendProviderEditRequestSubmittedToCab(loggedInUserEmail, providerProfileDto.RegisteredName,  previousData, newData);
+                await emailSender.SendProviderEditRequestSubmittedToOfdia( providerProfileDto.RegisteredName, newData, previousData);
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("{Message}", ex.Message);               
+            }
+          
         }
 
         public Task<(Dictionary<string, List<string>>, Dictionary<string, List<string>>)> GetProviderKeyValue(ProviderProfileDraftDto changedProvider, ProviderProfileDto currentProvider)
@@ -113,7 +139,25 @@ namespace DVSRegister.BusinessLogic.Services.Edit
                 previousDataDictionary.Add(Constants.ParenyCompanyLocation, [previousData.ParentCompanyLocation]);
                 currentDataDictionary.Add(Constants.ParenyCompanyLocation, [currentData.ParentCompanyLocation]);
             }
-   
+
+            if (currentData.ProviderWebsiteAddress != null)
+            {
+                previousDataDictionary.Add(Constants.ProviderWebsiteAddress, [previousData.ProviderWebsiteAddress]);
+                currentDataDictionary.Add(Constants.ProviderWebsiteAddress, [currentData.ProviderWebsiteAddress]);
+            }
+
+            if (currentData.PublicContactEmail != null)
+            {
+                previousDataDictionary.Add(Constants.PublicContactEmail, [string.IsNullOrEmpty(previousData.PublicContactEmail) ? Constants.NullFieldsDisplay : previousData.PublicContactEmail]);
+                currentDataDictionary.Add(Constants.PublicContactEmail, [currentData.PublicContactEmail]);
+            }
+
+            if (currentData.LinkToContactPage != null)
+            {
+                previousDataDictionary.Add(Constants.LinkToContactPage, [string.IsNullOrEmpty(previousData.LinkToContactPage) ? Constants.NullFieldsDisplay : previousData.LinkToContactPage]);
+                currentDataDictionary.Add(Constants.LinkToContactPage, [currentData.LinkToContactPage]);
+            };
+
         }
 
     }

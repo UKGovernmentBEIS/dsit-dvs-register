@@ -22,12 +22,13 @@ namespace DVSRegister.Data.Edit
             using var transaction = _context.Database.BeginTransaction();
             try
             {
-                var user = await _context.User.FirstOrDefaultAsync(x => x.Email == loggedInUserEmail);
-                draft.RequestedUserId = user.Id;
+                var cabUser = await _context.CabUser.FirstOrDefaultAsync(x => x.CabEmail == loggedInUserEmail);
+                draft.RequestedCabUserId = cabUser.Id;
+                draft.RequestedUserId = null;
                 var existingDraft = await _context.ProviderProfileDraft
                     .FirstOrDefaultAsync(x => x.ProviderProfileId == draft.ProviderProfileId && x.Id == draft.Id);
 
-                var provider = await _context.ProviderProfile.Include(p => p.Services).FirstOrDefaultAsync(x => x.Id == draft.ProviderProfileId);
+                var provider = await _context.ProviderProfile.Include(p => p.Services)!.ThenInclude(x=>x.CabUser).FirstOrDefaultAsync(x => x.Id == draft.ProviderProfileId);
 
                 if (existingDraft != null)
                 {
@@ -37,7 +38,7 @@ namespace DVSRegister.Data.Edit
                 {
                     draft.ModifiedTime = DateTime.UtcNow;
                     await _context.ProviderProfileDraft.AddAsync(draft);
-                    var servicesList = provider?.Services?.Where(x => x.ServiceStatus == ServiceStatusEnum.Published);
+                    var servicesList = provider?.Services?.Where(x => x.ServiceStatus == ServiceStatusEnum.Published && x.CabUser.CabId == cabUser.CabId);
 
                     provider.ProviderStatus = ProviderStatusEnum.UpdatesRequested;
                     provider.ModifiedTime = DateTime.UtcNow;
