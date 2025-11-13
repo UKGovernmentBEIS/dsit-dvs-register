@@ -1,8 +1,10 @@
 ﻿@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models.Enums;
 @model DVSRegister.Models.CAB.ProfileSummaryViewModel
 @{
     ViewData["Title"] = "Check your answers before submitting your information";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    SourcePageEnum sourcePage = SourcePageEnum.ProfileSummary;
 }
 
 @using (Html.BeginForm("SaveProfileSummary", "CabProvider", FormMethod.Post))
@@ -34,7 +36,7 @@
                                         @Model.RegisteredName
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "RegisteredName", "CabProvider", new { fromSummaryPage = true },
+                                        @Html.ActionLink("Change", "RegisteredName", "CabProvider", new { sourcePage = @sourcePage },
                                                  new
                                                       {
                                                           @class = "govuk-link",
@@ -50,7 +52,7 @@
                                         @Html.DisplayFor(model => model.TradingName)
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "TradingName", "CabProvider", new { fromSummaryPage = true },
+                                        @Html.ActionLink("Change", "TradingName", "CabProvider", new { sourcePage = @sourcePage },
                                                  new
                                                       {
                                                           @class = "govuk-link",
@@ -72,7 +74,7 @@
                                             @Model.CompanyRegistrationNumber
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "CompanyRegistrationNumber", "CabProvider", new { fromSummaryPage = true }, new
+                                            @Html.ActionLink("Change", "CompanyRegistrationNumber", "CabProvider", new { sourcePage = @sourcePage }, new
                                                 { @class = "govuk-link", @aria_label = "Change digital identity and attribute service Companies house or charity registration number" })
                                         </dd>
                                     </div>
@@ -89,7 +91,7 @@
                                             @Constants.NullFieldsDisplay
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { fromSummaryPage = true }, new
+                                            @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { sourcePage = @sourcePage }, new
                                                 {
                                                     @class = "govuk-link",
                                                     @aria_label = "Change digital identity and attribute service Companies House or charity registration number"
@@ -106,7 +108,7 @@
                                             @Model.DUNSNumber
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "DUNSNumber", "CabProvider", new { fromSummaryPage = true }, new
+                                            @Html.ActionLink("Change", "DUNSNumber", "CabProvider", new { sourcePage = @sourcePage }, new
                                             {
                                               @class = "govuk-link",
                                               @aria_label = "Change digital identity and attribute service Dun & Bradstreet or D-U-N-S number"
@@ -128,7 +130,7 @@
                                             @Model.ParentCompanyRegisteredName
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "ParentCompanyRegisteredName", "CabProvider", new { fromSummaryPage = true }, new
+                                            @Html.ActionLink("Change", "ParentCompanyRegisteredName", "CabProvider", new { sourcePage = @sourcePage }, new
                                                 { @class = "govuk-link", @aria_label = "Change digital identity and attribute service registered name of parent company" })
                                         </dd>
                                     </div>
@@ -141,7 +143,7 @@
                                             @Model.ParentCompanyLocation
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "ParentCompanyLocation", "CabProvider", new { fromSummaryPage = true }, new
+                                            @Html.ActionLink("Change", "ParentCompanyLocation", "CabProvider", new { sourcePage = @sourcePage }, new
                                                 { @class = "govuk-link", @aria_label = "Change digital identity and attribute service location of parent company" })
                                         </dd>
                                     </div>
@@ -162,7 +164,7 @@
                             <ul class="govuk-summary-card__actions">
 
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "PrimaryContact", "CabProvider", new { fromSummaryPage = true }, new
+                                    @Html.ActionLink("Change", "PrimaryContact", "CabProvider", new { sourcePage = @sourcePage }, new
                                         {
                                             @class = "govuk-link",
                                            @aria_label = "Change digital identity and attribute service primary contact details"
@@ -219,7 +221,7 @@
                             <ul class="govuk-summary-card__actions">
 
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "SecondaryContact", "CabProvider", new { fromSummaryPage = true }, new
+                                    @Html.ActionLink("Change", "SecondaryContact", "CabProvider", new { sourcePage = @sourcePage }, new
                                         {
                                             @class = "govuk-link",
                                          @aria_label = "Change digital identity and attribute service secondary contact details"
@@ -283,7 +285,7 @@
                                         @(string.IsNullOrEmpty(Model.PublicContactEmail) ? Constants.NullFieldsDisplay : Model.PublicContactEmail)
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "PublicContactEmail", "CabProvider", new { fromSummaryPage = true },
+                                        @Html.ActionLink("Change", "PublicContactEmail", "CabProvider", new { sourcePage = @sourcePage },
                                                  new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s Public email address" })
                                     </dd>
                                 </div>
@@ -295,7 +297,7 @@
                                         @Html.DisplayFor(model => model.ProviderTelephoneNumber)
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "TelephoneNumber", "CabProvider", new { fromSummaryPage = true },
+                                        @Html.ActionLink("Change", "TelephoneNumber", "CabProvider", new { sourcePage = @sourcePage },
                                                  new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s telephone number" })
                                     </dd>
                                 </div>
@@ -308,7 +310,7 @@
                                         @Model.ProviderWebsiteAddress
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "WebsiteAddress", "CabProvider", new { fromSummaryPage = true },
+                                        @Html.ActionLink("Change", "WebsiteAddress", "CabProvider", new { sourcePage = @sourcePage },
                                                  new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
                                     </dd>
                                 </div>
@@ -321,7 +323,7 @@
                                         @Model.LinkToContactPage
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "LinkToContactPage", "CabProvider", new { fromSummaryPage = true },
+                                        @Html.ActionLink("Change", "LinkToContactPage", "CabProvider", new { sourcePage = @sourcePage },
                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s public link to contact us page" })
                                     </dd>
                                 </div>

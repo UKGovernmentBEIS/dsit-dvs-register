@@ -2,6 +2,7 @@
 @using DVSRegister.CommonUtility
 @using DVSRegister.Extensions
 @using DVSRegister.Models.CAB.Provider
+@using DVSRegister.CommonUtility.Models.Enums;
 @model ProviderDetailsViewModel
 
 @{
@@ -9,6 +10,9 @@
     ViewData["ActiveNav"] = "AllProviders";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
     string refererUrl = Convert.ToString(ViewBag.RefererUrl);
+    bool isEditable = Model.Provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested;
+    bool adminEditInProgress = Model.Provider.ProviderProfileDraft != null && Model.Provider.ProviderProfileDraft.IsAdminRequested;
+    SourcePageEnum sourcePage = SourcePageEnum.ProfileDetails;
 }
 
 
@@ -48,26 +52,40 @@
             <div class="govuk-tabs__panel govuk-!-padding-0" id="overview">
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
-                        <h2 class="govuk-summary-card__title">Company information</h2>
-                        @if (ViewBag.IsEditable)
-                        {
-                            <ul class="govuk-summary-card__actions">
-                                <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditCompanyInformation", "CabProvider", new { providerId = Model.Provider.Id }, new { @class = "govuk-link",
-                                    @aria_label = "Change digital identity and attribute service provider's company information"})
-                                </li>
-                            </ul>
-                        }
+                        <h2 class="govuk-summary-card__title">Company information</h2>                        
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Registered name</dt>
                                 <dd class="govuk-summary-list__value">@Model.Provider.RegisteredName</dd>
+                                <dd class="govuk-summary-list__actions">
+                                    @if (isEditable)
+                                    {
+                                        @Html.ActionLink("Change", "RegisteredName", "CabProvider", new { sourcePage = @sourcePage },
+                                                 new
+                                                 {
+                                                     @class = "govuk-link",
+                                                     @aria_label = "Change digital identity and attribute service provider’s registered company name"
+                                                 })
+                                    }
+                                    
+                                </dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Trading names</dt>
                                 <dd class="govuk-summary-list__value">@Html.DisplayFor(p => p.Provider.TradingName)</dd>
+                                <dd class="govuk-summary-list__actions">
+                                    @if (isEditable)
+                                    {
+                                    @Html.ActionLink("Change", "TradingName", "CabProvider", new { sourcePage = @sourcePage },
+                                         new
+                                         {
+                                             @class = "govuk-link",
+                                             @aria_label = "Change digital identity and attribute service provider’s trading name"
+                                         })
+                                    }
+                                </dd>
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
@@ -76,6 +94,14 @@
                                 <dd class="govuk-summary-list__value">
                                     @(Model.Provider.HasRegistrationNumber ? Model.Provider.CompanyRegistrationNumber : Constants.NullFieldsDisplay)
                                 </dd>
+                                @if(isEditable)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { sourcePage = @sourcePage }, new
+                                            { @class = "govuk-link", @aria_label = "Change digital identity and attribute service Companies house or charity registration number" })
+                                    </dd>
+                                }
+                               
                             </div>
 
                             @if (!Model.Provider.HasRegistrationNumber)
@@ -83,6 +109,13 @@
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">D U-N-S number</dt>
                                     <dd class="govuk-summary-list__value">@Model.Provider.DUNSNumber</dd>
+                                    @if (isEditable)
+                                    {
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { sourcePage = @sourcePage }, new
+                                                { @class = "govuk-link", @aria_label = "Change digital identity and attribute DUNS number" })
+                                        </dd>
+                                    }
                             </div>
                             }
                             <div class="govuk-summary-list__row">
@@ -90,46 +123,82 @@
                                 <dd class="govuk-summary-list__value">
                                     @(string.IsNullOrEmpty(Model.Provider.ParentCompanyRegisteredName) ? Constants.NullFieldsDisplay : Model.Provider.ParentCompanyRegisteredName)
                                 </dd>
+
+                                @if (isEditable)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "HasParentCompany", "CabProvider", new { sourcePage = @sourcePage }, new
+                                            { @class = "govuk-link", @aria_label = "Change digital identity and attribute parent company" })
+                                    </dd>
+                                }
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Location of parent company</dt>
                                 <dd class="govuk-summary-list__value">
                                     @(string.IsNullOrEmpty(Model.Provider.ParentCompanyLocation) ? Constants.NullFieldsDisplay : Model.Provider.ParentCompanyLocation)
                                 </dd>
+                                @if (isEditable)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "HasParentCompany", "CabProvider", new { sourcePage = @sourcePage }, new
+                                            { @class = "govuk-link", @aria_label = "Change digital identity and attribute parent company" })
+                                    </dd>
+                                }
                             </div>
                         </dl>
                     </div>
                 </div>
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
-                        <h2 class="govuk-summary-card__title">Public provider information</h2>
-                        @if (ViewBag.IsEditable)
-                        {
-                            <ul class="govuk-summary-card__actions">
-                                <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditPublicProviderInformation", "CabProvider", new { providerId = Model.Provider.Id }, new { @class = "govuk-link",
-                                        @aria_label = "Change digital identity and attribute service provider's company information"})
-                                </li>
-                            </ul>
-                        }
+                        <h2 class="govuk-summary-card__title">Public provider information</h2>                      
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Contact email</dt>
                                 <dd class="govuk-summary-list__value">@(string.IsNullOrEmpty(Model.Provider.PublicContactEmail) ? Constants.NullFieldsDisplay : Model.Provider.PublicContactEmail)</dd>
+                           
+                                @if(isEditable)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "PublicContactEmail", "CabProvider", new { sourcePage = @sourcePage },
+                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s Public email address" })
+                                    </dd>
+                                }
+                               
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Telephone number</dt>
                                 <dd class="govuk-summary-list__value">@Html.DisplayFor(p => p.Provider.ProviderTelephoneNumber)</dd>
+                                @if(isEditable)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "TelephoneNumber", "CabProvider", new { sourcePage = @sourcePage },
+                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s telephone number" })
+                                    </dd>
+                                }
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Website address</dt>
                                 <dd class="govuk-summary-list__value">@Model.Provider.ProviderWebsiteAddress</dd>
+                                @if(isEditable)
+                                {
+                                    <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "WebsiteAddress", "CabProvider", new { sourcePage = @sourcePage },
+                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
+                                    </dd>
+                                }
                             </div>
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Link to Contact Page</dt>
                                 <dd class="govuk-summary-list__value">@Html.DisplayFor(p => p.Provider.LinkToContactPage)</dd>
+                                @if(isEditable)
+                                {
+                                     <dd class="govuk-summary-list__actions">
+                                        @Html.ActionLink("Change", "LinkToContactPage", "CabProvider", new { sourcePage = @sourcePage },
+                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s public link to contact us page" })
+                                    </dd>
+                                }
                             </div>
                         </dl>
                     </div>
@@ -174,7 +243,9 @@
                                         service.CertificateReview?.SingleOrDefault(x => x.IsLatestReviewVersion),
                                         service.PublicInterestCheck?.SingleOrDefault(x => x.IsLatestReviewVersion),
                                         service.ServiceStatus,
-                                        service.serviceDraft?.PreviousServiceStatus)
+                                        service.serviceDraft?.PreviousServiceStatus
+                                        ,adminEditInProgress
+                                    )
                                 </td>
                             </tr>
                         }
@@ -190,15 +261,7 @@
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">Primary contact's details</h2>
-                        @if (ViewBag.IsEditable)
-                        {
-                            <ul class="govuk-summary-card__actions">
-                                <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditPrimaryContact", "CabProvider", new { providerId = Model.Provider.Id }, new { @class = "govuk-link",
-                                    @aria_label = "Change digital identity and attribute service provider's primary contact details"})
-                                </li>
-                            </ul>
-                        }
+                     
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">

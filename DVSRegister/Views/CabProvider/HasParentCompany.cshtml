@@ -10,17 +10,13 @@
 
 @using (Html.BeginForm("SaveHasParentCompany", "CabProvider", FormMethod.Post))
 {
-    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
 
+    @Html.HiddenFor(m => m.SourcePage)
+    @Html.HiddenFor(m => m.RefererURL)
     <div class="govuk-width-container">
-        @if(Convert.ToBoolean(Model.HasRegistrationNumber))
-        {
-            @Html.ActionLink("Back", "CompanyRegistrationNumber", "CabProvider", null, new { @class = "govuk-back-link" })
-        }
-        else
-        {
-            @Html.ActionLink("Back", "DUNSNumber", "CabProvider", null, new { @class = "govuk-back-link" })
-        }
+        <a href="@Model.RefererURL" class="govuk-back-link">
+            Back
+        </a>
 
         <main id="main-content" class="govuk-main-wrapper" role="main">
             <div class="govuk-grid-row">

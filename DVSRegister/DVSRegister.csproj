@@ -46,6 +46,8 @@
     <Content Remove="wwwroot\css\utilities\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Views\CabProviderEdit\ProfileEditSummary.cshtml" />
+    <None Include="Views\CabProviderEdit\ProviderDifference.cshtml" />
     <None Include="Views\CabTransfer\PartialViews\_PendingSubmissions.cshtml" />
     <None Include="Views\PartialViews\_ErrorSummaryView.cshtml" />
   </ItemGroup>

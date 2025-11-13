@@ -1,9 +1,10 @@
-﻿using DVSRegister.Validations;
+﻿using DVSRegister.Models.CAB.Provider;
+using DVSRegister.Validations;
 using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.Models.CAB
 {
-    public class PrimaryContactViewModel
+    public class PrimaryContactViewModel : ProviderSummaryBaseViewModel
     {
         [Required(ErrorMessage = "Enter a full name")]
         public string? PrimaryContactFullName { get; set; }
@@ -18,7 +19,7 @@ namespace DVSRegister.Models.CAB
 
         [Required(ErrorMessage = "Enter a telephone number, like 01632 960000, 07700 900 000 or +44 20 7946 0000")]
         public string? PrimaryContactTelephoneNumber { get; set; }
-        public bool FromSummaryPage { get; set; }
-        public int ProviderId { get; set; }
+     
+
     }
 }

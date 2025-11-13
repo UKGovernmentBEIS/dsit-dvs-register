@@ -1,6 +1,7 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Users;
 using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.BusinessLogic.Models
@@ -37,8 +38,15 @@ namespace DVSRegister.BusinessLogic.Models
         [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? ProviderTelephoneNumber { get; set; }
         public string? ProviderWebsiteAddress { get; set; }
+        public string? LinkToContactPage { get; set; }
+        public ProviderStatusEnum PreviousProviderStatus { get; set; }       
         public string? CurrentProviderStatus { get; set; }
         public int RequestedUserId { get; set; }
         public UserDto User { get; set; }
+
+     
+        public int? RequestedCabUserId { get; set; }
+        public CabUserDto? CabUser { get; set; }
+        public bool IsAdminRequested { get; set; }
     }
 }
