@@ -58,6 +58,13 @@ namespace DVSRegister.Data.Repositories
             cab = await context.Cab.FirstOrDefaultAsync<Cab>(e => e.CabName == cabName);
             return cab;
         }
+
+        public async Task<List<string>> GetDSITUserEmails()
+        {
+            List<string> userEmails = await context.User.Where(u => u.Profile == "DSIT")
+            .Select(u => u.Email).ToListAsync() ?? new List<string>();
+            return userEmails;
+        }
     }
 }
 

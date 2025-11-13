@@ -22,23 +22,30 @@ namespace DVSRegister.Controllers
         private readonly IActionLogService actionLogService = actionLogService;
 
         [HttpGet("before-you-start")]
-        public IActionResult BeforeYouStart() => View();
+        public IActionResult BeforeYouStart()
+        {
+            HttpContext?.Session.Remove("ProfileSummary"); // clear data in session before adding a new profile
+            return View();
+        }
 
 
         #region Registered Name
 
         [HttpGet("reg-name")]
-        public IActionResult RegisteredName(bool fromSummaryPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
+        public IActionResult RegisteredName(SourcePageEnum sourcePage)
+        {          
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            profileSummaryViewModel.SourcePage = sourcePage;
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary 
+                || sourcePage == SourcePageEnum.ProfileEditSummary 
+                || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/before-you-start";
             return View("RegisteredName", profileSummaryViewModel);
         }
 
         [HttpPost("reg-name")]
         public async Task<IActionResult> SaveRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
             profileSummaryViewModel.FromSummaryPage = false;
 
             if (!string.IsNullOrEmpty(profileSummaryViewModel.RegisteredName))
@@ -56,7 +63,12 @@ namespace DVSRegister.Controllers
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.RegisteredName = profileSummaryViewModel.RegisteredName;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("TradingName");
+                return sourcePage switch
+                {
+                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                    _ => RedirectToAction("TradingName")
+                };
             }
             else
             {
@@ -70,24 +82,33 @@ namespace DVSRegister.Controllers
         #region Trading Name
 
         [HttpGet("trading-name")]
-        public IActionResult TradingName(bool fromSummaryPage)
+        public IActionResult TradingName(SourcePageEnum sourcePage)
         {
-            ViewBag.fromSummaryPage = fromSummaryPage;
+            
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            profileSummaryViewModel.SourcePage = sourcePage;
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+             || sourcePage == SourcePageEnum.ProfileEditSummary
+             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/reg-name";
             return View("TradingName", profileSummaryViewModel);
         }
 
         [HttpPost("trading-name")]
         public IActionResult SaveTradingName(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
-            profileSummaryViewModel.FromSummaryPage = false;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
+  
             if (ModelState["TradingName"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.TradingName = profileSummaryViewModel.TradingName;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("HasRegistrationNumber");
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);               
+                return sourcePage switch
+                {
+                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                    _ => RedirectToAction("HasRegistrationNumber")
+                };
             }
             else
             {
@@ -101,10 +122,13 @@ namespace DVSRegister.Controllers
         #region HasCompanyRegistrationNumber
 
         [HttpGet("company-number")]
-        public IActionResult HasRegistrationNumber(bool fromSummaryPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
+        public IActionResult HasRegistrationNumber(SourcePageEnum sourcePage)
+        {           
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            summaryViewModel.SourcePage = sourcePage;
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+             || sourcePage == SourcePageEnum.ProfileEditSummary
+             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/trading-name";
             return View(summaryViewModel);
         }
 
@@ -113,8 +137,8 @@ namespace DVSRegister.Controllers
         public IActionResult SaveHasRegistrationNumber(ProfileSummaryViewModel profileSummaryViewModel)
         {
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
-            profileSummaryViewModel.FromSummaryPage = false;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
+           
             if (ModelState["HasRegistrationNumber"].Errors.Count == 0)
             {
                 summaryViewModel.HasRegistrationNumber = profileSummaryViewModel.HasRegistrationNumber;
@@ -122,13 +146,13 @@ namespace DVSRegister.Controllers
                 {
                     summaryViewModel.DUNSNumber = null;
                     HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
-                    return RedirectToAction("CompanyRegistrationNumber", new { fromSummaryPage = fromSummaryPage });
+                    return RedirectToAction("CompanyRegistrationNumber", new { sourcePage = sourcePage });
                 }
                 else
                 {
                     summaryViewModel.CompanyRegistrationNumber = null;
                     HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
-                    return RedirectToAction("DUNSNumber", new { fromSummaryPage = fromSummaryPage });
+                    return RedirectToAction("DUNSNumber", new { sourcePage = sourcePage });
                 }
             }
             else
@@ -142,24 +166,31 @@ namespace DVSRegister.Controllers
         #region Registration number
 
         [HttpGet("company-number-input")]
-        public IActionResult CompanyRegistrationNumber(bool fromSummaryPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
+        public IActionResult CompanyRegistrationNumber(SourcePageEnum sourcePage)
+        {           
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            summaryViewModel.SourcePage = sourcePage;
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            || sourcePage == SourcePageEnum.ProfileEditSummary
+            || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/trading-name";
             return View(summaryViewModel);
         }
 
         [HttpPost("company-number-input")]
         public IActionResult SaveCompanyRegistrationNumber(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
-            profileSummaryViewModel.FromSummaryPage = false;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;      
             if (ModelState["CompanyRegistrationNumber"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.CompanyRegistrationNumber = profileSummaryViewModel.CompanyRegistrationNumber;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("HasParentCompany");
+                return sourcePage switch
+                {
+                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                    _ => RedirectToAction("HasParentCompany")
+                };
             }
             else
             {
@@ -172,24 +203,31 @@ namespace DVSRegister.Controllers
         #region DUNSNumber
 
         [HttpGet("duns-number")]
-        public IActionResult DUNSNumber(bool fromSummaryPage)
+        public IActionResult DUNSNumber(SourcePageEnum sourcePage)
         {
-            ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            summaryViewModel.SourcePage = sourcePage;
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+             || sourcePage == SourcePageEnum.ProfileEditSummary
+             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/company-number";
             return View(summaryViewModel);
         }
 
         [HttpPost("duns-number")]
         public IActionResult SaveDUNSNumber(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
-            profileSummaryViewModel.FromSummaryPage = false;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;        
             if (ModelState["DUNSNumber"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.DUNSNumber = profileSummaryViewModel.DUNSNumber;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("HasParentCompany");
+                return sourcePage switch
+                {
+                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                    _ => RedirectToAction("HasParentCompany")
+                };
             }
             else
             {
@@ -202,35 +240,36 @@ namespace DVSRegister.Controllers
         #region HasParentCompany
 
         [HttpGet("parent-company")]
-        public IActionResult HasParentCompany(bool fromSummaryPage)
+        public IActionResult HasParentCompany(SourcePageEnum sourcePage)
         {
-            ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            summaryViewModel.SourcePage = sourcePage;
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            || sourcePage == SourcePageEnum.ProfileEditSummary
+            || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() 
+            : summaryViewModel.HasRegistrationNumber == true? "/cab-service/create-profile/company-number-input": "/cab-service/create-profile/duns-number";
             return View(summaryViewModel);
         }
 
         [HttpPost("parent-company")]
         public IActionResult SaveHasParentCompany(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
-            profileSummaryViewModel.FromSummaryPage = false;
-            profileSummaryViewModel.HasRegistrationNumber =
-                summaryViewModel.HasRegistrationNumber; // required to add condition for back link
+            ProfileSummaryViewModel summaryViewModel = GetProfileSummary();          
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
             if (ModelState["HasParentCompany"].Errors.Count == 0)
             {
                 summaryViewModel.HasParentCompany = profileSummaryViewModel.HasParentCompany;
                 if (Convert.ToBoolean(summaryViewModel.HasParentCompany))
                 {
                     HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
-                    return RedirectToAction("ParentCompanyRegisteredName", new { fromSummaryPage = fromSummaryPage });
+                    return RedirectToAction("ParentCompanyRegisteredName", new { sourcePage = sourcePage });
                 }
                 else
                 {
                     summaryViewModel.ParentCompanyLocation = null;
                     summaryViewModel.ParentCompanyRegisteredName = null;
                     HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
-                    return RedirectToAction("PrimaryContact", new { fromSummaryPage = fromSummaryPage });
+                    return RedirectToAction("PrimaryContact", new { sourcePage = sourcePage });
                 }
             }
             else
@@ -244,10 +283,13 @@ namespace DVSRegister.Controllers
         #region Parent company registered name
 
         [HttpGet("parent-company-registered-name-input")]
-        public IActionResult ParentCompanyRegisteredName(bool fromSummaryPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
+        public IActionResult ParentCompanyRegisteredName(SourcePageEnum sourcePage)
+        {           
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            summaryViewModel.SourcePage = sourcePage;
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            || sourcePage == SourcePageEnum.ProfileEditSummary|| sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
+            : "/cab-service/create-profile/parent-company";
             return View(summaryViewModel);
         }
 
@@ -255,14 +297,19 @@ namespace DVSRegister.Controllers
         [HttpPost("parent-company-registered-name-input")]
         public IActionResult SaveParentCompanyRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
-            profileSummaryViewModel.FromSummaryPage = false;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
             if (ModelState["ParentCompanyRegisteredName"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.ParentCompanyRegisteredName = profileSummaryViewModel.ParentCompanyRegisteredName;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("ParentCompanyLocation");
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);              
+                return sourcePage switch
+                {
+                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails =>  string.IsNullOrEmpty(profileSummary.ParentCompanyLocation)?
+                    RedirectToAction("ParentCompanyLocation", new { sourcePage  = sourcePage }): RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                    _ => RedirectToAction("ParentCompanyLocation")
+                };
             }
             else
             {
@@ -275,24 +322,31 @@ namespace DVSRegister.Controllers
         #region Parent company location
 
         [HttpGet("parent-company-location-input")]
-        public IActionResult ParentCompanyLocation(bool fromSummaryPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
+        public IActionResult ParentCompanyLocation(SourcePageEnum sourcePage)
+        {          
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
+            summaryViewModel.SourcePage = sourcePage;
+            summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
+            : "/cab-service/create-profile/parent-company-registered-name-input";
             return View(summaryViewModel);
         }
 
         [HttpPost("parent-company-location-input")]
         public IActionResult SaveParentCompanyLocation(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
-            profileSummaryViewModel.FromSummaryPage = false;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage ;
             if (ModelState["ParentCompanyLocation"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.ParentCompanyLocation = profileSummaryViewModel.ParentCompanyLocation;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PrimaryContact");
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);                
+                return sourcePage switch
+                {
+                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                    _ => RedirectToAction("PrimaryContact")
+                };
             }
             else
             {
@@ -305,10 +359,10 @@ namespace DVSRegister.Controllers
         #region Primary Contact
 
         [HttpGet("primary-contact-information")]
-        public IActionResult PrimaryContact(bool fromSummaryPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
+        public IActionResult PrimaryContact(SourcePageEnum sourcePage)
+        {         
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            profileSummaryViewModel.SourcePage = sourcePage;
             ViewBag.hasParentCompany = profileSummaryViewModel.HasParentCompany;
             return View(profileSummaryViewModel.PrimaryContact);
         }
@@ -316,12 +370,8 @@ namespace DVSRegister.Controllers
         [HttpPost("primary-contact-information")]
         public IActionResult SavePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
         {
-            bool fromSummaryPage = primaryContactViewModel.FromSummaryPage;
-            primaryContactViewModel.FromSummaryPage = false;
-
+          SourcePageEnum? sourcePage = primaryContactViewModel.SourcePage ;
             ProfileSummaryViewModel profileSummary = GetProfileSummary();
-
-
             ValidationHelper.ValidateDuplicateFields(
                 ModelState,
                 primaryContactViewModel.PrimaryContactEmail,
@@ -348,7 +398,7 @@ namespace DVSRegister.Controllers
             {
                 profileSummary.PrimaryContact = primaryContactViewModel;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("SecondaryContact");
+                return sourcePage == SourcePageEnum.ProfileSummary ? RedirectToAction("ProfileSummary") : RedirectToAction("SecondaryContact");
             }
             else
             {
@@ -361,10 +411,10 @@ namespace DVSRegister.Controllers
         #region Secondary Contact
 
         [HttpGet("secondary-contact-information")]
-        public IActionResult SecondaryContact(bool fromSummaryPage)
+        public IActionResult SecondaryContact(SourcePageEnum sourcePage)
         {
-            ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            profileSummaryViewModel.SourcePage = sourcePage;
             return View(profileSummaryViewModel.SecondaryContact);
         }
 
@@ -372,9 +422,7 @@ namespace DVSRegister.Controllers
         [HttpPost("secondary-contact-information")]
         public IActionResult SaveSecondaryContact(SecondaryContactViewModel secondaryContactViewModel)
         {
-            bool fromSummaryPage = secondaryContactViewModel.FromSummaryPage;
-            secondaryContactViewModel.FromSummaryPage = false;
-
+           SourcePageEnum? sourcePage = secondaryContactViewModel.SourcePage;
             ProfileSummaryViewModel profileSummary = GetProfileSummary();
 
             ValidationHelper.ValidateDuplicateFields(
@@ -403,7 +451,7 @@ namespace DVSRegister.Controllers
             {
                 profileSummary.SecondaryContact = secondaryContactViewModel;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("PublicContactEmail");
+                return sourcePage == SourcePageEnum.ProfileSummary ? RedirectToAction("ProfileSummary") : RedirectToAction("PublicContactEmail");
             }
             else
             {
@@ -416,24 +464,32 @@ namespace DVSRegister.Controllers
         #region Public contact email
 
         [HttpGet("public-email")]
-        public IActionResult PublicContactEmail(bool fromSummaryPage)
+        public IActionResult PublicContactEmail(SourcePageEnum sourcePage)
         {
-            ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            profileSummaryViewModel.SourcePage = sourcePage;
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
+            : "/cab-service/create-profile/secondary-contact-information";
             return View("PublicContactEmail", profileSummaryViewModel);
         }
 
         [HttpPost("public-email")]
         public IActionResult SavePublicContactEmail(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
             profileSummaryViewModel.FromSummaryPage = false;
             if (ModelState["PublicContactEmail"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.PublicContactEmail = profileSummaryViewModel.PublicContactEmail;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("TelephoneNumber");
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);            
+                return sourcePage switch
+                {
+                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                    _ => RedirectToAction("TelephoneNumber")
+                };
             }
             else
             {
@@ -446,24 +502,31 @@ namespace DVSRegister.Controllers
         #region Telephone number
 
         [HttpGet("public-telephone")]
-        public IActionResult TelephoneNumber(bool fromSummaryPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
+        public IActionResult TelephoneNumber(SourcePageEnum sourcePage)
+        {            
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            profileSummaryViewModel.SourcePage = sourcePage;
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
+            : "/cab-service/create-profile/public-email";
             return View("TelephoneNumber", profileSummaryViewModel);
         }
 
         [HttpPost("public-telephone")]
         public IActionResult SaveTelephoneNumber(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
-            profileSummaryViewModel.FromSummaryPage = false;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;        
             if (ModelState["ProviderTelephoneNumber"]?.Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.ProviderTelephoneNumber = profileSummaryViewModel.ProviderTelephoneNumber;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("WebsiteAddress");
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);               
+                return sourcePage switch
+                {
+                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                    _ => RedirectToAction("WebsiteAddress")
+                };
             }
             else
             {
@@ -476,24 +539,31 @@ namespace DVSRegister.Controllers
         #region Website address
 
         [HttpGet("public-website")]
-        public IActionResult WebsiteAddress(bool fromSummaryPage)
+        public IActionResult WebsiteAddress(SourcePageEnum sourcePage)
         {
-            ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            profileSummaryViewModel.SourcePage = sourcePage;
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+           || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
+          : "/cab-service/create-profile/public-telephone";
             return View("WebsiteAddress", profileSummaryViewModel);
         }
 
         [HttpPost("public-website")]
         public IActionResult SaveWebsiteAddress(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
-            profileSummaryViewModel.FromSummaryPage = false;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;          
             if (ModelState["ProviderWebsiteAddress"]?.Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.ProviderWebsiteAddress = profileSummaryViewModel.ProviderWebsiteAddress;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return fromSummaryPage ? RedirectToAction("ProfileSummary") : RedirectToAction("LinkToContactPage");
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);               
+                return sourcePage switch
+                {
+                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                    _ => RedirectToAction("LinkToContactPage")
+                };
             }
             else
             {
@@ -506,10 +576,13 @@ namespace DVSRegister.Controllers
         #region Link To Contact Page
 
         [HttpGet("link-to-contact-page")]
-        public IActionResult LinkToContactPage(bool fromSummaryPage)
+        public IActionResult LinkToContactPage(SourcePageEnum sourcePage)
         {
-            ViewBag.fromSummaryPage = fromSummaryPage;
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            profileSummaryViewModel.SourcePage = sourcePage;
+            profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
+            || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
+            : "/cab-service/create-profile/public-website";
             return View("LinkToContactPage", profileSummaryViewModel);
         }
 
@@ -517,17 +590,18 @@ namespace DVSRegister.Controllers
         [HttpPost("link-to-contact-page")]
         public IActionResult SaveLinkToContactPage(ProfileSummaryViewModel profileSummaryViewModel)
         {
-            bool fromSummaryPage = profileSummaryViewModel.FromSummaryPage;
-            profileSummaryViewModel.FromSummaryPage = false;
+            SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;          
 
             if (ModelState["LinkToContactPage"]?.Errors.Count == 0 || !ModelState.ContainsKey("LinkToContactPage"))
             {
-
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.LinkToContactPage = profileSummaryViewModel.LinkToContactPage;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-
-                return RedirectToAction("ProfileSummary");
+                return sourcePage switch
+                {                   
+                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                    _ => RedirectToAction("ProfileSummary")
+                };
             }
             else
             {
@@ -601,7 +675,7 @@ namespace DVSRegister.Controllers
             }
 
             var provider = await cabService.GetProviderWithLatestVersionServices(providerId, CabId);
-
+            SetProviderDataToSession(provider);
             if (provider == null)
             {
                 return NotFound();
@@ -1034,8 +1108,39 @@ namespace DVSRegister.Controllers
 
             return providerDto;
         }
-           
 
-    #endregion
-}
+        protected void SetProviderDataToSession(ProviderProfileDto providerProfileDto)
+        {
+            ProfileSummaryViewModel profileSummaryViewModel = new(); 
+            profileSummaryViewModel.RegisteredName = providerProfileDto.RegisteredName;
+            profileSummaryViewModel.TradingName = providerProfileDto?.TradingName;
+            profileSummaryViewModel.HasRegistrationNumber = providerProfileDto?.HasRegistrationNumber;
+
+            profileSummaryViewModel.CompanyRegistrationNumber = providerProfileDto.CompanyRegistrationNumber;
+            profileSummaryViewModel.DUNSNumber = providerProfileDto.DUNSNumber;
+            profileSummaryViewModel.HasParentCompany = providerProfileDto.HasParentCompany;
+            profileSummaryViewModel.ParentCompanyRegisteredName = providerProfileDto.ParentCompanyRegisteredName;
+            profileSummaryViewModel.ParentCompanyLocation = providerProfileDto.ParentCompanyLocation;
+            profileSummaryViewModel.PrimaryContact = new PrimaryContactViewModel();
+            profileSummaryViewModel.PrimaryContact.PrimaryContactFullName = providerProfileDto.PrimaryContactFullName;
+            profileSummaryViewModel.PrimaryContact.PrimaryContactJobTitle = providerProfileDto.PrimaryContactJobTitle;
+            profileSummaryViewModel.PrimaryContact.PrimaryContactEmail = providerProfileDto.PrimaryContactEmail;
+            profileSummaryViewModel.SecondaryContact = new SecondaryContactViewModel();
+            profileSummaryViewModel.PrimaryContact.PrimaryContactTelephoneNumber = providerProfileDto.PrimaryContactTelephoneNumber;
+            profileSummaryViewModel.SecondaryContact.SecondaryContactFullName = providerProfileDto.SecondaryContactFullName;
+            profileSummaryViewModel.SecondaryContact.SecondaryContactJobTitle = providerProfileDto.SecondaryContactJobTitle;
+            profileSummaryViewModel.SecondaryContact.SecondaryContactEmail = providerProfileDto.SecondaryContactEmail;
+            profileSummaryViewModel.SecondaryContact.SecondaryContactTelephoneNumber = providerProfileDto.SecondaryContactTelephoneNumber;
+            profileSummaryViewModel.PublicContactEmail = providerProfileDto.PublicContactEmail;
+            profileSummaryViewModel.ProviderTelephoneNumber = providerProfileDto.ProviderTelephoneNumber;
+            profileSummaryViewModel.ProviderWebsiteAddress = providerProfileDto.ProviderWebsiteAddress;
+            profileSummaryViewModel.LinkToContactPage = providerProfileDto.LinkToContactPage;
+
+            HttpContext?.Session.Set("ProfileSummary", profileSummaryViewModel);
+
+
+        }
+
+            #endregion
+        }
 }

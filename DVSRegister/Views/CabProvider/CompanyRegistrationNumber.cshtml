@@ -9,7 +9,8 @@
 
 @using (Html.BeginForm("SaveCompanyRegistrationNumber", "CabProvider", FormMethod.Post))
 {
-@Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+@Html.HiddenFor(m => m.SourcePage)
+@Html.HiddenFor(m => m.RefererURL)
 
 <div class="govuk-width-container">
         @Html.ActionLink("Back", "HasRegistrationNumber", "CabProvider", new { fromSummaryPage = ViewBag.fromSummaryPage }, new { @class = "govuk-back-link" })

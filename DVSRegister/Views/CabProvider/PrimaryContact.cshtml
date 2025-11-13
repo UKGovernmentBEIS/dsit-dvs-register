@@ -5,20 +5,13 @@
 }
 @using (Html.BeginForm("SavePrimaryContact", "CabProvider", FormMethod.Post))
 {
-    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
-    bool hasParentCompany;  
-    hasParentCompany = ViewBag.hasParentCompany ?? false;
-    <div class="govuk-width-container">
 
-        @if (hasParentCompany)
-        {
-            @Html.ActionLink("Back", "ParentCompanyLocation", "CabProvider", null, new { @class = "govuk-back-link" })
-        }
-        else
-        {
-            @Html.ActionLink("Back", "HasParentCompany", "CabProvider", null, new { @class = "govuk-back-link" })           
-            
-        }
+    @Html.HiddenFor(m => m.SourcePage)
+    @Html.HiddenFor(m => m.RefererURL)
+    <div class="govuk-width-container">
+        <a href="@Model.RefererURL" class="govuk-back-link">
+            Back
+        </a>
        
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">

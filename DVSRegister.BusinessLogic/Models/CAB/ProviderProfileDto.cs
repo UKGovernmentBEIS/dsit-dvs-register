@@ -55,5 +55,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public string ProviderServiceNames { get; set; }
         public bool IsInRegister { get; set; }
         public DateTime? LastUpdated { get; set; }
+        [JsonIgnore]
+        public ProviderProfileDraftDto? ProviderProfileDraft { get; set; }
     }
 }

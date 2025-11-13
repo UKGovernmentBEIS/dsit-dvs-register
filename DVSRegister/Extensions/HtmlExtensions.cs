@@ -78,7 +78,7 @@ namespace DVSRegister.Extensions
         }
 
 
-        public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview,PublicInterestCheckDto publicInterestCheck, ServiceStatusEnum serviceStatus, ServiceStatusEnum? previousServiceStatus)
+        public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview,PublicInterestCheckDto publicInterestCheck, ServiceStatusEnum serviceStatus, ServiceStatusEnum? previousServiceStatus, bool adminEditInProgress = false)
         {
             // Check for Certificate Review whilst public interest has not become complete
             if (certificateReview != null && publicInterestCheck == null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received 
@@ -106,7 +106,7 @@ namespace DVSRegister.Extensions
             {
                 return HtmlExtensions.ToStyledStrongTag((ServiceStatusEnum)previousServiceStatus);               
             }
-            else if (serviceStatus == ServiceStatusEnum.UpdatesRequested)
+            else if (serviceStatus == ServiceStatusEnum.UpdatesRequested && !adminEditInProgress)
             {
                 return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Published);
             }

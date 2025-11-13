@@ -1,10 +1,11 @@
 ﻿using DVSRegister.CommonUtility;
+using DVSRegister.Models.CAB.Provider;
 using DVSRegister.Validations;
 using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.Models.CAB
 {
-    public class ProfileSummaryViewModel
+    public class ProfileSummaryViewModel : ProviderSummaryBaseViewModel
     {
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
@@ -59,6 +60,6 @@ namespace DVSRegister.Models.CAB
         [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? LinkToContactPage { get; set; }
 
-        public bool FromSummaryPage { get; set; }
+       
     }
 }

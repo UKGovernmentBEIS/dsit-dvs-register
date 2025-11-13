@@ -45,5 +45,10 @@ namespace DVSRegister.BusinessLogic.Services
             CabDto cabDto = automapper.Map<CabDto>(cab);
             return cabDto;
         }
+        public async Task<List<string>> GetDSITUserEmails()
+        {
+            var userEmails = await userRepository.GetDSITUserEmails();
+            return userEmails;
+        }
     }
 }
