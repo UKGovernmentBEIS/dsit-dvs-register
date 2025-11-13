@@ -33,11 +33,17 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("ProviderProfile")]
         public int ProviderProfileId { get; set; }
         public ProviderProfile Provider { get; set; }
+        public string? LinkToContactPage { get; set; }
 
         [ForeignKey("User")]
-        public int RequestedUserId{ get; set; }
-        public User User { get; set; }
+        public int? RequestedUserId{ get; set; }
+        public User? User { get; set; }
         public ProviderStatusEnum PreviousProviderStatus { get; set; }
         public DateTime ModifiedTime { get; set; }
+
+        [ForeignKey("CabUser")]
+        public int? RequestedCabUserId { get; set; }
+        public CabUser? CabUser { get; set; }
+        public bool IsAdminRequested { get; set; }
     }
 }
