@@ -66,7 +66,7 @@
                                                  new
                                                  {
                                                      @class = "govuk-link",
-                                                     @aria_label = "Change digital identity and attribute service provider’s registered company name"
+                                                     @aria_label = "Change digital identity and attribute service providerâ€™s registered company name"
                                                  })
                                     }
                                     
@@ -82,7 +82,7 @@
                                          new
                                          {
                                              @class = "govuk-link",
-                                             @aria_label = "Change digital identity and attribute service provider’s trading name"
+                                             @aria_label = "Change digital identity and attribute service providerâ€™s trading name"
                                          })
                                     }
                                 </dd>
@@ -162,7 +162,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "PublicContactEmail", "CabProvider", new { sourcePage = @sourcePage },
-                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s Public email address" })
+                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service providerâ€™s Public email address" })
                                     </dd>
                                 }
                                
@@ -174,7 +174,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "TelephoneNumber", "CabProvider", new { sourcePage = @sourcePage },
-                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s telephone number" })
+                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service providerâ€™s telephone number" })
                                     </dd>
                                 }
                             </div>
@@ -185,7 +185,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "WebsiteAddress", "CabProvider", new { sourcePage = @sourcePage },
-                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
+                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service providerâ€™s website address" })
                                     </dd>
                                 }
                             </div>
@@ -196,7 +196,7 @@
                                 {
                                      <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "LinkToContactPage", "CabProvider", new { sourcePage = @sourcePage },
-                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s public link to contact us page" })
+                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider's public link to contact us page" })
                                     </dd>
                                 }
                             </div>
@@ -208,28 +208,21 @@
                 <h2 class="govuk-heading-m">Services</h2>
                 @if (Model.Provider.Services != null && Model.Provider.Services.Any())
                 {
-                    <table class="govuk-table">
+                    <table class="govuk-table moj-sortable-table" data-module="moj-sortable-table">
+                        <caption class="govuk-table__caption govuk-visually-hidden">
+                            Services table - column headers with buttons are sortable
+                        </caption>
                         <thead class="govuk-table__head">
-                            <tr class="govuk-table__row sortable-table">
-                                <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "service") ? Model.CurrentSortAction : "none")"
-                                    aria-label="sort by service provider">
-                                    <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.Provider.Id, CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "service" })#services">
-                                        <b>Service name</b>
-                                    </a>
-                                </th>
-                                <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "date") ? Model.CurrentSortAction : "none")"
-                                    aria-label="sort by time of last activity">
-                                    <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.Provider.Id, CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "status" })#services">
-                                        <b>Status</b>
-                                    </a>
-                                </th>
+                            <tr class="govuk-table__row">
+                                <th scope="col" class="govuk-table__header" aria-sort="ascending">Service name</th>
+                                <th scope="col" class="govuk-table__header" aria-sort="none">Status</th>
                             </tr>
                         </thead>
                         <tbody class="govuk-table__body">
                         @foreach (var service in Model.Provider.Services)
                         {
                             <tr class="govuk-table__row">
-                                <td class="govuk-table__cell">
+                                <td class="govuk-table__cell" data-sort-value="@service.ServiceName">
                                     @Html.ActionLink(
                                         service.ServiceName,
                                         "ProviderServiceDetails",
@@ -238,7 +231,7 @@
                                         new { @class = "govuk-link" }
                                     )
                                 </td>
-                                <td class="govuk-table__cell">
+                                <td class="govuk-table__cell" data-sort-value="@service.ServiceStatus">
                                     @HtmlExtensions.GetStyledStatusTag(
                                         service.CertificateReview?.SingleOrDefault(x => x.IsLatestReviewVersion),
                                         service.PublicInterestCheck?.SingleOrDefault(x => x.IsLatestReviewVersion),
