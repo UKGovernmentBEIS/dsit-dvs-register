@@ -6,6 +6,7 @@ using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
@@ -162,7 +163,9 @@ namespace DVSRegister.Controllers
                 SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList(),
                 AvailableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version),
                 IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/company-address"
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : 
+                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? "/cab-service/submit-service/tf-version?providerProfileId=" + summaryViewModel.ProviderProfileId :
+                "/cab-service/submit-service/company-address"
             };
             return View(roleViewModel);
         }
@@ -195,10 +198,8 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");
-                
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");                
                 }
-
             }
             else
             {
@@ -496,8 +497,9 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> CertificateUploadPage(bool fromSummaryPage, bool remove, bool fromDetailsPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
-            ViewBag.fromDetailsPage = fromDetailsPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;            
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            ViewBag.IsTFVersionChanged = summaryViewModel.IsTFVersionChanged;
             var lastScheme = summaryViewModel?.SchemeQualityLevelMapping?.LastOrDefault() ?? null;
             CertificateFileViewModel certificateFileViewModel = new()
             {
@@ -739,6 +741,7 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 summaryViewModel.ConformityExpiryDate = conformityExpiryDate;
+                summaryViewModel.IsTFVersionChanged = false;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 return await HandleActions(action, summaryViewModel, true, fromDetailsPage, "ServiceSummary");               
             }
@@ -763,8 +766,14 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveServiceSummary()
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;           
-           ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
+            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
+
+            if (!HasAllRequiredData(summaryViewModel))
+            {
+                throw new InvalidOperationException("SummarySaveFail: All fields must be completed before submitting.");
+            }
+
+            ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
             
             ViewModelHelper.MapTFVersion0_4Fields(summaryViewModel, serviceDto);
 
@@ -871,7 +880,8 @@ namespace DVSRegister.Controllers
                     return await SaveAsDraftAndRedirect(serviceSummary);
 
                 case "amend":
-                    return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    return serviceSummary.IsTFVersionChanged.GetValueOrDefault() ? routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues) :
+                    RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
 
                 default:
                     throw new ArgumentException("Invalid action parameter");
@@ -886,7 +896,7 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(summaryViewModel.HasGPG44))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("GPG44", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                        return RedirectToAction("GPG44", new { fromSummaryPage, fromDetailsPage });
                     }
                     else
                     {
@@ -915,7 +925,7 @@ namespace DVSRegister.Controllers
                     {
                         ViewModelHelper.ClearGpg44(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("GPG45Input", new {fromSummaryPage, fromDetailsPage }) : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:
@@ -931,7 +941,7 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(summaryViewModel.HasGPG45))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("GPG45", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                        return RedirectToAction("GPG45", new { fromSummaryPage, fromDetailsPage });
                     }
                     else
                     {
@@ -959,7 +969,7 @@ namespace DVSRegister.Controllers
                     {
                         ViewModelHelper.ClearGpg45(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("HasSupplementarySchemesInput") : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:
@@ -974,7 +984,7 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(summaryViewModel.HasSupplementarySchemes))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("SupplementarySchemes", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage });
+                        return RedirectToAction("SupplementarySchemes", new { fromSummaryPage, fromDetailsPage });
                     }
                     else
                     {
@@ -1003,7 +1013,7 @@ namespace DVSRegister.Controllers
                     {
                         ViewModelHelper.ClearSchemes(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("CertificateUploadPage") : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:
@@ -1032,6 +1042,70 @@ namespace DVSRegister.Controllers
             }
         }
 
+        private bool HasAllRequiredData(ServiceSummaryViewModel vm)
+        {
+            if (vm == null)
+                return false;
+
+            bool hasBasicInfo =
+                !string.IsNullOrWhiteSpace(vm.ServiceName) &&
+                vm.TFVersionViewModel?.SelectedTFVersion != null &&
+                !string.IsNullOrWhiteSpace(vm.ServiceURL) &&
+                !string.IsNullOrWhiteSpace(vm.CompanyAddress) &&
+                vm.RoleViewModel?.SelectedRoles != null &&
+                vm.ConformityIssueDate != null &&
+                vm.ConformityExpiryDate != null;
+
+            bool hasGpg44Data =
+                vm.HasGPG44.HasValue &&
+                (!vm.HasGPG44.GetValueOrDefault() ||
+                 (vm.QualityLevelViewModel?.SelectedLevelOfProtections != null &&
+                  vm.QualityLevelViewModel?.SelectedQualityofAuthenticators != null));
+
+            bool hasGpg45Data =
+                vm.HasGPG45.HasValue &&
+                (!vm.HasGPG45.GetValueOrDefault() ||
+                 vm.IdentityProfileViewModel?.SelectedIdentityProfiles != null);
+
+            bool hasSupplementaryData =
+                vm.HasSupplementarySchemes.HasValue &&
+                (!vm.HasSupplementarySchemes.GetValueOrDefault() ||
+                 vm.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null);
+
+            bool hasTfVersion04Data = true;
+            if (vm.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+            {
+                hasTfVersion04Data =
+                    vm.ServiceType.HasValue &&
+                    (vm.ServiceType != ServiceTypeEnum.WhiteLabelled ||
+                        // White-labelled checks
+                        (vm.IsUnderpinningServicePublished == true && vm.SelectedUnderPinningServiceId != null) ||
+                        (vm.IsUnderpinningServicePublished == false && vm.SelectedManualUnderPinningServiceId != null) ||
+                        (vm.IsUnderpinningServicePublished == false &&
+                         !string.IsNullOrWhiteSpace(vm.UnderPinningProviderName) &&
+                         !string.IsNullOrWhiteSpace(vm.UnderPinningServiceName) &&
+                         vm.UnderPinningServiceExpiryDate != null &&
+                         !string.IsNullOrWhiteSpace(vm.SelectCabViewModel?.SelectedCabName)))
+                    &&
+                    // Supplementary scheme checks only for TF 0.4
+                    (vm.HasSupplementarySchemes.HasValue &&
+                     (!vm.HasSupplementarySchemes.GetValueOrDefault() ||
+                      ((vm.SchemeIdentityProfileMapping.Count() == vm.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count() &&
+                        vm.SchemeIdentityProfileMapping.All(sc =>
+                            sc.IdentityProfile?.SelectedIdentityProfiles != null)) &&
+                       (vm.SchemeQualityLevelMapping.Count == vm.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count() &&
+                        vm.SchemeQualityLevelMapping.All(sc => sc.HasGPG44.HasValue &&
+                            (!sc.HasGPG44.GetValueOrDefault() ||
+                            (sc.QualityLevel?.SelectedLevelOfProtections != null &&
+                             sc.QualityLevel?.SelectedQualityofAuthenticators != null)))))));
+            }
+
+            return hasBasicInfo
+                && hasGpg44Data
+                && hasGpg45Data
+                && hasSupplementaryData
+                && hasTfVersion04Data;
+        }
 
 
         #endregion

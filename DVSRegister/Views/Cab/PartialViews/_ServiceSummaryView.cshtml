@@ -27,11 +27,8 @@
                     @Model?.TFVersionViewModel?.SelectedTFVersion?.TrustFrameworkName
                 </dd>
                 <dd class="govuk-summary-list__actions">
-                    @if (Model.ServiceStatus != ServiceStatusEnum.AmendmentsRequired )
-                    { 
-                        @Html.ActionLink("Change", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model?.ProviderProfileId },
-                             new { @class = "govuk-link", @aria_label = "Change selected tf version" })
-                    }
+                    @Html.ActionLink("Change", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model?.ProviderProfileId },
+                    new { @class = "govuk-link", @aria_label = "Change selected tf version" })
                 </dd>
             </div>
 
@@ -143,9 +140,9 @@
                         GPG 45 identity profiles
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model?.IdentityProfileViewModel?.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
+                        @if (Model?.HasGPG45 == true)
                         {
-                            var groupedProfiles = Model.IdentityProfileViewModel.SelectedIdentityProfiles
+                            var groupedProfiles = Model?.IdentityProfileViewModel?.SelectedIdentityProfiles?
                             .GroupBy(profile => profile.IdentityProfileType)
                             .OrderBy(g => g.Key);
 
@@ -161,9 +158,13 @@
                                 <br>
                             }
                         }
-                        else
+                        else if (Model?.HasGPG45 == false)
                         {
                             <div>@Constants.NullFieldsDisplay</div>
+                        }
+                        else
+                        {
+                            <div>Incomplete</div>
                         }
                     </dd>
 
@@ -179,7 +180,7 @@
                         GPG 44 quality of authenticator
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model?.QualityLevelViewModel?.SelectedQualityofAuthenticators != null && Model.QualityLevelViewModel.SelectedQualityofAuthenticators.Count > 0)
+                        @if (Model?.HasGPG44 == true)
                         {
                             @foreach (var item in Model.QualityLevelViewModel.SelectedQualityofAuthenticators)
                             {
@@ -187,9 +188,13 @@
                                 <br>
                             }
                         }
-                        else
+                        else if (Model?.HasGPG44 == false)
                         {
                             <div>@Constants.NullFieldsDisplay</div>
+                        }
+                        else
+                        {
+                            <div>Incomplete</div>
                         }
                     </dd>
                     <dd class="govuk-summary-list__actions">
@@ -204,7 +209,7 @@
                     </dt>
 
                     <dd class="govuk-summary-list__value">
-                        @if (Model?.QualityLevelViewModel?.SelectedLevelOfProtections != null && Model.QualityLevelViewModel.SelectedLevelOfProtections.Count > 0)
+                        @if (Model.HasGPG44 == true)
                         {
                             @foreach (var item in Model.QualityLevelViewModel.SelectedLevelOfProtections)
                             {
@@ -212,9 +217,13 @@
                                 <br>
                             }
                         }
-                        else
+                        else if (Model?.HasGPG44 == false)
                         {
                             <div>@Constants.NullFieldsDisplay</div>
+                        }
+                        else
+                        {
+                            <div>Incomplete</div>
                         }
                     </dd>
                     <dd class="govuk-summary-list__actions">
@@ -232,7 +241,7 @@
                         GPG 44 quality of authenticator
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model?.QualityLevelViewModel?.SelectedQualityofAuthenticators != null && Model.QualityLevelViewModel.SelectedQualityofAuthenticators.Count > 0)
+                        @if (Model.HasGPG44 == true)
                         {
                             @foreach (var item in Model.QualityLevelViewModel.SelectedQualityofAuthenticators)
                             {
@@ -240,9 +249,13 @@
                                 <br>
                             }
                         }
-                        else
+                        else if (Model?.HasGPG44 == false)
                         {
                             <div>@Constants.NullFieldsDisplay</div>
+                        }
+                        else
+                        {
+                            <div>Incomplete</div>
                         }
                     </dd>
                     <dd class="govuk-summary-list__actions">
@@ -257,7 +270,7 @@
                     </dt>
 
                     <dd class="govuk-summary-list__value">
-                        @if (Model?.QualityLevelViewModel?.SelectedLevelOfProtections != null && Model.QualityLevelViewModel.SelectedLevelOfProtections.Count > 0)
+                        @if (Model?.HasGPG44 == true)
                         {
                             @foreach (var item in Model.QualityLevelViewModel.SelectedLevelOfProtections)
                             {
@@ -265,9 +278,13 @@
                                 <br>
                             }
                         }
-                        else
+                        else if (Model?.HasGPG44 == false)
                         {
                             <div>@Constants.NullFieldsDisplay</div>
+                        }
+                        else
+                        {
+                            <div>Incomplete</div>
                         }
                     </dd>
                     <dd class="govuk-summary-list__actions">
@@ -281,7 +298,7 @@
                         GPG 45 identity profiles
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model?.IdentityProfileViewModel?.SelectedIdentityProfiles != null && Model.IdentityProfileViewModel.SelectedIdentityProfiles.Count > 0)
+                        @if (Model?.HasGPG45 == true)
                         {
                             @foreach (var item in Model.IdentityProfileViewModel.SelectedIdentityProfiles)
                             {
@@ -289,9 +306,13 @@
                                 <br>
                             }
                         }
-                        else
+                        else if (Model?.HasGPG45 == false)
                         {
                             <div>@Constants.NullFieldsDisplay</div>
+                        }
+                        else
+                        {
+                            <div>Incomplete</div>
                         }
                     </dd>
                     <dd class="govuk-summary-list__actions">
@@ -299,27 +320,28 @@
                                  new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
                     </dd>
                 </div>
-            }
-
-           
+            }           
 
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">
                     Supplementary codes
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @if (Model?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count > 0)
+                    @if (Model.HasSupplementarySchemes == true)
                     {
-
                         @foreach (var item in Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
                         {
                             @item.SchemeName
                             <br>
                         }
                     }
-                    else
+                    else if (Model?.HasSupplementarySchemes == false)
                     {
                         <div>@Constants.NullFieldsDisplay</div>
+                    }
+                    else
+                    {
+                        <div>Incomplete</div>
                     }
                 </dd>
                 <dd class="govuk-summary-list__actions">
@@ -380,15 +402,14 @@
     List<IdentityProfileDto> identityProfilesMappings = [];
     List<QualityLevelDto> qualityLevelprotectionMappings = [];
     List<QualityLevelDto> qualityLevelAuthenticationMappings = [];
+    bool? schemeHasGPG44 = null;
 
     @foreach (var schemeMapping in Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes)
-    {
-
+    {       
         @if (Model.SchemeIdentityProfileMapping != null && Model.SchemeIdentityProfileMapping.Count > 0)
         {
             var maapings = Model.SchemeIdentityProfileMapping.Where(x => x.SchemeId == schemeMapping.Id).FirstOrDefault();
             identityProfilesMappings = maapings?.IdentityProfile?.SelectedIdentityProfiles??[];
-
         }
 
         @if (Model.SchemeQualityLevelMapping != null && Model.SchemeQualityLevelMapping.Count > 0)
@@ -397,8 +418,8 @@
             qualityLevelprotectionMappings = protectionMappings?.QualityLevel?.SelectedLevelOfProtections??[];
 
             var authenticationMappings = Model.SchemeQualityLevelMapping.Where(x => x.SchemeId == schemeMapping.Id).FirstOrDefault();
-
-            qualityLevelAuthenticationMappings = authenticationMappings?.QualityLevel?.SelectedQualityofAuthenticators??[];
+            schemeHasGPG44 = authenticationMappings?.HasGPG44;
+            qualityLevelAuthenticationMappings = authenticationMappings?.QualityLevel?.SelectedQualityofAuthenticators??[];                
         }
 
 
@@ -416,8 +437,7 @@
                             GPG 45 identity profiles
                         </dt>
                         <dd class="govuk-summary-list__value">
-
-                            @if (identityProfilesMappings != null && identityProfilesMappings.Count > 0)
+                            @if (identityProfilesMappings.Count() > 0 && identityProfilesMappings != null)
                             {
                                 var groupedProfiles = identityProfilesMappings
                                 .GroupBy(profile => profile.IdentityProfileType)
@@ -432,39 +452,42 @@
                                         @item.IdentityProfileName
                                                             <br>
                                     }
-                                    <br>
+                                        <br>
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                <div>@Constants.NullFieldsDisplay</div>
-                            }
-
-                        </dd>
+                                else
+                                {
+                                    <div>Incomplete</div>
+                                }
+                            </dd>
                         <dd class="govuk-summary-list__actions">
                                 @Html.ActionLink("Change", "SchemeGPG45", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.Id },
                                          new { @class = "govuk-link", @aria_label = "Change selected GPG45 options for " + schemeMapping.SchemeName })
                         </dd>
                     </div>
 
-
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             GPG 44 quality of authentication
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (qualityLevelAuthenticationMappings != null && qualityLevelAuthenticationMappings.Count > 0)
+                        @if (schemeHasGPG44 == true)
+                        {
+                            @foreach (var item in qualityLevelAuthenticationMappings)
                             {
-                                @foreach (var item in qualityLevelAuthenticationMappings)
-                                {
-                                    @item.Level
-                                    <br>
-                                }
+                                @item.Level
+                                <br>
                             }
-                            else
-                            {
-                                <div>@Constants.NullFieldsDisplay</div>
-                            }
+                        }
+                        else if (schemeHasGPG44 == false)
+                        {
+                            <div>@Constants.NullFieldsDisplay</div>
+                        }
+                        else
+                        {
+                            <div>Incomplete</div>
+                        }
+
                         </dd>
                         <dd class="govuk-summary-list__actions">
                                 @Html.ActionLink("Change", "SchemeGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.Id },
@@ -477,7 +500,7 @@
                             GPG 44 quality of protection
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (qualityLevelprotectionMappings != null && qualityLevelprotectionMappings.Count > 0)
+                            @if (schemeHasGPG44 == true)
                             {
                                 @foreach (var item in qualityLevelprotectionMappings)
                                 {
@@ -485,9 +508,13 @@
                                     <br>
                                 }
                             }
-                            else
+                            else if (schemeHasGPG44 == false)
                             {
                                 <div>@Constants.NullFieldsDisplay</div>
+                            }
+                            else
+                            {
+                                <div>Incomplete</div>
                             }
                         </dd>
                         <dd class="govuk-summary-list__actions">
@@ -545,8 +572,7 @@
                         Service provider
                     </dt>
                     <dd class="govuk-summary-list__value">
-
-                        @Model.UnderPinningProviderName
+                        @Model.UnderPinningProviderName ?? "Incomplete"
                     </dd>
 
                         @if (isFieldEditable || isManualUnderPinningService)
@@ -563,7 +589,7 @@
                         CAB of underpinning service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @Model?.SelectCabViewModel?.SelectedCabName
+                            @Model?.SelectCabViewModel?.SelectedCabName ?? "Incomplete"
                     </dd>
                         @if (isFieldEditable || isManualUnderPinningService)
                     {
