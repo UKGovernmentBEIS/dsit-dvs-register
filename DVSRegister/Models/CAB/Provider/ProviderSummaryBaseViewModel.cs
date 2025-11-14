@@ -1,4 +1,5 @@
 ﻿using DVSRegister.CommonUtility.Models.Enums;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace DVSRegister.Models.CAB.Provider
 {
@@ -6,6 +7,8 @@ namespace DVSRegister.Models.CAB.Provider
     {
         public bool FromSummaryPage { get; set; }
         public int ProviderId { get; set; }
+
+        [ValidateNever]
         public SourcePageEnum? SourcePage { get; set; }
         public string? RefererURL { get; set; }
     }

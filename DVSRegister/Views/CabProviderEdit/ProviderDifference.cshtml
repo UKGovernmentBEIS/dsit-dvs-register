@@ -6,7 +6,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ProfileSummary", "EditProvider", new { providerId = Model?.CurrentProvider?.Id }, new { @class = "govuk-back-link" })
+    @Html.ActionLink("Back", "ProfileEditSummary", "CabProviderEdit", new { providerId = Model?.CurrentProvider?.Id }, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
@@ -42,7 +42,11 @@
                     @Html.HiddenFor(m => m.ChangedProvider.DUNSNumber)
                     @Html.HiddenFor(m => m.ChangedProvider.HasParentCompany)
                     @Html.HiddenFor(m => m.ChangedProvider.ParentCompanyRegisteredName)
-                    @Html.HiddenFor(m => m.ChangedProvider.ParentCompanyLocation)                  
+                    @Html.HiddenFor(m => m.ChangedProvider.ParentCompanyLocation)
+                    @Html.HiddenFor(m => m.ChangedProvider.PublicContactEmail)
+                    @Html.HiddenFor(m => m.ChangedProvider.ProviderTelephoneNumber)
+                    @Html.HiddenFor(m => m.ChangedProvider.ProviderWebsiteAddress)
+                    @Html.HiddenFor(m => m.ChangedProvider.LinkToContactPage)
                     @Html.HiddenFor(m => m.ChangedProvider.ProviderProfileId)
                     @Html.HiddenFor(m => m.ChangedProvider.PreviousProviderStatus)
                     @Html.HiddenFor(m => m.DSITUserEmails)
@@ -120,7 +124,7 @@
                         <button type="submit" class="govuk-button" data-module="govuk-button" name="action">
                             Submit update request
                         </button>
-                        <a href="@(Url.Action("ProfileSummary", "EditProvider", new { providerId = Model?.CurrentProvider?.Id }))" class="govuk-button govuk-button--secondary" role="button">Cancel</a>
+                        <a href="@(Url.Action("ProfileEditSummary", "CabProviderEdit", new { providerId = Model?.CurrentProvider?.Id }))" class="govuk-button govuk-button--secondary" role="button">Cancel</a>
                     </div>
                 }
             </div>

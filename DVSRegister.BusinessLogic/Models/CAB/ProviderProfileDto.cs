@@ -1,9 +1,7 @@
 ﻿using DVSAdmin.CommonUtility.Models.Enums;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.Data.Entities;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata;
 using System.Text.Json.Serialization;
 
 namespace DVSRegister.BusinessLogic.Models.CAB

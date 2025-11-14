@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.Edit;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,7 @@ namespace DVSRegister.Controllers
         {
             ProviderChangesViewModel changesViewModel = new();
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
-            ProviderProfileDto currentProvider = await editService.GetProviderDetails(profileSummaryViewModel.ProviderId);
+            ProviderProfileDto currentProvider = await editService.GetProviderDetails(profileSummaryViewModel.ProviderId);          
             ProviderProfileDraftDto changedProvider = CreateDraft(currentProvider, profileSummaryViewModel);
             List<string> dsitEmails = await userService.GetDSITUserEmails();
             changesViewModel.DSITUserEmails = string.Join(",", dsitEmails);
@@ -42,6 +43,32 @@ namespace DVSRegister.Controllers
             HttpContext?.Session.Set("changedProvider", changedProvider);
 
             return View(changesViewModel);
+        }
+
+        [HttpPost("edit-summary")]
+        public async Task<IActionResult> SaveProviderDraft(ProviderChangesViewModel providerChangesViewModel)
+        {
+
+            if (providerChangesViewModel == null || providerChangesViewModel.ChangedProvider == null)
+                throw new InvalidOperationException("Provider draft submission is missing required data.");         
+
+            GenericResponse genericResponse = await editService.SaveProviderDraft(providerChangesViewModel.ChangedProvider, UserEmail);
+
+            if (!genericResponse.Success)
+                throw new InvalidOperationException("Failed to save provider draft.");
+
+            return RedirectToAction("InformationSubmitted", new { providerId = providerChangesViewModel.ChangedProvider.ProviderProfileId });
+
+        }
+
+        [HttpGet("edit-request-submitted/{providerId}")]
+        public async Task<IActionResult> InformationSubmitted(int providerId)
+        {
+            HttpContext?.Session.Remove("ProfileSummary");
+            ProviderProfileDto providerDto = await editService.GetProviderDetails(providerId);
+            return View(providerDto);
+
+
         }
 
         private ProfileSummaryViewModel GetProfileSummary()
@@ -74,9 +101,8 @@ namespace DVSRegister.Controllers
             draft.ParentCompanyRegisteredName = updatedService.ParentCompanyRegisteredName != existingProvider.ParentCompanyRegisteredName ?
                 (updatedService.ParentCompanyRegisteredName ?? "-") : null;
             draft.ParentCompanyLocation = updatedService.ParentCompanyLocation != existingProvider.ParentCompanyLocation ? (updatedService.ParentCompanyLocation ?? "-") : null;
-
-          
-
+            draft.LinkToContactPage = updatedService.LinkToContactPage != existingProvider.LinkToContactPage ? (updatedService.LinkToContactPage ?? "-") : null;
+            draft.IsAdminRequested = false;
             return draft;
         }
     }

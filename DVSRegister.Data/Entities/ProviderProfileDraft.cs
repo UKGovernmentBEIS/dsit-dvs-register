@@ -44,6 +44,6 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("CabUser")]
         public int? RequestedCabUserId { get; set; }
         public CabUser? CabUser { get; set; }
-        public bool IsAdminRequested { get; set; }
+        public bool IsCabRequested { get; set; }
     }
 }
