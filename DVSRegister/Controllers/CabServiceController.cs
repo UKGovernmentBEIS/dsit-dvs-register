@@ -6,6 +6,7 @@ using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
@@ -162,7 +163,9 @@ namespace DVSRegister.Controllers
                 SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList(),
                 AvailableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version),
                 IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/company-address"
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : 
+                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? "/cab-service/submit-service/tf-version?providerProfileId=" + summaryViewModel.ProviderProfileId :
+                "/cab-service/submit-service/company-address"
             };
             return View(roleViewModel);
         }
@@ -763,8 +766,14 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveServiceSummary()
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;           
-           ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
+            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
+
+            if (!HasAllRequiredData(summaryViewModel))
+            {
+                throw new InvalidOperationException("SummarySaveFail: All fields must be completed before submitting.");
+            }
+
+            ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
             
             ViewModelHelper.MapTFVersion0_4Fields(summaryViewModel, serviceDto);
 
@@ -1033,6 +1042,70 @@ namespace DVSRegister.Controllers
             }
         }
 
+        private bool HasAllRequiredData(ServiceSummaryViewModel vm)
+        {
+            if (vm == null)
+                return false;
+
+            bool hasBasicInfo =
+                !string.IsNullOrWhiteSpace(vm.ServiceName) &&
+                vm.TFVersionViewModel?.SelectedTFVersion != null &&
+                !string.IsNullOrWhiteSpace(vm.ServiceURL) &&
+                !string.IsNullOrWhiteSpace(vm.CompanyAddress) &&
+                vm.RoleViewModel?.SelectedRoles != null &&
+                vm.ConformityIssueDate != null &&
+                vm.ConformityExpiryDate != null;
+
+            bool hasGpg44Data =
+                vm.HasGPG44.HasValue &&
+                (!vm.HasGPG44.GetValueOrDefault() ||
+                 (vm.QualityLevelViewModel?.SelectedLevelOfProtections != null &&
+                  vm.QualityLevelViewModel?.SelectedQualityofAuthenticators != null));
+
+            bool hasGpg45Data =
+                vm.HasGPG45.HasValue &&
+                (!vm.HasGPG45.GetValueOrDefault() ||
+                 vm.IdentityProfileViewModel?.SelectedIdentityProfiles != null);
+
+            bool hasSupplementaryData =
+                vm.HasSupplementarySchemes.HasValue &&
+                (!vm.HasSupplementarySchemes.GetValueOrDefault() ||
+                 vm.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null);
+
+            bool hasTfVersion04Data = true;
+            if (vm.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+            {
+                hasTfVersion04Data =
+                    vm.ServiceType.HasValue &&
+                    (vm.ServiceType != ServiceTypeEnum.WhiteLabelled ||
+                        // White-labelled checks
+                        (vm.IsUnderpinningServicePublished == true && vm.SelectedUnderPinningServiceId != null) ||
+                        (vm.IsUnderpinningServicePublished == false && vm.SelectedManualUnderPinningServiceId != null) ||
+                        (vm.IsUnderpinningServicePublished == false &&
+                         !string.IsNullOrWhiteSpace(vm.UnderPinningProviderName) &&
+                         !string.IsNullOrWhiteSpace(vm.UnderPinningServiceName) &&
+                         vm.UnderPinningServiceExpiryDate != null &&
+                         !string.IsNullOrWhiteSpace(vm.SelectCabViewModel?.SelectedCabName)))
+                    &&
+                    // Supplementary scheme checks only for TF 0.4
+                    (vm.HasSupplementarySchemes.HasValue &&
+                     (!vm.HasSupplementarySchemes.GetValueOrDefault() ||
+                      ((vm.SchemeIdentityProfileMapping.Count() == vm.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count() &&
+                        vm.SchemeIdentityProfileMapping.All(sc =>
+                            sc.IdentityProfile?.SelectedIdentityProfiles != null)) &&
+                       (vm.SchemeQualityLevelMapping.Count == vm.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count() &&
+                        vm.SchemeQualityLevelMapping.All(sc => sc.HasGPG44.HasValue &&
+                            (!sc.HasGPG44.GetValueOrDefault() ||
+                            (sc.QualityLevel?.SelectedLevelOfProtections != null &&
+                             sc.QualityLevel?.SelectedQualityofAuthenticators != null)))))));
+            }
+
+            return hasBasicInfo
+                && hasGpg44Data
+                && hasGpg45Data
+                && hasSupplementaryData
+                && hasTfVersion04Data;
+        }
 
 
         #endregion

@@ -44,7 +44,11 @@ namespace DVSRegister.Controllers
                 SelectedTFVersionId = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Id,
                 AvailableVersions = await trustFrameworkService.GetTrustFrameworkVersions(),
                 IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/before-you-start?providerProfileId=" + summaryViewModel.ProviderProfileId
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() :
+                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && summaryViewModel.IsAmendment ? "/cab-service/amend/service-amendments?serviceId=" + summaryViewModel.ServiceId :
+                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && !summaryViewModel.IsAmendment && summaryViewModel.TFVersionViewModel.FromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel.ServiceKey :
+                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && !summaryViewModel.IsAmendment && summaryViewModel.TFVersionViewModel.FromSummaryPage ? "/cab-service/submit-service/check-your-answers" :
+                "/cab-service/submit-service/before-you-start?providerProfileId=" + summaryViewModel.ProviderProfileId
             }; 
 
             return View(TFVersionViewModel);
@@ -59,8 +63,6 @@ namespace DVSRegister.Controllers
             List<TrustFrameworkVersionDto> availableVersion = await trustFrameworkService.GetTrustFrameworkVersions();
             TFVersionViewModel.AvailableVersions = availableVersion;
             TFVersionViewModel.SelectedTFVersionId = TFVersionViewModel.SelectedTFVersionId ?? null;
-            TFVersionViewModel.FromSummaryPage = false;
-            TFVersionViewModel.FromDetailsPage = false;
             TFVersionViewModel.IsAmendment = summaryViewModel.IsAmendment;
 
             TrustFrameworkVersionDto previousSelection = new();
@@ -69,16 +71,37 @@ namespace DVSRegister.Controllers
                 previousSelection = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion;
                 summaryViewModel.TFVersionViewModel = new();              
                 summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);// current selection
+                summaryViewModel.TFVersionViewModel.FromDetailsPage = TFVersionViewModel.FromDetailsPage;
+                summaryViewModel.TFVersionViewModel.FromSummaryPage = TFVersionViewModel.FromSummaryPage;
             }
             if (ModelState.IsValid)
             {
-                if (previousSelection?.Version != summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version)
+                if (String.IsNullOrEmpty(summaryViewModel.ServiceName))
+                {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
+                }
+                else if (String.IsNullOrEmpty(summaryViewModel.ServiceURL))
+                {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceURL", "CabService");
+                }
+                else if (String.IsNullOrEmpty(summaryViewModel.CompanyAddress))
+                {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "CompanyAddress", "CabService");
+                }
+
+                if (previousSelection.Version > 0 && previousSelection.Version != summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version)
                 {
                     ViewModelHelper.ClearTFVersion0_4Fields(summaryViewModel); // clear extra fields value changed from 0.4 to 0.3
                     ViewModelHelper.ClearSchemes(summaryViewModel);
                     ViewModelHelper.ClearGpg44(summaryViewModel);
                     ViewModelHelper.ClearGpg45(summaryViewModel);
-                    summaryViewModel.RoleViewModel.SelectedRoles = [];
+                    var availableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version);
+                    summaryViewModel.RoleViewModel.SelectedRoles = summaryViewModel.RoleViewModel.SelectedRoles
+                        .Where(selectedRole => availableRoles.Any(availableRole => availableRole.Id == selectedRole.Id))
+                        .ToList();
                     summaryViewModel.HasSupplementarySchemes = null;
                     summaryViewModel.HasGPG45 = null;
                     summaryViewModel.HasGPG44 = null;
@@ -87,7 +110,8 @@ namespace DVSRegister.Controllers
                     return await HandleActions(action, summaryViewModel, false, false, false, "ProviderRoles", "CabService");
                 }
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");                    
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
+
             }
             else
             {
