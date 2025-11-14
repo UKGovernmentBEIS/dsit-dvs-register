@@ -663,21 +663,8 @@ namespace DVSRegister.Controllers
         # region Provider Details
         
         [HttpGet("provider-details/{providerId}")]
-        public async Task<IActionResult> ProviderDetails(int providerId, string CurrentSort = "service", string CurrentSortAction = "ascending", string NewSort = "")
+        public async Task<IActionResult> ProviderDetails(int providerId)
         {
-            if (NewSort != string.Empty)
-            {
-                if (CurrentSort == NewSort)
-                {
-                    CurrentSortAction = CurrentSortAction == "ascending" ? "descending" : "ascending";
-                }
-                else
-                {
-                    CurrentSort = NewSort;
-                    CurrentSortAction = "ascending";
-                }
-            }
-
             var provider = await cabService.GetProviderWithLatestVersionServices(providerId, CabId);
             SetProviderDataToSession(provider);
             if (provider == null)
@@ -685,26 +672,9 @@ namespace DVSRegister.Controllers
                 return NotFound();
             }
 
-            // Sort services
-            if (provider.Services != null && provider.Services.Any())
-            {
-                provider.Services = CurrentSort switch
-                {
-                    "service" => CurrentSortAction == "ascending" 
-                        ? provider.Services.OrderBy(s => s.ServiceName).ToList()
-                        : provider.Services.OrderByDescending(s => s.ServiceName).ToList(),
-                    "status" => CurrentSortAction == "ascending"
-                        ? provider.Services.OrderBy(s => s.ServiceStatus).ToList()
-                        : provider.Services.OrderByDescending(s => s.ServiceStatus).ToList(),
-                    _ => provider.Services.OrderBy(s => s.ServiceName).ToList()
-                };
-            }
-
             var viewModel = new ProviderDetailsViewModel
             {
-                Provider = provider,
-                CurrentSort = CurrentSort,
-                CurrentSortAction = CurrentSortAction
+                Provider = provider
             };
 
             ViewBag.IsEditable = true;
