@@ -56,7 +56,7 @@ namespace DVSRegister.BusinessLogic.Services.Edit
                 string newData = Helper.ConcatenateKeyValuePairs(currentDataDictionary);
                 string previousData = Helper.ConcatenateKeyValuePairs(previousDataDictionary);
                 await emailSender.SendProviderEditRequestSubmittedToCab(loggedInUserEmail, providerProfileDto.RegisteredName,  previousData, newData);
-                await emailSender.SendProviderEditRequestSubmittedToOfdia( providerProfileDto.RegisteredName, newData, previousData);
+                await emailSender.SendProviderEditRequestSubmittedToOfdia( providerProfileDto.RegisteredName, previousData,newData );
 
             }
             catch (Exception ex)
@@ -139,6 +139,16 @@ namespace DVSRegister.BusinessLogic.Services.Edit
                 previousDataDictionary.Add(Constants.ParenyCompanyLocation, [previousData.ParentCompanyLocation]);
                 currentDataDictionary.Add(Constants.ParenyCompanyLocation, [currentData.ParentCompanyLocation]);
             }
+            if (currentData.PublicContactEmail != null)
+            {
+                previousDataDictionary.Add(Constants.PublicContactEmail, [string.IsNullOrEmpty(previousData.PublicContactEmail) ? Constants.NullFieldsDisplay : previousData.PublicContactEmail]);
+                currentDataDictionary.Add(Constants.PublicContactEmail, [currentData.PublicContactEmail]);
+            }
+            if (currentData.ProviderTelephoneNumber != null)
+            {
+                previousDataDictionary.Add(Constants.ProviderTelephoneNumber, [previousData.ProviderTelephoneNumber]);
+                currentDataDictionary.Add(Constants.ProviderTelephoneNumber, [currentData.ProviderTelephoneNumber]);
+            }
 
             if (currentData.ProviderWebsiteAddress != null)
             {
@@ -146,11 +156,7 @@ namespace DVSRegister.BusinessLogic.Services.Edit
                 currentDataDictionary.Add(Constants.ProviderWebsiteAddress, [currentData.ProviderWebsiteAddress]);
             }
 
-            if (currentData.PublicContactEmail != null)
-            {
-                previousDataDictionary.Add(Constants.PublicContactEmail, [string.IsNullOrEmpty(previousData.PublicContactEmail) ? Constants.NullFieldsDisplay : previousData.PublicContactEmail]);
-                currentDataDictionary.Add(Constants.PublicContactEmail, [currentData.PublicContactEmail]);
-            }
+            
 
             if (currentData.LinkToContactPage != null)
             {

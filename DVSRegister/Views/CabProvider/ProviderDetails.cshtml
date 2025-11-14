@@ -11,7 +11,7 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
     string refererUrl = Convert.ToString(ViewBag.RefererUrl);
     bool isEditable = Model.Provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested;
-    bool adminEditInProgress = Model.Provider.ProviderProfileDraft != null && Model.Provider.ProviderProfileDraft.IsAdminRequested;
+    bool adminEditInProgress = Model.Provider.ProviderProfileDraft != null && !Model.Provider.ProviderProfileDraft.IsCabRequested;
     SourcePageEnum sourcePage = SourcePageEnum.ProfileDetails;
 }
 

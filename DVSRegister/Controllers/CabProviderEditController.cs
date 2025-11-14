@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.Edit;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
@@ -22,6 +23,7 @@ namespace DVSRegister.Controllers
         public IActionResult ProfileEditSummary()
         {          
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
+            profileSummaryViewModel.RefererURL=GetRefererURL();
             return View(profileSummaryViewModel);
         }
 
@@ -92,17 +94,25 @@ namespace DVSRegister.Controllers
             };
 
             draft.RegisteredName = updatedService.RegisteredName != existingProvider.RegisteredName ? updatedService.RegisteredName : null;
-            draft.TradingName = updatedService.TradingName != existingProvider.TradingName ? (updatedService.TradingName ?? "-") : null;
+            draft.TradingName = updatedService.TradingName != existingProvider.TradingName ? (updatedService.TradingName ?? Constants.NullFieldsDisplay) : null;
             draft.CompanyRegistrationNumber = updatedService.CompanyRegistrationNumber != existingProvider.CompanyRegistrationNumber ?
-                (updatedService.CompanyRegistrationNumber ?? "-") : null;
+                (updatedService.CompanyRegistrationNumber ?? Constants.NullFieldsDisplay) : null;
             draft.HasRegistrationNumber = updatedService.HasRegistrationNumber != existingProvider.HasRegistrationNumber ? updatedService.HasRegistrationNumber : null;
-            draft.DUNSNumber = updatedService.DUNSNumber != existingProvider.DUNSNumber ? (updatedService.DUNSNumber ?? "-") : null;
+            draft.DUNSNumber = updatedService.DUNSNumber != existingProvider.DUNSNumber ? (updatedService.DUNSNumber ?? Constants.NullFieldsDisplay) : null;
             draft.HasParentCompany = updatedService.HasParentCompany != existingProvider.HasParentCompany ? updatedService.HasParentCompany : null;
             draft.ParentCompanyRegisteredName = updatedService.ParentCompanyRegisteredName != existingProvider.ParentCompanyRegisteredName ?
-                (updatedService.ParentCompanyRegisteredName ?? "-") : null;
-            draft.ParentCompanyLocation = updatedService.ParentCompanyLocation != existingProvider.ParentCompanyLocation ? (updatedService.ParentCompanyLocation ?? "-") : null;
-            draft.LinkToContactPage = updatedService.LinkToContactPage != existingProvider.LinkToContactPage ? (updatedService.LinkToContactPage ?? "-") : null;
-            draft.IsAdminRequested = false;
+                (updatedService.ParentCompanyRegisteredName ?? Constants.NullFieldsDisplay) : null;
+            draft.ParentCompanyLocation = updatedService.ParentCompanyLocation != existingProvider.ParentCompanyLocation ? (updatedService.ParentCompanyLocation ?? Constants.NullFieldsDisplay) : null;
+            draft.ProviderWebsiteAddress = updatedService.ProviderWebsiteAddress != existingProvider.ProviderWebsiteAddress ? updatedService.ProviderWebsiteAddress : null;
+            draft.PublicContactEmail = updatedService.PublicContactEmail != existingProvider.PublicContactEmail
+            ? (updatedService.PublicContactEmail ?? Constants.NullFieldsDisplay)
+            : null;
+            draft.ProviderTelephoneNumber = updatedService.ProviderTelephoneNumber != existingProvider.ProviderTelephoneNumber
+          ? (updatedService.ProviderTelephoneNumber ?? Constants.NullFieldsDisplay)
+          : null;
+            draft.LinkToContactPage = updatedService.LinkToContactPage != existingProvider.LinkToContactPage
+           ? (updatedService.LinkToContactPage ?? Constants.NullFieldsDisplay)
+           : null;          
             return draft;
         }
     }

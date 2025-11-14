@@ -47,6 +47,6 @@ namespace DVSRegister.BusinessLogic.Models
      
         public int? RequestedCabUserId { get; set; }
         public CabUserDto? CabUser { get; set; }
-        public bool IsAdminRequested { get; set; }
+        public bool IsCabRequested { get; set; }
     }
 }
