@@ -268,8 +268,14 @@ namespace DVSRegister.Controllers
                 {
                     summaryViewModel.ParentCompanyLocation = null;
                     summaryViewModel.ParentCompanyRegisteredName = null;
-                    HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
-                    return RedirectToAction("PrimaryContact", new { sourcePage = sourcePage });
+                    HttpContext?.Session.Set("ProfileSummary", summaryViewModel);                 
+
+                    return sourcePage switch
+                    {
+                        SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                        SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                        _ => RedirectToAction("PrimaryContact")
+                    };
                 }
             }
             else
