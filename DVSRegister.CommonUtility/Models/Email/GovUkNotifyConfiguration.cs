@@ -57,8 +57,9 @@ namespace DVSRegister.CommonUtility.Models
         public CabTransferCancellationToCabB CabTransferCancellationToCabB { get; set; }
         public CabTransferCancellationToDSIT CabTransferCancellationToDSIT { get; set; }
         public CabTransferConfirmationToDSIT CabTransferConfirmationToDSIT { get; set; }
-
         public ProviderEditRequestSubmitted ProviderEditRequestSubmitted { get; set; }
         public ProviderEditRequestReceived ProviderEditRequestReceived { get; set; }
+        public ContactUpdatesToDSIT ContactUpdatesToDSIT { get; set; }
+        public ContactUpdatesToCab ContactUpdatesToCab { get; set; }
     }
 }

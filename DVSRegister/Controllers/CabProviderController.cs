@@ -844,6 +844,7 @@ namespace DVSRegister.Controllers
                 {
                     var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
                     var (current, previous) = cabService.GetPrimaryContactUpdates(providerProfileDto, previousData);
+                    await cabService.ConfirmPrimaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);
                     await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
                     return RedirectToAction("ProviderDetails", "CabProvider", new { providerId = providerProfileDto.Id });
                 }
@@ -935,6 +936,7 @@ namespace DVSRegister.Controllers
                 {
                     var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
                     var (current, previous) = cabService.GetSecondaryContactUpdates(providerProfileDto, previousData);
+                    await cabService.ConfirmSecondaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);
                     await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
                     return RedirectToAction("ProviderDetails", "CabProvider", new { providerId = providerProfileDto.Id }); 
                 }
