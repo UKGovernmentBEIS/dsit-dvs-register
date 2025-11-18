@@ -4,9 +4,11 @@ using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.Data.CAB;
 using DVSRegister.Data.Edit;
 using DVSRegister.Data.Entities;
 using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace DVSRegister.BusinessLogic.Services.Edit
 {
@@ -163,8 +165,70 @@ namespace DVSRegister.BusinessLogic.Services.Edit
                 previousDataDictionary.Add(Constants.LinkToContactPage, [string.IsNullOrEmpty(previousData.LinkToContactPage) ? Constants.NullFieldsDisplay : previousData.LinkToContactPage]);
                 currentDataDictionary.Add(Constants.LinkToContactPage, [currentData.LinkToContactPage]);
             };
-
         }
+
+        public async Task ConfirmPrimaryContactUpdates(Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, string emailAddress, string recipientName,
+            string providerName)
+        {
+            var labels = new Dictionary<string, string>
+            {
+                { Constants.PrimaryContactName, "Full name of primary contact" },
+                { Constants.PrimaryContactJobTitle, "Job title of primary contact" },
+                { Constants.PrimaryContactEmail, "Email address of primary contact" },
+                { Constants.PrimaryContactTelephone, "Telephone number of primary contact" }
+            };
+
+            await ConfirmContactUpdates(current, previous, emailAddress, recipientName, providerName, labels, "Primary contact’s details");
+        }
+        public async Task ConfirmSecondaryContactUpdates(Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, string emailAddress, string recipientName,
+            string providerName)
+        {
+            var labels = new Dictionary<string, string>
+            {
+                { Constants.SecondaryContactName, "Full name of secondary contact" },
+                { Constants.SecondaryContactJobTitle, "Job title of secondary contact" },
+                { Constants.SecondaryContactEmail, "Email address of secondary contact" },
+                { Constants.SecondaryContactTelephone, "Telephone number of secondary contact" }
+            };
+
+            await ConfirmContactUpdates(current, previous, emailAddress, recipientName, providerName, labels, "Secondary contact’s details");
+        }
+
+        #region Private Methods
+        private async Task ConfirmContactUpdates(Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, string emailAddress, string recipientName,
+            string providerName, Dictionary<string, string> labels, string header)
+        {
+            var previousData = new StringBuilder();
+            var newData = new StringBuilder();
+
+            previousData.AppendLine(header);
+            previousData.AppendLine();
+            newData.AppendLine(header);
+            newData.AppendLine();
+
+            foreach (var key in previous.Keys)
+            {
+                if (labels.TryGetValue(key, out var label))
+                {
+                    var prevValue = previous[key];
+                    var currValue = current[key];
+
+                    previousData.AppendLine($"{label}: {string.Join(", ", prevValue)}");
+                    newData.AppendLine($"{label}: {string.Join(", ", currValue)}");
+                }
+            }
+
+            previousData.AppendLine();
+            newData.AppendLine();
+
+            await emailSender.SendEmailContactUpdatesToCab(
+                emailAddress, recipientName, providerName, previousData.ToString(), newData.ToString());
+
+            await emailSender.SendEmailContactUpdatesToDSIT(
+                providerName, previousData.ToString(), newData.ToString());
+        }
+
+        #endregion
 
     }
 }

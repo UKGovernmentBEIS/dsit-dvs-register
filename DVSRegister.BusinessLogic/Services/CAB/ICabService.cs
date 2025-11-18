@@ -21,7 +21,6 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto);
         public Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId);
         public Task<(bool, List<CabTransferRequestDto>)> GetPendingReassignRequests(int cabId);
-
         public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetCompanyValueUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData);
         public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetPrimaryContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData);
         public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetSecondaryContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData);
@@ -33,9 +32,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<GenericResponse> SaveService(ServiceDto serviceDto, string loggedInUserEmail);
         public Task<GenericResponse> UpdateCompanyInfo(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
         public Task<GenericResponse> UpdatePrimaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
-        public Task ConfirmPrimaryContactUpdates(Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, string emailAddress, string recipientName, string providerName);
         public Task<GenericResponse> UpdateSecondaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
-        public Task ConfirmSecondaryContactUpdates(Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, string emailAddress, string recipientName, string providerName);
         public Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
         public Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail);
         public Task<GenericResponse> SaveServiceAmendments(ServiceDto serviceDto, string existingFileLink, int existingServiceCabId, int cabId, string loggedInUserEmail);      
