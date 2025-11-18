@@ -15,13 +15,11 @@ namespace DVSRegister.BusinessLogic.Services.CAB
     {
         private readonly ICabRepository cabRepository;
         private readonly IMapper automapper;
-        private readonly CabEmailSender cabEmailSender;
 
-        public CabService(ICabRepository cabRepository, IMapper automapper, CabEmailSender cabEmailSender)
+        public CabService(ICabRepository cabRepository, IMapper automapper)
         {
             this.cabRepository = cabRepository;
             this.automapper = automapper;  
-            this.cabEmailSender = cabEmailSender;
         }     
         public async Task<List<RoleDto>> GetRoles(decimal tfVersion)
         {
@@ -350,21 +348,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             automapper.Map(providerProfileDto, providerProfile);
             GenericResponse genericResponse = await cabRepository.UpdatePrimaryContact(providerProfile, loggedInUserEmail);
             return genericResponse;
-        }
-
-        public async Task ConfirmPrimaryContactUpdates(Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, string emailAddress, string recipientName,
-            string providerName)
-        {
-            var labels = new Dictionary<string, string>
-            {
-                { Constants.PrimaryContactName, "Full name of primary contact" },
-                { Constants.PrimaryContactJobTitle, "Job title of primary contact" },
-                { Constants.PrimaryContactEmail, "Email address of primary contact" },
-                { Constants.PrimaryContactTelephone, "Telephone number of primary contact" }
-            };
-
-            await ConfirmContactUpdates(current, previous, emailAddress, recipientName, providerName, labels, "Primary contact’s details");
-        }   
+        } 
 
         public async Task<GenericResponse> UpdateSecondaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
         {
@@ -374,21 +358,6 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return genericResponse;
         }
 
-        public async Task ConfirmSecondaryContactUpdates(Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, string emailAddress, string recipientName,
-            string providerName)
-        {
-            var labels = new Dictionary<string, string>
-            {
-                { Constants.SecondaryContactName, "Full name of secondary contact" },
-                { Constants.SecondaryContactJobTitle, "Job title of secondary contact" },
-                { Constants.SecondaryContactEmail, "Email address of secondary contact" },
-                { Constants.SecondaryContactTelephone, "Telephone number of secondary contact" }
-            };
-
-            await ConfirmContactUpdates(current, previous, emailAddress, recipientName, providerName, labels, "Secondary contact’s details");
-        }
-
-
         public async Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
         {
             ProviderProfile providerProfile = new();
@@ -396,43 +365,6 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             GenericResponse genericResponse = await cabRepository.UpdatePublicProviderInformation(providerProfile, loggedInUserEmail);
             return genericResponse;
         }
-
-
-        #endregion
-        #region Private Methods
-        private async Task ConfirmContactUpdates(Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, string emailAddress, string recipientName,
-            string providerName,  Dictionary<string, string> labels,string header)
-        {
-            var previousData = new StringBuilder();
-            var newData = new StringBuilder();
-
-            previousData.AppendLine(header);
-            previousData.AppendLine();
-            newData.AppendLine(header);
-            newData.AppendLine();
-
-            foreach (var key in previous.Keys)
-            {
-                if (labels.TryGetValue(key, out var label))
-                {
-                    var prevValue = previous[key];
-                    var currValue = current[key];
-
-                    previousData.AppendLine($"{label}: {string.Join(", ", prevValue)}");
-                    newData.AppendLine($"{label}: {string.Join(", ", currValue)}");
-                }
-            }
-
-            previousData.AppendLine();
-            newData.AppendLine();
-
-            await cabEmailSender.SendEmailContactUpdatesToCab(
-                emailAddress, recipientName, providerName, previousData.ToString(), newData.ToString());
-
-            await cabEmailSender.SendEmailContactUpdatesToDSIT(
-                providerName, previousData.ToString(), newData.ToString());
-        }
-
-        #endregion
+        #endregion        
     }
 }

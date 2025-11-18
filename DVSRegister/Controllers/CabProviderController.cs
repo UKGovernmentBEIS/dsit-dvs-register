@@ -10,14 +10,16 @@ using DVSRegister.Models.CAB.Provider;
 using DVSRegister.Models.CAB;
 using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
+using DVSRegister.BusinessLogic.Services.Edit;
 
 
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/create-profile")] 
-    public class CabProviderController(ICabService cabService, IUserService userService, IActionLogService actionLogService, ILogger<CabProviderController> logger) : BaseController(logger)
+    public class CabProviderController(ICabService cabService, IEditService editService, IUserService userService, IActionLogService actionLogService, ILogger<CabProviderController> logger) : BaseController(logger)
     {
         private readonly ICabService cabService = cabService;
+        private readonly IEditService editService = editService;
         private readonly IUserService userService = userService;
         private readonly IActionLogService actionLogService = actionLogService;
 
@@ -844,7 +846,7 @@ namespace DVSRegister.Controllers
                 {
                     var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
                     var (current, previous) = cabService.GetPrimaryContactUpdates(providerProfileDto, previousData);
-                    await cabService.ConfirmPrimaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);
+                    await editService.ConfirmPrimaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);
                     await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
                     return RedirectToAction("ProviderDetails", "CabProvider", new { providerId = providerProfileDto.Id });
                 }
@@ -936,7 +938,7 @@ namespace DVSRegister.Controllers
                 {
                     var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
                     var (current, previous) = cabService.GetSecondaryContactUpdates(providerProfileDto, previousData);
-                    await cabService.ConfirmSecondaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);
+                    await editService.ConfirmSecondaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);
                     await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
                     return RedirectToAction("ProviderDetails", "CabProvider", new { providerId = providerProfileDto.Id }); 
                 }

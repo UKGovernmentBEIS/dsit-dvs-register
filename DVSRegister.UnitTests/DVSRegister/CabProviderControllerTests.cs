@@ -16,7 +16,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         {
             ConfigureFakes(() =>
             {
-                var controllerInstance = new CabProviderController(CabService, UserService,ActionLogService, Logger);
+                var controllerInstance = new CabProviderController(CabService, EditService, UserService,ActionLogService, Logger);
                 return controllerInstance;
             });
         }

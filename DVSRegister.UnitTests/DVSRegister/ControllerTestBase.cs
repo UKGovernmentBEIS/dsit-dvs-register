@@ -2,6 +2,7 @@
 using AutoMapper;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.BusinessLogic.Services.Edit;
 using DVSRegister.CommonUtility;
 using DVSRegister.UnitTests.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +19,7 @@ public abstract class ControllerTestBase<TController>
     protected ICabService CabService { get; private set; }
     protected ICabRemovalRequestService CabRemovalRequestService { get; private set; }
     protected IUserService UserService  { get; private set; }
-
+    protected IEditService EditService  { get; private set; }
     protected IBucketService BucketService { get; private set; }
     protected IActionLogService ActionLogService { get; private set; }
     protected IMapper Mapper { get; private set; }
@@ -32,6 +33,7 @@ public abstract class ControllerTestBase<TController>
     protected void ConfigureFakes(Func<TController> controllerFactory)
     {
         CabService    = Substitute.For<ICabService>();
+        EditService   = Substitute.For<IEditService>();
         CabRemovalRequestService  = Substitute.For<ICabRemovalRequestService>();
         UserService  = Substitute.For<IUserService>();
         BucketService = Substitute.For<IBucketService>();
