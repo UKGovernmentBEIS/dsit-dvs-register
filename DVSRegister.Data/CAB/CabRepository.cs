@@ -337,7 +337,7 @@ namespace DVSRegister.Data.CAB
 
 
 
-        public async Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail)
+        public async Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail, bool isReupload)
         {
             GenericResponse genericResponse = new();
             using var transaction = context.Database.BeginTransaction();
@@ -348,8 +348,7 @@ namespace DVSRegister.Data.CAB
                .Include(x=>x.ManualUnderPinningService)
                .Where(x => x.ServiceKey == service.ServiceKey && x.IsCurrent == true).FirstOrDefaultAsync();
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
-                {
-                    var cabTransferRequest = context.CabTransferRequest.Include(c => c.RequestManagement).Where(c => c.ServiceId == existingService.Id).OrderByDescending(c => c.Id).FirstOrDefault();
+                {                    
 
                     if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
                     {
@@ -359,7 +358,82 @@ namespace DVSRegister.Data.CAB
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
                     }
                     else
-                    {
+                    {                       
+
+                        if (!isReupload)
+                        {
+                            var previousServiceVersion = await context.Service
+                                .Where(x => x.ServiceKey == service.ServiceKey)
+                                .Include(s => s.PublicInterestCheck)
+                                .Include(s => s.CertificateReview)
+                                .Include(s => s.ServiceRemovalRequest)
+                                .Include(s => s.CabTransferRequest).ThenInclude(tr => tr.RequestManagement)
+                                .Include(s => s.ActionLogs)
+                                .OrderByDescending(s => s.ServiceVersion)
+                                .FirstOrDefaultAsync();
+
+                            var certificateReview = previousServiceVersion.CertificateReview.FirstOrDefault(cr => cr.IsLatestReviewVersion);
+                            var publicInterestCheck = previousServiceVersion.PublicInterestCheck.FirstOrDefault(pic => pic.IsLatestReviewVersion);
+                            var transferRequest = previousServiceVersion.CabTransferRequest.OrderByDescending(c => c.Id).FirstOrDefault();
+                            
+
+                            if (previousServiceVersion != null)
+                            {
+                                if (certificateReview == null || previousServiceVersion.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)
+                                {
+                                    // delete service if it has not started PI check or has been sent back to cab
+                                    context.Remove(previousServiceVersion);
+                                }
+                                else if (certificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved && 
+                                    (publicInterestCheck == null || publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed && publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckPassed))
+                                {
+                                    // delete in progress application if pi check is not complete and cert review was approved
+                                    // But we must keep the record if it failed or PI check was rejected
+                                    context.Remove(previousServiceVersion);
+                                }
+                                else if (previousServiceVersion.ServiceRemovalRequest != null && (previousServiceVersion.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation || previousServiceVersion.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation))
+                                {
+                                    // if ongoing removal - delete removal request assign previous status back to service
+                                    previousServiceVersion.ServiceStatus = previousServiceVersion.ServiceRemovalRequest.PreviousServiceStatus;
+                                    context.Remove(previousServiceVersion.ServiceRemovalRequest);
+                                }
+                                else if (transferRequest != null && (previousServiceVersion.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || previousServiceVersion.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
+                                {
+                                    //if transfer ongoing but cab b is yet to accept and cab A, resubmits
+                                    // delete the cabtransferrequest and relevant request management and assign previous status back to service
+                                    var request = transferRequest.RequestManagement;
+                                    previousServiceVersion.ServiceStatus = transferRequest.PreviousServiceStatus;
+                                    context.Remove(transferRequest);
+                                    context.Remove(request);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var cabTransferRequest = context.CabTransferRequest.Include(c => c.RequestManagement).Where(c => c.ServiceId == existingService.Id).OrderByDescending(c => c.Id).FirstOrDefault();
+
+                            //if it is a transfered service, update certificate upload flag, update provider status
+                            if (cabTransferRequest != null && cabTransferRequest.RequestManagement != null
+                              && cabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
+                              && cabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
+                              && cabTransferRequest.CertificateUploaded == false)
+                            {
+                                cabTransferRequest.CertificateUploaded = true;
+                                if (existingService.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || existingService.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
+                                    existingService.ServiceStatus = cabTransferRequest.PreviousServiceStatus;
+
+                                var existingProvider = await context.ProviderProfile
+                                    .Include(service => service.Services)
+                                    .FirstOrDefaultAsync(p => p.Id == service.ProviderProfileId);
+
+                                if (existingProvider != null)
+                                {
+                                    existingProvider.ModifiedTime = DateTime.UtcNow;
+                                }
+                            }
+                        }
+
+
                         //reapplication - insert new version of service
                         existingService.IsCurrent = false;
                         existingService.ModifiedTime = DateTime.UtcNow;
@@ -369,26 +443,7 @@ namespace DVSRegister.Data.CAB
                         service.CreatedTime = DateTime.UtcNow;
                         service.ModifiedTime = DateTime.UtcNow;
                         service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue ? null : service.ConformityExpiryDate;
-                        service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;
-                        //if it is a transfered service, update certificate upload flag, update provider status
-                        if (cabTransferRequest != null && cabTransferRequest.RequestManagement != null
-                          && cabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
-                          && cabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
-                          && cabTransferRequest.CertificateUploaded == false)
-                        {
-                            cabTransferRequest.CertificateUploaded = true;
-                            if(existingService.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || existingService.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
-                            existingService.ServiceStatus = cabTransferRequest.PreviousServiceStatus;
-
-                            var existingProvider = await context.ProviderProfile
-                                .Include(service => service.Services)
-                                .FirstOrDefaultAsync(p => p.Id == service.ProviderProfileId);
-
-                            if (existingProvider != null)
-                            {                                               
-                                existingProvider.ModifiedTime = DateTime.UtcNow;                               
-                            }
-                        }
+                        service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;                        
                         var entity = await context.Service.AddAsync(service);
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                         genericResponse.InstanceId = existingService.ServiceKey;

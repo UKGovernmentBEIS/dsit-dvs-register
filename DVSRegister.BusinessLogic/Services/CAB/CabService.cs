@@ -2,12 +2,10 @@
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility;
-using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Entities;
-using System.Text;
 
 namespace DVSRegister.BusinessLogic.Services.CAB
 {
@@ -297,11 +295,11 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return genericResponse;
         }
 
-        public async Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail)
+        public async Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail, bool isReupload)
         {
             Service service = new ();
             automapper.Map(serviceDto, service);
-            GenericResponse genericResponse = await cabRepository.SaveServiceReApplication(service, loggedInUserEmail);
+            GenericResponse genericResponse = await cabRepository.SaveServiceReApplication(service, loggedInUserEmail, isReupload);
             return genericResponse;
         }
 

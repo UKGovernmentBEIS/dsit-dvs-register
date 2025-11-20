@@ -72,6 +72,7 @@ namespace DVSRegister.Models.CAB
         public SelectCabViewModel? SelectCabViewModel { get; set; }
         public DateTime? UnderPinningServiceExpiryDate { get; set; }
         public bool? IsTFVersionChanged { get; set; }
+        public bool? IsReupload { get; set; }
 
         public void ResetInpuData()
         {
