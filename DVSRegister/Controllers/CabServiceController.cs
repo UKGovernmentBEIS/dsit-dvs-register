@@ -781,9 +781,9 @@ namespace DVSRegister.Controllers
                 return HandleInvalidCabId(summaryViewModel.CabId);
 
             GenericResponse genericResponse = new();
-            if(summaryViewModel.IsResubmission)
+            if (summaryViewModel.IsResubmission)
             {
-                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
+                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail, summaryViewModel.IsReupload.GetValueOrDefault());
             }
             else
             {
@@ -837,7 +837,7 @@ namespace DVSRegister.Controllers
 
             if (serviceSummary.IsResubmission)
             {
-                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail);
+                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail, serviceSummary.IsReupload.GetValueOrDefault());
             }
             else
             {

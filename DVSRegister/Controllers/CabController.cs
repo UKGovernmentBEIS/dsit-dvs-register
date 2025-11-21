@@ -121,20 +121,12 @@ namespace DVSRegister.Controllers
                 currentServiceVersion.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)currentServiceVersion.ManualUnderPinningServiceId);
             }
 
-            if (serviceVersions.ServiceHistoryVersions.Any())
+            if (currentServiceVersion.ServiceStatus != ServiceStatusEnum.SavedAsDraft &&
+                (serviceVersions.ServiceHistoryVersions.Any() || currentServiceVersion.ServiceStatus >= ServiceStatusEnum.Published))
             {
-                serviceVersions.CurrentServiceVersion.EnableResubmission = (currentServiceVersion.ServiceStatus == ServiceStatusEnum.Published || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed) ||
-                (serviceVersions.ServiceHistoryVersions.Any(x => x.ServiceStatus == ServiceStatusEnum.Published || x.ServiceStatus == ServiceStatusEnum.Removed) &&
-                 (currentServiceVersion?.CertificateReview?.Where(x => x.IsLatestReviewVersion).SingleOrDefault()?.CertificateReviewStatus == CommonUtility.Models.Enums.CertificateReviewEnum.Rejected ||
-                currentServiceVersion?.PublicInterestCheck?.Where(x => x.IsLatestReviewVersion).SingleOrDefault()?.PublicInterestCheckStatus == CommonUtility.Models.Enums.PublicInterestCheckEnum.PublicInterestCheckFailed));
-
+                serviceVersions.CurrentServiceVersion.EnableResubmission = true;
             }
-            else
-            {
-                serviceVersions.CurrentServiceVersion.EnableResubmission = currentServiceVersion.ServiceStatus == ServiceStatusEnum.Published
-                || currentServiceVersion.ServiceStatus == ServiceStatusEnum.Removed;
 
-            }
             serviceVersions.CanRemoveService = serviceList?.Any(x => x.ServiceStatus == ServiceStatusEnum.Published) ?? false;
             serviceVersions.CanCancelRemovalRequest = serviceList?.Any(x => x.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation) ?? false;
             if (serviceVersions.CanRemoveService)
