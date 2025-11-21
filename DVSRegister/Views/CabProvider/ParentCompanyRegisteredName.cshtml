@@ -58,12 +58,10 @@
                         @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", regNameViewModel)
 
                     </div>
-                    <button type="submit" class="govuk-button" data-module="govuk-button">
-                        Continue
-                    </button>
-                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                        Save as draft
-                    </button>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="continue" data-module="govuk-button">Continue</button>
+                        <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft" data-module="govuk-button">  Save and complete later </button>
+                    </div>
                 </div>
             </div>
         </main>
