@@ -148,6 +148,26 @@ namespace DVSRegister.Controllers
             return View(serviceVersions);
         }
 
+        [HttpGet("service-version-details")]
+        public async Task<IActionResult> ServiceVersionDetails(int serviceKey, int serviceId)
+        {
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            var serviceVersion = await cabService.GetServiceDetails(serviceId, CabId);
+            
+            if (serviceVersion == null || serviceVersion.Id == 0)
+            {
+                return NotFound();
+            }
+
+            if (serviceVersion.ManualUnderPinningServiceId != null)
+            {
+                serviceVersion.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)serviceVersion.ManualUnderPinningServiceId);
+            }
+          
+            return View(serviceVersion);
+        }
 
         #endregion
     }
