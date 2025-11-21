@@ -1,0 +1,85 @@
+@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models
+@using DVSRegister.CommonUtility.Models.Enums
+@using DVSRegister.Extensions
+@using DVSRegister.BusinessLogic.Models.CAB
+@model ServiceDto
+
+<div class="govuk-summary-card govuk-!-margin-bottom-8">
+    <div class="govuk-summary-card__title-wrapper">
+        <p class="govuk-summary-card__title">
+            Submission date (GMT): @DateTimeExtensions.FormatDateTime(Model.CreatedTime)
+        </p>
+        <ul class="govuk-summary-card__actions">
+            <li class="govuk-summary-card__action">
+                <a class="govuk-link" href="@Url.Action("ServiceVersionDetails", "Cab", new { serviceKey = Model.ServiceKey, serviceId = Model.Id })">
+                    Show details<span class="govuk-visually-hidden"> for @Model.ServiceName submitted on @DateTimeExtensions.FormatDateTime(Model.CreatedTime)</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="govuk-summary-card__content">
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Publication status
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview?.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.PublicInterestCheck?.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.ServiceStatus, null)
+                </dd>
+            </div>
+            
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Name of service
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    @(Model.ServiceName ?? "N/A")
+                </dd>
+            </div>
+            
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Trust framework version
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    @(Model.TrustFrameworkVersion?.TrustFrameworkName ?? "N/A")
+                </dd>
+            </div>
+            
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Date of issue
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    @if (Model.ConformityIssueDate != DateTime.MinValue)
+                    {
+                        @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
+                    }
+                    else
+                    {
+                        @:Incomplete
+                    }
+                </dd>
+            </div>
+            
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Date of expiry
+                </dt>
+                <dd class="govuk-summary-list__value">
+                    @if (Model.ConformityExpiryDate != DateTime.MinValue)
+                    {
+                        @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMM yyyy")
+                    }
+                    else
+                    {
+                        @:Incomplete
+                    }
+                </dd>
+            </div>
+        </dl>
+    </div>
+</div>
+

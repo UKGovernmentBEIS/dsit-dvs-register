@@ -63,7 +63,7 @@
                     {
                         @foreach (var serviceDto in Model.ServiceHistoryVersions)
                         {
-                            @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml", serviceDto)
+                            @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceHistorySummaryView.cshtml", serviceDto)
                         }
                     }
                 </div>
