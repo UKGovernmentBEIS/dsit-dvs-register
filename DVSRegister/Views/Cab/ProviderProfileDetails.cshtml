@@ -59,7 +59,7 @@
                                     @Html.DisplayFor(model => model.Provider.TradingName)
                                 </dd>
                             </div>
-                            @if (Model.Provider.HasParentCompany)
+                            @if (Model.Provider.HasParentCompany == true)
                             {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
@@ -81,7 +81,7 @@
                             }
 
 
-                            @if (Model.Provider.HasRegistrationNumber)
+                            @if (Model.Provider.HasRegistrationNumber == true)
                             {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">

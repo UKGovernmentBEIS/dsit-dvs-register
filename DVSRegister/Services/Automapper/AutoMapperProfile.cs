@@ -27,6 +27,31 @@ namespace DVSRegister.Services
            .ForMember(dest => dest.ConformityIssueDate, opt => opt.MapFrom(src => Convert.ToDateTime(src.ConformityIssueDate)))
            .ForMember(dest => dest.ConformityExpiryDate, opt => opt.MapFrom(src => Convert.ToDateTime(src.ConformityExpiryDate)))
             .ForMember(dest => dest.ServiceType, opt => opt.MapFrom(src => src.ServiceType));
+
+
+            CreateMap<ProfileSummaryViewModel, ProviderProfileDto>()
+           
+                .ForMember(dest => dest.RegisteredName, opt => opt.MapFrom(src => src.RegisteredName))
+                .ForMember(dest => dest.TradingName, opt => opt.MapFrom(src => src.TradingName))
+                .ForMember(dest => dest.HasRegistrationNumber, opt => opt.MapFrom(src => src.HasRegistrationNumber))
+                .ForMember(dest => dest.CompanyRegistrationNumber, opt => opt.MapFrom(src => src.CompanyRegistrationNumber))
+                .ForMember(dest => dest.DUNSNumber, opt => opt.MapFrom(src => src.DUNSNumber))
+                .ForMember(dest => dest.HasParentCompany, opt => opt.MapFrom(src => src.HasParentCompany))
+                .ForMember(dest => dest.ParentCompanyRegisteredName, opt => opt.MapFrom(src => src.ParentCompanyRegisteredName))
+                .ForMember(dest => dest.ParentCompanyLocation, opt => opt.MapFrom(src => src.ParentCompanyLocation))
+                .ForMember(dest => dest.PrimaryContactFullName, opt => opt.MapFrom(src => src.PrimaryContact.PrimaryContactFullName))
+                .ForMember(dest => dest.PrimaryContactJobTitle, opt => opt.MapFrom(src => src.PrimaryContact.PrimaryContactJobTitle))
+                .ForMember(dest => dest.PrimaryContactEmail, opt => opt.MapFrom(src => src.PrimaryContact.PrimaryContactEmail))
+                .ForMember(dest => dest.PrimaryContactTelephoneNumber, opt => opt.MapFrom(src => src.PrimaryContact.PrimaryContactTelephoneNumber))
+                .ForMember(dest => dest.SecondaryContactFullName, opt => opt.MapFrom(src => src.SecondaryContact.SecondaryContactFullName))
+                .ForMember(dest => dest.SecondaryContactJobTitle, opt => opt.MapFrom(src => src.SecondaryContact.SecondaryContactJobTitle))
+                .ForMember(dest => dest.SecondaryContactEmail, opt => opt.MapFrom(src => src.SecondaryContact.SecondaryContactEmail))
+                .ForMember(dest => dest.SecondaryContactTelephoneNumber, opt => opt.MapFrom(src => src.SecondaryContact.SecondaryContactTelephoneNumber))
+                .ForMember(dest => dest.PublicContactEmail, opt => opt.MapFrom(src => src.PublicContactEmail))
+                .ForMember(dest => dest.ProviderTelephoneNumber, opt => opt.MapFrom(src => src.ProviderTelephoneNumber))
+                .ForMember(dest => dest.ProviderWebsiteAddress, opt => opt.MapFrom(src => src.ProviderWebsiteAddress))
+                .ForMember(dest => dest.LinkToContactPage, opt => opt.MapFrom(src => src.LinkToContactPage))                  
+               .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ProviderId));
         }
     }
 

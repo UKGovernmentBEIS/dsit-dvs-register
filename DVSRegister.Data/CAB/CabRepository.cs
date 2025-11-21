@@ -230,7 +230,7 @@ namespace DVSRegister.Data.CAB
         public async Task<ProviderProfile> GetProviderWithLatestVersionServices(int providerId, int cabId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.Services).ThenInclude(p => p.CertificateReview)
+            provider = await context.ProviderProfile.Include(p => p.Services)!.ThenInclude(p => p.CertificateReview)
             .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId && s.IsCurrent == true)).ThenInclude(p => p.CabUser)
             .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
@@ -244,10 +244,22 @@ namespace DVSRegister.Data.CAB
             using var transaction = context.Database.BeginTransaction();
             try
             {
-                providerProfile.CreatedTime = DateTime.UtcNow;
-                var entity = await context.ProviderProfile.AddAsync(providerProfile);
-                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddProvider, loggedInUserEmail);
-                genericResponse.InstanceId = entity.Entity.Id;
+
+                var existingProvider = await context.ProviderProfile.Where(p => p.Id == providerProfile.Id).FirstOrDefaultAsync();
+                if (existingProvider != null)
+                {
+                    UpdateExistingProfileRecord(existingProvider, providerProfile);
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddProvider, loggedInUserEmail);
+                    genericResponse.InstanceId = existingProvider.Id;
+                }
+                else
+                {
+                    providerProfile.CreatedTime = DateTime.UtcNow;
+                    var entity = await context.ProviderProfile.AddAsync(providerProfile);
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddProvider, loggedInUserEmail);
+                    genericResponse.InstanceId = entity.Entity.Id;
+                }
+
                 transaction.Commit();
                 genericResponse.Success = true;
 
@@ -364,10 +376,10 @@ namespace DVSRegister.Data.CAB
                         {
                             var previousServiceVersion = await context.Service
                                 .Where(x => x.ServiceKey == service.ServiceKey)
-                                .Include(s => s.PublicInterestCheck)
-                                .Include(s => s.CertificateReview)
-                                .Include(s => s.ServiceRemovalRequest)
-                                .Include(s => s.CabTransferRequest).ThenInclude(tr => tr.RequestManagement)
+                                .Include(s => s.PublicInterestCheck)!
+                                .Include(s => s.CertificateReview)!
+                                .Include(s => s.ServiceRemovalRequest)!
+                                .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
                                 .Include(s => s.ActionLogs)
                                 .OrderByDescending(s => s.ServiceVersion)
                                 .FirstOrDefaultAsync();
@@ -525,15 +537,15 @@ namespace DVSRegister.Data.CAB
                 {
                     existingProvider.RegisteredName = providerProfile.RegisteredName;
                     existingProvider.TradingName = providerProfile.TradingName;
-                    if (existingProvider.HasParentCompany && !string.IsNullOrEmpty(providerProfile.ParentCompanyLocation))
+                    if (existingProvider.HasParentCompany == true && !string.IsNullOrEmpty(providerProfile.ParentCompanyLocation))
                     {
                         existingProvider.ParentCompanyLocation = providerProfile.ParentCompanyLocation;
                     }
-                    if (existingProvider.HasParentCompany && !string.IsNullOrEmpty(providerProfile.ParentCompanyRegisteredName))
+                    if (existingProvider.HasParentCompany == true && !string.IsNullOrEmpty(providerProfile.ParentCompanyRegisteredName))
                     {
                         existingProvider.ParentCompanyRegisteredName = providerProfile.ParentCompanyRegisteredName;
                     }
-                    if (existingProvider.HasRegistrationNumber && !string.IsNullOrEmpty(providerProfile.CompanyRegistrationNumber))
+                    if (existingProvider.HasRegistrationNumber == true && !string.IsNullOrEmpty(providerProfile.CompanyRegistrationNumber))
                     {
                         existingProvider.CompanyRegistrationNumber = providerProfile.CompanyRegistrationNumber;
                     }
@@ -804,7 +816,41 @@ namespace DVSRegister.Data.CAB
             }
         }
 
-     
+        private void UpdateExistingProfileRecord(ProviderProfile existingProfile, ProviderProfile newProfile)
+        {
+
+            existingProfile.ProviderStatus = newProfile.ProviderStatus;
+            existingProfile.RegisteredName = newProfile.RegisteredName ?? existingProfile.RegisteredName;
+            existingProfile.TradingName = newProfile.TradingName ?? existingProfile.TradingName;
+            existingProfile.HasRegistrationNumber = newProfile.HasRegistrationNumber ?? existingProfile.HasRegistrationNumber;
+            if (newProfile.HasRegistrationNumber == true)
+            {
+                existingProfile.CompanyRegistrationNumber = newProfile.CompanyRegistrationNumber ?? existingProfile.CompanyRegistrationNumber;
+                existingProfile.DUNSNumber = null;
+            }
+            else if (newProfile.HasRegistrationNumber == false)
+            {
+                existingProfile.DUNSNumber = newProfile.DUNSNumber ?? existingProfile.DUNSNumber;
+                existingProfile.CompanyRegistrationNumber = null;
+            }
+
+
+            existingProfile.HasParentCompany = newProfile.HasParentCompany ?? existingProfile.HasParentCompany;
+            existingProfile.ParentCompanyRegisteredName = newProfile.ParentCompanyRegisteredName ?? existingProfile.ParentCompanyRegisteredName;
+            existingProfile.ParentCompanyLocation = newProfile.ParentCompanyLocation ?? existingProfile.ParentCompanyLocation;
+            existingProfile.PrimaryContactFullName = newProfile.PrimaryContactFullName ?? existingProfile.PrimaryContactFullName;
+            existingProfile.PrimaryContactJobTitle = newProfile.PrimaryContactJobTitle ?? existingProfile.PrimaryContactJobTitle;
+            existingProfile.PrimaryContactEmail = newProfile.PrimaryContactEmail ?? existingProfile.PrimaryContactEmail;
+            existingProfile.PrimaryContactTelephoneNumber = newProfile.PrimaryContactTelephoneNumber ?? existingProfile.PrimaryContactTelephoneNumber;
+            existingProfile.SecondaryContactFullName = newProfile.SecondaryContactFullName ?? existingProfile.SecondaryContactFullName;
+            existingProfile.SecondaryContactJobTitle = newProfile.SecondaryContactJobTitle ?? existingProfile.SecondaryContactJobTitle;
+            existingProfile.SecondaryContactEmail = newProfile.SecondaryContactEmail ?? existingProfile.SecondaryContactEmail;
+            existingProfile.SecondaryContactTelephoneNumber = newProfile.SecondaryContactTelephoneNumber ?? existingProfile.SecondaryContactTelephoneNumber;
+            existingProfile.PublicContactEmail = newProfile.PublicContactEmail ?? existingProfile.PublicContactEmail;
+            existingProfile.ProviderTelephoneNumber = newProfile.ProviderTelephoneNumber ?? existingProfile.ProviderTelephoneNumber;
+            existingProfile.ProviderWebsiteAddress = newProfile.ProviderWebsiteAddress ?? existingProfile.ProviderWebsiteAddress;
+            existingProfile.LinkToContactPage = newProfile.LinkToContactPage ?? existingProfile.LinkToContactPage;
+        }
         #endregion
     }
 }
