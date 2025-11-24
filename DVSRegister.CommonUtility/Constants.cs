@@ -76,6 +76,7 @@
         public const string InvitationDeclined = "Invitation declined";
 
         public const string ActionNotCompletedErrorPath = "/action-not-completed";
+        public const string Incomplete = "Incomplete";
 
     }
 }

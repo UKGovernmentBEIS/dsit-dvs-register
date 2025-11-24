@@ -11,5 +11,10 @@ namespace DVSRegister.Models.CAB.Provider
         [ValidateNever]
         public SourcePageEnum? SourcePage { get; set; }
         public string? RefererURL { get; set; }
+
+        [ValidateNever]
+        public ProviderStatusEnum? ProviderStatus { get; set; }
+
+        public bool IsInCompleteApplication { get; set; }
     }
 }

@@ -1,31 +1,34 @@
-﻿using DVSRegister.BusinessLogic.Models;
+﻿using AutoMapper;
+using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.BusinessLogic.Services.Edit;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
-using DVSRegister.Models.CAB.Provider;
 using DVSRegister.Models.CAB;
+using DVSRegister.Models.CAB.Provider;
 using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
-using DVSRegister.BusinessLogic.Services.Edit;
 
 
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/create-profile")] 
-    public class CabProviderController(ICabService cabService, IEditService editService, IUserService userService, IActionLogService actionLogService, ILogger<CabProviderController> logger) : BaseController(logger)
+    public class CabProviderController(ICabService cabService, IEditService editService, IUserService userService, IActionLogService actionLogService, IMapper mapper, ILogger<CabProviderController> logger) : BaseController(logger)
     {
         private readonly ICabService cabService = cabService;
         private readonly IEditService editService = editService;
         private readonly IUserService userService = userService;
         private readonly IActionLogService actionLogService = actionLogService;
+        private readonly IMapper mapper = mapper;
+      
 
         [HttpGet("before-you-start")]
         public IActionResult BeforeYouStart()
-        {
+        {           
             HttpContext?.Session.Remove("ProfileSummary"); // clear data in session before adding a new profile
             return View();
         }
@@ -33,8 +36,8 @@ namespace DVSRegister.Controllers
 
         #region Registered Name
 
-        [HttpGet("reg-name")]
-        public IActionResult RegisteredName(SourcePageEnum sourcePage)
+        [HttpGet("reg-name/{sourcePage?}")]
+        public IActionResult RegisteredName(SourcePageEnum? sourcePage)
         {          
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             profileSummaryViewModel.SourcePage = sourcePage;
@@ -45,14 +48,14 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("reg-name")]
-        public async Task<IActionResult> SaveRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveRegisteredName(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
-            profileSummaryViewModel.FromSummaryPage = false;
-
+            profileSummaryViewModel.FromSummaryPage = false;          
             if (!string.IsNullOrEmpty(profileSummaryViewModel.RegisteredName))
             {
-                bool registeredNameExist =
+                bool registeredNameExist = profileSummaryViewModel.ProviderId > 0?
+                    await cabService.CheckProviderRegisteredNameExists(profileSummaryViewModel.RegisteredName, profileSummaryViewModel.ProviderId) :
                     await cabService.CheckProviderRegisteredNameExists(profileSummaryViewModel.RegisteredName);
                 if (registeredNameExist)
                 {
@@ -65,12 +68,8 @@ namespace DVSRegister.Controllers
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.RegisteredName = profileSummaryViewModel.RegisteredName;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return sourcePage switch
-                {
-                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
-                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                    _ => RedirectToAction("TradingName")
-                };
+                return  await HandleActions(action, profileSummary, sourcePage, "TradingName");              
+
             }
             else
             {
@@ -96,7 +95,7 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("trading-name")]
-        public IActionResult SaveTradingName(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveTradingName(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
   
@@ -104,13 +103,9 @@ namespace DVSRegister.Controllers
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.TradingName = profileSummaryViewModel.TradingName;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);               
-                return sourcePage switch
-                {
-                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
-                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                    _ => RedirectToAction("HasRegistrationNumber")
-                };
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return await HandleActions(action, profileSummary, sourcePage, "HasRegistrationNumber");
+               
             }
             else
             {
@@ -136,7 +131,7 @@ namespace DVSRegister.Controllers
 
 
         [HttpPost("company-number")]
-        public IActionResult SaveHasRegistrationNumber(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveHasRegistrationNumber(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
@@ -144,18 +139,7 @@ namespace DVSRegister.Controllers
             if (ModelState["HasRegistrationNumber"].Errors.Count == 0)
             {
                 summaryViewModel.HasRegistrationNumber = profileSummaryViewModel.HasRegistrationNumber;
-                if (Convert.ToBoolean(summaryViewModel.HasRegistrationNumber))
-                {
-                    summaryViewModel.DUNSNumber = null;
-                    HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
-                    return RedirectToAction("CompanyRegistrationNumber", new { sourcePage = sourcePage });
-                }
-                else
-                {
-                    summaryViewModel.CompanyRegistrationNumber = null;
-                    HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
-                    return RedirectToAction("DUNSNumber", new { sourcePage = sourcePage });
-                }
+                return await HandleHasCompanyRegistration(action, summaryViewModel, sourcePage);
             }
             else
             {
@@ -179,7 +163,7 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("company-number-input")]
-        public IActionResult SaveCompanyRegistrationNumber(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveCompanyRegistrationNumber(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;      
             if (ModelState["CompanyRegistrationNumber"].Errors.Count == 0)
@@ -187,12 +171,8 @@ namespace DVSRegister.Controllers
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.CompanyRegistrationNumber = profileSummaryViewModel.CompanyRegistrationNumber;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return sourcePage switch
-                {
-                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
-                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                    _ => RedirectToAction("HasParentCompany")
-                };
+                return await HandleActions(action, profileSummary, sourcePage, "HasParentCompany");
+               
             }
             else
             {
@@ -216,7 +196,7 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("duns-number")]
-        public IActionResult SaveDUNSNumber(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveDUNSNumber(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;        
             if (ModelState["DUNSNumber"].Errors.Count == 0)
@@ -224,12 +204,8 @@ namespace DVSRegister.Controllers
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.DUNSNumber = profileSummaryViewModel.DUNSNumber;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return sourcePage switch
-                {
-                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
-                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                    _ => RedirectToAction("HasParentCompany")
-                };
+                return await HandleActions(action, profileSummary, sourcePage, "HasParentCompany");
+               
             }
             else
             {
@@ -254,31 +230,14 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("parent-company")]
-        public IActionResult SaveHasParentCompany(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveHasParentCompany(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             ProfileSummaryViewModel summaryViewModel = GetProfileSummary();          
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
             if (ModelState["HasParentCompany"].Errors.Count == 0)
             {
                 summaryViewModel.HasParentCompany = profileSummaryViewModel.HasParentCompany;
-                if (Convert.ToBoolean(summaryViewModel.HasParentCompany))
-                {
-                    HttpContext?.Session.Set("ProfileSummary", summaryViewModel);
-                    return RedirectToAction("ParentCompanyRegisteredName", new { sourcePage = sourcePage });
-                }
-                else
-                {
-                    summaryViewModel.ParentCompanyLocation = null;
-                    summaryViewModel.ParentCompanyRegisteredName = null;
-                    HttpContext?.Session.Set("ProfileSummary", summaryViewModel);                 
-
-                    return sourcePage switch
-                    {
-                        SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
-                        SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                        _ => RedirectToAction("PrimaryContact")
-                    };
-                }
+                return await HandleHasParentCompany(action, summaryViewModel, sourcePage, "PrimaryContact");
             }
             else
             {
@@ -303,21 +262,16 @@ namespace DVSRegister.Controllers
 
 
         [HttpPost("parent-company-registered-name-input")]
-        public IActionResult SaveParentCompanyRegisteredName(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveParentCompanyRegisteredName(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
             if (ModelState["ParentCompanyRegisteredName"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.ParentCompanyRegisteredName = profileSummaryViewModel.ParentCompanyRegisteredName;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);              
-                return sourcePage switch
-                {
-                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
-                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails =>  string.IsNullOrEmpty(profileSummary.ParentCompanyLocation)?
-                    RedirectToAction("ParentCompanyLocation", new { sourcePage  = sourcePage }): RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                    _ => RedirectToAction("ParentCompanyLocation")
-                };
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return await HandleActions(action, profileSummary, sourcePage, "ParentCompanyLocation");
+               
             }
             else
             {
@@ -341,20 +295,15 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("parent-company-location-input")]
-        public IActionResult SaveParentCompanyLocation(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveParentCompanyLocation(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage ;
             if (ModelState["ParentCompanyLocation"].Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.ParentCompanyLocation = profileSummaryViewModel.ParentCompanyLocation;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);                
-                return sourcePage switch
-                {
-                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
-                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                    _ => RedirectToAction("PrimaryContact")
-                };
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return await HandleActions(action, profileSummary, sourcePage, "PrimaryContact");               
             }
             else
             {
@@ -371,44 +320,38 @@ namespace DVSRegister.Controllers
         {         
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             profileSummaryViewModel.PrimaryContact.SourcePage = sourcePage;
+            profileSummaryViewModel.PrimaryContact.IsInCompleteApplication = profileSummaryViewModel.IsInCompleteApplication;
             ViewBag.hasParentCompany = profileSummaryViewModel.HasParentCompany;
             profileSummaryViewModel.PrimaryContact.RefererURL = sourcePage == SourcePageEnum.ProfileSummary? GetRefererURL()
-           : profileSummaryViewModel.HasParentCompany == true? "/cab-service/create-profile/parent-company-location-input" : "/cab-service/create-profile/parent-company";
+            :profileSummaryViewModel.HasParentCompany == true? "/cab-service/create-profile/parent-company-location-input" : "/cab-service/create-profile/parent-company";
             return View(profileSummaryViewModel.PrimaryContact);
         }
 
         [HttpPost("primary-contact-information")]
-        public IActionResult SavePrimaryContact(PrimaryContactViewModel primaryContactViewModel)
+        public async Task<IActionResult> SavePrimaryContact(PrimaryContactViewModel primaryContactViewModel, string action)
         {
           SourcePageEnum? sourcePage = primaryContactViewModel.SourcePage ;
             ProfileSummaryViewModel profileSummary = GetProfileSummary();
-            ValidationHelper.ValidateDuplicateFields(
-                ModelState,
-                primaryContactViewModel.PrimaryContactEmail,
-                profileSummary.SecondaryContact?.SecondaryContactEmail,
-                new ValidationHelper.FieldComparisonConfig(
-                    "PrimaryContactEmail",
-                    "SecondaryContactEmail",
-                    "Email address of secondary contact cannot be the same as primary contact"
-                )
-            );
+            primaryContactViewModel.IsInCompleteApplication = profileSummary.IsInCompleteApplication;
+            ValidationHelper.ValidateDuplicateFields(ModelState,primaryContactViewModel.PrimaryContactEmail,profileSummary.SecondaryContact?.SecondaryContactEmail,
+             new ValidationHelper.FieldComparisonConfig(
+            "PrimaryContactEmail",
+            "SecondaryContactEmail",
+            "Email address of secondary contact cannot be the same as primary contact"));
 
             ValidationHelper.ValidateDuplicateFields(
-                ModelState,
-                primaryValue: primaryContactViewModel.PrimaryContactTelephoneNumber,
-                secondaryValue: profileSummary.SecondaryContact?.SecondaryContactTelephoneNumber,
+                ModelState,primaryValue: primaryContactViewModel.PrimaryContactTelephoneNumber,secondaryValue: profileSummary.SecondaryContact?.SecondaryContactTelephoneNumber,
                 new ValidationHelper.FieldComparisonConfig(
-                    "PrimaryContactTelephoneNumber",
-                    "SecondaryContactTelephoneNumber",
-                    "Telephone number of secondary contact cannot be the same as primary contact"
-                )
-            );
+                "PrimaryContactTelephoneNumber",
+                "SecondaryContactTelephoneNumber",
+                "Telephone number of secondary contact cannot be the same as primary contact" ));
 
             if (ModelState.IsValid)
             {
-                profileSummary.PrimaryContact = primaryContactViewModel;
+                profileSummary.PrimaryContact = primaryContactViewModel;            
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return sourcePage == SourcePageEnum.ProfileSummary ? RedirectToAction("ProfileSummary") : RedirectToAction("SecondaryContact");
+                return await HandlePrimaryAndSecondaryContactActions(action, profileSummary, sourcePage, "SecondaryContact");
+              
             }
             else
             {
@@ -425,6 +368,7 @@ namespace DVSRegister.Controllers
         {
             ProfileSummaryViewModel profileSummaryViewModel = GetProfileSummary();
             profileSummaryViewModel.SecondaryContact.SourcePage = sourcePage;
+            profileSummaryViewModel.SecondaryContact.IsInCompleteApplication = profileSummaryViewModel.IsInCompleteApplication;
             profileSummaryViewModel.SecondaryContact.RefererURL = sourcePage == SourcePageEnum.ProfileSummary ? GetRefererURL()
             : "/cab-service/create-profile/primary-contact-information";
             return View(profileSummaryViewModel.SecondaryContact);
@@ -432,38 +376,30 @@ namespace DVSRegister.Controllers
 
 
         [HttpPost("secondary-contact-information")]
-        public IActionResult SaveSecondaryContact(SecondaryContactViewModel secondaryContactViewModel)
+        public async Task<IActionResult> SaveSecondaryContact(SecondaryContactViewModel secondaryContactViewModel, string action)
         {
-           SourcePageEnum? sourcePage = secondaryContactViewModel.SourcePage;
+            SourcePageEnum? sourcePage = secondaryContactViewModel.SourcePage;
             ProfileSummaryViewModel profileSummary = GetProfileSummary();
+            secondaryContactViewModel.IsInCompleteApplication = profileSummary.IsInCompleteApplication;
+            ValidationHelper.ValidateDuplicateFields(
+            ModelState,primaryValue: profileSummary.PrimaryContact?.PrimaryContactEmail, secondaryValue: secondaryContactViewModel.SecondaryContactEmail,
+                new ValidationHelper.FieldComparisonConfig(
+                "PrimaryContactEmail",
+                "SecondaryContactEmail",
+                "Email address of secondary contact cannot be the same as primary contact"));
 
             ValidationHelper.ValidateDuplicateFields(
-                ModelState,
-                primaryValue: profileSummary.PrimaryContact?.PrimaryContactEmail,
-                secondaryValue: secondaryContactViewModel.SecondaryContactEmail,
+                ModelState, primaryValue: profileSummary.PrimaryContact?.PrimaryContactTelephoneNumber, secondaryValue: secondaryContactViewModel.SecondaryContactTelephoneNumber,
                 new ValidationHelper.FieldComparisonConfig(
-                    "PrimaryContactEmail",
-                    "SecondaryContactEmail",
-                    "Email address of secondary contact cannot be the same as primary contact"
-                )
-            );
-
-            ValidationHelper.ValidateDuplicateFields(
-                ModelState,
-                primaryValue: profileSummary.PrimaryContact?.PrimaryContactTelephoneNumber,
-                secondaryValue: secondaryContactViewModel.SecondaryContactTelephoneNumber,
-                new ValidationHelper.FieldComparisonConfig(
-                    "PrimaryContactTelephoneNumber",
-                    "SecondaryContactTelephoneNumber",
-                    "Telephone number of secondary contact cannot be the same as primary contact"
-                )
-            );
+                "PrimaryContactTelephoneNumber",
+                "SecondaryContactTelephoneNumber",
+                "Telephone number of secondary contact cannot be the same as primary contact"));
 
             if (ModelState.IsValid)
             {
                 profileSummary.SecondaryContact = secondaryContactViewModel;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return sourcePage == SourcePageEnum.ProfileSummary ? RedirectToAction("ProfileSummary") : RedirectToAction("PublicContactEmail");
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);              
+                return await HandlePrimaryAndSecondaryContactActions(action, profileSummary, sourcePage, "PublicContactEmail");
             }
             else
             {
@@ -487,7 +423,7 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("public-email")]
-        public IActionResult SavePublicContactEmail(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SavePublicContactEmail(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;
           
@@ -495,13 +431,9 @@ namespace DVSRegister.Controllers
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.PublicContactEmail = profileSummaryViewModel.PublicContactEmail;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);            
-                return sourcePage switch
-                {
-                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
-                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                    _ => RedirectToAction("TelephoneNumber")
-                };
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return await HandleActions(action, profileSummary, sourcePage, "TelephoneNumber");
+               
             }
             else
             {
@@ -525,20 +457,15 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("public-telephone")]
-        public IActionResult SaveTelephoneNumber(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveTelephoneNumber(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;        
             if (ModelState["ProviderTelephoneNumber"]?.Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.ProviderTelephoneNumber = profileSummaryViewModel.ProviderTelephoneNumber;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);               
-                return sourcePage switch
-                {
-                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
-                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                    _ => RedirectToAction("WebsiteAddress")
-                };
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return await HandleActions(action, profileSummary, sourcePage, "WebsiteAddress");               
             }
             else
             {
@@ -562,20 +489,16 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("public-website")]
-        public IActionResult SaveWebsiteAddress(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveWebsiteAddress(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;          
             if (ModelState["ProviderWebsiteAddress"]?.Errors.Count == 0)
             {
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.ProviderWebsiteAddress = profileSummaryViewModel.ProviderWebsiteAddress;
-                HttpContext?.Session.Set("ProfileSummary", profileSummary);               
-                return sourcePage switch
-                {
-                    SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
-                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                    _ => RedirectToAction("LinkToContactPage")
-                };
+                HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                return await HandleActions(action, profileSummary, sourcePage, "LinkToContactPage");
+               
             }
             else
             {
@@ -600,7 +523,7 @@ namespace DVSRegister.Controllers
 
 
         [HttpPost("link-to-contact-page")]
-        public IActionResult SaveLinkToContactPage(ProfileSummaryViewModel profileSummaryViewModel)
+        public async Task<IActionResult> SaveLinkToContactPage(ProfileSummaryViewModel profileSummaryViewModel, string action)
         {
             SourcePageEnum? sourcePage = profileSummaryViewModel.SourcePage;          
 
@@ -609,11 +532,7 @@ namespace DVSRegister.Controllers
                 ProfileSummaryViewModel profileSummary = GetProfileSummary();
                 profileSummary.LinkToContactPage = profileSummaryViewModel.LinkToContactPage;
                 HttpContext?.Session.Set("ProfileSummary", profileSummary);
-                return sourcePage switch
-                {                   
-                    SourcePageEnum.ProfileEditSummary or SourcePageEnum.ProfileDetails => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
-                    _ => RedirectToAction("ProfileSummary")
-                };
+                return await HandleActions(action, profileSummary, sourcePage, "ProfileSummary");
             }
             else
             {
@@ -682,10 +601,8 @@ namespace DVSRegister.Controllers
 
             var viewModel = new ProviderDetailsViewModel
             {
-                Provider = provider
+                Provider = provider               
             };
-
-            ViewBag.IsEditable = true;
 
             return View(viewModel);
         }
@@ -1042,7 +959,8 @@ namespace DVSRegister.Controllers
                                             new ProfileSummaryViewModel
                                             {
                                                 PrimaryContact = new PrimaryContactViewModel(),
-                                                SecondaryContact = new SecondaryContactViewModel()
+                                                SecondaryContact = new SecondaryContactViewModel(),
+                                                IsInCompleteApplication = true
                                             };
             return model;
         }
@@ -1087,6 +1005,7 @@ namespace DVSRegister.Controllers
                 providerDto.ProviderProfileCabMapping = [new ProviderProfileCabMappingDto { CabId = CabId }];
                 providerDto.ProviderStatus = ProviderStatusEnum.NA;
                 providerDto.CreatedTime = DateTime.UtcNow;
+                providerDto.Id = model.ProviderId;
             }
 
 
@@ -1119,12 +1038,136 @@ namespace DVSRegister.Controllers
             profileSummaryViewModel.ProviderTelephoneNumber = providerProfileDto.ProviderTelephoneNumber;
             profileSummaryViewModel.ProviderWebsiteAddress = providerProfileDto.ProviderWebsiteAddress;
             profileSummaryViewModel.LinkToContactPage = providerProfileDto.LinkToContactPage;
-
+            profileSummaryViewModel.ProviderStatus = providerProfileDto.ProviderStatus;
+            profileSummaryViewModel.IsInCompleteApplication = providerProfileDto.Id == 0 || providerProfileDto.ProviderStatus == ProviderStatusEnum.SavedAsDraft;
             HttpContext?.Session.Set("ProfileSummary", profileSummaryViewModel);
 
+        }
+
+        private async Task<IActionResult> SaveAsDraftAndRedirect(ProfileSummaryViewModel profileSummary)
+        {
+            ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(profileSummary);
+            providerProfileDto.ProviderStatus = ProviderStatusEnum.SavedAsDraft;
+            providerProfileDto.ProviderProfileCabMapping = [new ProviderProfileCabMappingDto { CabId = CabId }];
+            GenericResponse genericResponse = await cabService.SaveProviderProfile(providerProfileDto, UserEmail);
+            if (genericResponse.Success)
+            {
+                HttpContext?.Session.Remove("ProfileSummary");
+                return RedirectToAction("ProviderDetails", new { providerId  = genericResponse.InstanceId});
+            }
+            else
+            {
+                throw new InvalidOperationException("SaveAsDraftAndRedirect: Failed to save provider draft");
+            }
 
         }
 
-            #endregion
+
+        private async Task<IActionResult> HandleHasCompanyRegistration(string action, ProfileSummaryViewModel profileSummary, SourcePageEnum? sourcePage)
+        {
+            switch (action)
+            {
+                case "continue":
+                    if (Convert.ToBoolean(profileSummary.HasRegistrationNumber))
+                    {
+                        profileSummary.DUNSNumber = null;
+                        HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                        return RedirectToAction("CompanyRegistrationNumber", new { sourcePage });
+                    }
+                    else
+                    {
+                        profileSummary.CompanyRegistrationNumber = null;
+                        HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                        return RedirectToAction("DUNSNumber", new { sourcePage });                      
+                    }
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(profileSummary);
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
         }
+
+        private async Task<IActionResult> HandleHasParentCompany(string action, ProfileSummaryViewModel profileSummary, SourcePageEnum? sourcePage, string nextPage)
+        {
+            bool isDraft = profileSummary.ProviderStatus == ProviderStatusEnum.SavedAsDraft;
+            switch (action)
+            {
+                case "continue":
+                    if (Convert.ToBoolean(profileSummary.HasParentCompany))
+                    {                   
+                        HttpContext?.Session.Set("ProfileSummary", profileSummary);
+                        return RedirectToAction("ParentCompanyRegisteredName", new { sourcePage });
+                    }
+                    else
+                    {
+                        profileSummary.ParentCompanyLocation = null;
+                        profileSummary.ParentCompanyRegisteredName = null;
+                        HttpContext?.Session.Set("ProfileSummary", profileSummary);                   
+
+                        return sourcePage switch
+                        {
+                            SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                            SourcePageEnum.ProfileEditSummary => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                            SourcePageEnum.ProfileDetails => isDraft ? await SaveAsDraftAndRedirect(profileSummary) : RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                            SourcePageEnum.ProfileDraft => RedirectToAction(nextPage),
+                            _ => RedirectToAction(nextPage)
+                        };
+                    }
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(profileSummary);
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
+        private async Task<IActionResult> HandleActions(string action, ProfileSummaryViewModel profileSummary, SourcePageEnum? sourcePage, string nextPage)
+        {
+            bool isDraft = profileSummary.ProviderStatus == ProviderStatusEnum.SavedAsDraft;
+            switch (action)
+            {
+                case "continue":
+                    
+                        return  sourcePage switch
+                        {
+                            SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),
+                            SourcePageEnum.ProfileEditSummary  => RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                             SourcePageEnum.ProfileDetails =>  isDraft ? await SaveAsDraftAndRedirect(profileSummary) : RedirectToAction("ProfileEditSummary", "CabProviderEdit"),
+                            SourcePageEnum.ProfileDraft => RedirectToAction(nextPage),
+                           _ => RedirectToAction(nextPage)
+                        };
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(profileSummary);            
+
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
+        private async Task<IActionResult> HandlePrimaryAndSecondaryContactActions(string action, ProfileSummaryViewModel profileSummary, SourcePageEnum? sourcePage, string nextPage)
+        {            
+            switch (action)
+            {
+                case "continue":
+
+                    return sourcePage switch
+                    {
+                        SourcePageEnum.ProfileSummary => RedirectToAction("ProfileSummary"),                       
+                        SourcePageEnum.ProfileDetails => await SaveAsDraftAndRedirect(profileSummary),
+                        SourcePageEnum.ProfileDraft => RedirectToAction(nextPage),
+                        _ => RedirectToAction(nextPage)
+                    };
+
+                case "draft":
+                    return await SaveAsDraftAndRedirect(profileSummary);
+                default:
+                    throw new ArgumentException("Invalid action parameter");
+            }
+        }
+
+        #endregion
+    }
 }

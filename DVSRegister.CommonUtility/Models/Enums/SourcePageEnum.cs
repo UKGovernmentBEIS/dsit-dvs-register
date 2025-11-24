@@ -3,9 +3,11 @@
     public enum SourcePageEnum
     {    
       
+
         ProfileSummary = 1,
         ProfileEditSummary = 2,
-        ProfileDetails = 3
+        ProfileDetails = 3,
+        ProfileDraft = 4
 
     }  
 
