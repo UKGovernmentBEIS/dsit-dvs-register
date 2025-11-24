@@ -374,47 +374,54 @@ namespace DVSRegister.Data.CAB
 
                         if (!isReupload)
                         {
-                            var previousServiceVersion = await context.Service
+                            var currentLatestServiceVersion = await context.Service
                                 .Where(x => x.ServiceKey == service.ServiceKey)
                                 .Include(s => s.PublicInterestCheck)!
                                 .Include(s => s.CertificateReview)!
+                                .Include(s => s.ServiceDraft)!
                                 .Include(s => s.ServiceRemovalRequest)!
                                 .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
                                 .Include(s => s.ActionLogs)
                                 .OrderByDescending(s => s.ServiceVersion)
                                 .FirstOrDefaultAsync();
 
-                            var certificateReview = previousServiceVersion.CertificateReview.FirstOrDefault(cr => cr.IsLatestReviewVersion);
-                            var publicInterestCheck = previousServiceVersion.PublicInterestCheck.FirstOrDefault(pic => pic.IsLatestReviewVersion);
-                            var transferRequest = previousServiceVersion.CabTransferRequest.OrderByDescending(c => c.Id).FirstOrDefault();
+                            var certificateReview = currentLatestServiceVersion.CertificateReview.FirstOrDefault(cr => cr.IsLatestReviewVersion);
+                            var publicInterestCheck = currentLatestServiceVersion.PublicInterestCheck.FirstOrDefault(pic => pic.IsLatestReviewVersion);
+                            var transferRequest = currentLatestServiceVersion.CabTransferRequest.OrderByDescending(c => c.Id).FirstOrDefault();
                             
 
-                            if (previousServiceVersion != null)
+                            if (currentLatestServiceVersion != null)
                             {
-                                if (certificateReview == null || previousServiceVersion.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)
+                                if (certificateReview == null || currentLatestServiceVersion.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)
                                 {
                                     // delete service if it has not started PI check or has been sent back to cab
-                                    context.Remove(previousServiceVersion);
+                                    context.Remove(currentLatestServiceVersion);
                                 }
                                 else if (certificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved && 
                                     (publicInterestCheck == null || publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed && publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckPassed))
                                 {
                                     // delete in progress application if pi check is not complete and cert review was approved
                                     // But we must keep the record if it failed or PI check was rejected
-                                    context.Remove(previousServiceVersion);
+                                    context.Remove(currentLatestServiceVersion);
                                 }
-                                else if (previousServiceVersion.ServiceRemovalRequest != null && (previousServiceVersion.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation || previousServiceVersion.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation))
+                                else if (currentLatestServiceVersion.ServiceRemovalRequest != null && (currentLatestServiceVersion.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation || currentLatestServiceVersion.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation))
                                 {
                                     // if ongoing removal - delete removal request assign previous status back to service
-                                    previousServiceVersion.ServiceStatus = previousServiceVersion.ServiceRemovalRequest.PreviousServiceStatus;
-                                    context.Remove(previousServiceVersion.ServiceRemovalRequest);
+                                    currentLatestServiceVersion.ServiceStatus = currentLatestServiceVersion.ServiceRemovalRequest.PreviousServiceStatus;
+                                    context.Remove(currentLatestServiceVersion.ServiceRemovalRequest);
                                 }
-                                else if (transferRequest != null && (previousServiceVersion.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || previousServiceVersion.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
+                                else if (currentLatestServiceVersion.ServiceDraft != null && currentLatestServiceVersion.ServiceStatus == ServiceStatusEnum.UpdatesRequested)
+                                {
+                                    // if ongoing edit request - delete edits and assign previous status back to service
+                                    currentLatestServiceVersion.ServiceStatus = currentLatestServiceVersion.ServiceDraft.PreviousServiceStatus;
+                                    context.Remove(currentLatestServiceVersion.ServiceDraft);
+                                }
+                                else if (transferRequest != null && (currentLatestServiceVersion.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || currentLatestServiceVersion.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
                                 {
                                     //if transfer ongoing but cab b is yet to accept and cab A, resubmits
                                     // delete the cabtransferrequest and relevant request management and assign previous status back to service
                                     var request = transferRequest.RequestManagement;
-                                    previousServiceVersion.ServiceStatus = transferRequest.PreviousServiceStatus;
+                                    currentLatestServiceVersion.ServiceStatus = transferRequest.PreviousServiceStatus;
                                     context.Remove(transferRequest);
                                     context.Remove(request);
                                 }
