@@ -14,7 +14,7 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div>
+                    <div style="flex: 1; min-width: 0; padding-right: 20px;">
                         <h1 class="govuk-heading-xl govuk-!-margin-bottom-1">
                             Service details: @(String.IsNullOrEmpty(Model.CurrentServiceVersion.ServiceName) ? "Incomplete" : Model.CurrentServiceVersion.ServiceName)
                         </h1>
@@ -22,18 +22,18 @@
                             Registered provider: <a href="@Url.Action("ProviderOverview", "Cab", new { providerId = Model.ProviderProfileId })" class="govuk-link">@Model.Provider.RegisteredName</a>
                         </p>
                     </div>
-                    <div class="govuk-button-group govuk-!-margin-top-2">
+                    <div class="govuk-button-group govuk-!-margin-top-1" style="flex-shrink: 0;">
                         @if (Model.CanRemoveService)
                         {
                             <a href="@Url.Action("ReasonForRemoval", "CabRemovalRequest", new { providerId = Model.CurrentServiceVersion.ProviderProfileId, serviceId = Model.PublishedServiceId, serviceKey = Model.CurrentServiceVersion.ServiceKey })"
-                               role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                               role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" style="white-space: nowrap;">
                                 Remove service
                             </a>
                         }
                         else if (Model.CanCancelRemovalRequest)
                         {
                             <a href="@Url.Action("CancelRemovalRequest", "CabRemovalRequest", new { serviceId = Model.PublishedServiceId })"
-                               role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                               role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" style="white-space: nowrap;">
                                 Cancel removal request
                             </a>
                         }
