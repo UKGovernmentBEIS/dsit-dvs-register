@@ -1,9 +1,8 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Models;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models.CAB;
-using DVSRegister.Models.CAB.Service;
-using DVSRegister.CommonUtility;
 
 namespace DVSRegister.Models
 {
@@ -235,6 +234,53 @@ namespace DVSRegister.Models
             else if (input == ServiceTypeEnum.WhiteLabelled) return "White-labelled";
             else return "Neither";
 
+        }
+
+        public static ProviderProfileDto MapViewModelToDto(ProfileSummaryViewModel model, int cabUserId, int cabId)
+        {
+            ProviderProfileDto providerDto = null;
+            if (model != null && !string.IsNullOrEmpty(model.RegisteredName) && model.HasRegistrationNumber != null &&
+                model.HasParentCompany != null
+                && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactFullName) &&
+                !string.IsNullOrEmpty(model?.PrimaryContact.PrimaryContactJobTitle)
+                && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactEmail) &&
+                !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactTelephoneNumber)
+                && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactFullName) &&
+                !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactJobTitle)
+                && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactEmail) &&
+                !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactTelephoneNumber)
+                && !string.IsNullOrEmpty(model.ProviderWebsiteAddress) && cabUserId > 0)
+            {
+                providerDto = new();
+                providerDto.ProviderProfileCabMapping = [new ProviderProfileCabMappingDto { CabId = cabId }];
+                providerDto.RegisteredName = model.RegisteredName;
+                providerDto.TradingName = model.TradingName ?? string.Empty;
+                providerDto.HasRegistrationNumber = model.HasRegistrationNumber ?? false;
+                providerDto.CompanyRegistrationNumber = model.CompanyRegistrationNumber;
+                providerDto.DUNSNumber = model.DUNSNumber;
+                providerDto.HasParentCompany = model.HasParentCompany ?? false;
+                providerDto.ParentCompanyRegisteredName = model.ParentCompanyRegisteredName;
+                providerDto.ParentCompanyLocation = model.ParentCompanyLocation;
+                providerDto.PrimaryContactFullName = model.PrimaryContact.PrimaryContactFullName;
+                providerDto.PrimaryContactJobTitle = model.PrimaryContact.PrimaryContactJobTitle;
+                providerDto.PrimaryContactEmail = model.PrimaryContact.PrimaryContactEmail;
+                providerDto.PrimaryContactTelephoneNumber = model.PrimaryContact.PrimaryContactTelephoneNumber;
+                providerDto.SecondaryContactFullName = model.SecondaryContact.SecondaryContactFullName;
+                providerDto.SecondaryContactJobTitle = model.SecondaryContact.SecondaryContactJobTitle;
+                providerDto.SecondaryContactEmail = model.SecondaryContact.SecondaryContactEmail;
+                providerDto.SecondaryContactTelephoneNumber = model.SecondaryContact.SecondaryContactTelephoneNumber;
+                providerDto.PublicContactEmail = model.PublicContactEmail;
+                providerDto.ProviderTelephoneNumber = model.ProviderTelephoneNumber;
+                providerDto.ProviderWebsiteAddress = model.ProviderWebsiteAddress;
+                providerDto.LinkToContactPage = model.LinkToContactPage;
+                providerDto.ProviderProfileCabMapping = [new ProviderProfileCabMappingDto { CabId = cabId }];
+                providerDto.ProviderStatus = ProviderStatusEnum.NA;
+                providerDto.CreatedTime = DateTime.UtcNow;
+                providerDto.Id = model.ProviderId;
+            }
+
+
+            return providerDto;
         }
 
 

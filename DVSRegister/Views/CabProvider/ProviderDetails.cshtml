@@ -299,7 +299,7 @@
                                     @{
                                         hasValue = !string.IsNullOrEmpty(Model.Provider.LinkToContactPage);
                                     }
-                                    @(hasValue ? @Html.DisplayFor(p => p.Provider.LinkToContactPage) : Constants.Incomplete)
+                                    @(hasValue || !isDraft ? @Html.DisplayFor(p => p.Provider.LinkToContactPage) : Constants.Incomplete)
 
                                 </dd>
                                 @if (isEditable || (isDraft && hasValue))
@@ -368,7 +368,9 @@
                         {
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditPrimaryContact", "CabProvider", new { providerId = Model.Provider.Id }, new{ @class = "govuk-link",
+                                    @Html.ActionLink("Change", "EditPrimaryContact", "CabProviderEdit", new { providerId = Model.Provider.Id }, new
+                                        {
+                                            @class = "govuk-link",
                                     @aria_label = "Change digital identity and attribute service provider's primary contact details"})
                                 </li>
                             </ul>
@@ -398,7 +400,7 @@
                                 @if (isDraft && hasValue)
                                 {
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "PrimaryContact", "CabProvider", new { sourcePage = @sourcePage },
+                                        @Html.ActionLink("Change", "PrimaryContact", "CabProviderEdit", new { sourcePage = @sourcePage },
                                         new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s primary contact full name" })
                                     </dd>
                                 }

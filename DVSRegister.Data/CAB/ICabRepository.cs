@@ -25,11 +25,7 @@ namespace DVSRegister.Data.CAB
 
         #region Save/update
         public Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile, string loggedInUserEmail);
-        public Task<GenericResponse> SaveService(Service service, string loggedInUserEmail);
-        public Task<GenericResponse> UpdateCompanyInfo(ProviderProfile providerProfile, string loggedInUserEmail);
-        public Task<GenericResponse> UpdatePrimaryContact(ProviderProfile providerProfile, string loggedInUserEmail);
-        public Task<GenericResponse> UpdateSecondaryContact(ProviderProfile providerProfile, string loggedInUserEmail);
-        public Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfile providerProfile, string loggedInUserEmail);
+        public Task<GenericResponse> SaveService(Service service, string loggedInUserEmail);   
 
         public Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail, bool isReupload);
         public Task<GenericResponse> SaveServiceAmendments(Service service, string loggedInUserEmail);
