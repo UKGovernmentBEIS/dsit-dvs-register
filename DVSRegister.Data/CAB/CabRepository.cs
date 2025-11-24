@@ -379,6 +379,7 @@ namespace DVSRegister.Data.CAB
                                 .Include(s => s.PublicInterestCheck)!
                                 .Include(s => s.CertificateReview)!
                                 .Include(s => s.ServiceRemovalRequest)!
+                                .Include(s => s.ServiceDraft)!
                                 .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
                                 .Include(s => s.ActionLogs)
                                 .OrderByDescending(s => s.ServiceVersion)
@@ -408,6 +409,12 @@ namespace DVSRegister.Data.CAB
                                     // if ongoing removal - delete removal request assign previous status back to service
                                     previousServiceVersion.ServiceStatus = previousServiceVersion.ServiceRemovalRequest.PreviousServiceStatus;
                                     context.Remove(previousServiceVersion.ServiceRemovalRequest);
+                                }
+                                else if (previousServiceVersion.ServiceDraft != null && previousServiceVersion.ServiceStatus == ServiceStatusEnum.UpdatesRequested)
+                                {
+                                    // if ongoing edits - delete edit request and assign previous status back to service
+                                    previousServiceVersion.ServiceStatus = previousServiceVersion.ServiceDraft.PreviousServiceStatus;
+                                    context.Remove(previousServiceVersion.ServiceDraft);
                                 }
                                 else if (transferRequest != null && (previousServiceVersion.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || previousServiceVersion.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
                                 {
