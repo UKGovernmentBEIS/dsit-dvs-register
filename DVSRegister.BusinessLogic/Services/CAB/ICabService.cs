@@ -21,19 +21,12 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto);
         public Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId);
         public Task<(bool, List<CabTransferRequestDto>)> GetPendingReassignRequests(int cabId);
-        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetCompanyValueUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData);
-        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetPrimaryContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData);
-        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetSecondaryContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData);
-        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetPublicContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData);
         public Task<ProviderProfileDto> GetProviderWithLatestVersionServices(int providerId, int cabId);
 
         #region Save/update
         public Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfile, string loggedInUserEmail);
         public Task<GenericResponse> SaveService(ServiceDto serviceDto, string loggedInUserEmail);
-        public Task<GenericResponse> UpdateCompanyInfo(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
-        public Task<GenericResponse> UpdatePrimaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
-        public Task<GenericResponse> UpdateSecondaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
-        public Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfileDto providerProfileDto, string loggedInUserEmail);
+      
         public Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail, bool isReupload);
         public Task<GenericResponse> SaveServiceAmendments(ServiceDto serviceDto, string existingFileLink, int existingServiceCabId, int cabId, string loggedInUserEmail);      
         public bool CanDeleteCertificate(string currentFileLink, string existingFileLink, int existingServiceCabId, int cabId);

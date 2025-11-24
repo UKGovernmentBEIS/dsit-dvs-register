@@ -4,7 +4,6 @@ using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.Data.CAB;
 using DVSRegister.Data.Edit;
 using DVSRegister.Data.Entities;
 using Microsoft.Extensions.Logging;
@@ -27,30 +26,30 @@ namespace DVSRegister.BusinessLogic.Services.Edit
           
         }
 
-        public async Task<ProviderProfileDto> GetProviderDetails(int providerId)
+        public async Task<ProviderProfileDto> GetProviderDetails(int providerId, int cabId)
         {
-            var provider = await editRepository.GetProviderDetails(providerId);
+            var provider = await editRepository.GetProviderDetails(providerId, cabId);
             ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(provider);
             return providerProfileDto;
         }
-        public async Task<GenericResponse> SaveProviderDraft(ProviderProfileDraftDto draftDto, string loggedInUserEmail)
+        public async Task<GenericResponse> SaveProviderDraft(ProviderProfileDraftDto draftDto, string loggedInUserEmail, int cabId)
         {
 
             var draftEntity = mapper.Map<ProviderProfileDraft>(draftDto);
             var response = await editRepository.SaveProviderDraft(draftEntity, loggedInUserEmail);
             if (response.Success)
             {
-                await SendProviderEditRequestSubmittedEmail(draftDto, loggedInUserEmail);
+                await SendProviderEditRequestSubmittedEmail(draftDto, loggedInUserEmail, cabId);
             }
             return response;
         }
 
-        private async Task SendProviderEditRequestSubmittedEmail(ProviderProfileDraftDto draftDto, string loggedInUserEmail)
+        private async Task SendProviderEditRequestSubmittedEmail(ProviderProfileDraftDto draftDto, string loggedInUserEmail, int cabId)
         { 
           
             try
             {
-                ProviderProfile providerProfile = await editRepository.GetProviderDetails(draftDto.ProviderProfileId);
+                ProviderProfile providerProfile = await editRepository.GetProviderDetails(draftDto.ProviderProfileId, cabId);
                 ProviderProfileDto providerProfileDto = mapper.Map<ProviderProfileDto>(providerProfile);
                 var currentDataDictionary = new Dictionary<string, List<string>>();
                 var previousDataDictionary = new Dictionary<string, List<string>>();
@@ -166,6 +165,66 @@ namespace DVSRegister.BusinessLogic.Services.Edit
                 currentDataDictionary.Add(Constants.LinkToContactPage, [currentData.LinkToContactPage]);
             };
         }
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetSecondaryContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData)
+        {
+            var currentDataDictionary = new Dictionary<string, List<string>>();
+            var previousDataDictionary = new Dictionary<string, List<string>>();
+
+
+            if (currentData.SecondaryContactFullName != previousData.SecondaryContactFullName)
+            {
+                previousDataDictionary.Add(Constants.SecondaryContactName, [previousData.SecondaryContactFullName]);
+                currentDataDictionary.Add(Constants.SecondaryContactName, [currentData.SecondaryContactFullName]);
+            }
+            if (currentData.SecondaryContactEmail != previousData.SecondaryContactEmail)
+            {
+                previousDataDictionary.Add(Constants.SecondaryContactEmail, [previousData.SecondaryContactEmail]);
+                currentDataDictionary.Add(Constants.SecondaryContactEmail, [currentData.SecondaryContactEmail]);
+            }
+            if (currentData.SecondaryContactJobTitle != previousData.SecondaryContactJobTitle)
+            {
+                previousDataDictionary.Add(Constants.SecondaryContactJobTitle, [previousData.SecondaryContactJobTitle]);
+                currentDataDictionary.Add(Constants.SecondaryContactJobTitle, [currentData.SecondaryContactJobTitle]);
+            }
+            if (currentData.SecondaryContactTelephoneNumber != previousData.SecondaryContactTelephoneNumber)
+            {
+                previousDataDictionary.Add(Constants.SecondaryContactTelephone, [previousData.SecondaryContactTelephoneNumber]);
+                currentDataDictionary.Add(Constants.SecondaryContactTelephone, [currentData.SecondaryContactTelephoneNumber]);
+            }
+
+            return (currentDataDictionary, previousDataDictionary);
+
+        }
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetPrimaryContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData)
+        {
+            var currentDataDictionary = new Dictionary<string, List<string>>();
+            var previousDataDictionary = new Dictionary<string, List<string>>();
+
+
+            if (currentData.PrimaryContactFullName != previousData.PrimaryContactFullName)
+            {
+                previousDataDictionary.Add(Constants.PrimaryContactName, [previousData.PrimaryContactFullName]);
+                currentDataDictionary.Add(Constants.PrimaryContactName, [currentData.PrimaryContactFullName]);
+            }
+            if (currentData.PrimaryContactEmail != previousData.PrimaryContactEmail)
+            {
+                previousDataDictionary.Add(Constants.PrimaryContactEmail, [previousData.PrimaryContactEmail]);
+                currentDataDictionary.Add(Constants.PrimaryContactEmail, [currentData.PrimaryContactEmail]);
+            }
+            if (currentData.PrimaryContactJobTitle != previousData.PrimaryContactJobTitle)
+            {
+                previousDataDictionary.Add(Constants.PrimaryContactJobTitle, [previousData.PrimaryContactJobTitle]);
+                currentDataDictionary.Add(Constants.PrimaryContactJobTitle, [currentData.PrimaryContactJobTitle]);
+            }
+            if (currentData.PrimaryContactTelephoneNumber != previousData.PrimaryContactTelephoneNumber)
+            {
+                previousDataDictionary.Add(Constants.PrimaryContactTelephone, [previousData.PrimaryContactTelephoneNumber]);
+                currentDataDictionary.Add(Constants.PrimaryContactTelephone, [currentData.PrimaryContactTelephoneNumber]);
+            }
+
+            return (currentDataDictionary, previousDataDictionary);
+
+        }
 
         public async Task ConfirmPrimaryContactUpdates(Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, string emailAddress, string recipientName,
             string providerName)
@@ -194,6 +253,107 @@ namespace DVSRegister.BusinessLogic.Services.Edit
             await ConfirmContactUpdates(current, previous, emailAddress, recipientName, providerName, labels, "Secondary contact’s details");
         }
 
+        public async Task<GenericResponse> UpdateCompanyInfoAndPublicProviderInfo(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
+        {
+            ProviderProfile providerProfile = new();
+            mapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await editRepository.UpdateCompanyInfoAndPublicProviderInfo(providerProfile, loggedInUserEmail);
+            return genericResponse;
+        }
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetPublicContactUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData)
+        {
+            var currentDataDictionary = new Dictionary<string, List<string>>();
+            var previousDataDictionary = new Dictionary<string, List<string>>();
+
+
+            if (currentData.ProviderWebsiteAddress != previousData.ProviderWebsiteAddress)
+            {
+                previousDataDictionary.Add(Constants.ProviderWebsiteAddress, [previousData.ProviderWebsiteAddress]);
+                currentDataDictionary.Add(Constants.ProviderWebsiteAddress, [currentData.ProviderWebsiteAddress]);
+            }
+            if (currentData.PublicContactEmail != previousData.PublicContactEmail)
+            {
+                previousDataDictionary.Add(Constants.PublicContactEmail, [string.IsNullOrEmpty(previousData.PublicContactEmail) ? Constants.NullFieldsDisplay : previousData.PublicContactEmail]);
+                currentDataDictionary.Add(Constants.PublicContactEmail, [string.IsNullOrEmpty(currentData.PublicContactEmail) ? Constants.NullFieldsDisplay : currentData.PublicContactEmail]);
+            }
+            if (currentData.ProviderTelephoneNumber != previousData.ProviderTelephoneNumber)
+            {
+                previousDataDictionary.Add(Constants.ProviderTelephoneNumber, [string.IsNullOrEmpty(previousData.ProviderTelephoneNumber) ? Constants.NullFieldsDisplay : previousData.ProviderTelephoneNumber]);
+                currentDataDictionary.Add(Constants.ProviderTelephoneNumber, [string.IsNullOrEmpty(currentData.ProviderTelephoneNumber) ? Constants.NullFieldsDisplay : currentData.ProviderTelephoneNumber]);
+            }
+            if (currentData.LinkToContactPage != previousData.LinkToContactPage)
+            {
+                previousDataDictionary.Add(Constants.LinkToContactPage, [string.IsNullOrEmpty(previousData.LinkToContactPage) ? Constants.NullFieldsDisplay : previousData.LinkToContactPage]);
+                currentDataDictionary.Add(Constants.LinkToContactPage, [string.IsNullOrEmpty(currentData.LinkToContactPage) ? Constants.NullFieldsDisplay : currentData.LinkToContactPage]);
+            }
+
+
+            return (currentDataDictionary, previousDataDictionary);
+
+        }
+        public (Dictionary<string, List<string>>, Dictionary<string, List<string>>) GetCompanyValueUpdates(ProviderProfileDto currentData, ProviderProfileDto previousData)
+        {
+            var currentDataDictionary = new Dictionary<string, List<string>>();
+            var previousDataDictionary = new Dictionary<string, List<string>>();
+
+
+            if (currentData.RegisteredName != previousData.RegisteredName)
+            {
+                previousDataDictionary.Add(Constants.RegisteredName, [previousData.RegisteredName]);
+                currentDataDictionary.Add(Constants.RegisteredName, [currentData.RegisteredName]);
+            }
+            if (currentData.TradingName != previousData.TradingName)
+            {
+                previousDataDictionary.Add(Constants.TradingName, [string.IsNullOrEmpty(previousData.TradingName) ? Constants.NullFieldsDisplay : previousData.TradingName]);
+                currentDataDictionary.Add(Constants.TradingName, [string.IsNullOrEmpty(currentData.TradingName) ? Constants.NullFieldsDisplay : currentData.TradingName]);
+            }
+
+            if (previousData.HasRegistrationNumber == true && currentData.CompanyRegistrationNumber != previousData.CompanyRegistrationNumber)
+            {
+                currentDataDictionary.Add(Constants.CompanyRegistrationNumber, [currentData.CompanyRegistrationNumber]);
+                previousDataDictionary.Add(Constants.CompanyRegistrationNumber, [previousData.CompanyRegistrationNumber]);
+            }
+            if (previousData.HasRegistrationNumber == false && currentData.DUNSNumber != previousData.DUNSNumber)
+            {
+
+                currentDataDictionary.Add(Constants.DUNSNumber, [currentData.DUNSNumber]);
+                previousDataDictionary.Add(Constants.DUNSNumber, [previousData.DUNSNumber]);
+            }
+
+            if (previousData.HasParentCompany == true)
+            {
+                if (currentData.ParentCompanyRegisteredName != previousData.ParentCompanyRegisteredName)
+                {
+                    currentDataDictionary.Add(Constants.ParentCompanyRegisteredName, [currentData.ParentCompanyRegisteredName]);
+                    previousDataDictionary.Add(Constants.ParentCompanyRegisteredName, [previousData.ParentCompanyRegisteredName]);
+                }
+                if (currentData.ParentCompanyLocation != previousData.ParentCompanyLocation)
+                {
+                    currentDataDictionary.Add(Constants.ParenyCompanyLocation, [currentData.ParentCompanyLocation]);
+                    previousDataDictionary.Add(Constants.ParenyCompanyLocation, [previousData.ParentCompanyLocation]);
+                }
+            }
+
+            return (currentDataDictionary, previousDataDictionary);
+        }
+       
+        public async Task<GenericResponse> UpdatePrimaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
+        {
+            ProviderProfile providerProfile = new();
+            mapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await editRepository.UpdatePrimaryContact(providerProfile, loggedInUserEmail);
+            return genericResponse;
+        }
+
+        public async Task<GenericResponse> UpdateSecondaryContact(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
+        {
+            ProviderProfile providerProfile = new();
+            mapper.Map(providerProfileDto, providerProfile);
+            GenericResponse genericResponse = await editRepository.UpdateSecondaryContact(providerProfile, loggedInUserEmail);
+            return genericResponse;
+        }
+
+       
         #region Private Methods
         private async Task ConfirmContactUpdates(Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, string emailAddress, string recipientName,
             string providerName, Dictionary<string, string> labels, string header)

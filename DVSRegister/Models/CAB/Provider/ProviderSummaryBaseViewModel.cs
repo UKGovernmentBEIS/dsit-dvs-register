@@ -16,5 +16,6 @@ namespace DVSRegister.Models.CAB.Provider
         public ProviderStatusEnum? ProviderStatus { get; set; }
 
         public bool IsInCompleteApplication { get; set; }
+        public bool DisableAdmin2iCheck { get; set; }
     }
 }

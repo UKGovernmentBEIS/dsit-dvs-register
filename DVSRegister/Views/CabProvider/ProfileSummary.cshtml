@@ -320,7 +320,7 @@
                                         Link to Contact Page
                                     </dt>
                                     <dd class="govuk-summary-list__value">
-                                        @Model.LinkToContactPage
+                                       @Html.DisplayFor(m=>m.LinkToContactPage)
                                     </dd>
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "LinkToContactPage", "CabProvider", new { sourcePage = @sourcePage },

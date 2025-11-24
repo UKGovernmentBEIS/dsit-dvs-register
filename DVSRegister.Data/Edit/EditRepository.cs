@@ -19,7 +19,7 @@ namespace DVSRegister.Data.Edit
         public async Task<GenericResponse> SaveProviderDraft(ProviderProfileDraft draft, string loggedInUserEmail)
         {
             var response = new GenericResponse();
-            using var transaction = _context.Database.BeginTransaction();
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var cabUser = await _context.CabUser.FirstOrDefaultAsync(x => x.CabEmail == loggedInUserEmail);
@@ -55,26 +55,146 @@ namespace DVSRegister.Data.Edit
                     response.InstanceId = draft.Id;
                 }
 
-                transaction.Commit();
+                await transaction.CommitAsync();
                 response.Success = true;
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 response.Success = false;
                 _logger.LogError(ex, "Error in SaveProviderDraft");
             }
             return response;
         }
 
-        public async Task<ProviderProfile> GetProviderDetails(int providerId)
+        public async Task<ProviderProfile> GetProviderDetails(int providerId, int cabId)
         {
-            var providerProfile = await _context.ProviderProfile
-              .Include(p => p.Services)
-              .Include(p => p.ProviderProfileDraft)             
-              .FirstOrDefaultAsync(p => p.Id == providerId);
-            return providerProfile;
+        var providerProfile = await _context.ProviderProfile
+        .Include(p => p.Services)
+        .Include(p => p.ProviderProfileCabMapping)
+        .Include(p => p.ProviderProfileDraft)
+        .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).FirstOrDefaultAsync();
+        return providerProfile!;
         }
+        public async Task<GenericResponse> UpdateCompanyInfoAndPublicProviderInfo(ProviderProfile providerProfile, string loggedInUserEmail)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var existingProvider = await _context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfile.Id);
+
+                if (existingProvider != null)
+                {
+                    existingProvider.RegisteredName = providerProfile.RegisteredName;
+                    existingProvider.TradingName = providerProfile.TradingName;
+                    existingProvider.HasParentCompany = providerProfile.HasParentCompany;
+                    existingProvider.HasRegistrationNumber = providerProfile.HasRegistrationNumber;
+                    if (providerProfile.HasParentCompany == false)
+                    {
+                        existingProvider.ParentCompanyLocation = null;
+                        existingProvider.ParentCompanyRegisteredName = null;
+
+                    }
+                    else if(providerProfile.HasParentCompany == true && !string.IsNullOrEmpty(providerProfile.ParentCompanyLocation) && !string.IsNullOrEmpty(providerProfile.ParentCompanyRegisteredName))
+                    {
+                        existingProvider.ParentCompanyLocation = providerProfile.ParentCompanyLocation;
+                        existingProvider.ParentCompanyRegisteredName = providerProfile.ParentCompanyRegisteredName;
+                    }
+
+                    if(providerProfile.HasRegistrationNumber == true && !string.IsNullOrEmpty(providerProfile.CompanyRegistrationNumber))
+                    {
+                        existingProvider.CompanyRegistrationNumber = providerProfile.CompanyRegistrationNumber;
+                        existingProvider.DUNSNumber = null;
+                    }
+                    else if(providerProfile.HasRegistrationNumber == false && !string.IsNullOrEmpty(providerProfile.DUNSNumber))
+                    {
+                        existingProvider.DUNSNumber = providerProfile.DUNSNumber;
+                        existingProvider.CompanyRegistrationNumber = null;
+                    }                    
+
+
+                    existingProvider.CabEditedTime = DateTime.UtcNow;
+                    existingProvider.PublicContactEmail = providerProfile.PublicContactEmail;
+                    existingProvider.ProviderTelephoneNumber = providerProfile.ProviderTelephoneNumber;
+                    existingProvider.ProviderWebsiteAddress = providerProfile.ProviderWebsiteAddress;
+                    existingProvider.LinkToContactPage = providerProfile.LinkToContactPage;
+                    existingProvider.CabEditedTime = DateTime.UtcNow;
+                    await _context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.CompanyInfoUpdate, loggedInUserEmail);
+                    transaction.Commit();
+                    genericResponse.Success = true;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                transaction.Rollback();
+                _logger.LogError(ex, "Error in UpdateCompanyInfo");
+            }
+            return genericResponse;
+        }
+
+ 
+        public async Task<GenericResponse> UpdatePrimaryContact(ProviderProfile providerProfile, string loggedInUserEmail)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = _context.Database.BeginTransaction();
+            try
+            {
+                var existingProvider = await _context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfile.Id);
+                if (existingProvider != null)
+                {
+                    existingProvider.PrimaryContactFullName = providerProfile.PrimaryContactFullName;
+                    existingProvider.PrimaryContactJobTitle = providerProfile.PrimaryContactJobTitle;
+                    existingProvider.PrimaryContactEmail = providerProfile.PrimaryContactEmail;
+                    existingProvider.PrimaryContactTelephoneNumber = providerProfile.PrimaryContactTelephoneNumber;
+                    existingProvider.CabEditedTime = DateTime.UtcNow;
+                    await _context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.PrimaryContactUpdate, loggedInUserEmail);
+                    transaction.Commit();
+                    genericResponse.Success = true;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                transaction.Rollback();
+                _logger.LogError(ex, "Error in UpdatePrimaryContact");
+            }
+            return genericResponse;
+        }
+        public async Task<GenericResponse> UpdateSecondaryContact(ProviderProfile providerProfile, string loggedInUserEmail)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var existingProvider = await _context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfile.Id);
+                if (existingProvider != null)
+                {
+                    existingProvider.SecondaryContactFullName = providerProfile.SecondaryContactFullName;
+                    existingProvider.SecondaryContactJobTitle = providerProfile.SecondaryContactJobTitle;
+                    existingProvider.SecondaryContactEmail = providerProfile.SecondaryContactEmail;
+                    existingProvider.SecondaryContactTelephoneNumber = providerProfile.SecondaryContactTelephoneNumber;
+                    existingProvider.CabEditedTime = DateTime.UtcNow;
+                    await _context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SecondaryContactUpdate, loggedInUserEmail);
+                    await transaction.CommitAsync();
+                    genericResponse.Success = true;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error in UpdateSecondaryContact");
+            }
+            return genericResponse;
+        }
+      
 
     }
 }
