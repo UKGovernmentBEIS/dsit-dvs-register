@@ -164,6 +164,7 @@ namespace DVSRegister.Data.CAB
         public async Task<List<Service>> GetServiceList(int serviceKey, int cabId)
             {
             return await context.Service
+            .Include(s => s.Provider)
             .Include(s => s.CertificateReview)
             .Include(s => s.PublicInterestCheck)
             .Include(s => s.ServiceSupSchemeMapping)
