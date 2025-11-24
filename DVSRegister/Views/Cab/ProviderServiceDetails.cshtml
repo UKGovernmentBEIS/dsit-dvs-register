@@ -9,7 +9,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ProviderOverview", "Cab", new { providerId = Model.CurrentServiceVersion.ProviderProfileId }, new { @class = "govuk-back-link" })
+    <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.CurrentServiceVersion.ProviderProfileId  })#services" class="govuk-back-link">Back</a>
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
@@ -57,7 +57,7 @@
                     </li>
                 </ul>
                 <div class="govuk-tabs__panel govuk-!-padding-0" id="latest-submission">
-                 @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml",Model.CurrentServiceVersion)
+                    @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml", Model.CurrentServiceVersion)
                 </div>
                 <div class="govuk-tabs__panel govuk-tabs__panel--hidden govuk-!-padding-0" id="previously-submitted">
                     @if (Model.ServiceHistoryVersions.Count() < 1)

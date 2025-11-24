@@ -26,7 +26,7 @@
                     Publication status
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview?.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.PublicInterestCheck?.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.ServiceStatus, null)
+                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview!.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.PublicInterestCheck!.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.ServiceStatus, null)
                 </dd>
             </div>
             
@@ -35,7 +35,7 @@
                     Name of service
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @(Model.ServiceName ?? "N/A")
+                    @(Model.ServiceName!)
                 </dd>
             </div>
             
@@ -44,7 +44,7 @@
                     Trust framework version
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @(Model.TrustFrameworkVersion?.TrustFrameworkName ?? "N/A")
+                    @(Model.TrustFrameworkVersion!.TrustFrameworkName)
                 </dd>
             </div>
             
@@ -53,14 +53,7 @@
                     Date of issue
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @if (Model.ConformityIssueDate != DateTime.MinValue)
-                    {
-                        @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
-                    }
-                    else
-                    {
-                        @:Incomplete
-                    }
+                    @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
                 </dd>
             </div>
             
@@ -69,14 +62,7 @@
                     Date of expiry
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @if (Model.ConformityExpiryDate != DateTime.MinValue)
-                    {
-                        @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMM yyyy")
-                    }
-                    else
-                    {
-                        @:Incomplete
-                    }
+                    @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMM yyyy")
                 </dd>
             </div>
         </dl>

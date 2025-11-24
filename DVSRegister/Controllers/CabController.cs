@@ -162,11 +162,6 @@ namespace DVSRegister.Controllers
             {
                 return NotFound();
             }
-
-            if (serviceVersion.ManualUnderPinningServiceId != null)
-            {
-                serviceVersion.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)serviceVersion.ManualUnderPinningServiceId);
-            }
           
             return View(serviceVersion);
         }
