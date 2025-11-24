@@ -47,16 +47,16 @@ namespace DVSRegister.Controllers
                 providerListViewModel.SearchText = null;
                 SearchText = string.Empty;
             }
-          providerListViewModel.Providers = await cabService.GetProviders(CabId, SearchText);
-          var (hasPendingRequests, uploadList) = await cabService.GetPendingReassignRequests(CabId);
-          providerListViewModel.HasPendingReAssignments = hasPendingRequests;
-          if(uploadList?.Count>0)
-           {
-             providerListViewModel.PendingCertificateUploads = uploadList.OrderBy(x=>x.Service.Provider.RegisteredName).ToList();
-             providerListViewModel.ProviderServiceNames = string.Join("<br>", providerListViewModel.PendingCertificateUploads
-             .Select(request => request.Service.Provider.RegisteredName + " - " + request.Service.ServiceName));
-           }
-           return View(providerListViewModel);          
+            providerListViewModel.Providers = await cabService.GetProviders(CabId, SearchText);
+            var (hasPendingRequests, uploadList) = await cabService.GetPendingReassignRequests(CabId);
+            providerListViewModel.HasPendingReAssignments = hasPendingRequests;
+            if(uploadList?.Count>0)
+            {
+                providerListViewModel.PendingCertificateUploads = uploadList.OrderBy(x=>x.Service.Provider.RegisteredName).ToList();
+                providerListViewModel.ProviderServiceNames = string.Join("<br>", providerListViewModel.PendingCertificateUploads
+                .Select(request => request.Service.Provider.RegisteredName + " - " + request.Service.ServiceName));
+            }
+            return View(providerListViewModel);          
           
         }
 
@@ -115,6 +115,8 @@ namespace DVSRegister.Controllers
             ServiceDto currentServiceVersion = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
             serviceVersions.CurrentServiceVersion = currentServiceVersion;
             serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
+            serviceVersions.ProviderProfileId = currentServiceVersion.ProviderProfileId;
+            serviceVersions.Provider = currentServiceVersion.Provider;
 
             if (currentServiceVersion.ManualUnderPinningServiceId != null)
             {
@@ -148,6 +150,21 @@ namespace DVSRegister.Controllers
             return View(serviceVersions);
         }
 
+        [HttpGet("service-version-details")]
+        public async Task<IActionResult> ServiceVersionDetails(int serviceKey, int serviceId)
+        {
+            if (!IsValidCabId(CabId))
+                return HandleInvalidCabId(CabId);
+            
+            var serviceVersion = await cabService.GetServiceDetails(serviceId, CabId);
+            
+            if (serviceVersion == null || serviceVersion.Id == 0)
+            {
+                return NotFound();
+            }
+          
+            return View(serviceVersion);
+        }
 
         #endregion
     }
