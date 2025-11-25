@@ -18,10 +18,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/create-profile")] 
-    public class CabProviderController(ICabService cabService, IEditService editService, IUserService userService, IActionLogService actionLogService, IMapper mapper, ILogger<CabProviderController> logger) : BaseController(logger)
+    public class CabProviderController(ICabService cabService,  IUserService userService, IActionLogService actionLogService, IMapper mapper, ILogger<CabProviderController> logger) : BaseController(logger)
     {
         private readonly ICabService cabService = cabService;
-        private readonly IEditService editService = editService;
+        
         private readonly IUserService userService = userService;
         private readonly IActionLogService actionLogService = actionLogService;
         private readonly IMapper mapper = mapper;

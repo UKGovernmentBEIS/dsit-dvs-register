@@ -364,19 +364,19 @@
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">Primary contact's details</h2>   
-                        @if (isEditable )
+                        @*   Direct update of primary contact with out 2i check. Always editable *@
+                        <ul class="govuk-summary-card__actions">
+                            <li class="govuk-summary-card__action">
+                                @Html.ActionLink("Change", "EditPrimaryContact", "CabProviderEdit", new { providerId = Model.Provider.Id }, new
+                                    {
+                                        @class = "govuk-link",
+                                        @aria_label = "Change digital identity and attribute service provider's primary contact details"
+                                    })
+                            </li>
+                        </ul>
+                        @if (isDraft)
                         {
-                            <ul class="govuk-summary-card__actions">
-                                <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditPrimaryContact", "CabProviderEdit", new { providerId = Model.Provider.Id }, new
-                                        {
-                                            @class = "govuk-link",
-                                    @aria_label = "Change digital identity and attribute service provider's primary contact details"})
-                                </li>
-                            </ul>
-                        }
-                        else if (isDraft)
-                        {
+                          @*   for draft providers show complete profile link *@
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
                                     <a class="govuk-link" href="@Url.Action("CompleteProviderProfile","CabProviderDraft")">Complete provider profile<span class="govuk-visually-hidden">of @Model.Provider.RegisteredName </span></a>
@@ -400,7 +400,7 @@
                                 @if (isDraft && hasValue)
                                 {
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "PrimaryContact", "CabProviderEdit", new { sourcePage = @sourcePage },
+                                        @Html.ActionLink("Change", "PrimaryContact", "CabProvider", new { sourcePage = @sourcePage },
                                         new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s primary contact full name" })
                                     </dd>
                                 }
@@ -462,15 +462,17 @@
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">Secondary contact's details</h2>
-                        @if (isEditable)
-                        {
-                            <ul class="govuk-summary-card__actions">
-                                <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "EditSecondaryContact", "CabProvider", new { providerId = Model.Provider.Id }, new{ @class = "govuk-link",
-                                    @aria_label = "Change digital identity and attribute service provider's secondary contact details"})
-                                </li>
-                            </ul>
-                        }                       
+                        <ul class="govuk-summary-card__actions">
+                            <li class="govuk-summary-card__action">
+
+                              @*   Direct update of secondary contact with out 2i check. Always editable *@
+                                @Html.ActionLink("Change", "EditSecondaryContact", "CabProviderEdit", new { providerId = Model.Provider.Id }, new
+                                    {
+                                        @class = "govuk-link",
+                                        @aria_label = "Change digital identity and attribute service provider's secondary contact details"
+                                    })
+                            </li>
+                        </ul>
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list">

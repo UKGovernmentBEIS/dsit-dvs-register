@@ -150,7 +150,9 @@ namespace DVSRegister.Controllers
                     var (current, previous) = editService.GetPrimaryContactUpdates(providerProfileDto, previousData);
                     await editService.ConfirmPrimaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);
                     await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
-                    return RedirectToAction("ProviderDetails", "CabProvider", new { providerId = providerProfileDto.Id });
+                    var url = Url.Action("ProviderDetails", "CabProvider", new { providerId = providerProfileDto.Id });
+                    return Redirect(url + "#contact-information");
+
                 }
                 else
                 {
@@ -242,7 +244,8 @@ namespace DVSRegister.Controllers
                     var (current, previous) = editService.GetSecondaryContactUpdates(providerProfileDto, previousData);
                     await editService.ConfirmSecondaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);
                     await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
-                    return RedirectToAction("ProviderDetails", "CabProvider", new { providerId = providerProfileDto.Id });
+                    var url = Url.Action("ProviderDetails", "CabProvider", new { providerId = providerProfileDto.Id });
+                    return Redirect(url + "#contact-information");
                 }
                 else
                 {
