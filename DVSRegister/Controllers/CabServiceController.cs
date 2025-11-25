@@ -28,7 +28,7 @@ namespace DVSRegister.Controllers
         private readonly ILogger<CabServiceController> _logger = logger;
         private readonly IMapper _mapper = mapper;
 
-        [HttpGet("before-you-start")]
+        [HttpGet("before-you-start/{providerProfileId}")]
         public async Task<IActionResult> BeforeYouStart(int providerProfileId)
         {
             HttpContext?.Session.Remove("ServiceSummary");

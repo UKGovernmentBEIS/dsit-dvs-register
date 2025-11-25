@@ -77,6 +77,7 @@
 
         public const string ActionNotCompletedErrorPath = "/action-not-completed";
         public const string Incomplete = "Incomplete";
+        public const string CabProviderBaseURL = "/cab-service/provider";
 
     }
 }
