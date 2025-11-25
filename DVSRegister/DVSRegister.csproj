@@ -49,13 +49,6 @@
   <ItemGroup>
     <None Include="Views\CabProviderEdit\ProfileEditSummary.cshtml" />
     <None Include="Views\CabProviderEdit\ProviderDifference.cshtml" />
-    <None Include="Views\CabTransfer\PartialViews\_PendingSubmissions.cshtml" />
     <None Include="Views\PartialViews\_ErrorSummaryView.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="Views\Cab\LandingPage.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
   </ItemGroup>
 </Project>

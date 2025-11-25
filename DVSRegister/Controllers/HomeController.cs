@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-    [Route("home")]
+    [Route("cab-service/home")]
     public class HomeController(IHomeService homeService, ICabService cabService, ILogger<HomeController> logger) : BaseController(logger)
     {
         private readonly IHomeService homeService = homeService;

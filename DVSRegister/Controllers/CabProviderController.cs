@@ -3,7 +3,6 @@ using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.BusinessLogic.Services.Edit;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
@@ -17,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
-    [Route("cab-service/create-profile")] 
+    [Route("cab-service/provider")] 
     public class CabProviderController(ICabService cabService,  IUserService userService, IActionLogService actionLogService, IMapper mapper, ILogger<CabProviderController> logger) : BaseController(logger)
     {
         private readonly ICabService cabService = cabService;
@@ -44,7 +43,7 @@ namespace DVSRegister.Controllers
             profileSummaryViewModel.SourcePage = sourcePage;
             profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
                 || sourcePage == SourcePageEnum.ProfileEditSummary 
-                || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/before-you-start";
+                || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() :Constants.CabProviderBaseURL+  "/before-you-start";
             return View("RegisteredName", profileSummaryViewModel);
         }
 
@@ -91,7 +90,7 @@ namespace DVSRegister.Controllers
             profileSummaryViewModel.SourcePage = sourcePage;
             profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
              || sourcePage == SourcePageEnum.ProfileEditSummary
-             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/reg-name";
+             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() :  Constants.CabProviderBaseURL+ "/reg-name";
             return View("TradingName", profileSummaryViewModel);
         }
 
@@ -126,7 +125,7 @@ namespace DVSRegister.Controllers
             summaryViewModel.SourcePage = sourcePage;
             summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
              || sourcePage == SourcePageEnum.ProfileEditSummary
-             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/trading-name";
+             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : Constants.CabProviderBaseURL + "/trading-name";
             return View(summaryViewModel);
         }
 
@@ -159,7 +158,7 @@ namespace DVSRegister.Controllers
             summaryViewModel.SourcePage = sourcePage;
             summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileEditSummary
             || sourcePage == SourcePageEnum.ProfileSummary
-            || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/company-number";
+            || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : Constants.CabProviderBaseURL + "/company-number";
             return View(summaryViewModel);
         }
 
@@ -192,7 +191,7 @@ namespace DVSRegister.Controllers
             summaryViewModel.SourcePage = sourcePage;
             summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
              || sourcePage == SourcePageEnum.ProfileEditSummary
-             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : "/cab-service/create-profile/company-number";
+             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() : Constants.CabProviderBaseURL + "/company-number";
             return View(summaryViewModel);
         }
 
@@ -226,7 +225,7 @@ namespace DVSRegister.Controllers
             summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary
             || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL() 
-            : summaryViewModel.HasRegistrationNumber == true? "/cab-service/create-profile/company-number-input": "/cab-service/create-profile/duns-number";
+            : summaryViewModel.HasRegistrationNumber == true? Constants.CabProviderBaseURL + "/company-number-input" : Constants.CabProviderBaseURL + "/duns-number";
             return View(summaryViewModel);
         }
 
@@ -257,7 +256,7 @@ namespace DVSRegister.Controllers
             summaryViewModel.SourcePage = sourcePage;
             summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary|| sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
-            : "/cab-service/create-profile/parent-company";
+            :"/parent-company";
             return View(summaryViewModel);
         }
 
@@ -291,7 +290,7 @@ namespace DVSRegister.Controllers
             summaryViewModel.SourcePage = sourcePage;
             summaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
-            : "/cab-service/create-profile/parent-company-registered-name-input";
+            : Constants.CabProviderBaseURL + "/parent-company-registered-name-input";
             return View(summaryViewModel);
         }
 
@@ -324,7 +323,7 @@ namespace DVSRegister.Controllers
             profileSummaryViewModel.PrimaryContact.IsInCompleteApplication = profileSummaryViewModel.IsInCompleteApplication;
             ViewBag.hasParentCompany = profileSummaryViewModel.HasParentCompany;
             profileSummaryViewModel.PrimaryContact.RefererURL = sourcePage == SourcePageEnum.ProfileSummary? GetRefererURL()
-            :profileSummaryViewModel.HasParentCompany == true? "/cab-service/create-profile/parent-company-location-input" : "/cab-service/create-profile/parent-company";
+            :profileSummaryViewModel.HasParentCompany == true? Constants.CabProviderBaseURL + "/parent-company-location-input" : Constants.CabProviderBaseURL + "/parent-company";
             return View(profileSummaryViewModel.PrimaryContact);
         }
 
@@ -371,7 +370,7 @@ namespace DVSRegister.Controllers
             profileSummaryViewModel.SecondaryContact.SourcePage = sourcePage;
             profileSummaryViewModel.SecondaryContact.IsInCompleteApplication = profileSummaryViewModel.IsInCompleteApplication;
             profileSummaryViewModel.SecondaryContact.RefererURL = sourcePage == SourcePageEnum.ProfileSummary ? GetRefererURL()
-            : "/cab-service/create-profile/primary-contact-information";
+            : Constants.CabProviderBaseURL + "/primary-contact-information";
             return View(profileSummaryViewModel.SecondaryContact);
         }
 
@@ -419,7 +418,7 @@ namespace DVSRegister.Controllers
             profileSummaryViewModel.SourcePage = sourcePage;
             profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
-            : "/cab-service/create-profile/secondary-contact-information";
+            : Constants.CabProviderBaseURL + "/secondary-contact-information";
             return View("PublicContactEmail", profileSummaryViewModel);
         }
 
@@ -453,7 +452,7 @@ namespace DVSRegister.Controllers
             profileSummaryViewModel.SourcePage = sourcePage;
             profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
-            : "/cab-service/create-profile/public-email";
+            : Constants.CabProviderBaseURL + "/public-email";
             return View("TelephoneNumber", profileSummaryViewModel);
         }
 
@@ -485,7 +484,7 @@ namespace DVSRegister.Controllers
             profileSummaryViewModel.SourcePage = sourcePage;
             profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
            || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
-          : "/cab-service/create-profile/public-telephone";
+          : Constants.CabProviderBaseURL + "/public-telephone";
             return View("WebsiteAddress", profileSummaryViewModel);
         }
 
@@ -518,7 +517,7 @@ namespace DVSRegister.Controllers
             profileSummaryViewModel.SourcePage = sourcePage;
             profileSummaryViewModel.RefererURL = sourcePage == SourcePageEnum.ProfileSummary
             || sourcePage == SourcePageEnum.ProfileEditSummary || sourcePage == SourcePageEnum.ProfileDetails ? GetRefererURL()
-            : "/cab-service/create-profile/public-website";
+            : Constants.CabProviderBaseURL + "/public-website";
             return View("LinkToContactPage", profileSummaryViewModel);
         }
 
