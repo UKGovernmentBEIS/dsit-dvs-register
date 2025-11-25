@@ -47,10 +47,18 @@
               
             </div>
         </div>
-        <a href="@Url.Action("ListProviders", "Cab")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-            Return to your provider profiles
-
-        </a>
+        @if (ViewBag.ProviderId != null)
+        {
+            <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = ViewBag.ProviderId })" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                Return to the provider profile
+            </a>
+        }
+        else
+        {
+            <a href="@Url.Action("SentBackApplications", "Home")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                Return to Open tasks
+            </a>
+        }        
     </main>
 </div>
 
