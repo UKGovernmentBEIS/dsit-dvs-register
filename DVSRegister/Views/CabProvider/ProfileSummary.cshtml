@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = "Check your answers before submitting your information";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    SourcePageEnum sourcePage = SourcePageEnum.ProfileSummary;
+    SourcePageEnum sourcePage = SourcePageEnum.profilesummary;
 }
 
 @using (Html.BeginForm("SaveProfileSummary", "CabProvider", FormMethod.Post))
@@ -62,25 +62,7 @@
                                 </div>
 
 
-                                @if (Convert.ToBoolean(Model.HasRegistrationNumber))
-                                {
-
-                                    <div class="govuk-summary-list__row">
-                                        <dt class="govuk-summary-list__key">
-                                            Companies House or charity
-                                            registration number
-                                        </dt>
-                                        <dd class="govuk-summary-list__value">
-                                            @Model.CompanyRegistrationNumber
-                                        </dd>
-                                        <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "CompanyRegistrationNumber", "CabProvider", new { sourcePage = @sourcePage }, new
-                                                { @class = "govuk-link", @aria_label = "Change digital identity and attribute service Companies house or charity registration number" })
-                                        </dd>
-                                    </div>
-
-                                }
-                                else
+                                @if(Model.HasRegistrationNumber == true)
                                 {
                                     <div class="govuk-summary-list__row">
                                         <dt class="govuk-summary-list__key">
@@ -88,39 +70,38 @@
                                             registration number
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @Constants.NullFieldsDisplay
+                                            @Html.DisplayFor(m => m.CompanyRegistrationNumber)
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { sourcePage = @sourcePage }, new
                                                 {
                                                     @class = "govuk-link",
                                                     @aria_label = "Change digital identity and attribute service Companies House or charity registration number"
-                                            })
+                                                })
                                         </dd>
                                     </div>
-
+                                }
+                                else if(Model.HasRegistrationNumber == false)
+                                {
                                     <div class="govuk-summary-list__row">
                                         <dt class="govuk-summary-list__key">
                                             Dun & Bradstreet or D-U-N-S
                                             number
                                         </dt>
                                         <dd class="govuk-summary-list__value">
-                                            @Model.DUNSNumber
+                                            @Html.DisplayFor(m => m.DUNSNumber)
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "DUNSNumber", "CabProvider", new { sourcePage = @sourcePage }, new
-                                            {
-                                              @class = "govuk-link",
-                                              @aria_label = "Change digital identity and attribute service Dun & Bradstreet or D-U-N-S number"
-                                            })
+                                            @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { sourcePage = @sourcePage }, new
+                                                {
+                                                    @class = "govuk-link",
+                                                    @aria_label = "Change digital identity and attribute service Companies House or charity registration number"
+                                                })
                                         </dd>
                                     </div>
+                                } 
 
-                                }
-
-
-
-                                @if (Convert.ToBoolean(Model.HasParentCompany))
+                                @if(Model.HasParentCompany == true)
                                 {
                                     <div class="govuk-summary-list__row">
                                         <dt class="govuk-summary-list__key">
@@ -130,7 +111,7 @@
                                             @Model.ParentCompanyRegisteredName
                                         </dd>
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "ParentCompanyRegisteredName", "CabProvider", new { sourcePage = @sourcePage }, new
+                                            @Html.ActionLink("Change", "HasParentCompany", "CabProvider", new { sourcePage = @sourcePage }, new
                                                 { @class = "govuk-link", @aria_label = "Change digital identity and attribute service registered name of parent company" })
                                         </dd>
                                     </div>
@@ -147,8 +128,39 @@
                                                 { @class = "govuk-link", @aria_label = "Change digital identity and attribute service location of parent company" })
                                         </dd>
                                     </div>
-
                                 }
+                                else
+                                {
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            Registered name of parent company
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                           @Constants.NullFieldsDisplay
+                                        </dd>
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "HasParentCompany", "CabProvider", new { sourcePage = @sourcePage }, new
+                                                { @class = "govuk-link", @aria_label = "Change digital identity and attribute service registered name of parent company" })
+                                        </dd>
+                                    </div>
+
+                                    <div class="govuk-summary-list__row">
+                                        <dt class="govuk-summary-list__key">
+                                            Location of parent company
+                                        </dt>
+                                        <dd class="govuk-summary-list__value">
+                                            @Constants.NullFieldsDisplay
+                                        </dd>
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "HasParentCompany", "CabProvider", new { sourcePage = @sourcePage }, new
+                                                { @class = "govuk-link", @aria_label = "Change digital identity and attribute service location of parent company" })
+                                        </dd>
+                                    </div>
+                                }
+
+                                   
+
+
 
                             </dl>
                         </div>

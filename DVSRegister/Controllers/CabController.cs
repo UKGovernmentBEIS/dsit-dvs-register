@@ -12,7 +12,7 @@ namespace DVSRegister.Controllers
     {
     
         private readonly ICabService cabService = cabService;
-        [HttpGet("service-details")]
+        [HttpGet("service-details/{serviceKey}/{fromOpenTasks?}")]
         public async Task<IActionResult> ProviderServiceDetails(int serviceKey, bool? fromOpenTasks)
         {
             HttpContext?.Session.Remove("ServiceSummary");
@@ -62,7 +62,7 @@ namespace DVSRegister.Controllers
             return View(serviceVersions);
         }
 
-        [HttpGet("service-version-details")]
+        [HttpGet("service-version-details/{serviceId}")]
         public async Task<IActionResult> ServiceVersionDetails(int serviceId)
         {
             if (!IsValidCabId(CabId))

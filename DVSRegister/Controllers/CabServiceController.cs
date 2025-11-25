@@ -28,7 +28,7 @@ namespace DVSRegister.Controllers
         private readonly ILogger<CabServiceController> _logger = logger;
         private readonly IMapper _mapper = mapper;
 
-        [HttpGet("before-you-start")]
+        [HttpGet("before-you-start/{providerProfileId}")]
         public async Task<IActionResult> BeforeYouStart(int providerProfileId)
         {
             HttpContext?.Session.Remove("ServiceSummary");
@@ -50,13 +50,14 @@ namespace DVSRegister.Controllers
 
 
         #region Service Name
-        [HttpGet("name-of-service")]
-        public IActionResult ServiceName(bool fromSummaryPage, bool fromDetailsPage)
+        [HttpGet("name-of-service/{fromSummaryPage?}/{fromDetailsPage?}")]
+        public IActionResult ServiceName(bool fromSummaryPage = false, bool fromDetailsPage = false)
         {           
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;          
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-            serviceSummaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/tf-version?providerProfileId=" + serviceSummaryViewModel.ProviderProfileId;
+            serviceSummaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage 
+           ? GetRefererURL() : "/cab-service/submit-service/tf-version/" + serviceSummaryViewModel.ProviderProfileId;
             return View(serviceSummaryViewModel);
 
         }
@@ -70,7 +71,7 @@ namespace DVSRegister.Controllers
             serviceSummaryViewModel.FromSummaryPage = false;
             serviceSummaryViewModel.FromDetailsPage = false;
             serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
-            if (ModelState["ServiceName"].Errors.Count == 0)
+            if (ModelState["ServiceName"]?.Errors.Count == 0)
             {               
                 serviceSummary.ServiceName = serviceSummaryViewModel.ServiceName;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
@@ -84,8 +85,8 @@ namespace DVSRegister.Controllers
         #endregion
 
         #region Service URL
-        [HttpGet("service-url")]
-        public IActionResult ServiceURL(bool fromSummaryPage, bool fromDetailsPage)
+        [HttpGet("service-url/{fromSummaryPage?}/{fromDetailsPage?}")]
+        public IActionResult ServiceURL(bool fromSummaryPage=false, bool fromDetailsPage = false)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
@@ -102,7 +103,7 @@ namespace DVSRegister.Controllers
             serviceSummaryViewModel.FromDetailsPage = false;
             ServiceSummaryViewModel serviceSummary = GetServiceSummary();
             serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
-            if (ModelState["ServiceURL"].Errors.Count == 0)
+            if (ModelState["ServiceURL"]?.Errors.Count == 0)
             {
                 serviceSummary.ServiceURL = serviceSummaryViewModel.ServiceURL;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);

@@ -31,8 +31,8 @@ namespace DVSRegister.Controllers
         private readonly IBucketService bucketService = bucketService;
         private readonly IMapper mapper = mapper;     
 
-        [HttpGet("tf-version")]
-        public async Task<IActionResult> SelectVersionOfTrustFrameWork(int providerProfileId, bool fromSummaryPage,  bool fromDetailsPage)
+        [HttpGet("tf-version/{providerProfileId}/{fromSummaryPage?}/{fromDetailsPage?}")]
+        public async Task<IActionResult> SelectVersionOfTrustFrameWork(int providerProfileId, bool fromSummaryPage=false,  bool fromDetailsPage=false)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
@@ -48,7 +48,7 @@ namespace DVSRegister.Controllers
                 summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && summaryViewModel.IsAmendment ? "/cab-service/amend/service-amendments?serviceId=" + summaryViewModel.ServiceId :
                 summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && !summaryViewModel.IsAmendment && summaryViewModel.TFVersionViewModel.FromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel.ServiceKey :
                 summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && !summaryViewModel.IsAmendment && summaryViewModel.TFVersionViewModel.FromSummaryPage ? "/cab-service/submit-service/check-your-answers" :
-                "/cab-service/submit-service/before-you-start?providerProfileId=" + summaryViewModel.ProviderProfileId
+                "/cab-service/submit-service/before-you-start/" + summaryViewModel.ProviderProfileId
             }; 
 
             return View(TFVersionViewModel);

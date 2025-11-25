@@ -74,7 +74,7 @@ namespace DVSRegister.Controllers
         }
         #region Edit primary contact
 
-        [HttpGet("edit-primary-contact")]
+        [HttpGet("edit-primary-contact/{providerId}")]
         public async Task<IActionResult> EditPrimaryContact(int providerId)
         {
             if (!IsValidCabId(CabId))
@@ -170,7 +170,7 @@ namespace DVSRegister.Controllers
 
         #region Edit secondary contact
 
-        [HttpGet("edit-secondary-contact")]
+        [HttpGet("edit-secondary-contact/{providerId}")]
         public async Task<IActionResult> EditSecondaryContact(int providerId)
         {
 

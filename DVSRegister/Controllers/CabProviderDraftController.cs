@@ -23,66 +23,66 @@ namespace DVSRegister.Controllers
         {
             if (string.IsNullOrEmpty(profileSummary.RegisteredName))
             {
-                return RedirectToAction("RegisteredName", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("RegisteredName", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (string.IsNullOrEmpty(profileSummary.TradingName) && profileSummary.HasRegistrationNumber == null)
             {
-                return RedirectToAction("TradingName", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("TradingName", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (profileSummary.HasRegistrationNumber == null)
             {
-                return RedirectToAction("HasRegistrationNumber", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("HasRegistrationNumber", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
 
             else if (profileSummary.HasRegistrationNumber != null && profileSummary.HasRegistrationNumber == true && string.IsNullOrEmpty(profileSummary.CompanyRegistrationNumber))
             {
-                return RedirectToAction("CompanyRegistrationNumber", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("CompanyRegistrationNumber", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (profileSummary.HasRegistrationNumber != null && profileSummary.HasRegistrationNumber == false && string.IsNullOrEmpty(profileSummary.DUNSNumber))
             {
-                return RedirectToAction("DUNSNumber", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("DUNSNumber", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (profileSummary.HasParentCompany == null)
             {
-                return RedirectToAction("HasParentCompany", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("HasParentCompany", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }         
 
             else if (profileSummary.HasParentCompany == true && string.IsNullOrEmpty(profileSummary.ParentCompanyRegisteredName))
             {
-                return RedirectToAction("ParentCompanyRegisteredName", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("ParentCompanyRegisteredName", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (profileSummary.HasParentCompany == true && string.IsNullOrEmpty(profileSummary.ParentCompanyLocation))
             {
-                return RedirectToAction("ParentCompanyLocation", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("ParentCompanyLocation", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (HasMissingPrimaryContactInfo(profileSummary.PrimaryContact!))
             {
-                return RedirectToAction("PrimaryContact", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("PrimaryContact", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (HasMissingSecondaryContactInfo(profileSummary.SecondaryContact!))
             {
-                return RedirectToAction("SecondaryContact", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("SecondaryContact", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (string.IsNullOrEmpty(profileSummary.PublicContactEmail) && string.IsNullOrEmpty(profileSummary.ProviderTelephoneNumber) 
                 && string.IsNullOrEmpty(profileSummary.ProviderWebsiteAddress))
             {
-                return RedirectToAction("PublicContactEmail", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("PublicContactEmail", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (string.IsNullOrEmpty(profileSummary.ProviderTelephoneNumber) && string.IsNullOrEmpty(profileSummary.ProviderWebsiteAddress))
             {
-                return RedirectToAction("TelephoneNumber", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("TelephoneNumber", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (string.IsNullOrEmpty(profileSummary.ProviderWebsiteAddress))
             {
-                return RedirectToAction("WebsiteAddress", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("WebsiteAddress", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else if (string.IsNullOrEmpty(profileSummary.LinkToContactPage))
             {
-                return RedirectToAction("LinkToContactPage", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("LinkToContactPage", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
             else
             {
-                return RedirectToAction("ProfileSummary", "CabProvider", new { sourcePage = SourcePageEnum.ProfileDraft });
+                return RedirectToAction("ProfileSummary", "CabProvider", new { sourcePage = SourcePageEnum.profiledraft });
             }
 
         }
