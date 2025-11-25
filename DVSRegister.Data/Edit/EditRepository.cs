@@ -23,7 +23,7 @@ namespace DVSRegister.Data.Edit
             try
             {
                 var cabUser = await _context.CabUser.FirstOrDefaultAsync(x => x.CabEmail == loggedInUserEmail);
-                draft.RequestedCabUserId = cabUser.Id;
+                draft.RequestedCabUserId = cabUser!.Id;
                 draft.RequestedUserId = null;
                draft.IsCabRequested = true;
                 var existingDraft = await _context.ProviderProfileDraft

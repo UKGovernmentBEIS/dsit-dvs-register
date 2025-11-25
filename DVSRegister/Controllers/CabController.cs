@@ -1,5 +1,4 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Models.CAB.Service;
@@ -12,11 +11,7 @@ namespace DVSRegister.Controllers
     public class CabController(ICabService cabService,ILogger<CabController> logger) : BaseController(logger)
     {
     
-        private readonly ICabService cabService = cabService;      
- 
-
-         
-
+        private readonly ICabService cabService = cabService;
         [HttpGet("service-details")]
         public async Task<IActionResult> ProviderServiceDetails(int serviceKey)
         {
@@ -26,7 +21,9 @@ namespace DVSRegister.Controllers
             
             ServiceVersionViewModel serviceVersions = new();
             var serviceList = await cabService.GetServiceList(serviceKey, CabId);
-            ServiceDto currentServiceVersion = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
+            ServiceDto latestSubmission = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
+
+            ServiceDto currentServiceVersion = await cabService.GetServiceDetails(latestSubmission.Id, CabId);
             serviceVersions.CurrentServiceVersion = currentServiceVersion;
             serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
             serviceVersions.ProviderProfileId = currentServiceVersion.ProviderProfileId;
@@ -65,7 +62,7 @@ namespace DVSRegister.Controllers
         }
 
         [HttpGet("service-version-details")]
-        public async Task<IActionResult> ServiceVersionDetails(int serviceKey, int serviceId)
+        public async Task<IActionResult> ServiceVersionDetails(int serviceId)
         {
             if (!IsValidCabId(CabId))
                 return HandleInvalidCabId(CabId);
