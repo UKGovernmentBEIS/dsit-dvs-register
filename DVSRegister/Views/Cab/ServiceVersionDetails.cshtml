@@ -19,7 +19,7 @@
                     Service: @Model.ServiceName
                 </h2>
                 <p class="govuk-body-l govuk-!-margin-bottom-9">
-                    Registered provider: <a href="@Url.Action("ProviderOverview", "Cab", new { providerId = Model.ProviderProfileId })" class="govuk-link">@Model.Provider.RegisteredName</a>
+                    Registered provider: <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.ProviderProfileId })" class="govuk-link">@Model.Provider.RegisteredName</a>
                 </p>
             </div>
         </div>
