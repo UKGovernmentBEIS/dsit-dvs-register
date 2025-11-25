@@ -793,7 +793,8 @@ namespace DVSRegister.Controllers
             {
                 ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
                 string providerName = provider?.RegisteredName;
-                return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName});
+                int providerId = provider.Id;
+                return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName, providerId});
             }
             else
             {
@@ -806,10 +807,11 @@ namespace DVSRegister.Controllers
         /// </summary>       
         /// <returns></returns>
         [HttpGet("service-submitted")]
-        public async Task <IActionResult> InformationSubmitted(string providerName, string serviceName)
+        public async Task <IActionResult> InformationSubmitted(string providerName, string serviceName, int? providerId)
         {
             ViewBag.ServiceName = serviceName;
             ViewBag.ProviderName = providerName;
+            ViewBag.ProviderId = providerId;
             HttpContext?.Session.Remove("ServiceSummary");
             ViewBag.Email = UserEmail;
             await emailSender.SendEmailCabInformationSubmitted(UserEmail, UserEmail, providerName, serviceName);

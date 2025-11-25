@@ -13,7 +13,7 @@ namespace DVSRegister.Controllers
     
         private readonly ICabService cabService = cabService;
         [HttpGet("service-details")]
-        public async Task<IActionResult> ProviderServiceDetails(int serviceKey)
+        public async Task<IActionResult> ProviderServiceDetails(int serviceKey, bool? fromOpenTasks)
         {
             HttpContext?.Session.Remove("ServiceSummary");
             if (!IsValidCabId(CabId))
@@ -28,6 +28,7 @@ namespace DVSRegister.Controllers
             serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
             serviceVersions.ProviderProfileId = currentServiceVersion.ProviderProfileId;
             serviceVersions.Provider = currentServiceVersion.Provider;
+            ViewBag.FromOpenTasks = fromOpenTasks;
 
             if (currentServiceVersion.ManualUnderPinningServiceId != null)
             {
