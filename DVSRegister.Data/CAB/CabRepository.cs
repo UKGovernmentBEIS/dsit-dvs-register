@@ -73,7 +73,7 @@ namespace DVSRegister.Data.CAB
         public async Task<List<ProviderProfile>> GetProviders(int cabId, string searchText = "")
         {
             //Filter based on cab type as well, fetch records for users with same cab type
-            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(s=>s.CabUser)
+            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services!.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(s=>s.CabUser)
              .Include(p => p.ProviderProfileCabMapping).ThenInclude(p => p.Cab)
             .Where(p => p.ProviderProfileCabMapping.Any(m => m.CabId == cabId))
             .OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime);
@@ -85,7 +85,7 @@ namespace DVSRegister.Data.CAB
                     p.RegisteredName.ToLower().Contains(lowerSearchText) ||
                     p.TradingName!.ToLower().Contains(lowerSearchText) ||
                     // Search in service names
-                    p.Services.Any(s => s.CabUser.CabId == cabId && s.ServiceName.ToLower().Contains(lowerSearchText))
+                    p.Services!.Any(s => s.CabUser.CabId == cabId && s.ServiceName!.ToLower().Contains(lowerSearchText))
                 );
             }
             var searchResults = await providerQuery.ToListAsync();
@@ -94,15 +94,15 @@ namespace DVSRegister.Data.CAB
 
         public async Task<ProviderProfile> GetProvider(int providerId,int cabId)
         {
-            ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p=>p.Services).ThenInclude(p=>p.CertificateReview)
-            .Include(p => p.Services).ThenInclude(p => p.PublicInterestCheck)
-            .Include(p => p.Services).ThenInclude(p => p.ServiceDraft)
-            .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
-             .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId)).ThenInclude(p => p.CabTransferRequest).ThenInclude(p => p.RequestManagement)
-            .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
-            .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
-            return provider;
+                ProviderProfile provider = new();
+                provider = await context.ProviderProfile.Include(p=>p.Services)!.ThenInclude(p=>p.CertificateReview)
+                .Include(p => p.Services)!.ThenInclude(p => p.PublicInterestCheck)
+                .Include(p => p.Services)!.ThenInclude(p => p.ServiceDraft)
+                .Include(p => p.Services!.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
+                .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId)).ThenInclude(p => p.CabTransferRequest)!.ThenInclude(p => p.RequestManagement)
+                .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
+                .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+                return provider;
         }
 
             public async Task<Service> GetServiceDetailsWithProvider(int serviceId, int cabId)
@@ -121,7 +121,7 @@ namespace DVSRegister.Data.CAB
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
-             .Include(p => p.Provider)              
+             .Include(p => p.Provider)   
              .Include(p => p.TrustFrameworkVersion)
              .Include(p => p.CertificateReview)
              .Include(p => p.PublicInterestCheck)
@@ -129,31 +129,31 @@ namespace DVSRegister.Data.CAB
              .Include(p => p.UnderPinningService).ThenInclude(p=>p.Provider)          
              .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
              .Include(p => p.ManualUnderPinningService) .ThenInclude(ms => ms.Cab)
-            .Include(p => p.ServiceRoleMapping)            
+            .Include(p => p.ServiceRoleMapping)!            
             .ThenInclude(s => s.Role);
 
 
             IQueryable<Service> queryWithOptionalIncludes = baseQuery;
             if (await baseQuery.AnyAsync(p => p.ServiceQualityLevelMapping != null && p.ServiceQualityLevelMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)!
                     .ThenInclude(sq => sq.QualityLevel);
             }
 
             if (await baseQuery.AnyAsync(p => p.ServiceSupSchemeMapping != null && p.ServiceSupSchemeMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
                     .ThenInclude(ssm => ssm.SupplementaryScheme);
 
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
-                    .ThenInclude(ssm => ssm.SchemeGPG44Mapping).ThenInclude(ssm=>ssm.QualityLevel);
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
-                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping).ThenInclude(ssm => ssm.IdentityProfile);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
+                    .ThenInclude(ssm => ssm.SchemeGPG44Mapping)!.ThenInclude(ssm=>ssm.QualityLevel);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
+                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping)!.ThenInclude(ssm => ssm.IdentityProfile);
             }
 
             if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)!
                     .ThenInclude(ssm => ssm.IdentityProfile);
             }
             var service = await queryWithOptionalIncludes.FirstOrDefaultAsync() ?? new Service();
@@ -164,28 +164,11 @@ namespace DVSRegister.Data.CAB
         public async Task<List<Service>> GetServiceList(int serviceKey, int cabId)
             {
             return await context.Service
-            .Include(s => s.Provider)
-            .Include(s => s.CertificateReview)
-            .Include(s => s.PublicInterestCheck)
-            .Include(s => s.ServiceSupSchemeMapping)
-            .ThenInclude(s=> s.SupplementaryScheme)
-             .Include(s => s.ServiceSupSchemeMapping)
-            .ThenInclude(s => s.SchemeGPG44Mapping)
-             .ThenInclude(s=>s.QualityLevel)
-            .Include(s => s.ServiceSupSchemeMapping)
-            .ThenInclude(s => s.SchemeGPG45Mapping)
-            .ThenInclude(s=>s.IdentityProfile)
-            .Include(s => s.ServiceRoleMapping)            
-            .ThenInclude(s => s.Role)
-            .Include(s=> s.ServiceQualityLevelMapping)
-            .ThenInclude(s => s.QualityLevel)
-            .Include(s => s.ServiceIdentityProfileMapping)
-            .ThenInclude(s => s.IdentityProfile)
-            .Include(s => s.CabUser).ThenInclude(s => s.Cab)
-            .Include(s => s.TrustFrameworkVersion)
-            .Include(s => s.UnderPinningService).ThenInclude(p=>p.Provider)
-             .Include(s => s.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(p=>p.Cab)
-             .Include(s => s.ManualUnderPinningService).ThenInclude(s=>s.Cab)
+            .Include(s => s.Provider).AsNoTracking()
+            .Include(s => s.CertificateReview).AsNoTracking()
+            .Include(s => s.PublicInterestCheck).AsNoTracking()
+            .Include(s => s.CabUser).ThenInclude(s => s.Cab).AsNoTracking()
+            .Include(s => s.TrustFrameworkVersion).AsNoTracking()
              .Include(s => s.ServiceDraft).AsNoTracking()
             .Where(s => s.ServiceKey == serviceKey)
             .ToListAsync();
@@ -233,7 +216,7 @@ namespace DVSRegister.Data.CAB
         {
             ProviderProfile provider = new();
             provider = await context.ProviderProfile.Include(p => p.Services)!.ThenInclude(p => p.CertificateReview)
-            .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId && s.IsCurrent == true)).ThenInclude(p => p.CabUser)
+            .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && s.IsCurrent == true)).ThenInclude(p => p.CabUser)
             .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
             return provider;

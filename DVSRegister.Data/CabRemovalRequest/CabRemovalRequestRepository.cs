@@ -87,7 +87,8 @@ namespace DVSRegister.Data.CabRemovalRequest
                     .Include(p => p.Services)
                     .FirstOrDefaultAsync(p => p.Id == providerProfileId);
 
-            return provider.Services.Where(s => s.Id != serviceId).All(s => s.IsInRegister == false);
+            if(provider == null) { return false; }
+            return provider.Services!.Where(s => s.Id != serviceId).All(s => s.IsInRegister == false);
         }
     }
 }
