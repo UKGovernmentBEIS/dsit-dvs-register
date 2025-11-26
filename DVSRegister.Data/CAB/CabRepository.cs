@@ -372,23 +372,23 @@ namespace DVSRegister.Data.CAB
                             var certificateReview = existingService.CertificateReview.FirstOrDefault(cr => cr.IsLatestReviewVersion);
                             var publicInterestCheck = existingService.PublicInterestCheck.FirstOrDefault(pic => pic.IsLatestReviewVersion);
                             var transferRequest = existingService.CabTransferRequest!.OrderByDescending(c => c.Id).FirstOrDefault();
-                            if (certificateReview == null )                                                               
+                            if (certificateReview == null)                                                               
                                 {
                                     // delete service if it has not started PI check or has been sent back to cab - submitted/resubmitted
                                     context.Remove(existingService);
                                     existingServiceRemoved = true;
                                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                                 }
-                                else if (certificateReview != null && publicInterestCheck == null && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Rejected)
+                                else if (publicInterestCheck == null && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Rejected)
                                 {  //Pi check not started , certificate review has status other than rejected
                                     context.Remove(existingService);
                                     existingServiceRemoved = true;
                                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                                 }
-                            else if (certificateReview != null && publicInterestCheck != null && publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed )
+                            else if (publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed &&
+                                publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckPassed)
                                 {
-                                // Pi check not started , certificate review has status other than PublicInterestCheckFailed
-                                // not adding PublicInterestCheckPass as published statuses will be filtered out at line 371
+                                // Pi check not started , certificate review has status other than PublicInterestCheckFailed or PublicInterestCheckPassed
                                 // delete in progress application if pi check is not complete and cert review was approved
                                 // But we must keep the record if it failed or PI check was rejected
                                 context.Remove(existingService);
