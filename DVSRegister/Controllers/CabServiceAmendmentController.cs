@@ -16,12 +16,12 @@ namespace DVSRegister.Controllers
 
     [Route("cab-service/amend")]
 
-    public class CabServiceAmendmentController(ICabService cabService, ILogger<CabServiceAmendmentController> logger, IMapper mapper, IBucketService bucketService) : BaseController(logger)
+    public class CabServiceAmendmentController(ICabService cabService, ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;    
         private readonly IMapper mapper = mapper;
-        private readonly IBucketService bucketService =bucketService;
+       
 
 
         #region Amendments
@@ -32,7 +32,8 @@ namespace DVSRegister.Controllers
             SetRefererURL();
             ServiceDto service = await cabService.GetServiceDetails(serviceId, CabId);
             var latestReview = service.CertificateReview.SingleOrDefault(x => x.IsLatestReviewVersion)!;
-            SetServiceDataToSession(CabId, service);
+            bool isAmendment = service.ServiceStatus == ServiceStatusEnum.AmendmentsRequired;
+            SetServiceDataToSession(CabId, service, isAmendment);
             AmendmentViewModel amendmentViewModel = new()
             {
                 CertificateReview = latestReview,

@@ -379,18 +379,19 @@ namespace DVSRegister.Data.CAB
                                     existingServiceRemoved = true;
                                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                                 }
-                                else if (certificateReview != null && publicInterestCheck == null && (certificateReview.CertificateReviewStatus != CertificateReviewEnum.Rejected))
-                                {
-
+                                else if (certificateReview != null && publicInterestCheck == null && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Rejected)
+                                {  //Pi check not started , certificate review has status other than rejected
                                     context.Remove(existingService);
                                     existingServiceRemoved = true;
                                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                                 }
-                            else if (publicInterestCheck == null || publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed )
+                            else if (certificateReview != null && publicInterestCheck != null && publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed )
                                 {
-                                    // delete in progress application if pi check is not complete and cert review was approved
-                                    // But we must keep the record if it failed or PI check was rejected
-                                    context.Remove(existingService);
+                                // Pi check not started , certificate review has status other than PublicInterestCheckFailed
+                                // not adding PublicInterestCheckPass as published statuses will be filtered out at line 371
+                                // delete in progress application if pi check is not complete and cert review was approved
+                                // But we must keep the record if it failed or PI check was rejected
+                                context.Remove(existingService);
                                     existingServiceRemoved = true;
                                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                                 }

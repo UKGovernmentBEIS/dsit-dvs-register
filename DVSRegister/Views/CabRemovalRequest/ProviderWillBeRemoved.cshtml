@@ -42,9 +42,12 @@
                 </p>
 
                 <div class="govuk-button-group govuk-!-margin-top-6">
-                    <a class="govuk-button" href="about-to-remove?serviceId=@Model.Id" role="button">
+                 
+
+                    <a href="@Url.Action("AboutToRemove", "CabRemovalRequest", new { serviceId = Model.Id})"
+                       role="button" draggable="false" class="govuk-button" aria-label="Remove provider">
                         Continue
-                    </a>               
+                    </a>
 
                     <a href="@Url.Action("ReasonForRemoval", "CabRemovalRequest", new { providerId = Model.ProviderProfileId, serviceId = Model.Id, serviceKey = Model.ServiceKey})"
                        role="button" draggable="false" class="govuk-button govuk-button--secondary" aria-label="Return to removal reason">
