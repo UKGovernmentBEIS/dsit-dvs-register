@@ -372,55 +372,55 @@ namespace DVSRegister.Data.CAB
                             var certificateReview = existingService.CertificateReview.FirstOrDefault(cr => cr.IsLatestReviewVersion);
                             var publicInterestCheck = existingService.PublicInterestCheck.FirstOrDefault(pic => pic.IsLatestReviewVersion);
                             var transferRequest = existingService.CabTransferRequest!.OrderByDescending(c => c.Id).FirstOrDefault();
-                            if (certificateReview == null )                                                               
-                                {
-                                    // delete service if it has not started PI check or has been sent back to cab - submitted/resubmitted
-                                    context.Remove(existingService);
-                                    existingServiceRemoved = true;
-                                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
-                                }
-                                else if (certificateReview != null && publicInterestCheck == null && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Rejected)
-                                {  //Pi check not started , certificate review has status other than rejected
-                                    context.Remove(existingService);
-                                    existingServiceRemoved = true;
-                                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
-                                }
-                            else if (certificateReview != null && publicInterestCheck != null && publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed )
-                                {
+                            if (certificateReview == null || certificateReview.CertificateReviewStatus != CertificateReviewEnum.Rejected)
+                            {
+                                // delete service if it has not started PI check or has been sent back to cab - submitted/resubmitted
+                                context.Remove(existingService);
+                                existingServiceRemoved = true;
+                                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+                            }
+                            else if (publicInterestCheck == null || (publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed && 
+                                publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckPassed))
+                            {
+                                //Pi check not started , certificate review has status other than rejected
+                                context.Remove(existingService);
+                                existingServiceRemoved = true;
+                                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+                            }
+                            else if (publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed || publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckPassed)
+                            {
                                 // Pi check not started , certificate review has status other than PublicInterestCheckFailed
                                 // not adding PublicInterestCheckPass as published statuses will be filtered out at line 371
                                 // delete in progress application if pi check is not complete and cert review was approved
                                 // But we must keep the record if it failed or PI check was rejected
                                 context.Remove(existingService);
-                                    existingServiceRemoved = true;
-                                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
-                                }
-                                else if (existingService.ServiceRemovalRequest != null && (existingService.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation || existingService.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation))
-                                {
+                                existingServiceRemoved = true;
+                                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+                            }
+                            else if (existingService.ServiceRemovalRequest != null && (existingService.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation || existingService.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation))
+                            {
                                 // if ongoing removal - delete removal request assign previous status back to service
-                                     existingService.ServiceStatus = existingService.ServiceRemovalRequest.PreviousServiceStatus;
-                                    context.Remove(existingService.ServiceRemovalRequest);
-                                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
-                                }
-                                else if (existingService.ServiceDraft != null && existingService.ServiceStatus == ServiceStatusEnum.UpdatesRequested)
-                                {
+                                existingService.ServiceStatus = existingService.ServiceRemovalRequest.PreviousServiceStatus;
+                                context.Remove(existingService.ServiceRemovalRequest);
+                                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+                            }
+                            else if (existingService.ServiceDraft != null && existingService.ServiceStatus == ServiceStatusEnum.UpdatesRequested)
+                            {
                                 // if ongoing edit request - delete edits and assign previous status back to service
-                                    existingService.ServiceStatus = existingService.ServiceDraft.PreviousServiceStatus;
-                                    context.Remove(existingService.ServiceDraft);
-                                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
-                                 }
-                                else if (transferRequest != null && (existingService.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || existingService.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
-                                {
-                                    //if transfer ongoing but cab b is yet to accept and cab A, resubmits
-                                    // delete the cabtransferrequest and relevant request management and assign previous status back to service
-                                    var request = transferRequest.RequestManagement;
-                                    existingService.ServiceStatus = transferRequest.PreviousServiceStatus;
-                                    context.Remove(transferRequest);
-                                    context.Remove(request);
-                                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
-                                 }
-                          
-
+                                existingService.ServiceStatus = existingService.ServiceDraft.PreviousServiceStatus;
+                                context.Remove(existingService.ServiceDraft);
+                                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+                            }
+                            else if (transferRequest != null && (existingService.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || existingService.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
+                            {
+                                //if transfer ongoing but cab b is yet to accept and cab A, resubmits
+                                // delete the cabtransferrequest and relevant request management and assign previous status back to service
+                                var request = transferRequest.RequestManagement;
+                                existingService.ServiceStatus = transferRequest.PreviousServiceStatus;
+                                context.Remove(transferRequest);
+                                context.Remove(request);
+                                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+                            }
                         }
                         else if(isReupload)
                         {
