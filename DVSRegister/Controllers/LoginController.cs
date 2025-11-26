@@ -1,17 +1,29 @@
 ﻿using DVSAdmin.BusinessLogic.Services;
+using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.Data.Entities;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DVSRegister.Controllers
 {
     [Route("cab-application-registration")]
-    public class LoginController(ISignUpService signUpService) : Controller
+    public class LoginController : Controller
     {
-        private readonly ISignUpService _signUpService = signUpService;
+        private readonly ISignUpService _signUpService ;
+        private readonly IUserService _userService ;
+        private readonly CognitoClient _cognitoClient;
 
+        public LoginController(ISignUpService signUpService, IUserService userService, CognitoClient cognitoClient)
+        {
+            _signUpService = signUpService;
+            _userService = userService;
+            _cognitoClient = cognitoClient;
+        }
         [HttpGet("")]
         public IActionResult StartPage()
         {
@@ -240,7 +252,22 @@ namespace DVSRegister.Controllers
                 {
                     HttpContext?.Session.Set("IdToken", mfaResponse.IdToken);
                     HttpContext?.Session.Set("AccessToken", mfaResponse.AccessToken);
-                    return RedirectToAction("LandingPage", "Cab");
+
+                    Task<TokenValidationResult> result = TokenExtensions.ValidateToken(mfaResponse.IdToken, _cognitoClient._userPoolId, _cognitoClient._region, _cognitoClient._clientId);
+                    string? cab = result.Result?.Claims?.FirstOrDefault(c => c.Key == "profile").Value?.ToString();
+                    string email = HttpContext?.Session.Get<string>("Email");
+
+                    if (!string.IsNullOrEmpty(cab) && !string.IsNullOrEmpty(email))
+                    {                      
+                        CabUserDto cabUser = await _userService.SaveUser(email, cab);                        
+                        if(cabUser.CabId>0)                            
+                        HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
+                        return RedirectToAction("DraftApplications", "Home");
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Invalid email or cab.");
+                    }
                 }
                 else
                 {

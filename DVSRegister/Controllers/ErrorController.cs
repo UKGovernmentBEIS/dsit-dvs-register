@@ -49,5 +49,10 @@ namespace DVSRegister.Controllers
             return View("PageNotFound");
         }
 
+        [HttpGet("action-not-completed")]
+        public IActionResult ActionNotCompleted()
+        {
+            return View("ActionNotCompleted");
+        }
     }
 }

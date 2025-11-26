@@ -57,10 +57,11 @@ namespace DVSRegister.Data.CabRemovalRequest
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var service = await context.Service.Include(s => s.ServiceRemovalRequest).FirstOrDefaultAsync(s => s.Id == serviceId);
+                var service = await context.Service.Include(s => s.ServiceRemovalRequest).FirstOrDefaultAsync(s => s.Id == serviceId && s.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation);
 
-                if (service.ServiceRemovalRequest == null || service == null) { 
-                    genericResponse.Success = false; 
+                if (service == null ||service.ServiceRemovalRequest == null ) { 
+                    genericResponse.Success = false;
+                    genericResponse.ErrorType = ErrorTypeEnum.RequestAlreadyProcessed;
                     return genericResponse; 
                 }
 
@@ -86,7 +87,8 @@ namespace DVSRegister.Data.CabRemovalRequest
                     .Include(p => p.Services)
                     .FirstOrDefaultAsync(p => p.Id == providerProfileId);
 
-            return provider.Services.Where(s => s.Id != serviceId).All(s => s.IsInRegister == false);
+            if(provider == null) { return false; }
+            return provider.Services!.Where(s => s.Id != serviceId).All(s => s.IsInRegister == false);
         }
     }
 }

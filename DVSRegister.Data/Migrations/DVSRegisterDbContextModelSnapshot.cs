@@ -1096,14 +1096,17 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("EditProviderTokenStatus")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("HasParentCompany")
+                    b.Property<bool?>("HasParentCompany")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("HasRegistrationNumber")
+                    b.Property<bool?>("HasRegistrationNumber")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("IsInRegister")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("LinkToContactPage")
+                        .HasColumnType("text");
 
                     b.Property<DateTime?>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
@@ -1115,19 +1118,15 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PrimaryContactEmail")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PrimaryContactFullName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PrimaryContactJobTitle")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PrimaryContactTelephoneNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("ProviderStatus")
@@ -1137,7 +1136,6 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ProviderWebsiteAddress")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PublicContactEmail")
@@ -1160,23 +1158,18 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SecondaryContactEmail")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SecondaryContactFullName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SecondaryContactJobTitle")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SecondaryContactTelephoneNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("TradingName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -1227,6 +1220,12 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool?>("HasRegistrationNumber")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsCabRequested")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LinkToContactPage")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("ModifiedTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -1266,7 +1265,10 @@ namespace DVSRegister.Data.Migrations
                     b.Property<string>("RegisteredName")
                         .HasColumnType("text");
 
-                    b.Property<int>("RequestedUserId")
+                    b.Property<int?>("RequestedCabUserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RequestedUserId")
                         .HasColumnType("integer");
 
                     b.Property<string>("SecondaryContactEmail")
@@ -1288,6 +1290,8 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasIndex("ProviderProfileId")
                         .IsUnique();
+
+                    b.HasIndex("RequestedCabUserId");
 
                     b.HasIndex("RequestedUserId");
 
@@ -2436,7 +2440,7 @@ namespace DVSRegister.Data.Migrations
                         .HasForeignKey("PublicInterestCheckId");
 
                     b.HasOne("DVSRegister.Data.Entities.Service", "Service")
-                        .WithMany()
+                        .WithMany("ActionLogs")
                         .HasForeignKey("ServiceId");
 
                     b.HasOne("DVSRegister.Data.Entities.User", "UpdateApprovedUser")
@@ -2653,11 +2657,15 @@ namespace DVSRegister.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DVSRegister.Data.Entities.CabUser", "CabUser")
+                        .WithMany()
+                        .HasForeignKey("RequestedCabUserId");
+
                     b.HasOne("DVSRegister.Data.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("RequestedUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RequestedUserId");
+
+                    b.Navigation("CabUser");
 
                     b.Navigation("Provider");
 
@@ -3186,6 +3194,8 @@ namespace DVSRegister.Data.Migrations
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Service", b =>
                 {
+                    b.Navigation("ActionLogs");
+
                     b.Navigation("CabTransferRequest");
 
                     b.Navigation("CertificateReview");

@@ -14,6 +14,7 @@
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" Version="8.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Build" Version="18.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -46,13 +47,8 @@
     <Content Remove="wwwroot\css\utilities\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Views\CabTransfer\PartialViews\_PendingSubmissions.cshtml" />
+    <None Include="Views\CabProviderEdit\ProfileEditSummary.cshtml" />
+    <None Include="Views\CabProviderEdit\ProviderDifference.cshtml" />
     <None Include="Views\PartialViews\_ErrorSummaryView.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Update="Views\Cab\LandingPage.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
   </ItemGroup>
 </Project>

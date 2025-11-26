@@ -51,15 +51,15 @@ namespace DVSRegister.CommonUtility.Models
         public RemovalRequestCancelledToCab RemovalRequestCancelledToCab { get; set; }
         public RemovalRequestCancelledToDSIT RemovalRequestCancelledToDSIT { get; set; }
         public Service2iCheckDeclinedToDSIT Service2iCheckDeclinedToDSIT { get; set; }
-        public Service2iCheckApprovedToDSIT Service2iCheckApprovedToDSIT { get; set; }
-        public EditProviderAccepted EditProviderAccepted { get; set; }
-        public EditProviderDeclined EditProviderDeclined { get; set; }  
-        public EditServiceAccepted EditServiceAccepted { get; set; }
-        public EditServiceDeclined EditServiceDeclined { get; set; }       
+        public Service2iCheckApprovedToDSIT Service2iCheckApprovedToDSIT { get; set; }      
         public CabTransferConfirmationToCabA CabTransferConfirmationToCabA { get; set; }
         public CabTransferConfirmationToCabB CabTransferConfirmationToCabB { get; set; }
         public CabTransferCancellationToCabB CabTransferCancellationToCabB { get; set; }
         public CabTransferCancellationToDSIT CabTransferCancellationToDSIT { get; set; }
         public CabTransferConfirmationToDSIT CabTransferConfirmationToDSIT { get; set; }
+        public ProviderEditRequestSubmitted ProviderEditRequestSubmitted { get; set; }
+        public ProviderEditRequestReceived ProviderEditRequestReceived { get; set; }
+        public ContactUpdatesToDSIT ContactUpdatesToDSIT { get; set; }
+        public ContactUpdatesToCab ContactUpdatesToCab { get; set; }
     }
 }

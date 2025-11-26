@@ -69,11 +69,10 @@ namespace DVSRegister.Models.CAB
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
         [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
         public string? UnderPinningProviderName { get; set; }
-
         public SelectCabViewModel? SelectCabViewModel { get; set; }
-
         public DateTime? UnderPinningServiceExpiryDate { get; set; }
-
+        public bool? IsTFVersionChanged { get; set; }
+        public bool? IsReupload { get; set; }
 
         public void ResetInpuData()
         {

@@ -1,0 +1,32 @@
+@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.Extensions
+@using DVSRegister.CommonUtility.Models;
+@model ServiceDto
+@{
+    ViewData["Title"] = "Service version details";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <a href="@Url.Action("ProviderServiceDetails", "Cab", new { serviceKey = Model.ServiceKey })#previously-submitted" class="govuk-back-link govuk-!-margin-bottom-0">Back</a>
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <p class="govuk-body-l govuk-!-margin-bottom-0">
+                    Previous submissions
+                </p>
+                <h2 class="govuk-heading-xl govuk-!-margin-bottom-0">
+                    Service: @Model.ServiceName
+                </h2>
+                <p class="govuk-body-l govuk-!-margin-bottom-9">
+                    Registered provider: <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.ProviderProfileId })" class="govuk-link">@Model.Provider.RegisteredName</a>
+                </p>
+            </div>
+        </div>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml", Model)
+            </div>
+        </div>
+    </main>
+</div>

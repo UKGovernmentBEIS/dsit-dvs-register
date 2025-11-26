@@ -1,0 +1,134 @@
+﻿@using DVSRegister.CommonUtility
+@model DVSRegister.Models.CAB.ProviderChangesViewModel
+@{
+    ViewData["Title"] = "ProviderDifference";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ProfileEditSummary", "CabProviderEdit", new { providerId = Model?.CurrentProvider?.Id }, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">You are about to send a request to update information about this provider</h1>
+            </div>
+
+            <div class="govuk-grid-column-two-thirds">
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Provider’s registered name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model?.CurrentProvider?.RegisteredName
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Provider’s trading names
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Html.DisplayFor(model => model.CurrentProvider.TradingName)
+                        </dd>
+                    </div>
+                </dl>
+
+                @using (Html.BeginForm("SaveProviderDraft", "EditProvider", FormMethod.Post))
+                {
+                    @Html.HiddenFor(m => m.ChangedProvider.RegisteredName)
+                    @Html.HiddenFor(m => m.ChangedProvider.TradingName)
+                    @Html.HiddenFor(m => m.ChangedProvider.HasRegistrationNumber)
+                    @Html.HiddenFor(m => m.ChangedProvider.CompanyRegistrationNumber)
+                    @Html.HiddenFor(m => m.ChangedProvider.DUNSNumber)
+                    @Html.HiddenFor(m => m.ChangedProvider.HasParentCompany)
+                    @Html.HiddenFor(m => m.ChangedProvider.ParentCompanyRegisteredName)
+                    @Html.HiddenFor(m => m.ChangedProvider.ParentCompanyLocation)
+                    @Html.HiddenFor(m => m.ChangedProvider.PublicContactEmail)
+                    @Html.HiddenFor(m => m.ChangedProvider.ProviderTelephoneNumber)
+                    @Html.HiddenFor(m => m.ChangedProvider.ProviderWebsiteAddress)
+                    @Html.HiddenFor(m => m.ChangedProvider.LinkToContactPage)
+                    @Html.HiddenFor(m => m.ChangedProvider.ProviderProfileId)
+                    @Html.HiddenFor(m => m.ChangedProvider.PreviousProviderStatus)
+                    @Html.HiddenFor(m => m.DSITUserEmails)
+
+                    <table class="govuk-table govuk-!-margin-top-7">
+                        <caption class="govuk-table__caption govuk-table__caption--m">What information is changing</caption>
+                        <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                <th scope="col" class="govuk-table__header">Updated field</th>
+                                <th scope="col" class="govuk-table__header govuk-table__header">Previous information</th>
+                                <th scope="col" class="govuk-table__header govuk-table__header">New information</th>
+                            </tr>
+                        </thead>
+                        <tbody class="govuk-table__body">
+                            @foreach (var item in Model.PreviousDataKeyValuePair)
+                            {
+                                <tr class="govuk-table__row">
+                                    <th scope="row" class="govuk-table__header">@item.Key</th>
+                                    <td class="govuk-table__cell govuk-table__cell">
+                                        @foreach (var value in item.Value)
+                                        {
+                                            @value
+                                            ;
+                                            <br>
+                                        }
+                                    </td>
+                                    <td class="govuk-table__cell govuk-table__cell">
+                                        @foreach (var value in Model.CurrentDataKeyValuePair[item.Key])
+                                        {
+                                            @value
+                                            ;
+                                            <br>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <h2 class="govuk-heading-m govuk-!-margin-top-8">Who will receive the request</h2>
+                    <hr class="govuk-section-break govuk-section-break--s govuk-section-break--visible">
+                    <dl class="govuk-summary-list">
+                        @foreach (var email in Model.DSITUserEmails.Split(',').ToList())
+                        {
+                            <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Email address of <br /> DSIT user
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @email
+                                </dd>
+                            </div>
+                        }
+                    </dl>
+
+                    <h2 class="govuk-heading-m govuk-!-margin-top-8">What will happen next</h2>
+                    <p class="govuk-body">
+                        These users will be sent an email asking them to review the request to update
+                        information for this provider. Once they accept the update, the changes will
+                        automatically be made to the register.
+                    </p>
+
+
+                    <div class="govuk-warning-text">
+                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                        <strong class="govuk-warning-text__text">
+                            <span class="govuk-visually-hidden">Warning</span>
+                            Once you submit the update request, the action can't be undone.
+                        </strong>
+                    </div>
+
+
+
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button" data-module="govuk-button" name="action">
+                            Submit update request
+                        </button>
+                        <a href="@(Url.Action("ProfileEditSummary", "CabProviderEdit", new { providerId = Model?.CurrentProvider?.Id }))" class="govuk-button govuk-button--secondary" role="button">Cancel</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </main>
+</div>
+

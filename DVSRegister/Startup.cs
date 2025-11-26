@@ -4,6 +4,7 @@ using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.CabTransfer;
+using DVSRegister.BusinessLogic.Services.Edit;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.GoogleAnalytics;
@@ -13,6 +14,7 @@ using DVSRegister.Data;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.CabRemovalRequest;
 using DVSRegister.Data.CabTransfer;
+using DVSRegister.Data.Edit;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Data.TrustFramework;
 using DVSRegister.Middleware;
@@ -146,13 +148,17 @@ namespace DVSRegister
             services.AddScoped<ITrustFrameworkService, TrustFrameworkService>();          
             services.AddScoped<IActionLogService, ActionLogService>();
             services.AddScoped<IActionLogRepository, ActionLogRepository>();
+            services.AddScoped<IHomeService, HomeService>();
+            services.AddScoped<IHomeRepository, HomeRepository>();
+            services.AddScoped<IEditService, EditService>();
+            services.AddScoped<IEditRepository, EditRepository>();
             services.AddTransient<LoginEmailSender>();
             services.AddTransient<CabEmailSender>();
             services.AddTransient<Removal2iCheckEmailSender>();
             services.AddTransient<ConsentEmailSender>();
-            services.AddTransient<CabRemovalRequestEmailSender>();
-            services.AddTransient<Edit2iCheckEmailSender>();
+            services.AddTransient<CabRemovalRequestEmailSender>();       
             services.AddTransient<CabTransferEmailSender>();
+            services.AddTransient<ProviderEditEmailSender>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));

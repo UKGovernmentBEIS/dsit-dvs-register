@@ -4,6 +4,8 @@
     {
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
+        public string? Sort { get; set; }
+        public string? SortAction { get; set; }
         public string? SortBy { get; set; }
         public string? SearchText { get; set; }
         public List<int>? SelectedRoleIds { get; set; }

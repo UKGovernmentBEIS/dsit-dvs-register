@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DVSRegister.BusinessLogic.Automapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.Register;
@@ -82,6 +83,7 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.PublicInterestCheck, opt => opt.MapFrom(src => src.PublicInterestCheck))
             .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest))
             .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom<CreatedTimeResolver>())
+            .ForMember(dest => dest.NewOrResubmission, opt => opt.MapFrom<NewOrResubmissionResolver>())
             .ForMember(dest => dest.TrustFrameworkVersion, opt => opt.MapFrom(src => src.TrustFrameworkVersion));
 
             CreateMap<ServiceDto, Service>()
@@ -136,6 +138,10 @@ namespace DVSRegister.BusinessLogic
 
             CreateMap<ActionCategoryDto, ActionCategory>();
             CreateMap<ActionCategoryDto, ActionCategory>();
+
+            CreateMap<ProviderProfileDraft, ProviderProfileDraftDto>();
+            CreateMap<ProviderProfileDraftDto, ProviderProfileDraft>();
+
 
         }
     }

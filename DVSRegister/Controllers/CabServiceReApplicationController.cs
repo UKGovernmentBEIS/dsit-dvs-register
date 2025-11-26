@@ -28,7 +28,7 @@ namespace DVSRegister.Controllers
         }
         
         [HttpGet("before-new-certificate")]
-        public async Task<IActionResult> BeforeYouSubmitNewCertificate(int serviceKey, int providerProfileId, int currentServiceId)
+        public async Task<IActionResult> BeforeYouSubmitNewCertificate(int serviceKey, int providerProfileId, int currentServiceId, bool isReupload)
         {
 
             ViewBag.ServiceKey = serviceKey;
@@ -46,7 +46,8 @@ namespace DVSRegister.Controllers
                 ServiceDto serviceDto = await cabService.GetServiceDetails(currentServiceId,CabId);
                 SetServiceDataToSession(CabId, serviceDto);
                 ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
-                serviceSummary.IsResubmission = true;                 
+                serviceSummary.IsResubmission = true;    
+                serviceSummary.IsReupload = isReupload;
                 serviceSummary.CabId = cabUserDto.CabId;
                 serviceSummary.CabUserId = cabUserDto.Id;
                 serviceSummary.ServiceKey = serviceKey;

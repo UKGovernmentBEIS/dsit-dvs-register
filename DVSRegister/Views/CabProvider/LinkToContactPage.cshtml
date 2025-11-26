@@ -1,0 +1,55 @@
+﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+
+@{
+    ViewData["Title"] = "The digital identity and attribute service provider’s link to contact page";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+@{
+    bool hasError = false;
+}
+
+@using (Html.BeginForm("SaveLinkToContactPage", "CabProvider", FormMethod.Post))
+{
+
+    @Html.HiddenFor(m => m.SourcePage)
+    @Html.HiddenFor(m => m.RefererURL)
+    <div class="govuk-width-container">
+        <a href="@Model.RefererURL" class="govuk-back-link">
+            Back
+        </a>
+        <main id="main-content" class="govuk-main-wrapper" role="main">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s link to contact page</h1>
+                    <p class="govuk-body">You should ask the service provider to provide this information. The contact page you enter will be publicly displayed on the register of digital identity and attribute services.</p>
+                    
+                    @{
+                        var providerLinkToContactPageViewModel = new TextBoxViewModel
+                        {
+                            PropertyName = "LinkToContactPage",
+                            Label = "Public contact page (optional)",
+                            Value = Model?.LinkToContactPage ?? string.Empty,
+                            Class = "govuk-input",
+                            Hint = "For example, www.yourcompanyexpress.co.uk/contact-us",
+                            HasError = hasError,
+                            ErrorMessage = hasError ? Html.ViewData?.ModelState["LinkToContactPage"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
+                        };
+                    }
+
+
+                    @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", providerLinkToContactPageViewModel)
+
+
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="continue" data-module="govuk-button">Continue</button>
+                        @if (Model.IsInCompleteApplication)
+                        {
+                            <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft" data-module="govuk-button">  Save and complete later </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+}

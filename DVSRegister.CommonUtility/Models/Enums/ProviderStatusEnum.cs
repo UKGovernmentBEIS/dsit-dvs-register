@@ -20,13 +20,15 @@ namespace DVSRegister.CommonUtility.Models.Enums
         //[Description("Removal request sent")]
         //CabAwaitingRemovalConfirmation = 7,
         [Description("Updates requsted")]
-        UpdatesRequested = 8
+        UpdatesRequested = 8,
+        [Description("Saved as draft")]
+        SavedAsDraft = 9
         //[Description("Published, under reassignment")]
         //PublishedUnderReassign = 9,
         //[Description("Removed, under reassignment")]
         //RemovedUnderReassign = 10
 
-        
+
 
     }
 }

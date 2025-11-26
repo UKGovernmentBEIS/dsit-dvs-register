@@ -1,10 +1,10 @@
-﻿namespace DVSRegister.CommonUtility
+﻿namespace DVSRegister.CommonUtility.Models
 {
-    public class EditProviderAccepted
+    public class ProviderEditRequestSubmitted
     {
         public string Id { get; set; }
         public string RecipientName { get; set; }
-        public string CompanyName { get; set; }
+        public string ProviderName { get; set; }       
         public string PreviousData { get; set; }
         public string CurrentData { get; set; }
     }
