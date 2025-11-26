@@ -59,7 +59,7 @@ namespace DVSRegister.Controllers
             }
         }
 
-        [HttpGet("provider-will-be-removed")]
+        [HttpGet("provider-will-be-removed/{serviceId}")]
         public async Task<IActionResult> ProviderWillBeRemoved(int serviceId)
         {
             ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);
@@ -105,7 +105,7 @@ namespace DVSRegister.Controllers
             }
         }
 
-        [HttpGet("cancel-removal-request")]
+        [HttpGet("cancel-removal-request/{serviceId}")]
         public async Task<IActionResult> CancelRemovalRequest(int serviceId)
         {
             ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);

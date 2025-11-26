@@ -4,10 +4,10 @@
     {    
       
 
-        ProfileSummary = 1,
-        ProfileEditSummary = 2,
-        ProfileDetails = 3,
-        ProfileDraft = 4
+        profilesummary = 1,
+        profileeditsummary = 2,
+        profiledetails = 3,
+        profiledraft = 4
 
     }  
 

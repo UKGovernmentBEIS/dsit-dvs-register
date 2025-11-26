@@ -12,7 +12,7 @@ namespace DVSRegister.Controllers
     {
     
         private readonly ICabService cabService = cabService;
-        [HttpGet("service-details")]
+        [HttpGet("service-details/{serviceKey}/{fromOpenTasks?}")]
         public async Task<IActionResult> ProviderServiceDetails(int serviceKey, bool? fromOpenTasks)
         {
             HttpContext?.Session.Remove("ServiceSummary");
@@ -35,8 +35,7 @@ namespace DVSRegister.Controllers
                 currentServiceVersion.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)currentServiceVersion.ManualUnderPinningServiceId);
             }
 
-            if (currentServiceVersion.ServiceStatus != ServiceStatusEnum.SavedAsDraft &&
-                (serviceVersions.ServiceHistoryVersions.Any() || currentServiceVersion.ServiceStatus >= ServiceStatusEnum.Published))
+            if (currentServiceVersion.ServiceStatus != ServiceStatusEnum.SavedAsDraft)
             {
                 serviceVersions.CurrentServiceVersion.EnableResubmission = true;
             }
@@ -62,7 +61,7 @@ namespace DVSRegister.Controllers
             return View(serviceVersions);
         }
 
-        [HttpGet("service-version-details")]
+        [HttpGet("service-version-details/{serviceId}")]
         public async Task<IActionResult> ServiceVersionDetails(int serviceId)
         {
             if (!IsValidCabId(CabId))
