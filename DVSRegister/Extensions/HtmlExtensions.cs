@@ -83,9 +83,9 @@ namespace DVSRegister.Extensions
         public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview,PublicInterestCheckDto publicInterestCheck, ServiceStatusEnum serviceStatus, ServiceStatusEnum? previousServiceStatus, bool adminEditInProgress = false)
         {
             // Check for Certificate Review whilst public interest has not become complete
-            if (certificateReview != null && publicInterestCheck == null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received 
-             || (serviceStatus == ServiceStatusEnum.Resubmitted && certificateReview.CertificateReviewStatus!=CertificateReviewEnum.AmendmentsRequired && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Restored)
-             && (certificateReview.CertificateReviewStatus != CertificateReviewEnum.DeclinedByProvider && certificateReview.CertificateReviewStatus != CertificateReviewEnum.InvitationCancelled)))
+            if (certificateReview != null && publicInterestCheck == null && certificateReview.CertificateReviewStatus != CertificateReviewEnum.DeclinedByProvider && certificateReview.CertificateReviewStatus != CertificateReviewEnum.InvitationCancelled
+               && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Restored && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received 
+             || (serviceStatus == ServiceStatusEnum.Resubmitted && certificateReview.CertificateReviewStatus!=CertificateReviewEnum.AmendmentsRequired )))
             {
                 return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
             }

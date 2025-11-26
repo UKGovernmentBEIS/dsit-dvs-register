@@ -35,8 +35,7 @@ namespace DVSRegister.Controllers
                 currentServiceVersion.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)currentServiceVersion.ManualUnderPinningServiceId);
             }
 
-            if (currentServiceVersion.ServiceStatus != ServiceStatusEnum.SavedAsDraft &&
-                (serviceVersions.ServiceHistoryVersions.Any() || currentServiceVersion.ServiceStatus >= ServiceStatusEnum.Published))
+            if (currentServiceVersion.ServiceStatus != ServiceStatusEnum.SavedAsDraft)
             {
                 serviceVersions.CurrentServiceVersion.EnableResubmission = true;
             }
