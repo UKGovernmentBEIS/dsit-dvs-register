@@ -125,12 +125,12 @@ namespace DVSRegister.Data.CAB
              .Include(p => p.TrustFrameworkVersion)
              .Include(p => p.CertificateReview)
              .Include(p => p.PublicInterestCheck)
+              .Include(p => p.CabTransferRequest)!.ThenInclude(x => x.RequestManagement)
              .Include(p => p.Provider)
              .Include(p => p.UnderPinningService).ThenInclude(p=>p.Provider)          
              .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
              .Include(p => p.ManualUnderPinningService) .ThenInclude(ms => ms.Cab)
-            .Include(p => p.ServiceRoleMapping)!            
-            .ThenInclude(s => s.Role);
+            .Include(p => p.ServiceRoleMapping)!.ThenInclude(s => s.Role);
 
 
             IQueryable<Service> queryWithOptionalIncludes = baseQuery;

@@ -1,6 +1,7 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models.CAB.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,6 +30,11 @@ namespace DVSRegister.Controllers
             serviceVersions.ProviderProfileId = currentServiceVersion.ProviderProfileId;
             serviceVersions.Provider = currentServiceVersion.Provider;
             ViewBag.FromOpenTasks = fromOpenTasks;
+            var latestCabTransferRequest = currentServiceVersion?.CabTransferRequest?.OrderByDescending(c => c.Id).FirstOrDefault();
+            currentServiceVersion.CertificateUploadRequired = latestCabTransferRequest != null && latestCabTransferRequest.RequestManagement != null
+                       && latestCabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
+                       && latestCabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
+                       && latestCabTransferRequest.CertificateUploaded == false;
 
             if (currentServiceVersion.ManualUnderPinningServiceId != null)
             {
