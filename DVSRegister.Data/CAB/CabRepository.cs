@@ -342,16 +342,18 @@ namespace DVSRegister.Data.CAB
          
             try
             {
-                var existingService = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)
-               .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping).Include(x=>x.ServiceSupSchemeMapping)
-               .Include(x=>x.ManualUnderPinningService)
+                var existingService = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)!
+                .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x=>x.SchemeGPG44Mapping)
+                .Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG45Mapping)
+                .Include(x=>x.ManualUnderPinningService)
                 .Include(s => s.PublicInterestCheck)!
                 .Include(s => s.CertificateReview)!
                 .Include(s => s.ServiceDraft)!
                 .Include(s => s.ServiceRemovalRequest)!
                 .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
                 .Include(s => s.ActionLogs)
-               .Where(x => x.ServiceKey == service.ServiceKey && x.IsCurrent == true).FirstOrDefaultAsync();
+                 .Include(s => s.ProceedApplicationConsentToken)
+                .Where(x => x.ServiceKey == service.ServiceKey && x.IsCurrent == true).FirstOrDefaultAsync();
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {                    
 
@@ -369,28 +371,22 @@ namespace DVSRegister.Data.CAB
                         {                            
                             var certificateReview = existingService.CertificateReview.FirstOrDefault(cr => cr.IsLatestReviewVersion);
                             var publicInterestCheck = existingService.PublicInterestCheck.FirstOrDefault(pic => pic.IsLatestReviewVersion);
-                            var transferRequest = existingService.CabTransferRequest.OrderByDescending(c => c.Id).FirstOrDefault();                            
+                            var transferRequest = existingService.CabTransferRequest!.OrderByDescending(c => c.Id).FirstOrDefault();
+                            if (certificateReview == null )                                                               
+                                {
+                                    // delete service if it has not started PI check or has been sent back to cab - submitted/resubmitted
+                                    context.Remove(existingService);
+                                    existingServiceRemoved = true;
+                                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+                                }
+                                else if (certificateReview != null && publicInterestCheck == null && (certificateReview.CertificateReviewStatus != CertificateReviewEnum.Rejected))
+                                {
 
-                            
-                                if (certificateReview == null || existingService.ServiceStatus == ServiceStatusEnum.AmendmentsRequired)                                                               
-                                {
-                                    // delete service if it has not started PI check or has been sent back to cab
                                     context.Remove(existingService);
                                     existingServiceRemoved = true;
                                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
-                                }     
-                                else if(certificateReview != null && (certificateReview.CertificateReviewStatus == CertificateReviewEnum.InvitationCancelled 
-                                || certificateReview.CertificateReviewStatus == CertificateReviewEnum.DeclinedByProvider
-                                   || certificateReview.CertificateReviewStatus == CertificateReviewEnum.Restored))
-                                {
-                                    
-                                    context.Remove(existingService);
-                                    existingServiceRemoved = true;
-                                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
-                                 }
-                                else if (certificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved && 
-                                    (publicInterestCheck == null 
-                                    || publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed && publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckPassed))
+                                }
+                            else if (publicInterestCheck == null || publicInterestCheck.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed )
                                 {
                                     // delete in progress application if pi check is not complete and cert review was approved
                                     // But we must keep the record if it failed or PI check was rejected
