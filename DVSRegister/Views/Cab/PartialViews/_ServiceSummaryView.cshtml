@@ -556,9 +556,9 @@
                     </dt>
                     <dd class="govuk-summary-list__value">
 
-                        @Model.UnderPinningServiceName
+                            @(Model.UnderPinningServiceName ?? "Incomplete")
 
-                    </dd>
+                        </dd>
                         @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
@@ -572,7 +572,7 @@
                         Service provider
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @Model.UnderPinningProviderName ?? "Incomplete"
+                        @(Model.UnderPinningProviderName ?? "Incomplete")
                     </dd>
 
                         @if (isFieldEditable || isManualUnderPinningService)
@@ -589,7 +589,7 @@
                         CAB of underpinning service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                            @Model?.SelectCabViewModel?.SelectedCabName ?? "Incomplete"
+                            @(Model?.SelectCabViewModel?.SelectedCabName ?? "Incomplete")
                     </dd>
                         @if (isFieldEditable || isManualUnderPinningService)
                     {

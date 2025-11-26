@@ -1213,8 +1213,9 @@ namespace DVSRegister.Controllers
                     return await SaveAsDraftAndRedirect(serviceSummary);
 
                 case "amend":
-                     return serviceSummary.IsTFVersionChanged.GetValueOrDefault() ? routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues) :
-                    RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    return fromSummaryPage ? RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment")
+                        : routeValues == null ? RedirectToAction(nextPage, controller)
+                        : RedirectToAction(nextPage, controller, routeValues);
 
                 default:
                     throw new ArgumentException("Invalid action parameter");
