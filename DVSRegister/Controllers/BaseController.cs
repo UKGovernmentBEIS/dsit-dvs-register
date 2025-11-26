@@ -81,7 +81,7 @@ namespace DVSRegister.Controllers
         }
 
 
-        protected void SetServiceDataToSession(int cabId, ServiceDto serviceDto)
+        protected void SetServiceDataToSession(int cabId, ServiceDto serviceDto, bool isAmendment = false)
         {
             TFVersionViewModel TFVersionViewModel = new()
             {
@@ -239,7 +239,7 @@ namespace DVSRegister.Controllers
                 ServiceKey = serviceDto.ServiceKey,
                 IsDraft = serviceDto.ServiceStatus == ServiceStatusEnum.SavedAsDraft,
                 IsResubmission = serviceDto.ServiceVersion >=1, // if there are previous versions , it means a resubmission
-                IsAmendment = serviceDto.ServiceStatus == ServiceStatusEnum.AmendmentsRequired,
+                IsAmendment = isAmendment,
                 ServiceStatus = serviceDto.ServiceStatus,
                 CreatedDate = serviceDto.CreatedTime
             };
