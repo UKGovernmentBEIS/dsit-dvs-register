@@ -121,7 +121,8 @@ namespace DVSRegister.Data.CAB
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
-             .Include(p => p.Provider)   
+             .Include(p => p.Provider)
+              .Include(p => p.ServiceDraft)
              .Include(p => p.TrustFrameworkVersion)
              .Include(p => p.CertificateReview)
              .Include(p => p.PublicInterestCheck)

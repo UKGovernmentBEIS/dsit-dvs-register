@@ -84,13 +84,14 @@ namespace DVSRegister.Extensions
         {
             // Check for Certificate Review whilst public interest has not become complete
             if (certificateReview != null && publicInterestCheck == null && certificateReview.CertificateReviewStatus != CertificateReviewEnum.DeclinedByProvider && certificateReview.CertificateReviewStatus != CertificateReviewEnum.InvitationCancelled
-               && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Restored && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received 
+               && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Restored && 
+                (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received ||   serviceStatus == ServiceStatusEnum.UpdatesRequested
              || (serviceStatus == ServiceStatusEnum.Resubmitted && certificateReview.CertificateReviewStatus!=CertificateReviewEnum.AmendmentsRequired )))
             {
                 return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
             }
             // Check for publicInterestCheck whilst service is not ready to publish
-            else if (publicInterestCheck != null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received || serviceStatus== ServiceStatusEnum.Resubmitted))
+            else if (publicInterestCheck != null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received || serviceStatus== ServiceStatusEnum.Resubmitted || serviceStatus == ServiceStatusEnum.UpdatesRequested))
             {
                 if ( publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckFailed
                      || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckPassed
@@ -98,7 +99,11 @@ namespace DVSRegister.Extensions
                 {
                     return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
                 }
-                else
+                else if(publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PublicInterestCheckPassed)
+                {
+                    return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Published);
+                }
+                else 
                 {
                     return HtmlExtensions.ToStyledStrongTag(publicInterestCheck.PublicInterestCheckStatus); // passed or failed
                 }
@@ -107,11 +112,7 @@ namespace DVSRegister.Extensions
             else if (previousServiceStatus > 0 && serviceStatus == ServiceStatusEnum.UpdatesRequested)
             {
                 return HtmlExtensions.ToStyledStrongTag((ServiceStatusEnum)previousServiceStatus);               
-            }
-            else if (serviceStatus == ServiceStatusEnum.UpdatesRequested && !adminEditInProgress)
-            {
-                return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Published);
-            }
+            }           
             // Default to displaying the actual ServiceStatus
             return HtmlExtensions.ToStyledStrongTag(serviceStatus);
         }
