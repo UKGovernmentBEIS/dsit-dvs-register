@@ -863,10 +863,31 @@ namespace DVSRegister.Controllers
 
             if (ModelState.IsValid)
             {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleAmendActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, false, "SchemeGPG44Input", "TrustFramework0_4",
-                new { schemeId = identityProfileViewModel.SchemeId });
-
+                if(summaryViewModel.HasGPG44 == false)
+                {
+                    SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = new();
+                    schemeQualityLevelMappingViewModel.HasGPG44 = false;
+                    schemeQualityLevelMappingViewModel.SchemeId = identityProfileViewModel.SchemeId;
+                    schemeQualityLevelMappingViewModel.RefererURL = identityProfileViewModel.RefererURL;
+                    summaryViewModel?.SchemeQualityLevelMapping?.Add(schemeQualityLevelMappingViewModel);
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    bool hasRemainingSchemes = HasRemainingSchemes(identityProfileViewModel.SchemeId);
+                    var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");
+                    if (hasRemainingSchemes)
+                    {
+                        return await HandleAmendActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, false, "SchemeGPG45", "TrustFramework0_4", new { schemeId = selectedSchemeIds[0] });
+                    }
+                    else
+                    {
+                        return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, summaryViewModel.IsSchemeEditedFromSummary ? "ServiceSummary" : "CertificateUploadPage", "CabService");
+                    }
+                }
+                else
+                {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return await HandleAmendActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, false, "SchemeGPG44Input", "TrustFramework0_4",
+                    new { schemeId = identityProfileViewModel.SchemeId });
+                }
             }
             else
             {
@@ -1130,7 +1151,7 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(schemeQualityLevelMappingViewModel.HasGPG44))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("SchemeGPG44", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage, schemeId = schemeId });
+                        return RedirectToAction("SchemeGPG44", new {  fromSummaryPage, fromDetailsPage, schemeId });
                     }
                     else
                     {
@@ -1156,7 +1177,7 @@ namespace DVSRegister.Controllers
                     if (Convert.ToBoolean(schemeQualityLevelMappingViewModel.HasGPG44))
                     {
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("SchemeGPG44", new { fromSummaryPage = fromSummaryPage, fromDetailsPage = fromDetailsPage, schemeId = schemeId });
+                        return RedirectToAction("SchemeGPG44", new {fromSummaryPage, fromDetailsPage, schemeId });
                     }
                     else
                     {
