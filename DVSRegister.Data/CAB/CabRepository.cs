@@ -358,80 +358,22 @@ namespace DVSRegister.Data.CAB
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
 
-                    if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                    if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft) //Resumisng save
                     {
-                        // reapplication - save as draft
                         UpdateExistingServiceRecord(service, existingService);
+                        if(inProgressApplicationParameters!=null)
+                        await RemoveInprogressApplications(loggedInUserEmail, inProgressApplicationParameters, existingService, service);
                         genericResponse.InstanceId = existingService.ServiceKey;
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
                     }
-                    else
+                    else // First time save
                     {
 
-                        if (!isReupload && existingService.ServiceStatus != ServiceStatusEnum.Published && existingService.ServiceStatus != ServiceStatusEnum.Removed && inProgressApplicationParameters != null)
+                        if (!isReupload && existingService.ServiceStatus != ServiceStatusEnum.Published && existingService.ServiceStatus != ServiceStatusEnum.Removed && service.ServiceStatus != ServiceStatusEnum.SavedAsDraft
+
+                            && inProgressApplicationParameters != null)
                         {
-
-                            if ((inProgressApplicationParameters.HasInProgressApplication && inProgressApplicationParameters.InProgressApplicationId == existingService.Id)
-                                || (inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested && inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequestedId == existingService.Id))
-                            {
-                                context.Remove(existingService);
-                                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
-                            }
-
-
-                            if (inProgressApplicationParameters.HasActiveRemovalRequest && inProgressApplicationParameters.InProgressRemovalRequestServiceId > 0)
-                            {
-                                var removalService = await context.Service
-                               .Include(s => s.ServiceRemovalRequest)!.Where(x => x.Id == inProgressApplicationParameters.InProgressRemovalRequestServiceId).FirstOrDefaultAsync();
-                                removalService.ServiceStatus = removalService.ServiceRemovalRequest.PreviousServiceStatus;
-                                context.Remove(removalService.ServiceRemovalRequest);
-                                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
-                            }
-
-                            if (inProgressApplicationParameters.HasActiveReassignmentRequest && inProgressApplicationParameters.InProgressReassignmentRequestServiceId > 0)
-                            {
-                                var reassignmentService = await context.Service
-                                .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
-                                .Where(x => x.Id == inProgressApplicationParameters.InProgressReassignmentRequestServiceId).FirstOrDefaultAsync();
-
-                                if (reassignmentService != null)
-                                {
-                                    var transferRequest = reassignmentService.CabTransferRequest!.OrderByDescending(c => c.Id).FirstOrDefault();
-                                    var request = transferRequest.RequestManagement;
-                                    reassignmentService.ServiceStatus = transferRequest.PreviousServiceStatus;
-                                    context.Remove(transferRequest);
-                                    context.Remove(request);
-                                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
-
-
-                                }
-
-                            }
-
-                            if (inProgressApplicationParameters.HasActiveUpdateRequest && inProgressApplicationParameters.InProgressUpdateRequestServiceIds != null && inProgressApplicationParameters.InProgressUpdateRequestServiceIds.Count > 0)
-                            {
-                                foreach (var serviceId in inProgressApplicationParameters.InProgressUpdateRequestServiceIds)
-                                {
-                                    if (serviceId != inProgressApplicationParameters.InProgressApplicationId)// if not already removed in first condition
-                                    {
-                                        var updateRequestService = await context.Service
-                                         .Include(s => s.ServiceDraft)!
-                                         .Where(x => x.Id == serviceId).FirstOrDefaultAsync();
-
-                                        if (updateRequestService != null)
-                                        {
-
-                                            updateRequestService.ServiceStatus = updateRequestService.ServiceDraft.PreviousServiceStatus;
-                                            context.Remove(updateRequestService.ServiceDraft);
-
-                                        }
-                                    }
-                                }
-
-                                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
-                            }
-
-
+                            await RemoveInprogressApplications(loggedInUserEmail, inProgressApplicationParameters, existingService);
 
                         }
                         else if (isReupload)
@@ -474,7 +416,7 @@ namespace DVSRegister.Data.CAB
                         var entity = await context.Service.AddAsync(service);
 
 
-                        if (inProgressApplicationParameters?.HasInProgressApplication != true)
+                        if (inProgressApplicationParameters?.HasInProgressApplication != true || service.ServiceStatus == ServiceStatusEnum.SavedAsDraft )
                         {
                             existingService.IsCurrent = false;
                             existingService.ModifiedTime = DateTime.UtcNow;
@@ -505,6 +447,7 @@ namespace DVSRegister.Data.CAB
             return genericResponse;
         }
 
+     
 
         public async Task<GenericResponse> SaveServiceAmendments(Service service, string loggedInUserEmail)
         {
@@ -551,13 +494,95 @@ namespace DVSRegister.Data.CAB
 
 
 
-    
+
         #endregion
 
 
         #region private methods
 
+        private async Task RemoveInprogressApplications(string loggedInUserEmail, InProgressApplicationParameters? inProgressApplicationParameters, Service? existingService, Service? newService = null)
+        {
+            if (inProgressApplicationParameters == null) return;
 
+            if (inProgressApplicationParameters.HasInProgressApplication && inProgressApplicationParameters.InProgressApplicationId == existingService?.Id)
+            {
+                context.Remove(existingService);
+                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+            }
+
+            else if (inProgressApplicationParameters.HasInProgressApplication && inProgressApplicationParameters.InProgressApplicationId != existingService?.Id
+                && newService?.ServiceStatus != ServiceStatusEnum.SavedAsDraft && newService != null)
+            {
+                var inprogressServiceBeforeDraft = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)!
+                .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG44Mapping)
+                .Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG45Mapping)
+                .Include(x => x.ManualUnderPinningService)
+                .Include(s => s.PublicInterestCheck)!
+                .Include(s => s.CertificateReview)!
+                .Include(s => s.ServiceDraft)!
+                .Include(s => s.ServiceRemovalRequest)!
+                .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
+                .Include(s => s.ActionLogs)
+                 .Include(s => s.ProceedApplicationConsentToken)
+                .Where(x => x.Id == inProgressApplicationParameters.InProgressApplicationId).FirstOrDefaultAsync();
+                context.Remove(inprogressServiceBeforeDraft);
+                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+            }
+
+
+
+            if (inProgressApplicationParameters.HasActiveRemovalRequest && inProgressApplicationParameters.InProgressRemovalRequestServiceId > 0)
+            {
+                var removalService = await context.Service
+               .Include(s => s.ServiceRemovalRequest)!.Where(x => x.Id == inProgressApplicationParameters.InProgressRemovalRequestServiceId).FirstOrDefaultAsync();
+                removalService.ServiceStatus = removalService.ServiceRemovalRequest.PreviousServiceStatus;
+                context.Remove(removalService.ServiceRemovalRequest);
+                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+            }
+
+            if (inProgressApplicationParameters.HasActiveReassignmentRequest && inProgressApplicationParameters.InProgressReassignmentRequestServiceId > 0)
+            {
+                var reassignmentService = await context.Service
+                .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
+                .Where(x => x.Id == inProgressApplicationParameters.InProgressReassignmentRequestServiceId).FirstOrDefaultAsync();
+
+                if (reassignmentService != null)
+                {
+                    var transferRequest = reassignmentService.CabTransferRequest!.OrderByDescending(c => c.Id).FirstOrDefault();
+                    var request = transferRequest.RequestManagement;
+                    reassignmentService.ServiceStatus = transferRequest.PreviousServiceStatus;
+                    context.Remove(transferRequest);
+                    context.Remove(request);
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+
+
+                }
+
+            }
+
+            if (inProgressApplicationParameters.HasActiveUpdateRequest && inProgressApplicationParameters.InProgressUpdateRequestServiceIds != null && inProgressApplicationParameters.InProgressUpdateRequestServiceIds.Count > 0)
+            {
+                foreach (var serviceId in inProgressApplicationParameters.InProgressUpdateRequestServiceIds)
+                {
+                    if (serviceId != inProgressApplicationParameters.InProgressApplicationId)// if not already removed in first condition
+                    {
+                        var updateRequestService = await context.Service
+                         .Include(s => s.ServiceDraft)!
+                         .Where(x => x.Id == serviceId).FirstOrDefaultAsync();
+
+                        if (updateRequestService != null)
+                        {
+
+                            updateRequestService.ServiceStatus = updateRequestService.ServiceDraft.PreviousServiceStatus;
+                            context.Remove(updateRequestService.ServiceDraft);
+
+                        }
+                    }
+                }
+
+                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+            }
+        }
         private void UpdateExistingServiceRecord(Service service, Service? existingService)
         {
             existingService.TrustFrameworkVersionId = service.TrustFrameworkVersionId;

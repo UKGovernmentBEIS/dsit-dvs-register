@@ -284,58 +284,70 @@ namespace DVSRegister.Models
             return providerDto;
         }
 
-        public static void AssignInProgressApplicationParameters( List<ServiceDto>? serviceList, ServiceSummaryViewModel serviceSummary)
+      
+        public static InProgressApplicationParameters GetInProgressApplicationParameters(List<ServiceDto>? serviceList)
         {
-            if (serviceSummary.InProgressApplicationParameters != null && serviceList!= null)
-            {               
-                ServiceDto inprogressService= serviceList.Where(x=> x.IsCurrent == true &&
+
+            if (serviceList!= null && serviceList.Count > 0)
+            {
+
+
+                InProgressApplicationParameters inProgressApplicationParameters = new();
+                ServiceDto inprogressService = serviceList.Where(x => 
                 (x.ServiceStatus == ServiceStatusEnum.Submitted || x.ServiceStatus == ServiceStatusEnum.Received ||
                 x.ServiceStatus == ServiceStatusEnum.Resubmitted || x.ServiceStatus == ServiceStatusEnum.AmendmentsRequired) &&
                 x.CertificateReview.Where(x => x.IsLatestReviewVersion).SingleOrDefault()?.CertificateReviewStatus != CertificateReviewEnum.Rejected &&
-                x.PublicInterestCheck.Where(x => x.IsLatestReviewVersion).SingleOrDefault()?.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed).FirstOrDefault()??new();
-                serviceSummary.InProgressApplicationParameters.InProgressApplicationId = inprogressService.Id;
-                serviceSummary.InProgressApplicationParameters.HasInProgressApplication = serviceSummary.InProgressApplicationParameters.InProgressApplicationId > 0;
+                x.PublicInterestCheck.Where(x => x.IsLatestReviewVersion).SingleOrDefault()?.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed).FirstOrDefault() ?? new();
+                inProgressApplicationParameters.InProgressApplicationId = inprogressService.Id;
+                inProgressApplicationParameters.HasInProgressApplication = inProgressApplicationParameters.InProgressApplicationId > 0;
 
                 ServiceDto reassginmentRequestService = serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign || x.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign).FirstOrDefault() ?? null!;
                 if (reassginmentRequestService != null && reassginmentRequestService.Id > 0)
                 {
-                    serviceSummary.InProgressApplicationParameters.HasActiveReassignmentRequest = true;
-                    serviceSummary.InProgressApplicationParameters.InProgressReassignmentRequestServiceId = reassginmentRequestService.Id;
+                    inProgressApplicationParameters.HasActiveReassignmentRequest = true;
+                    inProgressApplicationParameters.InProgressReassignmentRequestServiceId = reassginmentRequestService.Id;
                 }
 
                 ServiceDto removalrequestService = serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation || x.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation).FirstOrDefault() ?? null!;
                 if (removalrequestService != null && removalrequestService.Id > 0)
                 {
-                    serviceSummary.InProgressApplicationParameters.HasActiveRemovalRequest = true;
-                    serviceSummary.InProgressApplicationParameters.InProgressRemovalRequestServiceId = removalrequestService.Id;
+                    inProgressApplicationParameters.HasActiveRemovalRequest = true;
+                    inProgressApplicationParameters.InProgressRemovalRequestServiceId = removalrequestService.Id;
                 }
 
 
                 ServiceDto latestVersionService = serviceList?.Where(x => x.IsCurrent == true).FirstOrDefault();
-                serviceSummary.InProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested = latestVersionService.ServiceStatus == ServiceStatusEnum.UpdatesRequested &&
-                latestVersionService.serviceDraft.PreviousServiceStatus != ServiceStatusEnum.Published && (latestVersionService?.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.Submitted
+                inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested = latestVersionService.ServiceStatus == ServiceStatusEnum.UpdatesRequested &&
+                latestVersionService?.serviceDraft?.PreviousServiceStatus != ServiceStatusEnum.Published && (latestVersionService?.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.Submitted
                 || latestVersionService?.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.Received ||
-                latestVersionService.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.Resubmitted ||
-                latestVersionService.serviceDraft.PreviousServiceStatus == ServiceStatusEnum.AmendmentsRequired);
-                serviceSummary.InProgressApplicationParameters.LatestVersionInProgressAndUpdateRequestedId = latestVersionService.Id;
+                latestVersionService?.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.Resubmitted ||
+                latestVersionService?.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.AmendmentsRequired);
+                inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequestedId = latestVersionService.Id;
 
 
 
-                List <ServiceDto> updateRequestServices = serviceSummary.InProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested ? 
-                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested && x.IsCurrent == false).ToList() ?? null!:
-                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested ).ToList() ?? null!;
+                List<ServiceDto> updateRequestServices = inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested ?
+                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested && x.IsCurrent == false).ToList() ?? null! :
+                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested).ToList() ?? null!;
                 if (updateRequestServices != null && updateRequestServices.Count > 0)
                 {
-                    serviceSummary.InProgressApplicationParameters.HasActiveUpdateRequest = true;
-                    serviceSummary.InProgressApplicationParameters.InProgressUpdateRequestServiceIds = [];
+                    inProgressApplicationParameters.HasActiveUpdateRequest = true;
+                    inProgressApplicationParameters.InProgressUpdateRequestServiceIds = [];
                     foreach (var service in updateRequestServices)
                     {
-                        serviceSummary.InProgressApplicationParameters.InProgressUpdateRequestServiceIds.Add(service.Id);
+                        inProgressApplicationParameters.InProgressUpdateRequestServiceIds.Add(service.Id);
                     }
 
                 }
+
+                return inProgressApplicationParameters;
+
             }
-            
+            else
+            {
+                return null!;
+            }
+
         }
 
 

@@ -74,6 +74,6 @@ namespace DVSRegister.Models.CAB
         public bool? IsTFVersionChanged { get; set; }
         public bool? IsReupload { get; set; }
 
-        public InProgressApplicationParameters? InProgressApplicationParameters { get; set; }
+       
     }
 }

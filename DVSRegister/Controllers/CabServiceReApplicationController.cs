@@ -3,6 +3,7 @@ using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
@@ -63,14 +64,14 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> ContinueSubmission()
         {
             ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
-            serviceSummary.InProgressApplicationParameters = new();
+        
             var serviceList = await cabService.GetServiceList(serviceSummary.ServiceKey, CabId);
             if(serviceSummary.IsReupload == null || serviceSummary.IsReupload == false)
             {
-                ViewModelHelper.AssignInProgressApplicationParameters(serviceList, serviceSummary);
-                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                if (serviceSummary.InProgressApplicationParameters.HasInProgressApplication || serviceSummary.InProgressApplicationParameters.HasActiveReassignmentRequest
-                 || serviceSummary.InProgressApplicationParameters.HasActiveRemovalRequest || serviceSummary.InProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested)
+                  InProgressApplicationParameters inProgressApplicationParameters =   ViewModelHelper.GetInProgressApplicationParameters(serviceList);
+          
+                if (inProgressApplicationParameters.HasInProgressApplication || inProgressApplicationParameters.HasActiveReassignmentRequest
+                 || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested)
                 {
                     return RedirectToAction("StartInProgressApplicationRemoval");
 
