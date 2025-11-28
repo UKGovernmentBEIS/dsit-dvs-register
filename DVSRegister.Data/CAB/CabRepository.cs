@@ -525,8 +525,14 @@ namespace DVSRegister.Data.CAB
                 .Include(s => s.ActionLogs)
                  .Include(s => s.ProceedApplicationConsentToken)
                 .Where(x => x.Id == inProgressApplicationParameters.InProgressApplicationId).FirstOrDefaultAsync();
-                context.Remove(inprogressServiceBeforeDraft);
-                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+
+                if(inprogressServiceBeforeDraft!=null)
+                {
+                    context.Remove(inprogressServiceBeforeDraft);
+                    existingService.ServiceVersion = existingService.ServiceVersion - 1; // as previous service is removed, decrese version by 1
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+                }
+              
             }
 
 
