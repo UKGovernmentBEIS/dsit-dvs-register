@@ -5,6 +5,7 @@ using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
+using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,9 +31,7 @@ namespace DVSRegister.Controllers
         [HttpGet("before-new-certificate")]
         public async Task<IActionResult> BeforeYouSubmitNewCertificate(int serviceKey, int providerProfileId, int currentServiceId, bool isReupload)
         {
-
-            ViewBag.ServiceKey = serviceKey;
-            ViewBag.ProviderProfileId = providerProfileId;        
+            ViewBag.serviceKey = serviceKey;    
             CabUserDto cabUserDto = await userService.GetUser(UserEmail);
             
             if(!IsValidCabId(CabId))
@@ -42,16 +41,16 @@ namespace DVSRegister.Controllers
             bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
             if (isValid)
             {
-               
-                ServiceDto serviceDto = await cabService.GetServiceDetails(currentServiceId,CabId);
-                SetServiceDataToSession(CabId, serviceDto);
+
+                ServiceDto currentServiceVersion = await cabService.GetServiceDetails(currentServiceId, CabId);              
+                SetServiceDataToSession(CabId, currentServiceVersion);
                 ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
-                serviceSummary.IsResubmission = true;    
+                serviceSummary.IsResubmission = true;
                 serviceSummary.IsReupload = isReupload;
                 serviceSummary.CabId = cabUserDto.CabId;
                 serviceSummary.CabUserId = cabUserDto.Id;
                 serviceSummary.ServiceKey = serviceKey;
-                serviceSummary.ProviderProfileId = providerProfileId;            
+                serviceSummary.ProviderProfileId = providerProfileId;
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
                 return View();
             }
@@ -60,6 +59,47 @@ namespace DVSRegister.Controllers
                 throw new ArgumentException("Invalid providerProfileId.");
             }
         }
+        [HttpPost("before-new-certificate")]
+        public async Task<IActionResult> ContinueSubmission()
+        {
+            ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
+            serviceSummary.InProgressApplicationParameters = new();
+            var serviceList = await cabService.GetServiceList(serviceSummary.ServiceKey, CabId);
+            if(serviceSummary.IsReupload == null || serviceSummary.IsReupload == false)
+            {
+                ViewModelHelper.AssignInProgressApplicationParameters(serviceList, serviceSummary);
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+                if (serviceSummary.InProgressApplicationParameters.HasInProgressApplication || serviceSummary.InProgressApplicationParameters.HasActiveReassignmentRequest
+                 || serviceSummary.InProgressApplicationParameters.HasActiveRemovalRequest || serviceSummary.InProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested)
+                {
+                    return RedirectToAction("StartInProgressApplicationRemoval");
+
+                }
+                else
+                {
+                    return RedirectToAction("SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { providerProfileId = serviceSummary.ProviderProfileId });
+                }
+            }
+            else
+            {
+                return RedirectToAction("SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { providerProfileId = serviceSummary.ProviderProfileId });
+            }
+            
+          
+        }
+
+
+        [HttpGet("in-progress-application-removal-start")]
+        public IActionResult StartInProgressApplicationRemoval()
+        {
+            ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
+            ViewBag.ServiceKey = serviceSummary.ServiceKey;
+            ViewBag.ProviderProfileId = serviceSummary.ProviderProfileId;
+            ViewBag.ServiceId = serviceSummary.ServiceId;
+            return View();
+        }
+
+   
 
 
         #region Private method

@@ -1,0 +1,37 @@
+﻿
+@{
+    ViewData["Title"] = "You are about to start a submission for a service that has an application already in progress";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "BeforeYouSubmitNewCertificate", "CabServiceReApplication", new { serviceKey = ViewBag.ServiceKey, providerProfileId = ViewBag.ProviderProfileId, currentServiceId = ViewBag.ServiceId }, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
+
+                <p class="govuk-body">
+                    The service you are creating a submission for currently has an application in
+                    progress or is currently under reassignment or removal.
+                </p>
+              
+
+                <p class="govuk-body">
+                    If you submit this submission, the application that is currently in progress will
+                    be deleted and replaced by this submission. If it is under reassignment or
+                    removal, the request will be cancelled.
+                </p>
+
+                <p class="govuk-body">
+                    Select ‘Continue’ if you wish to start a submission.
+                </p>
+
+
+                <p class="govuk-body">@Html.ActionLink("Continue", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { providerProfileId = ViewBag.ProviderProfileId }, new { @class = "govuk-button" })</p>
+
+            </div>
+        </div>
+    </main>
+</div>
+
