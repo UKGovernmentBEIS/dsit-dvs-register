@@ -770,7 +770,7 @@ namespace DVSRegister.Controllers
             var serviceList = await cabService.GetServiceList(summaryViewModel.ServiceKey, CabId);
             InProgressApplicationParameters inProgressApplicationParameters = ViewModelHelper.GetInProgressApplicationParameters(serviceList);
             if (inProgressApplicationParameters != null && (inProgressApplicationParameters.HasInProgressApplication || inProgressApplicationParameters.HasActiveReassignmentRequest 
-            || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested))
+            || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.InProgressAndUpdateRequested))
             {
                 return RedirectToAction("ConfirmInProgressApplicationRemoval");
             }

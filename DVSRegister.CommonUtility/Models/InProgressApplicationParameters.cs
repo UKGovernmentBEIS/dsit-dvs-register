@@ -10,8 +10,8 @@
         public int InProgressReassignmentRequestServiceId { get; set; }
 
         public bool HasActiveUpdateRequest { get; set; }
-        public bool LatestVersionInProgressAndUpdateRequested { get; set; }
-        public int LatestVersionInProgressAndUpdateRequestedId { get; set; }
+        public bool InProgressAndUpdateRequested { get; set; }
+        public int InProgressAndUpdateRequestedId { get; set; }
         public List<int>? InProgressUpdateRequestServiceIds { get; set; }
     }
 }

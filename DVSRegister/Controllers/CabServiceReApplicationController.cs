@@ -71,7 +71,7 @@ namespace DVSRegister.Controllers
                   InProgressApplicationParameters inProgressApplicationParameters =   ViewModelHelper.GetInProgressApplicationParameters(serviceList);
           
                 if (inProgressApplicationParameters.HasInProgressApplication || inProgressApplicationParameters.HasActiveReassignmentRequest
-                 || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested)
+                 || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.InProgressAndUpdateRequested)
                 {
                     return RedirectToAction("StartInProgressApplicationRemoval");
 
