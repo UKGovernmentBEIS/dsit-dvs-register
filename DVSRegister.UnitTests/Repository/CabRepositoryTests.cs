@@ -335,7 +335,7 @@ namespace DVSRegister.UnitTests.Repository
             Service newVersionServiceTest = RepositoryTestHelper.CreateService(1, serviceName, providerProfileId, serviceStatus, null, null, null, savedVersion1Service.ServiceKey); // to modify saved service
 
             newVersionServiceTest.ServiceRoleMapping = [new() { RoleId = 1 }];
-            GenericResponse newGenericResponse = await cabRepository.SaveServiceReApplication(newVersionServiceTest, "test.user123@test.com", false);
+            GenericResponse newGenericResponse = await cabRepository.SaveServiceReApplication(newVersionServiceTest, "test.user123@test.com", false,null);
 
             Service? savedVersion2Service = await dbContext.Service.Include(p => p.ServiceRoleMapping).ThenInclude(p => p.Role)
            .Include(p => p.ServiceQualityLevelMapping).ThenInclude(p => p.QualityLevel)
@@ -362,7 +362,7 @@ namespace DVSRegister.UnitTests.Repository
             InitializeDbContext(out DVSRegisterDbContext dbContext);
             CabRepository cabRepository = new(dbContext, logger);
             Service service = new();
-            GenericResponse genericResponse = await cabRepository.SaveServiceReApplication(service, "test.user123@test.com",false);
+            GenericResponse genericResponse = await cabRepository.SaveServiceReApplication(service, "test.user123@test.com",false,null);
             Assert.False(genericResponse.Success);
         }
 

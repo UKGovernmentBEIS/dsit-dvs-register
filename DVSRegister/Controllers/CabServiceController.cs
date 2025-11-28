@@ -767,41 +767,36 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveServiceSummary()
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
-
-            if (!HasAllRequiredData(summaryViewModel))
+            var serviceList = await cabService.GetServiceList(summaryViewModel.ServiceKey, CabId);
+            InProgressApplicationParameters inProgressApplicationParameters = ViewModelHelper.GetInProgressApplicationParameters(serviceList);
+            if (inProgressApplicationParameters != null && (inProgressApplicationParameters.HasInProgressApplication || inProgressApplicationParameters.HasActiveReassignmentRequest 
+            || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested))
             {
-                throw new InvalidOperationException("SummarySaveFail: All fields must be completed before submitting.");
+                return RedirectToAction("ConfirmInProgressApplicationRemoval");
             }
-
-            ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
+            else
+            {
+                return await SaveServiceSummary(summaryViewModel, inProgressApplicationParameters);
+            }
             
-            ViewModelHelper.MapTFVersion0_4Fields(summaryViewModel, serviceDto);
+        }
 
-            if (!IsValidCabId(summaryViewModel.CabId))
-                return HandleInvalidCabId(summaryViewModel.CabId);
+        [HttpGet("confirm-in-progress-application-removal")]
+        public IActionResult ConfirmInProgressApplicationRemoval()
+        {
+            return View();
+        }
 
-            GenericResponse genericResponse = new();
-            if (summaryViewModel.IsResubmission)
-            {
-                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail, summaryViewModel.IsReupload.GetValueOrDefault());
-            }
-            else
-            {
-                genericResponse = await cabService.SaveService(serviceDto, UserEmail);
-            }
-            if (genericResponse.Success)
-            {
-                ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
-                string providerName = provider?.RegisteredName;
-                int providerId = provider.Id;
-                return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName, providerId});
-            }
-            else
-            {
-                throw new InvalidOperationException("Service submission failed");
-            }
-        }        
+        [HttpPost("confirm-in-progress-application-removal")]
+        public async Task<IActionResult> SaveConfirmInProgressApplicationRemoval()
+        {
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            var serviceList = await cabService.GetServiceList(summaryViewModel.ServiceKey, CabId);
+            InProgressApplicationParameters inProgressApplicationParameters = ViewModelHelper.GetInProgressApplicationParameters(serviceList);
+            return await SaveServiceSummary(summaryViewModel, inProgressApplicationParameters);
+        }
+
+       
 
         /// <summary>
         ///Final page if save success
@@ -840,7 +835,7 @@ namespace DVSRegister.Controllers
 
             if (serviceSummary.IsResubmission)
             {
-                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail, serviceSummary.IsReupload.GetValueOrDefault());
+                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail, serviceSummary.IsReupload.GetValueOrDefault(), null);
             }
             else
             {
@@ -857,7 +852,43 @@ namespace DVSRegister.Controllers
                 throw new InvalidOperationException("SaveAsDraftAndRedirect: Failed to save draft");
             }
 
-        } 
+        }
+        private async Task<IActionResult> SaveServiceSummary(ServiceSummaryViewModel summaryViewModel, InProgressApplicationParameters? inProgressApplicationParameters)
+        {
+            summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
+            if (!HasAllRequiredData(summaryViewModel))
+            {
+                throw new InvalidOperationException("SummarySaveFail: All fields must be completed before submitting.");
+            }
+
+            ServiceDto serviceDto = _mapper.Map<ServiceDto>(summaryViewModel);
+
+            ViewModelHelper.MapTFVersion0_4Fields(summaryViewModel, serviceDto);
+
+            if (!IsValidCabId(summaryViewModel.CabId))
+                return HandleInvalidCabId(summaryViewModel.CabId);
+
+            GenericResponse genericResponse = new();
+            if (summaryViewModel.IsResubmission)
+            {
+                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail, summaryViewModel.IsReupload.GetValueOrDefault(), inProgressApplicationParameters);
+            }
+            else
+            {
+                genericResponse = await cabService.SaveService(serviceDto, UserEmail);
+            }
+            if (genericResponse.Success)
+            {
+                ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
+                string providerName = provider?.RegisteredName;
+                int providerId = provider.Id;
+                return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName, providerId });
+            }
+            else
+            {
+                throw new InvalidOperationException("Service submission failed");
+            }
+        }
 
         private async Task HandleInvalidProfileAndCab(int providerProfileId, CabUserDto cabUserDto)
         {
@@ -868,6 +899,7 @@ namespace DVSRegister.Controllers
         }
 
         #region Handle save/draft/amend actions
+
 
         private async Task<IActionResult> HandleActions(string action, ServiceSummaryViewModel serviceSummary, bool fromSummaryPage, bool fromDetailsPage, 
             string nextPage,  string controller = "CabService", object routeValues = null!)

@@ -141,11 +141,11 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return genericResponse;
         }
 
-        public async Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail, bool isReupload)
+        public async Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail, bool isReupload, InProgressApplicationParameters? inProgressApplicationParameters)
         {
             Service service = new ();
             automapper.Map(serviceDto, service);
-            GenericResponse genericResponse = await cabRepository.SaveServiceReApplication(service, loggedInUserEmail, isReupload);
+            GenericResponse genericResponse = await cabRepository.SaveServiceReApplication(service, loggedInUserEmail, isReupload, inProgressApplicationParameters);
             return genericResponse;
         }
 

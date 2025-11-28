@@ -26,7 +26,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfile, string loggedInUserEmail);
         public Task<GenericResponse> SaveService(ServiceDto serviceDto, string loggedInUserEmail);
       
-        public Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail, bool isReupload);
+        public Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail, bool isReupload, InProgressApplicationParameters? inProgressApplicationParameters = null);
         public Task<GenericResponse> SaveServiceAmendments(ServiceDto serviceDto, string existingFileLink, int existingServiceCabId, int cabId, string loggedInUserEmail);      
         public bool CanDeleteCertificate(string currentFileLink, string existingFileLink, int existingServiceCabId, int cabId);
 
