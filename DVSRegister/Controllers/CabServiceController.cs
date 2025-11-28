@@ -864,7 +864,7 @@ namespace DVSRegister.Controllers
             if (genericResponse.Success)
             {
                 HttpContext?.Session.Remove("ServiceSummary");
-                return RedirectToAction("ProviderServiceDetails", "Cab", new { serviceKey = genericResponse.InstanceId });
+                return RedirectToAction("DraftApplications", "Home");
             }
             else
             {
