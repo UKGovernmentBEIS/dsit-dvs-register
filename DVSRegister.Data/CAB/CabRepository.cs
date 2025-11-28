@@ -216,7 +216,11 @@ namespace DVSRegister.Data.CAB
         public async Task<ProviderProfile> GetProviderWithLatestVersionServices(int providerId, int cabId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.Services)!.ThenInclude(p => p.CertificateReview)
+            provider = await context.ProviderProfile
+            .Include(p => p.Services)!.ThenInclude(p => p.CertificateReview)
+            .Include(p => p.Services)!.ThenInclude(p => p.PublicInterestCheck)
+            .Include(p => p.Services)!.ThenInclude(p => p.ServiceDraft)
+             .Include(p => p.ProviderProfileDraft)!
             .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && s.IsCurrent == true)).ThenInclude(p => p.CabUser)
             .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
