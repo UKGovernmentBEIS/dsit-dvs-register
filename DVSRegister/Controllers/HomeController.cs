@@ -1,5 +1,9 @@
-﻿using DVSRegister.BusinessLogic.Services;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Models.CAB.Service;
 using DVSRegister.Models.Home;
 using DVSRegister.Models.Register;
 using Microsoft.AspNetCore.Mvc;
@@ -180,6 +184,13 @@ namespace DVSRegister.Controllers
             ViewBag.CurrentPage = PageNum;
 
             return View(vm);
+        }
+
+        [HttpGet("draft-details")]
+        public async Task<IActionResult> ServiceDraftDetails(int serviceId)
+        {
+            ServiceDto draftService = await homeService.GetServiceDetails(serviceId);
+            return View(draftService);
         }
     }
 }

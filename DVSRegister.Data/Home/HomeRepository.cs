@@ -130,6 +130,48 @@ namespace DVSRegister.Data
                 TotalCount = totalCount
             };
         }
+
+        public async Task<Service> GetServiceDetails(int serviceId)
+        {
+            var baseQuery = context.Service
+            .Where(p => p.Id == serviceId)
+             .Include(p => p.Provider)
+             .Include(p => p.TrustFrameworkVersion)
+             .Include(p => p.Provider)
+             .Include(p => p.UnderPinningService).ThenInclude(p => p.Provider)
+             .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
+             .Include(p => p.ManualUnderPinningService).ThenInclude(ms => ms.Cab)
+            .Include(p => p.ServiceRoleMapping)!.ThenInclude(s => s.Role);
+
+
+            IQueryable<Service> queryWithOptionalIncludes = baseQuery;
+            if (await baseQuery.AnyAsync(p => p.ServiceQualityLevelMapping != null && p.ServiceQualityLevelMapping.Any()))
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)!
+                    .ThenInclude(sq => sq.QualityLevel);
+            }
+
+            if (await baseQuery.AnyAsync(p => p.ServiceSupSchemeMapping != null && p.ServiceSupSchemeMapping.Any()))
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
+                    .ThenInclude(ssm => ssm.SupplementaryScheme);
+
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
+                    .ThenInclude(ssm => ssm.SchemeGPG44Mapping)!.ThenInclude(ssm => ssm.QualityLevel);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
+                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping)!.ThenInclude(ssm => ssm.IdentityProfile);
+            }
+
+            if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)!
+                    .ThenInclude(ssm => ssm.IdentityProfile);
+            }
+            var service = await queryWithOptionalIncludes.FirstOrDefaultAsync() ?? new Service();
+
+            return service;
+        }
+
         #region Private methods
 
         private static Task<PaginatedResult<Service>> SortAndPaginate(int pageNumber, string sort, string sortAction, IEnumerable<Service> baseQuery)
