@@ -767,17 +767,27 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveServiceSummary()
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            var serviceList = await cabService.GetServiceList(summaryViewModel.ServiceKey, CabId);
-            InProgressApplicationParameters inProgressApplicationParameters = ViewModelHelper.GetInProgressApplicationParameters(serviceList);
-            if (inProgressApplicationParameters != null && (inProgressApplicationParameters.HasInProgressApplication || inProgressApplicationParameters.HasActiveReassignmentRequest 
-            || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested))
+
+            if(!summaryViewModel.IsReupload.GetValueOrDefault())
             {
-                return RedirectToAction("ConfirmInProgressApplicationRemoval");
+                var serviceList = await cabService.GetServiceList(summaryViewModel.ServiceKey, CabId);
+                InProgressApplicationParameters inProgressApplicationParameters = ViewModelHelper.GetInProgressApplicationParameters(serviceList);
+                if (inProgressApplicationParameters != null && (inProgressApplicationParameters.HasInProgressApplication || inProgressApplicationParameters.HasActiveReassignmentRequest
+                || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.InProgressAndUpdateRequested))
+                {
+                    return RedirectToAction("ConfirmInProgressApplicationRemoval");
+                }
+                else
+                {
+                    return await SaveServiceSummary(summaryViewModel, inProgressApplicationParameters);
+                }
+
             }
             else
             {
-                return await SaveServiceSummary(summaryViewModel, inProgressApplicationParameters);
+                return await SaveServiceSummary(summaryViewModel, null);
             }
+           
             
         }
 
@@ -791,9 +801,18 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> SaveConfirmInProgressApplicationRemoval()
         {
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            var serviceList = await cabService.GetServiceList(summaryViewModel.ServiceKey, CabId);
-            InProgressApplicationParameters inProgressApplicationParameters = ViewModelHelper.GetInProgressApplicationParameters(serviceList);
-            return await SaveServiceSummary(summaryViewModel, inProgressApplicationParameters);
+            if(!summaryViewModel.IsReupload.GetValueOrDefault())
+            {
+                var serviceList = await cabService.GetServiceList(summaryViewModel.ServiceKey, CabId);
+                InProgressApplicationParameters inProgressApplicationParameters = ViewModelHelper.GetInProgressApplicationParameters(serviceList);
+                return await SaveServiceSummary(summaryViewModel, inProgressApplicationParameters);
+            }
+            else
+            {
+                return await SaveServiceSummary(summaryViewModel, null);
+            }
+          
+            
         }
 
        

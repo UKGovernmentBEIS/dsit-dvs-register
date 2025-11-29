@@ -39,7 +39,7 @@ namespace DVSRegister.Data.Edit
                 {
                     draft.ModifiedTime = DateTime.UtcNow;
                     await _context.ProviderProfileDraft.AddAsync(draft);
-                    var servicesList = provider?.Services?.Where(x => x.ServiceStatus == ServiceStatusEnum.Published && x.CabUser.CabId == cabUser.CabId);
+                    var servicesList = provider?.Services?.Where(x => x.ServiceStatus == ServiceStatusEnum.Published );
 
                     provider.ProviderStatus = ProviderStatusEnum.UpdatesRequested;
                     provider.ModifiedTime = DateTime.UtcNow;
