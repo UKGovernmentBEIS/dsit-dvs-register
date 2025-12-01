@@ -2,7 +2,6 @@
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.Data;
-using DVSRegister.Data.CAB;
 
 namespace DVSRegister.BusinessLogic.Services
 {
@@ -64,11 +63,6 @@ namespace DVSRegister.BusinessLogic.Services
             };
         }
 
-        public async Task<ServiceDto> GetServiceDetails(int serviceId)
-        {
-            var service = await homeRepository.GetServiceDetails(serviceId);
-            ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
-            return serviceDto;
-        }
+       
     }
 }

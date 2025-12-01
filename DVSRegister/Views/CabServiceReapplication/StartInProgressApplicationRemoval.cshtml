@@ -1,4 +1,4 @@
-﻿
+﻿@model DVSRegister.BusinessLogic.Models.CAB.ServiceDto
 @{
     ViewData["Title"] = "You are about to start a submission for a service that has an application already in progress";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
@@ -11,15 +11,37 @@
             <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
 
+
+
+
+                <table class="govuk-table">
+                  
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">Service name</th>
+                            <th scope="col" class="govuk-table__header">Provider’s registered name</th>
+                        </tr>
+                    </thead>
+                    <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            
+                            <td class="govuk-table__cell">@Model.ServiceName</td>
+                            <td class="govuk-table__cell">@Model.Provider.RegisteredName</td>
+                        </tr>
+                       
+                    </tbody>
+                </table>
+
+
                 <p class="govuk-body">
-                    The service you are creating a submission for currently has an application in
-                    progress or is currently under reassignment or removal.
+                    You are about to start a submission for a service that has an application
+                    already in progress, or that is currently under reassignment or removal.
                 </p>
               
 
                 <p class="govuk-body">
-                    If you submit this submission, the application that is currently in progress will
-                    be deleted and replaced by this submission. If it is under reassignment or
+                    If you complete this submission, the application that is currently in progress
+                    will be deleted and replaced by this submission. If it is under reassignment or
                     removal, the request will be cancelled.
                 </p>
 

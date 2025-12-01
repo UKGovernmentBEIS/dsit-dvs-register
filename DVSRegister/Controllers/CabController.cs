@@ -36,11 +36,7 @@ namespace DVSRegister.Controllers
                        && latestCabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
                        && latestCabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
                        && latestCabTransferRequest.CertificateUploaded == false;
-
-            if (currentServiceVersion.ManualUnderPinningServiceId != null)
-            {
-                currentServiceVersion.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)currentServiceVersion.ManualUnderPinningServiceId);
-            }
+           
 
             if (currentServiceVersion.ServiceStatus != ServiceStatusEnum.SavedAsDraft && serviceList != null && (serviceList.Any(x=>x.IsInRegister == true) 
                 || serviceList.Any(x => x.ServiceStatus == ServiceStatusEnum.Removed)) )
@@ -59,14 +55,9 @@ namespace DVSRegister.Controllers
             {
                 var removalRequestedService = serviceList?.Where(s => s.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation).FirstOrDefault();
                 serviceVersions.PublishedServiceId = removalRequestedService?.Id ?? 0; // the service is still published
-            }
-            
-            if (currentServiceVersion?.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
-            {
-                SetServiceDataToSession(CabId, currentServiceVersion);
-            }
+            }            
           
-            return View(serviceVersions);
+             return View(serviceVersions);
         }
 
         [HttpGet("service-version-details/{serviceId}")]
