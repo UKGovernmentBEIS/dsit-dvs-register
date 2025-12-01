@@ -37,6 +37,7 @@
         ServiceAmendments = 31,
         ApproveOrRejectReAssign = 32,
         CancelRemovalRequest = 33,
-        CabEditProvider = 34
+        CabEditProvider = 34,
+        RemoveInProgressApplication = 35
     }
 }

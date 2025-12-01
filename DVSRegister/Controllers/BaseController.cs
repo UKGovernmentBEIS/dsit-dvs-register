@@ -238,7 +238,9 @@ namespace DVSRegister.Controllers
                 CabUserId = serviceDto.CabUserId,
                 ServiceKey = serviceDto.ServiceKey,
                 IsDraft = serviceDto.ServiceStatus == ServiceStatusEnum.SavedAsDraft,
-                IsResubmission = serviceDto.ServiceVersion >=1, // if there are previous versions , it means a resubmission
+                IsResubmission = serviceDto.ServiceVersion >= 1
+                && !(serviceDto.ServiceStatus == ServiceStatusEnum.SavedAsDraft
+                && serviceDto.ServiceVersion == 1), // if there are previous versions , it means a resubmission
                 IsAmendment = isAmendment,
                 ServiceStatus = serviceDto.ServiceStatus,
                 CreatedDate = serviceDto.CreatedTime
