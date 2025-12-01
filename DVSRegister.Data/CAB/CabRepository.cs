@@ -170,8 +170,8 @@ namespace DVSRegister.Data.CAB
             .Include(s => s.PublicInterestCheck).AsNoTracking()
             .Include(s => s.CabUser).ThenInclude(s => s.Cab).AsNoTracking()
             .Include(s => s.TrustFrameworkVersion).AsNoTracking()
-             .Include(s => s.ServiceDraft).AsNoTracking()
-            .Where(s => s.ServiceKey == serviceKey)
+            .Include(s => s.ServiceDraft).AsNoTracking()
+            .Where(s => s.ServiceKey == serviceKey && s.CabUser.Cab.Id == cabId)
             .ToListAsync();
         }
         public async Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId)
