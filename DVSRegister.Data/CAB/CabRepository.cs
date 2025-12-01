@@ -215,15 +215,26 @@ namespace DVSRegister.Data.CAB
 
         public async Task<ProviderProfile> GetProviderWithLatestVersionServices(int providerId, int cabId)
         {
+            var latestServiceIds = await context.Service
+                .Include(s =>  s.CabTransferRequest)
+                .Where(s => s.ProviderProfileId == providerId
+                && s.CabUser.CabId == cabId
+                && !(s.ServiceStatus == ServiceStatusEnum.SavedAsDraft
+                || s.ServiceStatus == ServiceStatusEnum.AmendmentsRequired))
+                .GroupBy(s => s.ServiceKey)
+                .Select(g => g.OrderByDescending(s => s.ServiceVersion).FirstOrDefault()!.Id)
+                .ToListAsync();
+
             ProviderProfile provider = new();
             provider = await context.ProviderProfile
-            .Include(p => p.Services)!.ThenInclude(p => p.CertificateReview)
-            .Include(p => p.Services)!.ThenInclude(p => p.PublicInterestCheck)
-            .Include(p => p.Services)!.ThenInclude(p => p.ServiceDraft)
-             .Include(p => p.ProviderProfileDraft)!
-            .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && s.IsCurrent == true)).ThenInclude(p => p.CabUser)
-            .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
-            .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+                .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && latestServiceIds.Contains(s.Id))).ThenInclude(s => s.CertificateReview)
+                .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && latestServiceIds.Contains(s.Id))).ThenInclude(s => s.PublicInterestCheck)                
+                .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && latestServiceIds.Contains(s.Id))).ThenInclude(p => p.ServiceDraft)
+                .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && latestServiceIds.Contains(s.Id))).ThenInclude(s => s.CabUser)
+                .Include(p => p.ProviderProfileDraft)!
+                .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
+                .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+
             return provider;
         }
 

@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data.Entities;
 using DVSRegister.Models.CAB.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,11 +23,11 @@ namespace DVSRegister.Controllers
             
             ServiceVersionViewModel serviceVersions = new();
             var serviceList = await cabService.GetServiceList(serviceKey, CabId);
-            ServiceDto latestSubmission = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
-
+            ServiceDto latestSubmission = serviceList?.Where(s => !(s.ServiceStatus == ServiceStatusEnum.SavedAsDraft  || s.ServiceStatus == ServiceStatusEnum.AmendmentsRequired))
+                .OrderByDescending(s=> s.ServiceVersion).FirstOrDefault() ?? new ServiceDto();
             ServiceDto currentServiceVersion = await cabService.GetServiceDetails(latestSubmission.Id, CabId);
             serviceVersions.CurrentServiceVersion = currentServiceVersion;
-            serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
+            serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.ServiceVersion < currentServiceVersion.ServiceVersion).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
             serviceVersions.ProviderProfileId = currentServiceVersion.ProviderProfileId;
             serviceVersions.Provider = currentServiceVersion.Provider;
             ViewBag.FromOpenTasks = fromOpenTasks;
