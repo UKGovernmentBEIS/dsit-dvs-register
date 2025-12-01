@@ -1,0 +1,127 @@
+﻿@using DVSRegister.Extensions
+@using DVSRegister.Models.Home
+@using DVSRegister.Models.UI
+@model PendingListViewModel
+@{
+    ViewData["Title"] = "Reassignment requests pending";
+    ViewData["ActiveNav"] = "OpenTasks";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl govuk-!-margin-bottom-5">Open Tasks</h1>
+                <p class="govuk-body">
+                    Manage applications and requests.
+                </p>
+            </div>
+            <div class="govuk-grid-column-full">
+                @await Html.PartialAsync(
+                "~/Views/Home/PartialViews/_DashboardSummaryCards.cshtml",
+                                new DashboardSummaryCardViewModel[]
+                                {
+                                new DashboardSummaryCardViewModel
+                                {
+                                Label = "Applications in draft",
+                                Count = Model.OpenTaskCount.DraftApplications,
+                                Action = "DraftApplications"
+                                },
+                                new DashboardSummaryCardViewModel
+                                {
+                                Label = "Applications sent back for amendments",
+                                Count = Model.OpenTaskCount.SentBackApplications,
+                                Action = "SentBackApplications"
+                                },
+                                new DashboardSummaryCardViewModel
+                                {
+                                Label = "Reassignment requests pending",
+                                Count = Model.OpenTaskCount.PendingReassignmentRequests,
+                                Action = "PendingReassignmentRequests",
+                                Emphasised = true
+                                }
+                                })
+
+                <div class="govuk-form-group" style="border: 1px solid #b1b4b6; padding: 20px; padding-bottom: 0px; margin-top: 20px;">
+                    <table class="govuk-table govuk-table--small-text-until-tablet">
+                        <caption class="govuk-table__caption govuk-table__caption--m govuk-!-margin-bottom-5">
+                            Reassignment requests pending
+                            <span class="govuk-visually-hidden">column headers with links are sortable</span>
+                        </caption>
+                        <thead class="govuk-table__head">
+                            <tr class="govuk-table__row sortable-table">
+                                <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "service name") ? Model.CurrentSortAction : "none")"
+                                    aria-label="sort by service name">
+                                    <a href="@Url.Action("PendingReassignmentRequests", "Home", new { CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "service name" })">
+                                        <b>Service name</b>
+                                    </a>
+                                </th>
+                                <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "provider") ? Model.CurrentSortAction : "none")"
+                                    aria-label="sort by provider name">
+                                    <a href="@Url.Action("PendingReassignmentRequests", "Home", new { CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "provider" })">
+                                        <b>Service provider</b>
+                                    </a>
+                                </th>
+                                <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "cab") ? Model.CurrentSortAction : "none")"
+                                    aria-label="sort by current cab name">
+                                    <a href="@Url.Action("PendingReassignmentRequests", "Home", new { CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "cab" })">
+                                        <b>Existing CAB</b>
+                                    </a>
+                                </th>
+                                <th scope="col" class="govuk-table__header" aria-sort="@((Model.CurrentSort == "dateAfterPublish") ? Model.CurrentSortAction : "none")"
+                                    aria-label="sort by time of last activity">
+                                    <a href="@Url.Action("PendingReassignmentRequests", "Home", new { CurrentSort = Model.CurrentSort, CurrentSortAction = Model.CurrentSortAction, NewSort = "dateAfterPublish" })">
+                                        <b>Date and time of last<br />activity (GMT)</b>
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="govuk-table__body">
+                            @if (Model?.PendingRequests != null && Model.PendingRequests.Count > 0)
+                            {
+                                @foreach (var item in Model.PendingRequests)
+                                {
+                                    <tr class="govuk-table__row">
+                                        <td class="govuk-table__cell">
+                                            @Html.ActionLink(item.ServiceName, "ServiceReassignmentDetails", "CabTransfer", new { serviceId = item.Id, fromCabId = item.CabUser.CabId }, new { @class = "govuk-link" })
+                                        </td>
+                                        <td class="govuk-table__cell"> @item.Provider.RegisteredName</td>
+                                        <td class="govuk-table__cell"> @item.CabUser.Cab.CabName</td>
+                                        <td class="govuk-table__cell"> @DateTimeExtensions.FormatDateTime(item.ModifiedTime ?? item.PublishedTime)</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell" colspan="4">
+                                        <p class="govuk-body"><b>Showing 0 results</b></p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>                        
+                    </table>
+
+                    @if (Model?.TotalPages > 1)
+                    {
+                        PaginationViewModel paginationViewModel = new PaginationViewModel
+                        {
+                            Action = "PendingReassignmentRequests",
+                            CurrentPage = ViewBag.CurrentPage,
+                            TotalPages = Model.TotalPages,
+                            Sort = Model.CurrentSort,
+                            SortAction = Model.CurrentSortAction
+                        };
+                        @await Html.PartialAsync("~/Views/PartialViews/_PaginationView.cshtml", paginationViewModel)
+                    }
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+
+
+
+

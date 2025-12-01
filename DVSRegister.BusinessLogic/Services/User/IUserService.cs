@@ -8,5 +8,6 @@ namespace DVSRegister.BusinessLogic.Services
         public Task<CabUserDto> SaveUser(string email, string cabName);
         public Task<CabUserDto> GetUser(string email);
         public Task<CabDto> GetCab(string cabName);
+        public Task<List<string>> GetDSITUserEmails();
     }
 }

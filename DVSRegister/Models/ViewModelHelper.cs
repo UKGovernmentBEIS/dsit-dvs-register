@@ -1,9 +1,9 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Models;
+﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models.CAB;
-using DVSRegister.Models.CAB.Service;
-using DVSRegister.CommonUtility;
 
 namespace DVSRegister.Models
 {
@@ -234,6 +234,125 @@ namespace DVSRegister.Models
             if (input == ServiceTypeEnum.UnderPinning) return "Underpinning";
             else if (input == ServiceTypeEnum.WhiteLabelled) return "White-labelled";
             else return "Neither";
+
+        }
+
+        public static ProviderProfileDto MapViewModelToDto(ProfileSummaryViewModel model, int cabUserId, int cabId)
+        {
+            ProviderProfileDto providerDto = null;
+            if (model != null && !string.IsNullOrEmpty(model.RegisteredName) && model.HasRegistrationNumber != null &&
+                model.HasParentCompany != null
+                && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactFullName) &&
+                !string.IsNullOrEmpty(model?.PrimaryContact.PrimaryContactJobTitle)
+                && !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactEmail) &&
+                !string.IsNullOrEmpty(model.PrimaryContact?.PrimaryContactTelephoneNumber)
+                && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactFullName) &&
+                !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactJobTitle)
+                && !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactEmail) &&
+                !string.IsNullOrEmpty(model.SecondaryContact?.SecondaryContactTelephoneNumber)
+                && !string.IsNullOrEmpty(model.ProviderWebsiteAddress) && cabUserId > 0)
+            {
+                providerDto = new();
+                providerDto.ProviderProfileCabMapping = [new ProviderProfileCabMappingDto { CabId = cabId }];
+                providerDto.RegisteredName = model.RegisteredName;
+                providerDto.TradingName = model.TradingName ?? string.Empty;
+                providerDto.HasRegistrationNumber = model.HasRegistrationNumber ?? false;
+                providerDto.CompanyRegistrationNumber = model.CompanyRegistrationNumber;
+                providerDto.DUNSNumber = model.DUNSNumber;
+                providerDto.HasParentCompany = model.HasParentCompany ?? false;
+                providerDto.ParentCompanyRegisteredName = model.ParentCompanyRegisteredName;
+                providerDto.ParentCompanyLocation = model.ParentCompanyLocation;
+                providerDto.PrimaryContactFullName = model.PrimaryContact.PrimaryContactFullName;
+                providerDto.PrimaryContactJobTitle = model.PrimaryContact.PrimaryContactJobTitle;
+                providerDto.PrimaryContactEmail = model.PrimaryContact.PrimaryContactEmail;
+                providerDto.PrimaryContactTelephoneNumber = model.PrimaryContact.PrimaryContactTelephoneNumber;
+                providerDto.SecondaryContactFullName = model.SecondaryContact.SecondaryContactFullName;
+                providerDto.SecondaryContactJobTitle = model.SecondaryContact.SecondaryContactJobTitle;
+                providerDto.SecondaryContactEmail = model.SecondaryContact.SecondaryContactEmail;
+                providerDto.SecondaryContactTelephoneNumber = model.SecondaryContact.SecondaryContactTelephoneNumber;
+                providerDto.PublicContactEmail = model.PublicContactEmail;
+                providerDto.ProviderTelephoneNumber = model.ProviderTelephoneNumber;
+                providerDto.ProviderWebsiteAddress = model.ProviderWebsiteAddress;
+                providerDto.LinkToContactPage = model.LinkToContactPage;
+                providerDto.ProviderProfileCabMapping = [new ProviderProfileCabMappingDto { CabId = cabId }];
+                providerDto.ProviderStatus = ProviderStatusEnum.NA;
+                providerDto.CreatedTime = DateTime.UtcNow;
+                providerDto.Id = model.ProviderId;
+            }
+
+
+            return providerDto;
+        }
+
+      
+        public static InProgressApplicationParameters GetInProgressApplicationParameters(List<ServiceDto>? serviceList)
+        {
+
+            if (serviceList!= null && serviceList.Count > 0)
+            {
+
+
+                InProgressApplicationParameters inProgressApplicationParameters = new();
+                ServiceDto inprogressService = serviceList.Where(x => 
+                (x.ServiceStatus == ServiceStatusEnum.Submitted || x.ServiceStatus == ServiceStatusEnum.Received ||
+                x.ServiceStatus == ServiceStatusEnum.Resubmitted || x.ServiceStatus == ServiceStatusEnum.AmendmentsRequired) &&
+                x.CertificateReview.Where(x => x.IsLatestReviewVersion).SingleOrDefault()?.CertificateReviewStatus != CertificateReviewEnum.Rejected &&
+                x.PublicInterestCheck.Where(x => x.IsLatestReviewVersion).SingleOrDefault()?.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed).FirstOrDefault() ?? new();
+                inProgressApplicationParameters.InProgressApplicationId = inprogressService.Id;
+                inProgressApplicationParameters.HasInProgressApplication = inProgressApplicationParameters.InProgressApplicationId > 0;
+
+                ServiceDto reassginmentRequestService = serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign || x.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign).FirstOrDefault() ?? null!;
+                if (reassginmentRequestService != null && reassginmentRequestService.Id > 0)
+                {
+                    inProgressApplicationParameters.HasActiveReassignmentRequest = true;
+                    inProgressApplicationParameters.InProgressReassignmentRequestServiceId = reassginmentRequestService.Id;
+                }
+
+                ServiceDto removalrequestService = serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation || x.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation).FirstOrDefault() ?? null!;
+                if (removalrequestService != null && removalrequestService.Id > 0)
+                {
+                    inProgressApplicationParameters.HasActiveRemovalRequest = true;
+                    inProgressApplicationParameters.InProgressRemovalRequestServiceId = removalrequestService.Id;
+                }
+
+
+               
+
+                ServiceDto inprogresAndUpdateRequestedService = serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested &&
+                x?.serviceDraft?.PreviousServiceStatus != ServiceStatusEnum.Published && (x?.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.Submitted
+                || x?.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.Received ||
+                x?.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.Resubmitted ||
+                x?.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.AmendmentsRequired)).FirstOrDefault()??null!;
+                if(inprogresAndUpdateRequestedService!=null && inprogresAndUpdateRequestedService.Id > 0)
+                {
+                    inProgressApplicationParameters.InProgressAndUpdateRequested = true;
+                    inProgressApplicationParameters.InProgressAndUpdateRequestedId = inprogresAndUpdateRequestedService.Id;
+                }
+                
+
+
+
+                List<ServiceDto> updateRequestServices = inProgressApplicationParameters.InProgressAndUpdateRequested ?
+                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested && x.IsCurrent == false).ToList() ?? null! :
+                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested).ToList() ?? null!;
+                if (updateRequestServices != null && updateRequestServices.Count > 0)
+                {
+                    inProgressApplicationParameters.HasActiveUpdateRequest = true;
+                    inProgressApplicationParameters.InProgressUpdateRequestServiceIds = [];
+                    foreach (var service in updateRequestServices)
+                    {
+                        inProgressApplicationParameters.InProgressUpdateRequestServiceIds.Add(service.Id);
+                    }
+
+                }
+
+                return inProgressApplicationParameters;
+
+            }
+            else
+            {
+                return null!;
+            }
 
         }
 

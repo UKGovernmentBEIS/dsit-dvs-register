@@ -32,6 +32,8 @@
         public const string NullFieldsDisplay = "Not applicable";
 
         public const string RegisteredNameExistsError = "The registered name you have entered already exists";
+        public const string NewApplication = "New application";
+        public const string ReApplication = "Reapplication";
         public const decimal TFVersion0_4 = 0.4m;
         public const decimal TFVersion0_3 = 0.3m;
         public const string GPG44Authentication = "GPG 44 quality of authentication";
@@ -67,10 +69,14 @@
         public const string SecondaryContactTelephone = "Secondary contact telephone number";
 
         public const string ProviderWebsiteAddress = "Provider website address";
+        public const string LinkToContactPage = "Link to contact page";
         public const string PublicContactEmail = "Public contact email";
         public const string ProviderTelephoneNumber = "Provider telephone number";
 
         public const string InvitationDeclined = "Invitation declined";
 
+        public const string ActionNotCompletedErrorPath = "/action-not-completed";
+        public const string Incomplete = "Incomplete";
+        public const string CabProviderBaseURL = "/cab-service/provider";
     }
 }

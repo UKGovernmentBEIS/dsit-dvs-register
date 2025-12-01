@@ -115,7 +115,7 @@ namespace DVSRegister.Data.Repositories
              .ThenInclude(p => p.Provider)
             .Include(p => p.ManualUnderPinningService).ThenInclude(x => x.Cab)
             .Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
-            .Include(p => p.ServiceRoleMapping)
+            .Include(p => p.ServiceRoleMapping)!
             .ThenInclude(s => s.Role).AsSplitQuery();
 
 
@@ -123,24 +123,24 @@ namespace DVSRegister.Data.Repositories
             IQueryable<Service> queryWithOptionalIncludes = baseQuery;
             if (await baseQuery.AnyAsync(p => p.ServiceQualityLevelMapping != null && p.ServiceQualityLevelMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)!
                     .ThenInclude(sq => sq.QualityLevel);
             }
 
             if (await baseQuery.AnyAsync(p => p.ServiceSupSchemeMapping != null && p.ServiceSupSchemeMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
                     .ThenInclude(ssm => ssm.SupplementaryScheme);
 
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
-               .ThenInclude(ssm => ssm.SchemeGPG44Mapping).ThenInclude(ssm => ssm.QualityLevel);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
+               .ThenInclude(ssm => ssm.SchemeGPG44Mapping)!.ThenInclude(ssm => ssm.QualityLevel);
 
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
-                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping).ThenInclude(ssm => ssm.IdentityProfile);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
+                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping)!.ThenInclude(ssm => ssm.IdentityProfile);
             }
             if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)!
                     .ThenInclude(ssm => ssm.IdentityProfile);
             }
             var service = await queryWithOptionalIncludes.FirstOrDefaultAsync() ?? new Service();

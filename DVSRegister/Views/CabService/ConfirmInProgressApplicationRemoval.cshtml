@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewData["Title"] = "You are about to submit a submission for a service that has an application already in progress";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    @Html.ActionLink("Back", "ServiceSummary", "CabService", null, new { @class = "govuk-back-link" })
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
+
+                <p class="govuk-body">
+                    The service you are creating a submission for currently has an application in
+                    progress or is currently under reassignment or removal.
+                </p>
+
+
+                <p class="govuk-body">
+                    Once you submit this submission, the application that is currently in progress
+                    will be deleted and replaced by this submission. If it is under reassignment or
+                    removal, the request will be cancelled
+                </p>
+
+                <p class="govuk-body">
+                    Select ‘Submit’ if you wish to proceed with the submission
+                </p>
+
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-visually-hidden">Warning</span>
+                        Once you click ‘Submit’, the action can't be undone.
+                    </strong>
+                </div>
+
+                @using (Html.BeginForm("SaveConfirmInProgressApplicationRemoval", "CabService", FormMethod.Post))
+                {
+                    <button type="submit" class="govuk-button govuk-!-margin-top-2" data-module="govuk-button" name="action" value="continue">
+                        Submit
+                    </button>
+                }
+
+            </div>
+        </div>
+    </main>
+</div>

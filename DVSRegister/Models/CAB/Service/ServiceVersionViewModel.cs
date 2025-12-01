@@ -7,5 +7,10 @@ namespace DVSRegister.Models.CAB.Service
         public ServiceDto CurrentServiceVersion { get; set; }
         public List<ServiceDto> ServiceHistoryVersions { get; set; }
 
+        public bool CanRemoveService { get; set; }
+        public int PublishedServiceId { get; set; }
+        public bool CanCancelRemovalRequest{ get; set; }
+        public int ProviderProfileId { get; set; }
+        public ProviderProfileDto Provider { get; set; }
     }
 }

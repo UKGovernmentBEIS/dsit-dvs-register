@@ -32,6 +32,6 @@ namespace DVSRegister.CommonUtility.Email
                 { template.LoginLink,  govUkNotifyConfig.LoginLink}
             };
             return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
-        }
+        }      
     }
 }

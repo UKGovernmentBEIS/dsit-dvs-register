@@ -10,9 +10,12 @@
 }
 @using (Html.BeginForm("SaveRegisteredName", "CabProvider", FormMethod.Post))
 {
-    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    @Html.HiddenFor(m => m.SourcePage)
+    @Html.HiddenFor(m => m.RefererURL)
     <div class="govuk-width-container">
-        @Html.ActionLink("Back", "BeforeYouStart", "CabProvider", null, new { @class = "govuk-back-link" })
+        <a href="@Model.RefererURL" class="govuk-back-link">
+            Back
+        </a>
         <main id="main-content" class="govuk-main-wrapper" role="main">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
@@ -46,9 +49,13 @@
 
                     @await Html.PartialAsync("~/Views/PartialViews/_TextBoxView.cshtml", registeredNameViewmodel)
 
-                    <button type="submit" class="govuk-button" data-module="govuk-button">
-                        Continue
-                    </button>
+                    <div class="govuk-button-group">
+                        <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="continue" data-module="govuk-button">Continue</button>
+                        @if (Model.IsInCompleteApplication)
+                        {
+                            <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft" data-module="govuk-button">  Save and complete later </button>
+                        }
+                    </div>
                 </div>
             </div>
         </main>

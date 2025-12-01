@@ -25,7 +25,8 @@ namespace DVSRegister.CommonUtility.Email
             {
                 EmailAddress = emailAddress,
                 TemplateId = template.Id,
-                Personalisation = personalisation
+                Personalisation = personalisation,
+
             };
             return await SendEmail(emailModel);
         }      

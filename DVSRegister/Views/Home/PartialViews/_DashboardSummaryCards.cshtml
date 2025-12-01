@@ -1,0 +1,28 @@
+﻿@using DVSRegister.Models.Home
+@model IEnumerable<DashboardSummaryCardViewModel>
+
+<div class="dashboard-summary" role="listbox" aria-label="Dashboard summary">
+    @{
+        var index = 0;
+    }
+    @foreach (var card in Model)
+    {
+        <a class="dashboard-summary__card @(card.Emphasised ? "dashboard-summary__card--emphasised" : "")"
+           href="@Url.Action(card.Action)"
+           role="option"
+           aria-selected="@(card.Emphasised ? "true" : "false")"
+           data-card>
+            <span class="dashboard-summary__count">@card.Count</span>
+            <span class="dashboard-summary__label govuk-!-font-weight-bold">@card.Label</span>
+            <div class="dashboard-summary__gap">
+                <svg class="dashboard-summary__arrow" width="20" height="18" viewBox="0 0 20 18" aria-hidden="true">
+                    <path d="M10.81 -0.166014L8.92518 1.71932L14.6487 7.44332H0v2.666h14.529l-5.58 5.302 1.836 1.932 8.992-8.541L10.81 -0.166z"
+                          fill="currentColor" />
+                </svg>
+            </div>
+        </a>
+        index++;
+    }
+</div>
+
+

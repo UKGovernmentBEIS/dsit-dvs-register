@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewData["Title"] = "ActionNotCompleted";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">There is a problem</h1>
+                <p class="govuk-body">
+                    It has not been possible to complete this action. This could be because:
+                </p>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>the request you are trying to action has already been completed by another user</li>
+                    <li>the request you are trying to action is currently being completed by another user</li>
+                    <li>there is an unexpected technical error</li>
+                </ul>
+             
+                <a href="@Url.Action("DraftApplications", "Home",null)" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                    Return to open tasks
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+

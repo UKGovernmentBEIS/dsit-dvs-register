@@ -9,15 +9,45 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ProviderOverview", "Cab", new { providerId = Model.CurrentServiceVersion.ProviderProfileId }, new { @class = "govuk-back-link" })
+    @if (ViewBag.FromOpenTasks == true)
+    {
+        <a href="@Url.Action("DraftApplications", "Home", null)" class="govuk-back-link">Back</a>
+    }
+    else
+    {
+        <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.CurrentServiceVersion.ProviderProfileId })#services" class="govuk-back-link">Back</a>
+    }
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-
-                <h1 class="govuk-heading-xl">
-                    Service details: @(String.IsNullOrEmpty(Model.CurrentServiceVersion.ServiceName) ? "Incomplete" : Model.CurrentServiceVersion.ServiceName)
-                </h1>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 1; min-width: 0; padding-right: 20px;">
+                        <h1 class="govuk-heading-xl govuk-!-margin-bottom-1">
+                            Service details: @(String.IsNullOrEmpty(Model.CurrentServiceVersion.ServiceName) ? "Incomplete" : Model.CurrentServiceVersion.ServiceName)
+                        </h1>
+                        <p class="govuk-body-l govuk-!-margin-bottom-9">
+                            Registered provider: <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.ProviderProfileId })" class="govuk-link">@Model.Provider.RegisteredName</a>
+                        </p>
+                    </div>
+                    <div class="govuk-button-group govuk-!-margin-top-1" style="flex-shrink: 0;">
+                        @if (Model.CanRemoveService)
+                        {
+                            <a href="@Url.Action("ReasonForRemoval", "CabRemovalRequest", new { providerId = Model.CurrentServiceVersion.ProviderProfileId, serviceId = Model.PublishedServiceId, serviceKey = Model.CurrentServiceVersion.ServiceKey })"
+                               role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" style="white-space: nowrap;">
+                                Remove service
+                            </a>
+                        }
+                        else if (Model.CanCancelRemovalRequest)
+                        {
+                            <a href="@Url.Action("CancelRemovalRequest", "CabRemovalRequest", new { serviceId = Model.PublishedServiceId })"
+                               role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" style="white-space: nowrap;">
+                                Cancel removal request
+                            </a>
+                        }
+                    </div>
+                </div>
             </div>
+
         </div>
         <div class="govuk-grid-row">
             <div class="govuk-tabs" data-module="govuk-tabs">
@@ -34,7 +64,7 @@
                     </li>
                 </ul>
                 <div class="govuk-tabs__panel govuk-!-padding-0" id="latest-submission">
-                 @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml",Model.CurrentServiceVersion)
+                    @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml", Model.CurrentServiceVersion)
                 </div>
                 <div class="govuk-tabs__panel govuk-tabs__panel--hidden govuk-!-padding-0" id="previously-submitted">
                     @if (Model.ServiceHistoryVersions.Count() < 1)
@@ -45,7 +75,7 @@
                     {
                         @foreach (var serviceDto in Model.ServiceHistoryVersions)
                         {
-                            @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceDetailsView.cshtml", serviceDto)
+                            @await Html.PartialAsync("~/Views/Cab/PartialViews/_ServiceHistorySummaryView.cshtml", serviceDto)
                         }
                     }
                 </div>

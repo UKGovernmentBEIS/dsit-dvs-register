@@ -17,7 +17,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         public CabServiceAmendmentControllerTests()
         {
             ConfigureFakes(() =>
-                new CabServiceAmendmentController(CabService,Logger, Mapper, BucketService ));
+                new CabServiceAmendmentController(CabService,Logger, Mapper ));
         }
 
         #region ServiceAmendments GET

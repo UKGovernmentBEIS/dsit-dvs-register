@@ -1,0 +1,71 @@
+﻿@using DVSRegister.Extensions
+@using DVSRegister.BusinessLogic.Models
+@model DVSRegister.BusinessLogic.Models.CAB.ProviderProfileDto
+@{
+    ViewData["Title"] = "You have requested to update information about this provider";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+}
+
+<div class="govuk-width-container">
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">You have requested to update information about this provider</h1>
+
+
+                <div class="govuk-grid-column-full">
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                            <h2 class="govuk-summary-card__title">
+                                Provider information
+                            </h2>
+                        </div>
+                        <div class="govuk-summary-card__content">
+                            <dl class="govuk-summary-list">                              
+
+                               
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Registered name
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Model?.RegisteredName
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Trading name
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @Html.DisplayFor(model => model.TradingName)
+                                    </dd>
+                                </div>
+
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Provider publication status
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @HtmlExtensions.ToStyledStrongTag(Model.ProviderStatus)
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <p class="govuk-body">The Office for Digital Identities and Attributes  will receive an email notification of the update request.</p>            
+
+                <a href="@( Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.Id }) )" class="govuk-button" role="button">Go back to service provider</a>
+                
+            </div>
+        </div>
+    </main>
+</div>
+
+

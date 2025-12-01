@@ -8,11 +8,8 @@
 
   <ItemGroup>
     <Compile Remove="Automapper\NewFolder\**" />
-    <Compile Remove="Models\NewFolder\**" />
     <EmbeddedResource Remove="Automapper\NewFolder\**" />
-    <EmbeddedResource Remove="Models\NewFolder\**" />
     <None Remove="Automapper\NewFolder\**" />
-    <None Remove="Models\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +19,10 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="CsvHelper" Version="33.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helper\" />
   </ItemGroup>
 
 </Project>

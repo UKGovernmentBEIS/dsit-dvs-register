@@ -73,7 +73,7 @@ namespace DVSRegister.Data.CAB
         public async Task<List<ProviderProfile>> GetProviders(int cabId, string searchText = "")
         {
             //Filter based on cab type as well, fetch records for users with same cab type
-            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(s=>s.CabUser)
+            IQueryable<ProviderProfile> providerQuery = context.ProviderProfile.Include(p => p.Services!.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(s=>s.CabUser)
              .Include(p => p.ProviderProfileCabMapping).ThenInclude(p => p.Cab)
             .Where(p => p.ProviderProfileCabMapping.Any(m => m.CabId == cabId))
             .OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime);
@@ -85,7 +85,7 @@ namespace DVSRegister.Data.CAB
                     p.RegisteredName.ToLower().Contains(lowerSearchText) ||
                     p.TradingName!.ToLower().Contains(lowerSearchText) ||
                     // Search in service names
-                    p.Services.Any(s => s.CabUser.CabId == cabId && s.ServiceName.ToLower().Contains(lowerSearchText))
+                    p.Services!.Any(s => s.CabUser.CabId == cabId && s.ServiceName!.ToLower().Contains(lowerSearchText))
                 );
             }
             var searchResults = await providerQuery.ToListAsync();
@@ -94,15 +94,15 @@ namespace DVSRegister.Data.CAB
 
         public async Task<ProviderProfile> GetProvider(int providerId,int cabId)
         {
-            ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p=>p.Services).ThenInclude(p=>p.CertificateReview)
-            .Include(p => p.Services).ThenInclude(p => p.PublicInterestCheck)
-            .Include(p => p.Services).ThenInclude(p => p.ServiceDraft)
-            .Include(p => p.Services.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
-             .Include(p => p.Services.Where(s => s.CabUser.CabId == cabId)).ThenInclude(p => p.CabTransferRequest).ThenInclude(p => p.RequestManagement)
-            .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
-            .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
-            return provider;
+                ProviderProfile provider = new();
+                provider = await context.ProviderProfile.Include(p=>p.Services)!.ThenInclude(p=>p.CertificateReview)
+                .Include(p => p.Services)!.ThenInclude(p => p.PublicInterestCheck)
+                .Include(p => p.Services)!.ThenInclude(p => p.ServiceDraft)
+                .Include(p => p.Services!.Where(s=>s.CabUser.CabId == cabId)).ThenInclude(p => p.CabUser)
+                .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId)).ThenInclude(p => p.CabTransferRequest)!.ThenInclude(p => p.RequestManagement)
+                .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
+                .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+                return provider;
         }
 
             public async Task<Service> GetServiceDetailsWithProvider(int serviceId, int cabId)
@@ -121,38 +121,40 @@ namespace DVSRegister.Data.CAB
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
-             .Include(p => p.Provider)              
+             .Include(p => p.Provider)
+              .Include(p => p.ServiceDraft)
              .Include(p => p.TrustFrameworkVersion)
              .Include(p => p.CertificateReview)
+             .Include(p => p.PublicInterestCheck)
+              .Include(p => p.CabTransferRequest)!.ThenInclude(x => x.RequestManagement)
              .Include(p => p.Provider)
              .Include(p => p.UnderPinningService).ThenInclude(p=>p.Provider)          
              .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
              .Include(p => p.ManualUnderPinningService) .ThenInclude(ms => ms.Cab)
-            .Include(p => p.ServiceRoleMapping)            
-            .ThenInclude(s => s.Role);
+            .Include(p => p.ServiceRoleMapping)!.ThenInclude(s => s.Role);
 
 
             IQueryable<Service> queryWithOptionalIncludes = baseQuery;
             if (await baseQuery.AnyAsync(p => p.ServiceQualityLevelMapping != null && p.ServiceQualityLevelMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)!
                     .ThenInclude(sq => sq.QualityLevel);
             }
 
             if (await baseQuery.AnyAsync(p => p.ServiceSupSchemeMapping != null && p.ServiceSupSchemeMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
                     .ThenInclude(ssm => ssm.SupplementaryScheme);
 
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
-                    .ThenInclude(ssm => ssm.SchemeGPG44Mapping).ThenInclude(ssm=>ssm.QualityLevel);
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
-                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping).ThenInclude(ssm => ssm.IdentityProfile);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
+                    .ThenInclude(ssm => ssm.SchemeGPG44Mapping)!.ThenInclude(ssm=>ssm.QualityLevel);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
+                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping)!.ThenInclude(ssm => ssm.IdentityProfile);
             }
 
             if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)!
                     .ThenInclude(ssm => ssm.IdentityProfile);
             }
             var service = await queryWithOptionalIncludes.FirstOrDefaultAsync() ?? new Service();
@@ -163,29 +165,13 @@ namespace DVSRegister.Data.CAB
         public async Task<List<Service>> GetServiceList(int serviceKey, int cabId)
             {
             return await context.Service
-            .Include(s => s.CertificateReview)
-            .Include(s => s.PublicInterestCheck)
-            .Include(s => s.ServiceSupSchemeMapping)
-            .ThenInclude(s=> s.SupplementaryScheme)
-             .Include(s => s.ServiceSupSchemeMapping)
-            .ThenInclude(s => s.SchemeGPG44Mapping)
-             .ThenInclude(s=>s.QualityLevel)
-            .Include(s => s.ServiceSupSchemeMapping)
-            .ThenInclude(s => s.SchemeGPG45Mapping)
-            .ThenInclude(s=>s.IdentityProfile)
-            .Include(s => s.ServiceRoleMapping)            
-            .ThenInclude(s => s.Role)
-            .Include(s=> s.ServiceQualityLevelMapping)
-            .ThenInclude(s => s.QualityLevel)
-            .Include(s => s.ServiceIdentityProfileMapping)
-            .ThenInclude(s => s.IdentityProfile)
-            .Include(s => s.CabUser).ThenInclude(s => s.Cab)
-            .Include(s => s.TrustFrameworkVersion)
-            .Include(s => s.UnderPinningService).ThenInclude(p=>p.Provider)
-             .Include(s => s.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(p=>p.Cab)
-             .Include(s => s.ManualUnderPinningService).ThenInclude(s=>s.Cab)
-             .Include(s => s.ServiceDraft).AsNoTracking()
-            .Where(s => s.ServiceKey == serviceKey)
+            .Include(s => s.Provider).AsNoTracking()
+            .Include(s => s.CertificateReview).AsNoTracking()
+            .Include(s => s.PublicInterestCheck).AsNoTracking()
+            .Include(s => s.CabUser).ThenInclude(s => s.Cab).AsNoTracking()
+            .Include(s => s.TrustFrameworkVersion).AsNoTracking()
+            .Include(s => s.ServiceDraft).AsNoTracking()
+            .Where(s => s.ServiceKey == serviceKey && s.CabUser.Cab.Id == cabId)
             .ToListAsync();
         }
         public async Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId)
@@ -227,6 +213,20 @@ namespace DVSRegister.Data.CAB
             return activeCabUserEmails;
         }
 
+        public async Task<ProviderProfile> GetProviderWithLatestVersionServices(int providerId, int cabId)
+        {
+            ProviderProfile provider = new();
+            provider = await context.ProviderProfile
+            .Include(p => p.Services)!.ThenInclude(p => p.CertificateReview)
+            .Include(p => p.Services)!.ThenInclude(p => p.PublicInterestCheck)
+            .Include(p => p.Services)!.ThenInclude(p => p.ServiceDraft)
+             .Include(p => p.ProviderProfileDraft)!
+            .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && s.IsCurrent == true)).ThenInclude(p => p.CabUser)
+            .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
+            .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+            return provider;
+        }
+
         #region Save/update
         public async Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile, string loggedInUserEmail)
         {
@@ -234,10 +234,22 @@ namespace DVSRegister.Data.CAB
             using var transaction = context.Database.BeginTransaction();
             try
             {
-                providerProfile.CreatedTime = DateTime.UtcNow;
-                var entity = await context.ProviderProfile.AddAsync(providerProfile);
-                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddProvider, loggedInUserEmail);
-                genericResponse.InstanceId = entity.Entity.Id;
+
+                var existingProvider = await context.ProviderProfile.Where(p => p.Id == providerProfile.Id).FirstOrDefaultAsync();
+                if (existingProvider != null)
+                {
+                    UpdateExistingProfileRecord(existingProvider, providerProfile);
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddProvider, loggedInUserEmail);
+                    genericResponse.InstanceId = existingProvider.Id;
+                }
+                else
+                {
+                    providerProfile.CreatedTime = DateTime.UtcNow;
+                    var entity = await context.ProviderProfile.AddAsync(providerProfile);
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddProvider, loggedInUserEmail);
+                    genericResponse.InstanceId = entity.Entity.Id;
+                }
+
                 transaction.Commit();
                 genericResponse.Success = true;
 
@@ -327,61 +339,98 @@ namespace DVSRegister.Data.CAB
 
 
 
-        public async Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail)
+        public async Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail, bool isReupload, InProgressApplicationParameters? inProgressApplicationParameters)
         {
             GenericResponse genericResponse = new();
             using var transaction = context.Database.BeginTransaction();
+
+
             try
             {
-                var existingService = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)
-               .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)
-               .Include(x=>x.ManualUnderPinningService)
-               .Where(x => x.ServiceKey == service.ServiceKey && x.IsCurrent == true).FirstOrDefaultAsync();
+                var existingService = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)!
+                .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG44Mapping)
+                .Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG45Mapping)
+                .Include(x => x.ManualUnderPinningService)
+                .Include(s => s.PublicInterestCheck)!
+                .Include(s => s.CertificateReview)!
+                .Include(s => s.ServiceDraft)!
+                .Include(s => s.ServiceRemovalRequest)!
+                .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
+                .Include(s => s.ActionLogs)
+                 .Include(s => s.ProceedApplicationConsentToken)
+                .Where(x => x.ServiceKey == service.ServiceKey && x.IsCurrent == true).FirstOrDefaultAsync();
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
-                    var cabTransferRequest = context.CabTransferRequest.Include(c => c.RequestManagement).Where(c => c.ServiceId == existingService.Id).OrderByDescending(c => c.Id).FirstOrDefault();
 
-                    if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                    if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft) //Resumisng save
                     {
-                        // reapplication - save as draft
                         UpdateExistingServiceRecord(service, existingService);
+                        if(inProgressApplicationParameters!=null)
+                        await RemoveInprogressApplications(loggedInUserEmail, inProgressApplicationParameters, existingService, service);
                         genericResponse.InstanceId = existingService.ServiceKey;
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
                     }
-                    else
+                    else // First time save
                     {
+
+                        if (!isReupload && existingService.ServiceStatus != ServiceStatusEnum.Published && existingService.ServiceStatus != ServiceStatusEnum.Removed && service.ServiceStatus != ServiceStatusEnum.SavedAsDraft
+
+                            && inProgressApplicationParameters != null)
+                        {
+                            await RemoveInprogressApplications(loggedInUserEmail, inProgressApplicationParameters, existingService);
+
+                        }
+                        else if (isReupload)
+                        {
+                            var cabTransferRequest = context.CabTransferRequest.Include(c => c.RequestManagement).Where(c => c.ServiceId == existingService.Id).OrderByDescending(c => c.Id).FirstOrDefault();
+
+                            //if it is a transfered service, update certificate upload flag, update provider status
+                            if (cabTransferRequest != null && cabTransferRequest.RequestManagement != null
+                              && cabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
+                              && cabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
+                              && cabTransferRequest.CertificateUploaded == false)
+                            {
+                                cabTransferRequest.CertificateUploaded = true;
+                                if (existingService.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || existingService.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
+                                    existingService.ServiceStatus = cabTransferRequest.PreviousServiceStatus;
+
+                                var existingProvider = await context.ProviderProfile
+                                    .Include(service => service.Services)
+                                    .FirstOrDefaultAsync(p => p.Id == service.ProviderProfileId);
+
+                                if (existingProvider != null)
+                                {
+                                    existingProvider.ModifiedTime = DateTime.UtcNow;
+                                }
+                            }
+                        }
+
+
                         //reapplication - insert new version of service
-                        existingService.IsCurrent = false;
-                        existingService.ModifiedTime = DateTime.UtcNow;
-                        int maxServiceVersion = await context.Service.Where(x => x.ServiceKey == service.ServiceKey).MaxAsync(s => s.ServiceVersion);
+
+
+                        var serviceList = await context.Service.Where(x => x.ServiceKey == service.ServiceKey).ToListAsync();
+                        int maxServiceVersion = serviceList.Any() ? serviceList.Max(s => s.ServiceVersion) : 0;
                         service.Id = 0; // to insert as new record
                         service.ServiceVersion = maxServiceVersion + 1;
                         service.CreatedTime = DateTime.UtcNow;
                         service.ModifiedTime = DateTime.UtcNow;
                         service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue ? null : service.ConformityExpiryDate;
                         service.ConformityIssueDate = service.ConformityIssueDate == DateTime.MinValue ? null : service.ConformityIssueDate;
-                        //if it is a transfered service, update certificate upload flag, update provider status
-                        if (cabTransferRequest != null && cabTransferRequest.RequestManagement != null
-                          && cabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
-                          && cabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
-                          && cabTransferRequest.CertificateUploaded == false)
-                        {
-                            cabTransferRequest.CertificateUploaded = true;
-                            if(existingService.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || existingService.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
-                            existingService.ServiceStatus = cabTransferRequest.PreviousServiceStatus;
-
-                            var existingProvider = await context.ProviderProfile
-                                .Include(service => service.Services)
-                                .FirstOrDefaultAsync(p => p.Id == service.ProviderProfileId);
-
-                            if (existingProvider != null)
-                            {                                               
-                                existingProvider.ModifiedTime = DateTime.UtcNow;                               
-                            }
-                        }
                         var entity = await context.Service.AddAsync(service);
+
+
+                        if (inProgressApplicationParameters?.HasInProgressApplication != true || service.ServiceStatus == ServiceStatusEnum.SavedAsDraft )
+                        {
+                            existingService.IsCurrent = false;
+                            existingService.ModifiedTime = DateTime.UtcNow;
+                            genericResponse.InstanceId = existingService.ServiceKey;
+                        }
+                        else
+                        {
+                            genericResponse.InstanceId = service.ServiceKey;
+                        }
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
-                        genericResponse.InstanceId = existingService.ServiceKey;
                     }
                     transaction.Commit();
                     genericResponse.Success = true;
@@ -402,6 +451,7 @@ namespace DVSRegister.Data.CAB
             return genericResponse;
         }
 
+     
 
         public async Task<GenericResponse> SaveServiceAmendments(Service service, string loggedInUserEmail)
         {
@@ -448,142 +498,128 @@ namespace DVSRegister.Data.CAB
 
 
 
-        public async Task<GenericResponse> UpdateCompanyInfo(ProviderProfile providerProfile, string loggedInUserEmail)
-        {
-            GenericResponse genericResponse = new();
-            using var transaction = context.Database.BeginTransaction();
-            try
-            {
-                var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfile.Id);
 
-                if (existingProvider !=null)
-                {
-                    existingProvider.RegisteredName = providerProfile.RegisteredName;
-                    existingProvider.TradingName = providerProfile.TradingName;
-                    if (existingProvider.HasParentCompany && !string.IsNullOrEmpty(providerProfile.ParentCompanyLocation))
-                    {
-                        existingProvider.ParentCompanyLocation = providerProfile.ParentCompanyLocation;
-                    }
-                    if (existingProvider.HasParentCompany && !string.IsNullOrEmpty(providerProfile.ParentCompanyRegisteredName))
-                    {
-                        existingProvider.ParentCompanyRegisteredName = providerProfile.ParentCompanyRegisteredName;
-                    }
-                    if (existingProvider.HasRegistrationNumber && !string.IsNullOrEmpty(providerProfile.CompanyRegistrationNumber))
-                    {
-                        existingProvider.CompanyRegistrationNumber = providerProfile.CompanyRegistrationNumber;
-                    }
-                    else
-                    {
-                        existingProvider.DUNSNumber = providerProfile.DUNSNumber;
-                    }
-
-                    existingProvider.CabEditedTime = DateTime.UtcNow;
-                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.CompanyInfoUpdate, loggedInUserEmail);
-                    transaction.Commit();
-                    genericResponse.Success = true;
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                genericResponse.Success = false;
-                transaction.Rollback();
-                logger.LogError(ex, "Error in UpdateCompanyInfo");
-            }
-            return genericResponse;
-        }
-        public async Task<GenericResponse> UpdatePrimaryContact(ProviderProfile providerProfile, string loggedInUserEmail)
-        {
-            GenericResponse genericResponse = new();
-            using var transaction = context.Database.BeginTransaction();
-            try
-            {
-                var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfile.Id);
-                if (existingProvider !=null)
-                {
-                    existingProvider.PrimaryContactFullName= providerProfile.PrimaryContactFullName;
-                    existingProvider.PrimaryContactJobTitle= providerProfile.PrimaryContactJobTitle;
-                    existingProvider.PrimaryContactEmail = providerProfile.PrimaryContactEmail;
-                    existingProvider.PrimaryContactTelephoneNumber = providerProfile.PrimaryContactTelephoneNumber;
-                    existingProvider.CabEditedTime = DateTime.UtcNow;
-                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.PrimaryContactUpdate, loggedInUserEmail);
-                    transaction.Commit();
-                    genericResponse.Success = true;
-
-                }
-            }
-            catch (Exception ex)
-            {
-                genericResponse.Success = false;
-                transaction.Rollback();
-                logger.LogError(ex, "Error in UpdatePrimaryContact");
-            }
-            return genericResponse;
-        }
-        public async Task<GenericResponse> UpdateSecondaryContact(ProviderProfile providerProfile, string loggedInUserEmail)
-        {
-            GenericResponse genericResponse = new();
-            using var transaction = context.Database.BeginTransaction();
-            try
-            {
-                var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfile.Id);
-                if (existingProvider !=null)
-                {
-                    existingProvider.SecondaryContactFullName= providerProfile.SecondaryContactFullName;
-                    existingProvider.SecondaryContactJobTitle= providerProfile.SecondaryContactJobTitle;
-                    existingProvider.SecondaryContactEmail = providerProfile.SecondaryContactEmail;
-                    existingProvider.SecondaryContactTelephoneNumber = providerProfile.SecondaryContactTelephoneNumber;
-                    existingProvider.CabEditedTime = DateTime.UtcNow;
-                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SecondaryContactUpdate, loggedInUserEmail);
-                    transaction.Commit();
-                    genericResponse.Success = true;
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                genericResponse.Success = false;
-                transaction.Rollback();
-                logger.LogError(ex, "Error in UpdateSecondaryContact");
-            }
-            return genericResponse;
-        }
-        public async Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfile providerProfile, string loggedInUserEmail)
-        {
-            GenericResponse genericResponse = new();
-            using var transaction = context.Database.BeginTransaction();
-            try
-            {
-                var existingProvider = await context.ProviderProfile.FirstOrDefaultAsync(p => p.Id == providerProfile.Id);
-                if (existingProvider !=null)
-                {
-                    existingProvider.PublicContactEmail= providerProfile.PublicContactEmail;
-                    existingProvider.ProviderTelephoneNumber = providerProfile.ProviderTelephoneNumber;
-                    existingProvider.ProviderWebsiteAddress = providerProfile.ProviderWebsiteAddress;                  
-                    existingProvider.CabEditedTime = DateTime.UtcNow;
-                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.PublicContactUpdate, loggedInUserEmail);
-                    transaction.Commit();
-                    genericResponse.Success = true;
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                genericResponse.Success = false;
-                transaction.Rollback();
-                logger.LogError(ex, "Error in UpdatePublicProviderInformation");
-            }
-            return genericResponse;
-        }
         #endregion
 
 
         #region private methods
 
+        private async Task RemoveInprogressApplications(string loggedInUserEmail, InProgressApplicationParameters? inProgressApplicationParameters, Service? existingService, Service? newService = null)
+        {
+            if (inProgressApplicationParameters == null) return;
 
+            if ( (inProgressApplicationParameters.HasInProgressApplication && inProgressApplicationParameters.InProgressApplicationId == existingService?.Id)
+                || (inProgressApplicationParameters.InProgressAndUpdateRequested && inProgressApplicationParameters.InProgressAndUpdateRequestedId == existingService?.Id))
+            {
+                context.Remove(existingService);
+                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+            }
+           
+
+            else if( inProgressApplicationParameters.HasInProgressApplication && inProgressApplicationParameters.InProgressApplicationId != existingService?.Id               
+                && newService?.ServiceStatus != ServiceStatusEnum.SavedAsDraft && newService != null)
+            {
+                var inprogressServiceBeforeDraft = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)!
+                .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG44Mapping)
+                .Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG45Mapping)
+                .Include(x => x.ManualUnderPinningService)
+                .Include(s => s.PublicInterestCheck)!
+                .Include(s => s.CertificateReview)!
+                .Include(s => s.ServiceDraft)!
+                .Include(s => s.ServiceRemovalRequest)!
+                .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
+                .Include(s => s.ActionLogs)
+                 .Include(s => s.ProceedApplicationConsentToken)
+                .Where(x => x.Id == inProgressApplicationParameters.InProgressApplicationId).FirstOrDefaultAsync();
+
+                if(inprogressServiceBeforeDraft!=null)
+                {
+                    context.Remove(inprogressServiceBeforeDraft);
+                    existingService.ServiceVersion = existingService.ServiceVersion - 1; // as previous service is removed, decrease version by 1
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+                }
+              
+            }
+
+            else if (inProgressApplicationParameters.InProgressAndUpdateRequested && inProgressApplicationParameters.InProgressAndUpdateRequestedId != existingService?.Id
+               && newService?.ServiceStatus != ServiceStatusEnum.SavedAsDraft && newService != null)
+            {
+                var inprogressServiceBeforeDraft = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)!
+                .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG44Mapping)
+                .Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG45Mapping)
+                .Include(x => x.ManualUnderPinningService)
+                .Include(s => s.PublicInterestCheck)!
+                .Include(s => s.CertificateReview)!
+                .Include(s => s.ServiceDraft)!
+                .Include(s => s.ServiceRemovalRequest)!
+                .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
+                .Include(s => s.ActionLogs)
+                 .Include(s => s.ProceedApplicationConsentToken)
+                .Where(x => x.Id == inProgressApplicationParameters.InProgressAndUpdateRequestedId).FirstOrDefaultAsync();
+
+                if (inprogressServiceBeforeDraft != null)
+                {
+                    context.Remove(inprogressServiceBeforeDraft);
+                    existingService.ServiceVersion = existingService.ServiceVersion - 1; // as previous service is removed, decrease version by 1
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+                }
+
+            }
+
+
+
+            if (inProgressApplicationParameters.HasActiveRemovalRequest && inProgressApplicationParameters.InProgressRemovalRequestServiceId > 0)
+            {
+                var removalService = await context.Service
+               .Include(s => s.ServiceRemovalRequest)!.Where(x => x.Id == inProgressApplicationParameters.InProgressRemovalRequestServiceId).FirstOrDefaultAsync();
+                removalService.ServiceStatus = removalService.ServiceRemovalRequest.PreviousServiceStatus;
+                context.Remove(removalService.ServiceRemovalRequest);
+                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+            }
+
+            if (inProgressApplicationParameters.HasActiveReassignmentRequest && inProgressApplicationParameters.InProgressReassignmentRequestServiceId > 0)
+            {
+                var reassignmentService = await context.Service
+                .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
+                .Where(x => x.Id == inProgressApplicationParameters.InProgressReassignmentRequestServiceId).FirstOrDefaultAsync();
+
+                if (reassignmentService != null)
+                {
+                    var transferRequest = reassignmentService.CabTransferRequest!.OrderByDescending(c => c.Id).FirstOrDefault();
+                    var request = transferRequest.RequestManagement;
+                    reassignmentService.ServiceStatus = transferRequest.PreviousServiceStatus;
+                    context.Remove(transferRequest);
+                    context.Remove(request);
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+
+
+                }
+
+            }
+
+            if (inProgressApplicationParameters.HasActiveUpdateRequest && inProgressApplicationParameters.InProgressUpdateRequestServiceIds != null && inProgressApplicationParameters.InProgressUpdateRequestServiceIds.Count > 0)
+            {
+                foreach (var serviceId in inProgressApplicationParameters.InProgressUpdateRequestServiceIds)
+                {
+                    if (serviceId != inProgressApplicationParameters.InProgressApplicationId)// if not already removed in first condition
+                    {
+                        var updateRequestService = await context.Service
+                         .Include(s => s.ServiceDraft)!
+                         .Where(x => x.Id == serviceId).FirstOrDefaultAsync();
+
+                        if (updateRequestService != null)
+                        {
+
+                            updateRequestService.ServiceStatus = updateRequestService.ServiceDraft.PreviousServiceStatus;
+                            context.Remove(updateRequestService.ServiceDraft);
+
+                        }
+                    }
+                }
+
+                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+            }
+        }
         private void UpdateExistingServiceRecord(Service service, Service? existingService)
         {
             existingService.TrustFrameworkVersionId = service.TrustFrameworkVersionId;
@@ -738,7 +774,41 @@ namespace DVSRegister.Data.CAB
             }
         }
 
-     
+        private void UpdateExistingProfileRecord(ProviderProfile existingProfile, ProviderProfile newProfile)
+        {
+
+            existingProfile.ProviderStatus = newProfile.ProviderStatus;
+            existingProfile.RegisteredName = newProfile.RegisteredName ?? existingProfile.RegisteredName;
+            existingProfile.TradingName = newProfile.TradingName ?? existingProfile.TradingName;
+            existingProfile.HasRegistrationNumber = newProfile.HasRegistrationNumber ?? existingProfile.HasRegistrationNumber;
+            if (newProfile.HasRegistrationNumber == true)
+            {
+                existingProfile.CompanyRegistrationNumber = newProfile.CompanyRegistrationNumber ?? existingProfile.CompanyRegistrationNumber;
+                existingProfile.DUNSNumber = null;
+            }
+            else if (newProfile.HasRegistrationNumber == false)
+            {
+                existingProfile.DUNSNumber = newProfile.DUNSNumber ?? existingProfile.DUNSNumber;
+                existingProfile.CompanyRegistrationNumber = null;
+            }
+
+
+            existingProfile.HasParentCompany = newProfile.HasParentCompany ?? existingProfile.HasParentCompany;
+            existingProfile.ParentCompanyRegisteredName = newProfile.ParentCompanyRegisteredName ?? existingProfile.ParentCompanyRegisteredName;
+            existingProfile.ParentCompanyLocation = newProfile.ParentCompanyLocation ?? existingProfile.ParentCompanyLocation;
+            existingProfile.PrimaryContactFullName = newProfile.PrimaryContactFullName ?? existingProfile.PrimaryContactFullName;
+            existingProfile.PrimaryContactJobTitle = newProfile.PrimaryContactJobTitle ?? existingProfile.PrimaryContactJobTitle;
+            existingProfile.PrimaryContactEmail = newProfile.PrimaryContactEmail ?? existingProfile.PrimaryContactEmail;
+            existingProfile.PrimaryContactTelephoneNumber = newProfile.PrimaryContactTelephoneNumber ?? existingProfile.PrimaryContactTelephoneNumber;
+            existingProfile.SecondaryContactFullName = newProfile.SecondaryContactFullName ?? existingProfile.SecondaryContactFullName;
+            existingProfile.SecondaryContactJobTitle = newProfile.SecondaryContactJobTitle ?? existingProfile.SecondaryContactJobTitle;
+            existingProfile.SecondaryContactEmail = newProfile.SecondaryContactEmail ?? existingProfile.SecondaryContactEmail;
+            existingProfile.SecondaryContactTelephoneNumber = newProfile.SecondaryContactTelephoneNumber ?? existingProfile.SecondaryContactTelephoneNumber;
+            existingProfile.PublicContactEmail = newProfile.PublicContactEmail ?? existingProfile.PublicContactEmail;
+            existingProfile.ProviderTelephoneNumber = newProfile.ProviderTelephoneNumber ?? existingProfile.ProviderTelephoneNumber;
+            existingProfile.ProviderWebsiteAddress = newProfile.ProviderWebsiteAddress ?? existingProfile.ProviderWebsiteAddress;
+            existingProfile.LinkToContactPage = newProfile.LinkToContactPage ?? existingProfile.LinkToContactPage;
+        }
         #endregion
     }
 }

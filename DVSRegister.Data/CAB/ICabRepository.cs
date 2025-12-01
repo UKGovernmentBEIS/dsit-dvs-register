@@ -21,16 +21,13 @@ namespace DVSRegister.Data.CAB
         public Task<Service> GetServiceDetailsWithProvider(int serviceId, int cabId);
         public Task<(int, List<CabTransferRequest>)> GetPendingReassignRequestsCount(int cabId);
         public  Task<List<string>> GetCabEmailListForServices(List<int> serviceIds);
+        public Task<ProviderProfile> GetProviderWithLatestVersionServices(int providerId, int cabId);
 
         #region Save/update
         public Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile, string loggedInUserEmail);
-        public Task<GenericResponse> SaveService(Service service, string loggedInUserEmail);
-        public Task<GenericResponse> UpdateCompanyInfo(ProviderProfile providerProfile, string loggedInUserEmail);
-        public Task<GenericResponse> UpdatePrimaryContact(ProviderProfile providerProfile, string loggedInUserEmail);
-        public Task<GenericResponse> UpdateSecondaryContact(ProviderProfile providerProfile, string loggedInUserEmail);
-        public Task<GenericResponse> UpdatePublicProviderInformation(ProviderProfile providerProfile, string loggedInUserEmail);
+        public Task<GenericResponse> SaveService(Service service, string loggedInUserEmail);   
 
-        public Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail);
+        public Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail, bool isReupload, InProgressApplicationParameters? inProgressApplicationParameters);
         public Task<GenericResponse> SaveServiceAmendments(Service service, string loggedInUserEmail);
         #endregion
 

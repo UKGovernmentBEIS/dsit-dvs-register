@@ -2,15 +2,13 @@
 @{
     ViewData["Title"] = "Before you create a profile";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    ViewData["ActiveNav"] = "AllProviders";
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "LandingPage", "Cab", null, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-
-
                 <h1 class="govuk-heading-xl">Before you create a profile</h1>
 
                 <p class="govuk-body">Before starting your submission, check that you have all the required information listed below. You must complete your submission in a single session as the application does not support saving and resuming at a later time.</p>
@@ -27,9 +25,14 @@
                     <li>public contact details</li>
                     <li>public telephone number</li>
                     <li>website address</li>
+                    <li>link to a contact us page</li>
                 </ul>
 
-                <p class="govuk-body">Check your information carefully before proceeding and make sure all contact details are up to date.</p>
+                <p class="govuk-body">
+                    Check your information carefully before proceeding and make sure all
+                    contact details are up to date. Once your submission is approved, some of the
+                    public company information you have provided will be publicly available on
+                    the register of digital identity and attribute services.</p>
 
                 <p class="govuk-body">@Html.ActionLink("Continue", "RegisteredName", "CabProvider", null, new { @class = "govuk-button" })</p>
             </div>

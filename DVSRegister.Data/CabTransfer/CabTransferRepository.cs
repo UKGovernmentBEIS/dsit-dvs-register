@@ -16,49 +16,42 @@ namespace DVSRegister.Data.CabTransfer
             this.context = context;
             this.logger = logger;
         }
-
-        public async Task<List<CabTransferRequest>> GetServiceTransferRequests(int cabId)
-        {
-            return await context.CabTransferRequest.Include(r=>r.RequestManagement).Include(r=>r.Service).ThenInclude(r=>r.Provider).Include(r => r.ToCab)
-            .Include(r=>r.FromCabUser)
-           .Where(r=>r.ToCabId == cabId && r.RequestManagement.RequestStatus!=RequestStatusEnum.AwaitingRemoval)
-           .OrderBy(r=>r.DecisionTime).ToListAsync();
-        }
+   
 
         public async Task<Service> GetServiceDetailsWithCabTransferDetails(int serviceId, int cabId)
         {
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
-             .Include(p => p.CabTransferRequest).ThenInclude(p=>p.RequestManagement)
+             .Include(p => p.CabTransferRequest)!.ThenInclude(p=>p.RequestManagement)
               .Include(p => p.Provider)
               .Include(p => p.TrustFrameworkVersion)
               .Include(p => p.UnderPinningService).ThenInclude(p => p.Provider)
               .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(p=>p.Cab)
                .Include(p => p.ManualUnderPinningService).ThenInclude(p=>p.Cab)
-            .Include(p => p.ServiceRoleMapping).ThenInclude(s => s.Role);
+            .Include(p => p.ServiceRoleMapping)!.ThenInclude(s => s.Role);
 
 
             IQueryable<Service> queryWithOptionalIncludes = baseQuery;
             if (await baseQuery.AnyAsync(p => p.ServiceQualityLevelMapping != null && p.ServiceQualityLevelMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)!
                     .ThenInclude(sq => sq.QualityLevel);
             }
 
             if (await baseQuery.AnyAsync(p => p.ServiceSupSchemeMapping != null && p.ServiceSupSchemeMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!
                     .ThenInclude(ssm => ssm.SupplementaryScheme);
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping).ThenInclude(s=>s.SchemeGPG44Mapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!.ThenInclude(s=>s.SchemeGPG44Mapping)!
                    .ThenInclude(ssm => ssm.QualityLevel);
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping).ThenInclude(s => s.SchemeGPG45Mapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)!.ThenInclude(s => s.SchemeGPG45Mapping)!
                   .ThenInclude(ssm => ssm.IdentityProfile);
             }
 
             if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)!
                     .ThenInclude(ssm => ssm.IdentityProfile);
             }
             var service = await queryWithOptionalIncludes.AsNoTracking().FirstOrDefaultAsync() ?? new Service();
@@ -84,13 +77,13 @@ namespace DVSRegister.Data.CabTransfer
                 var cabUser = await context.CabUser.Where(x => x.CabEmail == loggedInUserEmail && x.IsActive).FirstOrDefaultAsync();
                 var previousVersions = await context.Service.Where(x => x.ServiceKey == entity.Service.ServiceKey && x.ServiceVersion < entity.Service.ServiceVersion).ToListAsync();
                 var inProgressServices = await context.Service.Include(c=>c.CertificateReview).Include(p=>p.PublicInterestCheck).Include(x=>x.ActionLogs)
-                    .Where(x => x.ServiceKey == entity.Service.ServiceKey && x.ServiceVersion > entity.Service.ServiceVersion).ToListAsync();
+                    .Where(x => x.ServiceKey == entity!.Service.ServiceKey && x.ServiceVersion > entity.Service.ServiceVersion).ToListAsync();
                 if (entity != null && entity.RequestManagement != null && entity.Service != null && 
                 (entity.Service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || entity.Service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
                 {
                     if(approve)
                     {
-                        var existingMapping = await context.ProviderProfileCabMapping.FirstOrDefaultAsync(m => m.CabId == cabUser.CabId && m.ProviderId == providerProfileId);
+                        var existingMapping = await context.ProviderProfileCabMapping.FirstOrDefaultAsync(m => m.CabId == cabUser!.CabId && m.ProviderId == providerProfileId);
                         if (existingMapping == null)
                         {
                             await context.ProviderProfileCabMapping.AddAsync(new ProviderProfileCabMapping
@@ -100,7 +93,7 @@ namespace DVSRegister.Data.CabTransfer
                             });
                         }
                         entity.RequestManagement.RequestStatus = RequestStatusEnum.Approved;
-                        entity.Service.CabUserId =  cabUser.Id;
+                        entity.Service.CabUserId =  cabUser!.Id;
                         entity.Service.IsCurrent = true;
                         foreach(var previousService in previousVersions)
                         {

@@ -1,4 +1,4 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models.CAB.Service;
 using DVSRegister.Models.CabTrustFramework;
@@ -69,52 +69,11 @@ namespace DVSRegister.Models.CAB
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
         [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
         public string? UnderPinningProviderName { get; set; }
-
         public SelectCabViewModel? SelectCabViewModel { get; set; }
-
         public DateTime? UnderPinningServiceExpiryDate { get; set; }
+        public bool? IsTFVersionChanged { get; set; }
+        public bool? IsReupload { get; set; }
 
-
-        public void ResetInpuData()
-        {
-            ServiceName = null;
-            ServiceURL = null;
-            CompanyAddress = null;
-            ServiceId = 0;
-
-            QualityLevelViewModel = new QualityLevelViewModel
-            {
-                SelectedLevelOfProtections = new List<QualityLevelDto>(),
-                SelectedQualityofAuthenticators = new List<QualityLevelDto>()
-            };
-
-            RoleViewModel = new RoleViewModel
-            {
-                SelectedRoles = new List<RoleDto>()
-            };
-
-            IdentityProfileViewModel = new IdentityProfileViewModel
-            {
-                SelectedIdentityProfiles = new List<IdentityProfileDto>()
-            };
-
-            SupplementarySchemeViewModel = new SupplementarySchemeViewModel
-            {
-                SelectedSupplementarySchemes = new List<SupplementarySchemeDto>()
-            };
-
-            HasSupplementarySchemes = null;
-            HasGPG44 = null;
-            HasGPG45 = null;
-
-            FileLink = null;
-            FileName = null;
-            FileSizeInKb = null;
-            ConformityIssueDate = null;
-            ConformityExpiryDate = null;
-            TFVersionViewModel = null;
-         
-           
-        }
+       
     }
 }

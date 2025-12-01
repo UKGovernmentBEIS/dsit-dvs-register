@@ -15,6 +15,9 @@ namespace DVSRegister.Models.CAB
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's website address")]
         [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address")]
         public string? ProviderWebsiteAddress { get; set; }
+
+        public string? LinkToContactPage { get; set; }
+        
         public int ProviderId { get; set; }
 
        

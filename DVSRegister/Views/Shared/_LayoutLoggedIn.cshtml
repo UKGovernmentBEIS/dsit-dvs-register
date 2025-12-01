@@ -82,6 +82,33 @@ await Html.RenderPartialAsync("_CookieBanner");
         </nav>
     </div>
 </header>
+    @if (!String.IsNullOrEmpty(ViewData["ActiveNav"]?.ToString()))
+    {
+        <div class="govuk-service-navigation"
+             data-module="govuk-service-navigation">
+            <div class="govuk-width-container">
+                <div class="govuk-service-navigation__container">
+                    <nav aria-label="Menu" class="govuk-service-navigation__wrapper">
+                        <button type="button" class="govuk-service-navigation__toggle govuk-js-service-navigation-toggle" aria-controls="navigation" hidden>
+                            Menu
+                        </button>
+                        <ul class="govuk-service-navigation__list" id="navigation">
+                            <li class="govuk-service-navigation__item @(ViewData["ActiveNav"]?.ToString() == "OpenTasks" ? "govuk-service-navigation__item--active" : "")">
+                                <a class="govuk-service-navigation__link" href="@Url.Action("DraftApplications", "Home")" aria-current="@(ViewData["ActiveNav"]?.ToString() == "OpenTasks" ? "true" : "false")">
+                                    Open tasks
+                                </a>
+                            </li>
+                            <li class="govuk-service-navigation__item @(ViewData["ActiveNav"]?.ToString() == "AllProviders" ? "govuk-service-navigation__item--active" : "")">
+                                <a class="govuk-service-navigation__link" href="@Url.Action("AllProviders", "Home")" aria-current="@(ViewData["ActiveNav"]?.ToString() == "AllProviders" ? "true" : "false")">
+                                    All providers
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    }
 
 <div class="govuk-width-container">
     <div class="govuk-phase-banner">

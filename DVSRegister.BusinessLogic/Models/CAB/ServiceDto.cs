@@ -55,8 +55,9 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public int? ManualUnderPinningServiceId { get; set; }
         public ManualUnderPinningServiceDto ManualUnderPinningService { get; set; }
         public bool? IsManualServiceLinkedToMultipleServices { get; set; }
-
         public bool? IsUnderPinningServicePublished { get; set; }
+        public string NewOrResubmission { get; set; }
+        public bool? IsResubmission { get; set; }
         public ServiceDraftDto? serviceDraft { get; set; }
         public bool IsInRegister { get; set; }
 
@@ -64,6 +65,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public ServiceDto? PublishedServiceVersion { get; set; }
 
         public DateTime? LastUpdated { get; set; }
+
+      public bool CertificateUploadRequired { get; set; }
 
 
     }
