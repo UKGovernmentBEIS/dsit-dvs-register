@@ -216,7 +216,11 @@ namespace DVSRegister.Data.CAB
         public async Task<ProviderProfile> GetProviderWithLatestVersionServices(int providerId, int cabId)
         {
             ProviderProfile provider = new();
-            provider = await context.ProviderProfile.Include(p => p.Services)!.ThenInclude(p => p.CertificateReview)
+            provider = await context.ProviderProfile
+            .Include(p => p.Services)!.ThenInclude(p => p.CertificateReview)
+            .Include(p => p.Services)!.ThenInclude(p => p.PublicInterestCheck)
+            .Include(p => p.Services)!.ThenInclude(p => p.ServiceDraft)
+             .Include(p => p.ProviderProfileDraft)!
             .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && s.IsCurrent == true)).ThenInclude(p => p.CabUser)
             .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
@@ -504,13 +508,15 @@ namespace DVSRegister.Data.CAB
         {
             if (inProgressApplicationParameters == null) return;
 
-            if (inProgressApplicationParameters.HasInProgressApplication && inProgressApplicationParameters.InProgressApplicationId == existingService?.Id)
+            if ( (inProgressApplicationParameters.HasInProgressApplication && inProgressApplicationParameters.InProgressApplicationId == existingService?.Id)
+                || (inProgressApplicationParameters.InProgressAndUpdateRequested && inProgressApplicationParameters.InProgressAndUpdateRequestedId == existingService?.Id))
             {
                 context.Remove(existingService);
                 await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
             }
+           
 
-            else if (inProgressApplicationParameters.HasInProgressApplication && inProgressApplicationParameters.InProgressApplicationId != existingService?.Id
+            else if( inProgressApplicationParameters.HasInProgressApplication && inProgressApplicationParameters.InProgressApplicationId != existingService?.Id               
                 && newService?.ServiceStatus != ServiceStatusEnum.SavedAsDraft && newService != null)
             {
                 var inprogressServiceBeforeDraft = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)!
@@ -525,8 +531,39 @@ namespace DVSRegister.Data.CAB
                 .Include(s => s.ActionLogs)
                  .Include(s => s.ProceedApplicationConsentToken)
                 .Where(x => x.Id == inProgressApplicationParameters.InProgressApplicationId).FirstOrDefaultAsync();
-                context.Remove(inprogressServiceBeforeDraft);
-                await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+
+                if(inprogressServiceBeforeDraft!=null)
+                {
+                    context.Remove(inprogressServiceBeforeDraft);
+                    existingService.ServiceVersion = existingService.ServiceVersion - 1; // as previous service is removed, decrease version by 1
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+                }
+              
+            }
+
+            else if (inProgressApplicationParameters.InProgressAndUpdateRequested && inProgressApplicationParameters.InProgressAndUpdateRequestedId != existingService?.Id
+               && newService?.ServiceStatus != ServiceStatusEnum.SavedAsDraft && newService != null)
+            {
+                var inprogressServiceBeforeDraft = await context.Service.Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)!
+                .Include(x => x.ServiceQualityLevelMapping).Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG44Mapping)
+                .Include(x => x.ServiceSupSchemeMapping)!.ThenInclude(x => x.SchemeGPG45Mapping)
+                .Include(x => x.ManualUnderPinningService)
+                .Include(s => s.PublicInterestCheck)!
+                .Include(s => s.CertificateReview)!
+                .Include(s => s.ServiceDraft)!
+                .Include(s => s.ServiceRemovalRequest)!
+                .Include(s => s.CabTransferRequest)!.ThenInclude(tr => tr.RequestManagement)
+                .Include(s => s.ActionLogs)
+                 .Include(s => s.ProceedApplicationConsentToken)
+                .Where(x => x.Id == inProgressApplicationParameters.InProgressAndUpdateRequestedId).FirstOrDefaultAsync();
+
+                if (inprogressServiceBeforeDraft != null)
+                {
+                    context.Remove(inprogressServiceBeforeDraft);
+                    existingService.ServiceVersion = existingService.ServiceVersion - 1; // as previous service is removed, decrease version by 1
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
+                }
+
             }
 
 

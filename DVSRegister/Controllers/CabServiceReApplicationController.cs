@@ -66,12 +66,12 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
         
             var serviceList = await cabService.GetServiceList(serviceSummary.ServiceKey, CabId);
-            if(serviceSummary.IsReupload == null || serviceSummary.IsReupload == false)
+            if(!serviceSummary.IsReupload.GetValueOrDefault())
             {
                   InProgressApplicationParameters inProgressApplicationParameters =   ViewModelHelper.GetInProgressApplicationParameters(serviceList);
           
                 if (inProgressApplicationParameters.HasInProgressApplication || inProgressApplicationParameters.HasActiveReassignmentRequest
-                 || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.LatestVersionInProgressAndUpdateRequested)
+                 || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.InProgressAndUpdateRequested)
                 {
                     return RedirectToAction("StartInProgressApplicationRemoval");
 
