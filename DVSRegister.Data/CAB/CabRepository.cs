@@ -373,7 +373,7 @@ namespace DVSRegister.Data.CAB
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
 
-                    if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft) //Resumisng save
+                    if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft) //Resuming save
                     {
                         UpdateExistingServiceRecord(service, existingService);
                         if(inProgressApplicationParameters!=null)
@@ -618,7 +618,7 @@ namespace DVSRegister.Data.CAB
                          .Include(s => s.ServiceDraft)!
                          .Where(x => x.Id == serviceId).FirstOrDefaultAsync();
 
-                        if (updateRequestService != null)
+                        if (updateRequestService != null && updateRequestService.ServiceDraft != null)
                         {
 
                             updateRequestService.ServiceStatus = updateRequestService.ServiceDraft.PreviousServiceStatus;

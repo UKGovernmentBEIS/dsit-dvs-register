@@ -336,8 +336,8 @@ namespace DVSRegister.Models
 
 
                 List<ServiceDto> updateRequestServices = inProgressApplicationParameters.InProgressAndUpdateRequested ?
-                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested && x.IsCurrent == false).ToList() ?? null! :
-                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested).ToList() ?? null!;
+                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested && x.Provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested && x.IsCurrent == false).ToList() ?? null! :
+                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested && x.Provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested).ToList() ?? null!;
                 if (updateRequestServices != null && updateRequestServices.Count > 0)
                 {
                     inProgressApplicationParameters.HasActiveUpdateRequest = true;

@@ -38,7 +38,8 @@ namespace DVSRegister.Controllers
                        && latestCabTransferRequest.CertificateUploaded == false;
            
 
-            if (currentServiceVersion.ServiceStatus != ServiceStatusEnum.SavedAsDraft && serviceList != null && (serviceList.Any(x=>x.IsInRegister == true) 
+            if (serviceList != null && !serviceList.Any(x=>x.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                 && (serviceList.Any(x=>x.IsInRegister == true) 
                 || serviceList.Any(x => x.ServiceStatus == ServiceStatusEnum.Removed)) )
             {
                 serviceVersions.CurrentServiceVersion.EnableResubmission = true;

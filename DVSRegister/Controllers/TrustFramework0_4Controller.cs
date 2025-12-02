@@ -1266,7 +1266,7 @@ namespace DVSRegister.Controllers
             if (genericResponse.Success)
             {
                 HttpContext?.Session.Remove("ServiceSummary");
-                return RedirectToAction("DraftApplications", "Home");
+                return RedirectToAction("ServiceDraftDetails", "CabServiceReApplication", new { serviceId = serviceDto.Id });
             }
             else
             {

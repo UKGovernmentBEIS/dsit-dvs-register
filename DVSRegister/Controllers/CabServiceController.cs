@@ -50,7 +50,7 @@ namespace DVSRegister.Controllers
 
 
         #region Service Name
-        [HttpGet("name-of-service/{fromSummaryPage?}/{fromDetailsPage?}")]
+        [HttpGet("name-of-service")]
         public IActionResult ServiceName(bool fromSummaryPage = false, bool fromDetailsPage = false)
         {           
             ViewBag.fromSummaryPage = fromSummaryPage;
@@ -85,7 +85,7 @@ namespace DVSRegister.Controllers
         #endregion
 
         #region Service URL
-        [HttpGet("service-url/{fromSummaryPage?}/{fromDetailsPage?}")]
+        [HttpGet("service-url")]
         public IActionResult ServiceURL(bool fromSummaryPage=false, bool fromDetailsPage = false)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
@@ -766,54 +766,24 @@ namespace DVSRegister.Controllers
         [HttpPost("check-your-answers")]
         public async Task<IActionResult> SaveServiceSummary()
         {
+            InProgressApplicationParameters parameters = null!;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-
-            if(!summaryViewModel.IsReupload.GetValueOrDefault())
+            if (!summaryViewModel.IsReupload.GetValueOrDefault())
             {
                 var serviceList = await cabService.GetServiceList(summaryViewModel.ServiceKey, CabId);
                 InProgressApplicationParameters inProgressApplicationParameters = ViewModelHelper.GetInProgressApplicationParameters(serviceList);
                 if (inProgressApplicationParameters != null && (inProgressApplicationParameters.HasInProgressApplication || inProgressApplicationParameters.HasActiveReassignmentRequest
                 || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.InProgressAndUpdateRequested))
                 {
-                    return RedirectToAction("ConfirmInProgressApplicationRemoval");
+                    parameters = inProgressApplicationParameters;
                 }
-                else
-                {
-                    return await SaveServiceSummary(summaryViewModel, inProgressApplicationParameters);
-                }
+            }
+            return await SaveServiceSummary(summaryViewModel, parameters);
 
-            }
-            else
-            {
-                return await SaveServiceSummary(summaryViewModel, null);
-            }
-           
-            
         }
 
-        [HttpGet("confirm-in-progress-application-removal")]
-        public IActionResult ConfirmInProgressApplicationRemoval()
-        {
-            return View();
-        }
+       
 
-        [HttpPost("confirm-in-progress-application-removal")]
-        public async Task<IActionResult> SaveConfirmInProgressApplicationRemoval()
-        {
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            if(!summaryViewModel.IsReupload.GetValueOrDefault())
-            {
-                var serviceList = await cabService.GetServiceList(summaryViewModel.ServiceKey, CabId);
-                InProgressApplicationParameters inProgressApplicationParameters = ViewModelHelper.GetInProgressApplicationParameters(serviceList);
-                return await SaveServiceSummary(summaryViewModel, inProgressApplicationParameters);
-            }
-            else
-            {
-                return await SaveServiceSummary(summaryViewModel, null);
-            }
-          
-            
-        }
 
        
 
@@ -854,22 +824,23 @@ namespace DVSRegister.Controllers
 
             if (serviceSummary.IsResubmission)
             {
-                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail, serviceSummary.IsReupload.GetValueOrDefault(), null);
+                genericResponse = await cabService.SaveServiceReApplication(serviceDto, UserEmail, serviceSummary.IsReupload.GetValueOrDefault(), null);                              
             }
             else
             {
-                genericResponse = await cabService.SaveService(serviceDto, UserEmail);
+                genericResponse = await cabService.SaveService(serviceDto, UserEmail);               
             }
-         
+
             if (genericResponse.Success)
             {
                 HttpContext?.Session.Remove("ServiceSummary");
-                return RedirectToAction("DraftApplications", "Home");
+                return RedirectToAction("ServiceDraftDetails", "CabServiceReApplication", new { serviceId = serviceDto.Id });
             }
             else
             {
                 throw new InvalidOperationException("SaveAsDraftAndRedirect: Failed to save draft");
             }
+
 
         }
         private async Task<IActionResult> SaveServiceSummary(ServiceSummaryViewModel summaryViewModel, InProgressApplicationParameters? inProgressApplicationParameters)
