@@ -2,6 +2,7 @@
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data.Entities;
 using DVSRegister.Models.CAB.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,11 +23,11 @@ namespace DVSRegister.Controllers
             
             ServiceVersionViewModel serviceVersions = new();
             var serviceList = await cabService.GetServiceList(serviceKey, CabId);
-            ServiceDto latestSubmission = serviceList?.FirstOrDefault(x => x.IsCurrent == true) ?? new ServiceDto();
-
+            ServiceDto latestSubmission = serviceList?.Where(s => !(s.ServiceStatus == ServiceStatusEnum.SavedAsDraft  || s.ServiceStatus == ServiceStatusEnum.AmendmentsRequired))
+                .OrderByDescending(s=> s.ServiceVersion).FirstOrDefault() ?? new ServiceDto();
             ServiceDto currentServiceVersion = await cabService.GetServiceDetails(latestSubmission.Id, CabId);
             serviceVersions.CurrentServiceVersion = currentServiceVersion;
-            serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.IsCurrent != true).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
+            serviceVersions.ServiceHistoryVersions = serviceList?.Where(x => x.ServiceVersion < currentServiceVersion.ServiceVersion).OrderByDescending(x=> x.PublishedTime).ToList()?? new ();
             serviceVersions.ProviderProfileId = currentServiceVersion.ProviderProfileId;
             serviceVersions.Provider = currentServiceVersion.Provider;
             ViewBag.FromOpenTasks = fromOpenTasks;
@@ -35,13 +36,10 @@ namespace DVSRegister.Controllers
                        && latestCabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer
                        && latestCabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved
                        && latestCabTransferRequest.CertificateUploaded == false;
+           
 
-            if (currentServiceVersion.ManualUnderPinningServiceId != null)
-            {
-                currentServiceVersion.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)currentServiceVersion.ManualUnderPinningServiceId);
-            }
-
-            if (currentServiceVersion.ServiceStatus != ServiceStatusEnum.SavedAsDraft && serviceList != null && (serviceList.Any(x=>x.IsInRegister == true) 
+            if (serviceList != null && !serviceList.Any(x=>x.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
+                 && (serviceList.Any(x=>x.IsInRegister == true) 
                 || serviceList.Any(x => x.ServiceStatus == ServiceStatusEnum.Removed)) )
             {
                 serviceVersions.CurrentServiceVersion.EnableResubmission = true;
@@ -58,14 +56,9 @@ namespace DVSRegister.Controllers
             {
                 var removalRequestedService = serviceList?.Where(s => s.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation).FirstOrDefault();
                 serviceVersions.PublishedServiceId = removalRequestedService?.Id ?? 0; // the service is still published
-            }
-            
-            if (currentServiceVersion?.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
-            {
-                SetServiceDataToSession(CabId, currentServiceVersion);
-            }
+            }            
           
-            return View(serviceVersions);
+             return View(serviceVersions);
         }
 
         [HttpGet("service-version-details/{serviceId}")]
