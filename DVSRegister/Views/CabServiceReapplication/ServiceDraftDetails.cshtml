@@ -60,8 +60,8 @@
                                 @if (hasValue)
                                 {
                                     <dd class="govuk-summary-list__actions">
-                                        @Html.ActionLink("Change", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { fromDetailsPage = true, providerProfileId = Model.ProviderProfileId },
-                                            new { @class = "govuk-link", @aria_label = "Change trust framework version" })
+                                        @Html.ActionLink("Change", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { providerProfileId = Model.ProviderProfileId, fromSummaryPage = false, fromDetailsPage = true },
+                                        new { @class = "govuk-link", @aria_label = "Change trust framework version" })
                                     </dd>
                                 }
                             </div>
