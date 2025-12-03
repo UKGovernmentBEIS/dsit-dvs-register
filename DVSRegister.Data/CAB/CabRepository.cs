@@ -288,7 +288,7 @@ namespace DVSRegister.Data.CAB
                 {
                     // save as draft : update existing records
                     UpdateExistingServiceRecord(service, existingService);
-                    genericResponse.InstanceId = existingService.ServiceKey;
+                    genericResponse.InstanceId = existingService.Id;
                     if (service.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
                     else
@@ -378,7 +378,7 @@ namespace DVSRegister.Data.CAB
                         UpdateExistingServiceRecord(service, existingService);
                         if(inProgressApplicationParameters!=null)
                         await RemoveInprogressApplications(loggedInUserEmail, inProgressApplicationParameters, existingService, service);
-                        genericResponse.InstanceId = existingService.ServiceKey;
+                        genericResponse.InstanceId = existingService.Id;
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
                     }
                     else // First time save
@@ -435,13 +435,11 @@ namespace DVSRegister.Data.CAB
                         {
                             existingService.IsCurrent = false;
                             existingService.ModifiedTime = DateTime.UtcNow;
-                            genericResponse.InstanceId = existingService.ServiceKey;
+                           
                         }
-                        else
-                        {
-                            genericResponse.InstanceId = service.ServiceKey;
-                        }
+                    
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+                        genericResponse.InstanceId = entity.Entity.Id;
                     }
                     transaction.Commit();
                     genericResponse.Success = true;
