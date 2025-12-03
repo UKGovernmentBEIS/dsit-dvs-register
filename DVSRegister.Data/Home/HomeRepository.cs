@@ -130,6 +130,9 @@ namespace DVSRegister.Data
                 TotalCount = totalCount
             };
         }
+
+       
+
         #region Private methods
 
         private static Task<PaginatedResult<Service>> SortAndPaginate(int pageNumber, string sort, string sortAction, IEnumerable<Service> baseQuery)

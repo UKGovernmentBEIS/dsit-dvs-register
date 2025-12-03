@@ -62,5 +62,7 @@ namespace DVSRegister.BusinessLogic.Services
                 TotalCount = page.TotalCount
             };
         }
+
+       
     }
 }

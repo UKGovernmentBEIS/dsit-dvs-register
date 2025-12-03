@@ -215,15 +215,26 @@ namespace DVSRegister.Data.CAB
 
         public async Task<ProviderProfile> GetProviderWithLatestVersionServices(int providerId, int cabId)
         {
+            var latestServiceIds = await context.Service
+                .Include(s =>  s.CabTransferRequest)
+                .Where(s => s.ProviderProfileId == providerId
+                && s.CabUser.CabId == cabId
+                && !(s.ServiceStatus == ServiceStatusEnum.SavedAsDraft
+                || s.ServiceStatus == ServiceStatusEnum.AmendmentsRequired))
+                .GroupBy(s => s.ServiceKey)
+                .Select(g => g.OrderByDescending(s => s.ServiceVersion).FirstOrDefault()!.Id)
+                .ToListAsync();
+
             ProviderProfile provider = new();
             provider = await context.ProviderProfile
-            .Include(p => p.Services)!.ThenInclude(p => p.CertificateReview)
-            .Include(p => p.Services)!.ThenInclude(p => p.PublicInterestCheck)
-            .Include(p => p.Services)!.ThenInclude(p => p.ServiceDraft)
-             .Include(p => p.ProviderProfileDraft)!
-            .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && s.IsCurrent == true)).ThenInclude(p => p.CabUser)
-            .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
-            .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+                .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && latestServiceIds.Contains(s.Id))).ThenInclude(s => s.CertificateReview)
+                .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && latestServiceIds.Contains(s.Id))).ThenInclude(s => s.PublicInterestCheck)                
+                .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && latestServiceIds.Contains(s.Id))).ThenInclude(p => p.ServiceDraft)
+                .Include(p => p.Services!.Where(s => s.CabUser.CabId == cabId && latestServiceIds.Contains(s.Id))).ThenInclude(s => s.CabUser)
+                .Include(p => p.ProviderProfileDraft)!
+                .Include(p => p.ProviderProfileCabMapping).ThenInclude(cu => cu.Cab)
+                .Where(p => p.Id == providerId && p.ProviderProfileCabMapping.Any(m => m.CabId == cabId)).OrderBy(p => p.ModifiedTime != null ? p.ModifiedTime : p.CreatedTime).FirstOrDefaultAsync() ?? new ProviderProfile();
+
             return provider;
         }
 
@@ -277,7 +288,7 @@ namespace DVSRegister.Data.CAB
                 {
                     // save as draft : update existing records
                     UpdateExistingServiceRecord(service, existingService);
-                    genericResponse.InstanceId = existingService.ServiceKey;
+                    genericResponse.InstanceId = existingService.Id;
                     if (service.ServiceStatus == ServiceStatusEnum.SavedAsDraft)
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
                     else
@@ -362,12 +373,12 @@ namespace DVSRegister.Data.CAB
                 if (existingService != null && existingService.Id > 0 && existingService.ServiceKey > 0)
                 {
 
-                    if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft) //Resumisng save
+                    if (existingService.ServiceStatus == ServiceStatusEnum.SavedAsDraft) //Resuming save
                     {
                         UpdateExistingServiceRecord(service, existingService);
                         if(inProgressApplicationParameters!=null)
                         await RemoveInprogressApplications(loggedInUserEmail, inProgressApplicationParameters, existingService, service);
-                        genericResponse.InstanceId = existingService.ServiceKey;
+                        genericResponse.InstanceId = existingService.Id;
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.SaveAsDraftService, loggedInUserEmail);
                     }
                     else // First time save
@@ -424,13 +435,11 @@ namespace DVSRegister.Data.CAB
                         {
                             existingService.IsCurrent = false;
                             existingService.ModifiedTime = DateTime.UtcNow;
-                            genericResponse.InstanceId = existingService.ServiceKey;
+                           
                         }
-                        else
-                        {
-                            genericResponse.InstanceId = service.ServiceKey;
-                        }
+                    
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
+                        genericResponse.InstanceId = entity.Entity.Id;
                     }
                     transaction.Commit();
                     genericResponse.Success = true;
@@ -607,7 +616,7 @@ namespace DVSRegister.Data.CAB
                          .Include(s => s.ServiceDraft)!
                          .Where(x => x.Id == serviceId).FirstOrDefaultAsync();
 
-                        if (updateRequestService != null)
+                        if (updateRequestService != null && updateRequestService.ServiceDraft != null)
                         {
 
                             updateRequestService.ServiceStatus = updateRequestService.ServiceDraft.PreviousServiceStatus;

@@ -9,6 +9,6 @@ namespace DVSRegister.BusinessLogic.Services
         public Task<PaginatedResult<ServiceDto>> GetSentBackApplications(int cabId, int pageNumber, string sort, string sortAction);
         public Task<PaginatedResult<ServiceDto>> GetPendingReassignmentRequests(int cabId, int pageNumber, string sort, string sortAction);
         public Task<Dictionary<string, int>> GetPendingCounts(int cabId);
-        public Task<PaginatedResult<ProviderProfileDto>> GetAllProviders(int cabId, int pageNumber, string sort, string sortAction, string searchText);
+        public Task<PaginatedResult<ProviderProfileDto>> GetAllProviders(int cabId, int pageNumber, string sort, string sortAction, string searchText);       
     }
 }
