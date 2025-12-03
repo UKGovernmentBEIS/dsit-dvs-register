@@ -2,6 +2,7 @@
 {
     public class InProgressApplicationParameters
     {
+        public int ServiceId { get; set; }
         public bool HasInProgressApplication { get; set; }
         public int InProgressApplicationId { get; set; }
         public bool HasActiveRemovalRequest { get; set; }

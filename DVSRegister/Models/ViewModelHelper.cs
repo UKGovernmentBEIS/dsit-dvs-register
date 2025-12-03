@@ -290,8 +290,6 @@ namespace DVSRegister.Models
 
             if (serviceList!= null && serviceList.Count > 0)
             {
-
-
                 InProgressApplicationParameters inProgressApplicationParameters = new();
                 ServiceDto inprogressService = serviceList.Where(x => 
                 (x.ServiceStatus == ServiceStatusEnum.Submitted || x.ServiceStatus == ServiceStatusEnum.Received ||
@@ -300,12 +298,15 @@ namespace DVSRegister.Models
                 x.PublicInterestCheck.Where(x => x.IsLatestReviewVersion).SingleOrDefault()?.PublicInterestCheckStatus != PublicInterestCheckEnum.PublicInterestCheckFailed).FirstOrDefault() ?? new();
                 inProgressApplicationParameters.InProgressApplicationId = inprogressService.Id;
                 inProgressApplicationParameters.HasInProgressApplication = inProgressApplicationParameters.InProgressApplicationId > 0;
-
+                inProgressApplicationParameters.ServiceId = inprogressService.Id;
                 ServiceDto reassginmentRequestService = serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign || x.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign).FirstOrDefault() ?? null!;
                 if (reassginmentRequestService != null && reassginmentRequestService.Id > 0)
                 {
                     inProgressApplicationParameters.HasActiveReassignmentRequest = true;
                     inProgressApplicationParameters.InProgressReassignmentRequestServiceId = reassginmentRequestService.Id;
+                    inProgressApplicationParameters.ServiceId = inProgressApplicationParameters.ServiceId == 0? reassginmentRequestService.Id : inProgressApplicationParameters.ServiceId;
+
+
                 }
 
                 ServiceDto removalrequestService = serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation || x.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation).FirstOrDefault() ?? null!;
@@ -313,6 +314,7 @@ namespace DVSRegister.Models
                 {
                     inProgressApplicationParameters.HasActiveRemovalRequest = true;
                     inProgressApplicationParameters.InProgressRemovalRequestServiceId = removalrequestService.Id;
+                    inProgressApplicationParameters.ServiceId = inProgressApplicationParameters.ServiceId == 0 ? removalrequestService.Id : inProgressApplicationParameters.ServiceId;
                 }
 
 
@@ -327,6 +329,7 @@ namespace DVSRegister.Models
                 {
                     inProgressApplicationParameters.InProgressAndUpdateRequested = true;
                     inProgressApplicationParameters.InProgressAndUpdateRequestedId = inprogresAndUpdateRequestedService.Id;
+                    inProgressApplicationParameters.ServiceId = inprogresAndUpdateRequestedService.Id;
                 }
                 
 
@@ -334,7 +337,7 @@ namespace DVSRegister.Models
 
                 List<ServiceDto> updateRequestServices = inProgressApplicationParameters.InProgressAndUpdateRequested ?
                 serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested && x.IsCurrent == false).ToList() ?? null! :
-                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested).ToList() ?? null!;
+                serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested ).ToList() ?? null!;
                 if (updateRequestServices != null && updateRequestServices.Count > 0)
                 {
                     inProgressApplicationParameters.HasActiveUpdateRequest = true;

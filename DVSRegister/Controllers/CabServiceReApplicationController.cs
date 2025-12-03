@@ -19,16 +19,31 @@ namespace DVSRegister.Controllers
         private readonly IUserService userService = userService;
         private readonly ILogger<CabServiceReApplicationController> _logger = logger;
 
+
+        #region save as draft
+
+        [HttpGet("draft-details")]
+        public async Task<IActionResult> ServiceDraftDetails(int serviceId)
+        {
+            ServiceDto draftService = await cabService.GetServiceDetails(serviceId,CabId);
+            if (draftService.ManualUnderPinningServiceId != null)
+            {
+                draftService.IsManualServiceLinkedToMultipleServices = await cabService.IsManualServiceLinkedToMultipleServices((int)draftService.ManualUnderPinningServiceId);
+            }
+            SetServiceDataToSession(CabId, draftService);
+            return View(draftService);
+        }
+
         [HttpGet("resume-submission")]
         public IActionResult ResumeSubmission()
         {
             if(!IsValidCabId(CabId))
                 return HandleInvalidCabId(CabId);
             ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
-            return RedirectToNextEmptyField(serviceSummary);
-            
+            return RedirectToNextEmptyField(serviceSummary);            
         }
-        
+
+        #endregion
         [HttpGet("before-new-certificate")]
         public async Task<IActionResult> BeforeYouSubmitNewCertificate(int serviceKey, int providerProfileId, int currentServiceId, bool isReupload)
         {
@@ -91,13 +106,16 @@ namespace DVSRegister.Controllers
 
 
         [HttpGet("in-progress-application-removal-start")]
-        public IActionResult StartInProgressApplicationRemoval()
+        public async Task<IActionResult> StartInProgressApplicationRemoval()
         {
             ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
             ViewBag.ServiceKey = serviceSummary.ServiceKey;
             ViewBag.ProviderProfileId = serviceSummary.ProviderProfileId;
             ViewBag.ServiceId = serviceSummary.ServiceId;
-            return View();
+            var serviceList = await cabService.GetServiceList(serviceSummary.ServiceKey, CabId);
+            InProgressApplicationParameters inProgressApplicationParameters = ViewModelHelper.GetInProgressApplicationParameters(serviceList);
+            ServiceDto serviceDetails = await cabService.GetServiceDetailsWithProvider(inProgressApplicationParameters.ServiceId,CabId);
+            return View(serviceDetails);
         }
 
    
