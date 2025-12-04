@@ -1,5 +1,6 @@
 ﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
@@ -16,7 +17,6 @@ namespace DVSRegister.Controllers
     public class BaseController : Controller
     {
         private readonly ILogger<BaseController> _logger;
-
         public BaseController(ILogger<BaseController> logger)
         {
             _logger = logger;
@@ -52,8 +52,6 @@ namespace DVSRegister.Controllers
             string refererUrl = HttpContext.Request.Headers["Referer"].ToString();
             return refererUrl;
         }
-
-
 
         protected IActionResult HandleInvalidCabId(int cabId)
         {
@@ -247,7 +245,5 @@ namespace DVSRegister.Controllers
             };
             HttpContext?.Session.Set("ServiceSummary", serviceSummary);
         }
-
-
     }
 }

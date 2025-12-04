@@ -10,9 +10,7 @@
 
 
 <div class="govuk-width-container">
-    <a href="@Model.RefererURL" class="govuk-back-link">
-        Back
-    </a>
+    @await Html.PartialAsync("~/Views/PartialViews/_BackButton.cshtml")
 
     @using (Html.BeginForm("SaveHasSupplementarySchemesInput", "CabService", FormMethod.Post))
     {

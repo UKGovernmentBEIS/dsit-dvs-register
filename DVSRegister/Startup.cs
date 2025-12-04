@@ -124,8 +124,7 @@ namespace DVSRegister
         }
 
         public void ConfigureDvsRegisterServices(IServiceCollection services)
-        {
-          
+        {         
             services.AddScoped<ICabService, CabService>();
             services.AddScoped<ISignUpService, SignUpService>();
             services.AddScoped<ICabRepository, CabRepository>();
@@ -165,6 +164,11 @@ namespace DVSRegister
                 string clientId = string.Format(configuration.GetValue<string>("ClientId")); ;
                 string region = string.Format(configuration.GetValue<string>("Region"));
                 return new CognitoClient(userPoolId, clientId, region);
+            });
+            services.AddScoped<NavigationTrackingFilter>();
+            services.AddControllersWithViews(options =>
+            {
+                options.Filters.AddService<NavigationTrackingFilter>();
             });
 
         }

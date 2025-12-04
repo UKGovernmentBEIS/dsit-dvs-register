@@ -9,14 +9,7 @@
 }
 
 <div class="govuk-width-container">
-    @if (ViewBag.FromOpenTasks == true)
-    {
-        <a href="@Url.Action("DraftApplications", "Home", null)" class="govuk-back-link">Back</a>
-    }
-    else
-    {
-        <a href="@Url.Action("ProviderDetails", "CabProvider", new { providerId = Model.CurrentServiceVersion.ProviderProfileId })#services" class="govuk-back-link">Back</a>
-    }
+    @await Html.PartialAsync("~/Views/PartialViews/_BackButton.cshtml")
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">

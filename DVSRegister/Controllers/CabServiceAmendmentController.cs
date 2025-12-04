@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;

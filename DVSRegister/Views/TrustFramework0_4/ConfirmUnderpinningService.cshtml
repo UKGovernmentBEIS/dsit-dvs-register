@@ -8,8 +8,7 @@
     ViewData["Manual"] = false;
 }
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "SelectedUnderpinningService", "TrustFramework0_4", new { serviceId = Model.SelectedUnderPinningServiceId, published = Model.IsUnderpinningServicePublished,
-    fromSummaryPage = ViewBag.fromSummaryPage, fromDetailsPage = ViewBag.fromDetailsPage }, new { @class = "govuk-back-link" })
+    @await Html.PartialAsync("~/Views/PartialViews/_BackButton.cshtml")
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
@@ -26,7 +25,6 @@
                 {
                     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
-                    @Html.HiddenFor(m => m.RefererURL)
                     @Html.HiddenFor(m => m.SelectedUnderPinningServiceId)
                     @Html.HiddenFor(m => m.SelectedManualUnderPinningServiceId)
                     @Html.HiddenFor(m =>m.UnderPinningServiceName)
