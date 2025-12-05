@@ -37,6 +37,11 @@ namespace DVSRegister.Data.Entities
         public bool IsLatestReviewVersion { get; set; }
         public int ReviewVersion { get; set; }
         public string? ReturningSubmissionComments { get; set; }
+
+        public PICheckFailReasonEnum ? PICheckFailReason { get; set; }
+        public SendBackReviewTypeEnum SendBackReviewType { get; set; }
+
+        public DateTime? SendBackTime { get; set; }
     }
    
 }
