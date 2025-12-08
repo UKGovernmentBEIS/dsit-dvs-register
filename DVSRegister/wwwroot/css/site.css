@@ -1,6 +1,11 @@
 ﻿.govuk-header__container {
     display: flex;
-    align-items: baseline;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: flex-start;
+    max-width: 960px !important;
+    margin: 0 auto !important;
+    padding: 0 15px !important;
     white-space: nowrap;
 }
 .govuk-header__container {
