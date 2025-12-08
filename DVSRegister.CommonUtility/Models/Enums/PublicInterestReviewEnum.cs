@@ -17,6 +17,8 @@ namespace DVSRegister.CommonUtility.Models.Enums
         [Description("Public interest check failed")]
         PublicInterestCheckFailed = 6,
         [Description("Public interest check passed")]
-        PublicInterestCheckPassed = 7
+        PublicInterestCheckPassed = 7,
+        [Description("Sent back to certificate review")]
+        SentBackToCertificateReview = 8
     }
 }

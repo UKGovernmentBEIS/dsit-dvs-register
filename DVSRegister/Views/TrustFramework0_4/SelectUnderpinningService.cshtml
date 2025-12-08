@@ -140,6 +140,7 @@
                                     {
                                         @foreach (var item in Model.ManualUnderpinningServices)
                                         {
+                                            bool cabRequestedEdit = item.Provider.ProviderProfileDraft != null && item.Provider.ProviderProfileDraft.IsCabRequested;
                                             <tr class="govuk-table__row">
                                                 <td class="govuk-table__cell" data-sort-value="@item.ManualUnderPinningService.ServiceName">
                                                     @Html.ActionLink(item.ManualUnderPinningService.ServiceName, "SelectedUnderpinningService", "TrustFramework0_4", new
@@ -152,7 +153,7 @@
                                                 </td>
                                                 <td class="govuk-table__cell">@item.ManualUnderPinningService.ProviderName</td>
                                                 <td class="govuk-table__cell">@item.ManualUnderPinningService.Cab.CabName</td>
-                                                <td class="govuk-table__cell">@HtmlExtensions.GetStyledStatusTag(item.CertificateReview.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), item.PublicInterestCheck.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), item.ServiceStatus, item?.serviceDraft?.PreviousServiceStatus)</td>
+                                                <td class="govuk-table__cell">@HtmlExtensions.GetStyledStatusTag(item.CertificateReview.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), item.PublicInterestCheck.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), item.ServiceStatus, item?.serviceDraft?.PreviousServiceStatus, cabRequestedEdit)</td>
                                             </tr>
                                         }
                                     }

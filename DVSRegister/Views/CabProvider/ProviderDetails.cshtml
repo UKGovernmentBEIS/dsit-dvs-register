@@ -11,7 +11,7 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
     string refererUrl = Convert.ToString(ViewBag.RefererUrl);
     bool isEditable = Model.Provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested && Model.Provider.ProviderStatus != ProviderStatusEnum.SavedAsDraft;
-    bool adminEditInProgress = Model.Provider.ProviderProfileDraft != null && !Model.Provider.ProviderProfileDraft.IsCabRequested;
+    bool cabRequestedEdit = Model.Provider.ProviderProfileDraft != null && Model.Provider.ProviderProfileDraft.IsCabRequested;
     bool isDraft = Model.Provider.ProviderStatus == ProviderStatusEnum.SavedAsDraft;
     bool hasValue = true;
     SourcePageEnum sourcePage = SourcePageEnum.profiledetails;
@@ -343,11 +343,11 @@
                                 </td>
                                 <td class="govuk-table__cell" data-sort-value="@service.ServiceStatus">
                                     @HtmlExtensions.GetStyledStatusTag(
-                                        service.CertificateReview?.SingleOrDefault(x => x.IsLatestReviewVersion),
-                                        service.PublicInterestCheck?.SingleOrDefault(x => x.IsLatestReviewVersion),
+                                        service.CertificateReview?.SingleOrDefault(x => x.IsLatestReviewVersion)!,
+                                        service.PublicInterestCheck?.SingleOrDefault(x => x.IsLatestReviewVersion)!,
                                         service.ServiceStatus,
                                         service.serviceDraft?.PreviousServiceStatus
-                                        ,adminEditInProgress
+                                        , cabRequestedEdit
                                     )
                                 </td>
                             </tr>
