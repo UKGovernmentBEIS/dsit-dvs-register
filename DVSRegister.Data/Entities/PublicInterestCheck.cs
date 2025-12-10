@@ -27,8 +27,8 @@ namespace DVSRegister.Data.Entities
         public string? SecondaryCheckComment { get; set; }
 
         [ForeignKey("User")]
-        public int PrimaryCheckUserId { get; set; }
-        public User PrimaryCheckUser { get; set; }
+        public int? PrimaryCheckUserId { get; set; }
+        public User? PrimaryCheckUser { get; set; }
         public DateTime? PrimaryCheckTime { get; set; }
         [ForeignKey("User")]
         public int? SecondaryCheckUserId { get; set; }
@@ -42,6 +42,10 @@ namespace DVSRegister.Data.Entities
         public SendBackReviewTypeEnum SendBackReviewType { get; set; }
 
         public DateTime? SendBackTime { get; set; }
+
+        [ForeignKey("User")]
+        public int? SentBackByUserId { get; set; }
+        public User? SentBackByUser { get; set; }
     }
    
 }
