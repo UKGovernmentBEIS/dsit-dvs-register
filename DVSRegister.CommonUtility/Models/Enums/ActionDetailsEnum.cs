@@ -19,7 +19,11 @@
         ServiceNameUpdate,         
         ServiceUpdates,            
         ProviderContactUpdate,  
-        BusinessDetailsUpdate           
+        BusinessDetailsUpdate,
+        PI_SentBackFromPrimary,
+        PI_SentBackFromSecondary,
+        PI_RestoreRejectedPICheck
+
 
     }
 }
