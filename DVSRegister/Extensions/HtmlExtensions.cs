@@ -92,13 +92,8 @@ namespace DVSRegister.Extensions
 
             bool isPreviousStatusReceived = previousServiceStatus!=null && previousServiceStatus == ServiceStatusEnum.Received;
 
-            if (serviceStatus == ServiceStatusEnum.UpdatesRequested && isCabRequestedEdit == false)
-            {
-                return HtmlExtensions.ToStyledStrongTag(previousServiceStatus != null && previousServiceStatus > 0 ?
-                (ServiceStatusEnum)previousServiceStatus 
-                : ServiceStatusEnum.Published);
-            }
-            else if ((isCurrentStatusReceived || isPreviousStatusReceived) 
+           
+             if ((isCurrentStatusReceived || isPreviousStatusReceived) 
                 && publicInterestCheck != null &&   publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PublicInterestCheckFailed)  // Passed PI check will be displayed as Published
             {
                 return HtmlExtensions.ToStyledStrongTag(publicInterestCheck.PublicInterestCheckStatus);
@@ -107,6 +102,12 @@ namespace DVSRegister.Extensions
                     && certificateReview != null && (certificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved || certificateReview.CertificateReviewStatus == CertificateReviewEnum.Rejected))
             {
                 return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
+            }
+            else if (serviceStatus == ServiceStatusEnum.UpdatesRequested && isCabRequestedEdit == false)
+            {
+                return HtmlExtensions.ToStyledStrongTag(previousServiceStatus != null && previousServiceStatus > 0 ?
+                (ServiceStatusEnum)previousServiceStatus
+                : ServiceStatusEnum.Published);
             }
             else
             {
