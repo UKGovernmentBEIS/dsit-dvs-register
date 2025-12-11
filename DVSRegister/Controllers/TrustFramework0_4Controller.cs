@@ -43,12 +43,7 @@ namespace DVSRegister.Controllers
             {
                 SelectedTFVersionId = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Id,
                 AvailableVersions = await trustFrameworkService.GetTrustFrameworkVersions(),
-                IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() :
-                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && summaryViewModel.IsAmendment ? "/cab-service/amend/service-amendments?serviceId=" + summaryViewModel.ServiceId :
-                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && !summaryViewModel.IsAmendment && summaryViewModel.TFVersionViewModel.FromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel.ServiceKey :
-                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && !summaryViewModel.IsAmendment && summaryViewModel.TFVersionViewModel.FromSummaryPage ? "/cab-service/submit-service/check-your-answers" :
-                "/cab-service/submit-service/before-you-start/" + summaryViewModel.ProviderProfileId
+                IsAmendment = summaryViewModel.IsAmendment
             }; 
 
             return View(TFVersionViewModel);
@@ -128,7 +123,6 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-            serviceSummaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/provider-roles";
             return View(serviceSummaryViewModel);
         }
 
@@ -189,10 +183,6 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = fromSummaryPage ? "/cab-service/submit-service/check-your-answers"
-                : fromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel?.ServiceKey
-                : summaryViewModel.ServiceType == ServiceTypeEnum.WhiteLabelled ? "/cab-service/submit-service/select-underpinning-service"
-                : "/cab-service/submit-service/select-service-type";
             return View(summaryViewModel);
         }
 
@@ -230,8 +220,7 @@ namespace DVSRegister.Controllers
             {
                 IsAmendment = summaryViewModel.IsAmendment,
                 SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList(),
-                AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
-                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/service/gpg45-input"
+                AvailableIdentityProfiles = await cabService.GetIdentityProfiles()
             };
             return View(identityProfileViewModel);
         }
@@ -264,8 +253,7 @@ namespace DVSRegister.Controllers
                 return View("ServiceGPG45", identityProfileViewModel);
             }
         }
-        #endregion
-    
+        #endregion  
 
         #region GPG44 - input
 
@@ -275,10 +263,6 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = fromSummaryPage ? "/cab-service/submit-service/check-your-answers" 
-                : fromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel?.ServiceKey 
-                : summaryViewModel.HasGPG45 == true ? "/cab-service/submit-service/service/gpg45"
-                : "/cab-service/submit-service/service/gpg45-input";
             return View(summaryViewModel);
         }
 
@@ -366,15 +350,12 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
-      
-
         [HttpGet("status-of-underpinning-service")]
         public IActionResult StatusOfUnderpinningService(bool fromSummaryPage, bool fromDetailsPage)
         {
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/select-service-type";
             return View(summaryViewModel);
         }
 
@@ -573,8 +554,6 @@ namespace DVSRegister.Controllers
                 ViewModelHelper.ClearUnderPinningServiceFieldsBeforeManualEntry(serviceSummaryViewModel);
                 HttpContext?.Session.Set("ServiceSummary", serviceSummaryViewModel);            
             }
-            serviceSummaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/select-underpinning-service";
-
             return View(serviceSummaryViewModel);
         }
 
@@ -613,7 +592,6 @@ namespace DVSRegister.Controllers
             ViewBag.singleChange = singleChange;
             ViewBag.fromUnderPinningServiceSummaryPage = fromUnderPinningServiceSummaryPage;
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
-            serviceSummaryViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/underpinning-service-name?manualEntryFirstTimeLoad=True";
             return View(serviceSummaryViewModel);
         }
 
@@ -655,7 +633,6 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel serviceSummaryViewModel = GetServiceSummary();
             var selectCabViewModel = serviceSummaryViewModel?.SelectCabViewModel ?? new SelectCabViewModel();
             selectCabViewModel.Cabs = allCabs;
-            selectCabViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/select-underpinning-service";
             return View(selectCabViewModel);
         }
 
@@ -706,7 +683,6 @@ namespace DVSRegister.Controllers
             {
                 dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.UnderPinningServiceExpiryDate);
             }
-            dateViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/underpinning-provider-name";
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
         }
@@ -798,10 +774,6 @@ namespace DVSRegister.Controllers
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             int previousSchemeId = GetPreviousScheme(schemeId);
-            summaryViewModel.RefererURL = fromSummaryPage ? "/cab-service/submit-service/check-your-answers"
-                : fromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel?.ServiceKey
-                : previousSchemeId == 0 ? "/cab-service/submit-service/supplementary-schemes" 
-                : "/cab-service/submit-service/scheme/gpg44?schemeId=" + previousSchemeId;
             var identityProfile = summaryViewModel?.SchemeIdentityProfileMapping?.Where(scheme => scheme.SchemeId == schemeId)?.FirstOrDefault()?.IdentityProfile;
             IdentityProfileViewModel identityProfileViewModel = new()
             {
@@ -907,9 +879,6 @@ namespace DVSRegister.Controllers
 
             SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = summaryViewModel?.SchemeQualityLevelMapping?.Where(scheme => scheme.SchemeId == schemeId).
             FirstOrDefault() ?? new();
-            schemeQualityLevelMappingViewModel.RefererURL = fromSummaryPage ? "/cab-service/submit-service/check-your-answers" :
-                fromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel?.ServiceKey : 
-                "/cab-service/submit-service/scheme/gpg45?schemeId=" + schemeId;
             schemeQualityLevelMappingViewModel.SchemeId = schemeId;
             schemeQualityLevelMappingViewModel.SchemeName = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Where(scheme => scheme.Id == schemeId)
             .Select(scheme => scheme.SchemeName).FirstOrDefault() ?? string.Empty;
@@ -978,10 +947,7 @@ namespace DVSRegister.Controllers
                 IsAmendment = summaryViewModel.IsAmendment
             
             };
-
-            qualityLevelViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/scheme/gpg44-input?schemeId=" + schemeId;
             var qualityLevel = summaryViewModel?.SchemeQualityLevelMapping?.Where(scheme => scheme.SchemeId == schemeId)?.FirstOrDefault()?.QualityLevel;
-
             var qualityLevels = await cabService.GetQualitylevels();
             qualityLevelViewModel.AvailableQualityOfAuthenticators = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
             qualityLevelViewModel.SelectedQualityofAuthenticatorIds = qualityLevel?.SelectedQualityofAuthenticators?.Select(c => c.Id)?.ToList() ?? [];

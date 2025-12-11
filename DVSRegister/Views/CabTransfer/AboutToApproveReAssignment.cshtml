@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "ServiceReassignmentDetails", "CabTransfer", new { serviceId = Model.ServiceId, fromCabId = Model.FromCabUser.CabId }, new { @class = "govuk-back-link" })
+    @await Html.PartialAsync("~/Views/PartialViews/_BackButton.cshtml")
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">

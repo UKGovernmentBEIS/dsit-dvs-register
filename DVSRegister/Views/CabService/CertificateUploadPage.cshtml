@@ -16,9 +16,7 @@
     @Html.HiddenFor(m => m.FileRemoved)
    
     <div class="govuk-width-container">
-        <a href="@Model.RefererURL" class="govuk-back-link">
-            Back
-        </a>
+        @await Html.PartialAsync("~/Views/PartialViews/_BackButton.cshtml")
 
         <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
             <div class="govuk-grid-row">

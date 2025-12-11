@@ -13,7 +13,7 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "PendingReassignmentRequests", "Home", null, new { @class = "govuk-back-link" })
+    @await Html.PartialAsync("~/Views/PartialViews/_BackButton.cshtml")
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-three-quarters">

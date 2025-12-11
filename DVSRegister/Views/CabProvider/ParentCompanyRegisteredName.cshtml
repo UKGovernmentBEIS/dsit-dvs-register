@@ -11,11 +11,8 @@
 {
 
     @Html.HiddenFor(m => m.SourcePage)
-    @Html.HiddenFor(m => m.RefererURL)
     <div class="govuk-width-container">
-        <a href="@Model.RefererURL" class="govuk-back-link">
-            Back
-        </a>
+        @await Html.PartialAsync("~/Views/PartialViews/_BackButton.cshtml")
         <main id="main-content" class="govuk-main-wrapper" role="main">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">

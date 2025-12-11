@@ -5,17 +5,12 @@
 }
 
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "BeforeYouSubmitNewCertificate", "CabServiceReApplication", new { serviceKey = ViewBag.ServiceKey, providerProfileId = ViewBag.ProviderProfileId, currentServiceId = ViewBag.ServiceId }, new { @class = "govuk-back-link" })
-    <main id="main-content" class="govuk-main-wrapper" role="main">
+    @await Html.PartialAsync("~/Views/PartialViews/_BackButton.cshtml")
+    s<main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
-
-
-
-
-                <table class="govuk-table">
-                  
+                <table class="govuk-table">                  
                     <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
                             <th scope="col" class="govuk-table__header">Service name</th>
@@ -23,8 +18,7 @@
                         </tr>
                     </thead>
                     <tbody class="govuk-table__body">
-                        <tr class="govuk-table__row">
-                            
+                        <tr class="govuk-table__row">                            
                             <td class="govuk-table__cell">@Model.ServiceName</td>
                             <td class="govuk-table__cell">@Model.Provider.RegisteredName</td>
                         </tr>
