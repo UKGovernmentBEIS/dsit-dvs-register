@@ -301,7 +301,10 @@ namespace DVSRegister.Data
                 new ActionDetails { Id = 14, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceUpdates), ActionDescription = "Updates published", ActionCategoryId = 3 },
                 new ActionDetails { Id = 15, ActionDetailsKey = nameof(ActionDetailsEnum.ProviderContactUpdate), ActionDescription = "Contact details changed", ActionCategoryId = 4 },
                 new ActionDetails { Id = 16, ActionDetailsKey = nameof(ActionDetailsEnum.BusinessDetailsUpdate), ActionDescription = "Business details changed", ActionCategoryId = 4 },
-                new ActionDetails { Id = 17, ActionDetailsKey = nameof(ActionDetailsEnum.CR_InvitationCancelled), ActionDescription = "Invitation cancelled", ActionCategoryId = 1 }
+                new ActionDetails { Id = 17, ActionDetailsKey = nameof(ActionDetailsEnum.CR_InvitationCancelled), ActionDescription = "Invitation cancelled", ActionCategoryId = 1 },
+                new ActionDetails { Id = 18, ActionDetailsKey = nameof(ActionDetailsEnum.PI_SentBackFromPrimary), ActionDescription = "Send back to certificate review from primary public checks", ActionCategoryId = 2 },
+                new ActionDetails { Id = 19, ActionDetailsKey = nameof(ActionDetailsEnum.PI_SentBackFromSecondary), ActionDescription = "Send back to certificate review from  secondary public interest checks", ActionCategoryId = 2 },
+                new ActionDetails { Id = 20, ActionDetailsKey = nameof(ActionDetailsEnum.PI_RestoreRejectedPICheck), ActionDescription = "Restore rejected public interest check", ActionCategoryId = 2 }
 
             );
 
