@@ -18,16 +18,7 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("ProviderProfile")]
         public int ProviderProfileId { get; set; }
         public ProviderProfile Provider { get; set; }       
-        public bool? IsCompanyHouseNumberApproved { get; set; }      
-        public bool? IsDirectorshipsApproved { get; set; }
-        public bool? IsDirectorshipsAndRelationApproved { get; set; }
-        public bool? IsTradingAddressApproved { get; set; }
-        public bool? IsSanctionListApproved { get; set; }
-        public bool? IsUNFCApproved { get; set; }
-        public bool? IsECCheckApproved { get; set; }
-        public bool? IsTARICApproved { get; set; }
-        public bool? IsBannedPoliticalApproved { get; set; }
-        public bool? IsProvidersWebpageApproved { get; set; }
+       
         public bool? PublicInterestChecksMet { get; set; }
         public PublicInterestCheckEnum PublicInterestCheckStatus { get; set; }
         public RejectionReasonEnum? RejectionReason { get; set; }
@@ -36,8 +27,8 @@ namespace DVSRegister.Data.Entities
         public string? SecondaryCheckComment { get; set; }
 
         [ForeignKey("User")]
-        public int PrimaryCheckUserId { get; set; }
-        public User PrimaryCheckUser { get; set; }
+        public int? PrimaryCheckUserId { get; set; }
+        public User? PrimaryCheckUser { get; set; }
         public DateTime? PrimaryCheckTime { get; set; }
         [ForeignKey("User")]
         public int? SecondaryCheckUserId { get; set; }
@@ -45,6 +36,16 @@ namespace DVSRegister.Data.Entities
         public DateTime? SecondaryCheckTime { get; set; }
         public bool IsLatestReviewVersion { get; set; }
         public int ReviewVersion { get; set; }
+        public string? ReturningSubmissionComments { get; set; }
+
+        public PICheckFailReasonEnum ? PICheckFailReason { get; set; }
+        public SendBackReviewTypeEnum SendBackReviewType { get; set; }
+
+        public DateTime? SendBackTime { get; set; }
+
+        [ForeignKey("User")]
+        public int? SentBackByUserId { get; set; }
+        public User? SentBackByUser { get; set; }
     }
    
 }

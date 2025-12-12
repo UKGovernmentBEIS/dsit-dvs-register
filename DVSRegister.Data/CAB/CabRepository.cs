@@ -121,17 +121,17 @@ namespace DVSRegister.Data.CAB
 
             var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
-             .Include(p => p.Provider)
-              .Include(p => p.ServiceDraft)
-             .Include(p => p.TrustFrameworkVersion)
-             .Include(p => p.CertificateReview)
-             .Include(p => p.PublicInterestCheck)
-              .Include(p => p.CabTransferRequest)!.ThenInclude(x => x.RequestManagement)
-             .Include(p => p.Provider)
-             .Include(p => p.UnderPinningService).ThenInclude(p=>p.Provider)          
-             .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
-             .Include(p => p.ManualUnderPinningService) .ThenInclude(ms => ms.Cab)
-            .Include(p => p.ServiceRoleMapping)!.ThenInclude(s => s.Role);
+             .Include(p => p.Provider).ThenInclude(p => p.ProviderProfileDraft).AsNoTracking()
+              .Include(p => p.ServiceDraft).AsNoTracking()
+             .Include(p => p.TrustFrameworkVersion).AsNoTracking()
+             .Include(p => p.CertificateReview).AsNoTracking()
+             .Include(p => p.PublicInterestCheck).AsNoTracking()
+              .Include(p => p.CabTransferRequest)!.ThenInclude(x => x.RequestManagement).AsNoTracking()
+
+             .Include(p => p.UnderPinningService).ThenInclude(p=>p.Provider).AsNoTracking()
+             .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab).AsNoTracking()
+             .Include(p => p.ManualUnderPinningService) .ThenInclude(ms => ms.Cab).AsNoTracking()
+            .Include(p => p.ServiceRoleMapping)!.ThenInclude(s => s.Role).AsNoTracking();
 
 
             IQueryable<Service> queryWithOptionalIncludes = baseQuery;
@@ -165,7 +165,7 @@ namespace DVSRegister.Data.CAB
         public async Task<List<Service>> GetServiceList(int serviceKey, int cabId)
             {
             return await context.Service
-            .Include(s => s.Provider).AsNoTracking()
+            .Include(s => s.Provider).ThenInclude(p=>p.ProviderProfileDraft).AsNoTracking()
             .Include(s => s.CertificateReview).AsNoTracking()
             .Include(s => s.PublicInterestCheck).AsNoTracking()
             .Include(s => s.CabUser).ThenInclude(s => s.Cab).AsNoTracking()

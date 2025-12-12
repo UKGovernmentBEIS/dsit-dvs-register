@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251204131033_PopulatePICheckColumnFromExistingData")]
+    partial class PopulatePICheckColumnFromExistingData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,27 +223,6 @@ namespace DVSRegister.Data.Migrations
                             ActionCategoryId = 1,
                             ActionDescription = "Invitation cancelled",
                             ActionDetailsKey = "CR_InvitationCancelled"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            ActionCategoryId = 2,
-                            ActionDescription = "Send back to certificate review from primary public checks",
-                            ActionDetailsKey = "PI_SentBackFromPrimary"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            ActionCategoryId = 2,
-                            ActionDescription = "Send back to certificate review from  secondary public interest checks",
-                            ActionDetailsKey = "PI_SentBackFromSecondary"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            ActionCategoryId = 2,
-                            ActionDescription = "Restore rejected public interest check",
-                            ActionDetailsKey = "PI_RestoreRejectedPICheck"
                         });
                 });
 
@@ -499,7 +481,52 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool?>("InformationMatched")
                         .HasColumnType("boolean");
 
+                    b.Property<bool?>("IsAuthenticyVerifiedCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsCabDetailsCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsCabLogoCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsCertificationScopeCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsDateOfExpiryCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsDateOfIssueCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsGPG44Correct")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsGPG45Correct")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsLatestReviewVersion")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsLocationCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsProviderDetailsCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsRolesCertifiedCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsServiceNameCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsServiceProvisionCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsServiceSummaryCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsURLLinkToServiceCorrect")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("ModifiedDate")
@@ -509,9 +536,6 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("RejectionComments")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ReturningSubmissionComments")
                         .HasColumnType("text");
 
                     b.Property<int>("ReviewVersion")
@@ -1363,11 +1387,38 @@ namespace DVSRegister.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool?>("IsBannedPoliticalApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsCompanyHouseNumberApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsDirectorshipsAndRelationApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsDirectorshipsApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsECCheckApproved")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsLatestReviewVersion")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("PICheckFailReason")
-                        .HasColumnType("integer");
+                    b.Property<bool?>("IsProvidersWebpageApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsSanctionListApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsTARICApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsTradingAddressApproved")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsUNFCApproved")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("PrimaryCheckComment")
                         .HasColumnType("text");
@@ -1375,7 +1426,7 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("PrimaryCheckTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("PrimaryCheckUserId")
+                    b.Property<int>("PrimaryCheckUserId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ProviderProfileId")
@@ -1393,9 +1444,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<string>("RejectionReasons")
                         .HasColumnType("text");
 
-                    b.Property<string>("ReturningSubmissionComments")
-                        .HasColumnType("text");
-
                     b.Property<int>("ReviewVersion")
                         .HasColumnType("integer");
 
@@ -1408,15 +1456,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int?>("SecondaryCheckUserId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("SendBackReviewType")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("SendBackTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int?>("SentBackByUserId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ServiceId")
                         .HasColumnType("integer");
 
@@ -1427,8 +1466,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("ProviderProfileId");
 
                     b.HasIndex("SecondaryCheckUserId");
-
-                    b.HasIndex("SentBackByUserId");
 
                     b.HasIndex("ServiceId");
 
@@ -2684,7 +2721,9 @@ namespace DVSRegister.Data.Migrations
                 {
                     b.HasOne("DVSRegister.Data.Entities.User", "PrimaryCheckUser")
                         .WithMany()
-                        .HasForeignKey("PrimaryCheckUserId");
+                        .HasForeignKey("PrimaryCheckUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
                         .WithMany()
@@ -2695,10 +2734,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasOne("DVSRegister.Data.Entities.User", "SecondaryCheckUser")
                         .WithMany()
                         .HasForeignKey("SecondaryCheckUserId");
-
-                    b.HasOne("DVSRegister.Data.Entities.User", "SentBackByUser")
-                        .WithMany()
-                        .HasForeignKey("SentBackByUserId");
 
                     b.HasOne("DVSRegister.Data.Entities.Service", "PreRegistration")
                         .WithMany("PublicInterestCheck")
@@ -2713,8 +2748,6 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Provider");
 
                     b.Navigation("SecondaryCheckUser");
-
-                    b.Navigation("SentBackByUser");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.QualityLevel", b =>

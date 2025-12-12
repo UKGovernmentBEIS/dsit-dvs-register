@@ -10,9 +10,7 @@ namespace DVSRegister.CommonUtility.Models.Enums
         [Description("Passed")]
         Approved = 2,
         [Description("Rejected")]
-        Rejected = 3,
-        [Description("Expired")]
-        Expired = 4,
+        Rejected = 3,  
         [Description("Amendments needed")]
         AmendmentsRequired = 5,
         [Description("Passed")]
@@ -20,6 +18,10 @@ namespace DVSRegister.CommonUtility.Models.Enums
         [Description("Invitation cancelled")]
         InvitationCancelled = 7,
         [Description("Application restored")]
-        Restored = 8
+        Restored = 8,
+        [Description("Sent back from Primary check")]
+        SentBackFromPrimaryCheck = 9,
+        [Description("Sent back from secondary check")]
+        SentBackFromSecondaryCheck = 10
     }
 }

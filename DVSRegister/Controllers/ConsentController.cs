@@ -116,6 +116,11 @@ namespace DVSRegister.Controllers
                 _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Opening loop:Already consented"));
                 return View("ProceedApplicationAlreadyAgreed");
             }
+            else if (serviceDto?.ServiceStatus == ServiceStatusEnum.UpdatesRequested )
+            {
+                _logger.LogError("{Message}", Helper.LoggingHelper.FormatErrorMessage("Update request in progress"));
+                return View("ProceedApplicationConsentError");
+            }
             else
             {
                 return null;

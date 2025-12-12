@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251209181556_UpdatePiCheckTableAddSendBackUser")]
+    partial class UpdatePiCheckTableAddSendBackUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,27 +223,6 @@ namespace DVSRegister.Data.Migrations
                             ActionCategoryId = 1,
                             ActionDescription = "Invitation cancelled",
                             ActionDetailsKey = "CR_InvitationCancelled"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            ActionCategoryId = 2,
-                            ActionDescription = "Send back to certificate review from primary public checks",
-                            ActionDetailsKey = "PI_SentBackFromPrimary"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            ActionCategoryId = 2,
-                            ActionDescription = "Send back to certificate review from  secondary public interest checks",
-                            ActionDetailsKey = "PI_SentBackFromSecondary"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            ActionCategoryId = 2,
-                            ActionDescription = "Restore rejected public interest check",
-                            ActionDetailsKey = "PI_RestoreRejectedPICheck"
                         });
                 });
 
