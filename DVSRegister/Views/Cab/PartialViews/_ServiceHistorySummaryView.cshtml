@@ -4,6 +4,9 @@
 @using DVSRegister.Extensions
 @using DVSRegister.BusinessLogic.Models.CAB
 @model ServiceDto
+@{
+    bool cabRequestedEdit = Model.Provider.ProviderProfileDraft != null && Model.Provider.ProviderProfileDraft.IsCabRequested;
+}
 
 <div class="govuk-summary-card govuk-!-margin-bottom-8">
     <div class="govuk-summary-card__title-wrapper">
@@ -26,7 +29,8 @@
                     Publication status
                 </dt>
                 <dd class="govuk-summary-list__value">
-                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview?.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.PublicInterestCheck?.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.ServiceStatus, Model.serviceDraft?.PreviousServiceStatus)
+                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview?.Where(x => x.IsLatestReviewVersion).SingleOrDefault(),
+                             Model.PublicInterestCheck?.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.ServiceStatus, Model.serviceDraft?.PreviousServiceStatus, cabRequestedEdit)
                 </dd>
             </div>
             

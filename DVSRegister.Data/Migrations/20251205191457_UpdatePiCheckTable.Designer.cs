@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251205191457_UpdatePiCheckTable")]
+    partial class UpdatePiCheckTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,27 +223,6 @@ namespace DVSRegister.Data.Migrations
                             ActionCategoryId = 1,
                             ActionDescription = "Invitation cancelled",
                             ActionDetailsKey = "CR_InvitationCancelled"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            ActionCategoryId = 2,
-                            ActionDescription = "Send back to certificate review from primary public checks",
-                            ActionDetailsKey = "PI_SentBackFromPrimary"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            ActionCategoryId = 2,
-                            ActionDescription = "Send back to certificate review from  secondary public interest checks",
-                            ActionDetailsKey = "PI_SentBackFromSecondary"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            ActionCategoryId = 2,
-                            ActionDescription = "Restore rejected public interest check",
-                            ActionDetailsKey = "PI_RestoreRejectedPICheck"
                         });
                 });
 
@@ -1375,7 +1357,7 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("PrimaryCheckTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("PrimaryCheckUserId")
+                    b.Property<int>("PrimaryCheckUserId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ProviderProfileId")
@@ -1414,9 +1396,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("SendBackTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("SentBackByUserId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ServiceId")
                         .HasColumnType("integer");
 
@@ -1427,8 +1406,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("ProviderProfileId");
 
                     b.HasIndex("SecondaryCheckUserId");
-
-                    b.HasIndex("SentBackByUserId");
 
                     b.HasIndex("ServiceId");
 
@@ -2684,7 +2661,9 @@ namespace DVSRegister.Data.Migrations
                 {
                     b.HasOne("DVSRegister.Data.Entities.User", "PrimaryCheckUser")
                         .WithMany()
-                        .HasForeignKey("PrimaryCheckUserId");
+                        .HasForeignKey("PrimaryCheckUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DVSRegister.Data.Entities.ProviderProfile", "Provider")
                         .WithMany()
@@ -2695,10 +2674,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasOne("DVSRegister.Data.Entities.User", "SecondaryCheckUser")
                         .WithMany()
                         .HasForeignKey("SecondaryCheckUserId");
-
-                    b.HasOne("DVSRegister.Data.Entities.User", "SentBackByUser")
-                        .WithMany()
-                        .HasForeignKey("SentBackByUserId");
 
                     b.HasOne("DVSRegister.Data.Entities.Service", "PreRegistration")
                         .WithMany("PublicInterestCheck")
@@ -2713,8 +2688,6 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("Provider");
 
                     b.Navigation("SecondaryCheckUser");
-
-                    b.Navigation("SentBackByUser");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.QualityLevel", b =>

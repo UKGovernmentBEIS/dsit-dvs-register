@@ -10,7 +10,7 @@
     bool hasValue = true;
     bool is0_4GammaVersion = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
     bool isEdit = Model.ServiceStatus == ServiceStatusEnum.UpdatesRequested ? true : false;
-
+    bool cabRequestedEdit = Model.Provider.ProviderProfileDraft != null && Model.Provider.ProviderProfileDraft.IsCabRequested;
     var latestCabTransferRequest = Model?.CabTransferRequest?.OrderByDescending(c => c.Id).FirstOrDefault();
     var certificateUploadRequired = latestCabTransferRequest != null && latestCabTransferRequest.RequestManagement != null &&
         latestCabTransferRequest.RequestManagement.RequestType == RequestTypeEnum.CabTransfer && latestCabTransferRequest.RequestManagement.RequestStatus == RequestStatusEnum.Approved &&
@@ -66,7 +66,8 @@
                         Status
                     </dt>
                     <dd class="govuk-summary-list__value">
-                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.PublicInterestCheck.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.ServiceStatus, isEdit ? Model?.serviceDraft?.PreviousServiceStatus : null)
+                    @HtmlExtensions.GetStyledStatusTag(Model.CertificateReview.Where(x => x.IsLatestReviewVersion).SingleOrDefault(),
+                    Model.PublicInterestCheck.Where(x => x.IsLatestReviewVersion).SingleOrDefault(), Model.ServiceStatus, isEdit ? Model?.serviceDraft?.PreviousServiceStatus : null,cabRequestedEdit)
                     </dd>
                 </div>
 

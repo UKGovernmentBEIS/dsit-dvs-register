@@ -17,23 +17,7 @@ namespace DVSRegister.Data.Entities
 
         [ForeignKey("ProviderProfile")]
         public int ProviProviderProfileId { get; set; }
-        public ProviderProfile ProviderProfile { get; set; }
-
-        public bool? IsCabLogoCorrect { get; set; }
-        public bool? IsCabDetailsCorrect { get; set; }
-        public bool? IsProviderDetailsCorrect { get; set; }
-        public bool? IsServiceNameCorrect { get; set; }
-        public bool? IsRolesCertifiedCorrect { get; set; }
-        public bool? IsCertificationScopeCorrect { get; set; }
-        public bool? IsServiceSummaryCorrect { get; set; }
-        public bool? IsURLLinkToServiceCorrect { get; set; }
-        public bool? IsGPG44Correct { get; set; }
-        public bool? IsGPG45Correct { get; set; }
-        public bool? IsServiceProvisionCorrect { get; set; }
-        public bool? IsLocationCorrect { get; set; }
-        public bool? IsDateOfIssueCorrect { get; set; }
-        public bool? IsDateOfExpiryCorrect { get; set; }
-        public bool? IsAuthenticyVerifiedCorrect { get; set; }
+        public ProviderProfile ProviderProfile { get; set; }     
         public string? Comments { get; set; }
         public bool? InformationMatched { get; set; }
         public bool? CertificateValid { get; set; }
@@ -49,6 +33,7 @@ namespace DVSRegister.Data.Entities
         public ICollection<CertificateReviewRejectionReasonMapping>? CertificateReviewRejectionReasonMapping { get; set; }
         public bool IsLatestReviewVersion { get; set; }
         public int ReviewVersion { get; set; }
+        public string? ReturningSubmissionComments { get; set; }
 
     }
 }

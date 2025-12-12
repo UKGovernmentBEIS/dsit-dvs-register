@@ -37,7 +37,8 @@ namespace DVSRegister.Data.TrustFramework
         public async Task<List<Service>> GetPublishedUnderpinningServices(string searchText)
         {
             var baseQuery = context.Service
-                .Include(s => s.Provider)
+                .Include(s=>s.ServiceDraft)
+                .Include(s => s.Provider).ThenInclude(s=>s.ProviderProfileDraft)
                 .Include(s => s.CertificateReview)
                 .Include(s => s.TrustFrameworkVersion)
                 .Include(s => s.CabUser).ThenInclude(s => s.Cab);
@@ -70,7 +71,8 @@ namespace DVSRegister.Data.TrustFramework
             .Include(s => s.ManualUnderPinningService).ThenInclude(s => s.Cab)
             .Include(s => s.CertificateReview)
             .Include(s => s.PublicInterestCheck)
-            .Include(s => s.ServiceDraft)         
+            .Include(s => s.ServiceDraft)
+            .Include(s => s.Provider).ThenInclude(p=>p.ProviderProfileDraft)
             .Where(x => x.ServiceType == ServiceTypeEnum.WhiteLabelled
                         && x.ManualUnderPinningServiceId != null
                         && x.ManualUnderPinningServiceId > 0

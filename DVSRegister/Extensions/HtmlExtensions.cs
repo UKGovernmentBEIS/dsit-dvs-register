@@ -75,46 +75,45 @@ namespace DVSRegister.Extensions
             sb.Append("\">");
             sb.Append(HttpUtility.HtmlEncode(description));
             sb.Append("</strong>");
-            var test = sb.ToString();
             return new HtmlString(sb.ToString());
         }
 
 
-        public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview,PublicInterestCheckDto publicInterestCheck, ServiceStatusEnum serviceStatus, ServiceStatusEnum? previousServiceStatus, bool adminEditInProgress = false)
+        public static HtmlString GetStyledStatusTag(CertificateReviewDto certificateReview,PublicInterestCheckDto publicInterestCheck, ServiceStatusEnum serviceStatus, ServiceStatusEnum? previousServiceStatus, bool isCabRequestedEdit)
         {
-            // Check for Certificate Review whilst public interest has not become complete
-            if (certificateReview != null && publicInterestCheck == null && certificateReview.CertificateReviewStatus != CertificateReviewEnum.DeclinedByProvider && certificateReview.CertificateReviewStatus != CertificateReviewEnum.InvitationCancelled
-               && certificateReview.CertificateReviewStatus != CertificateReviewEnum.Restored && 
-                (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received ||   serviceStatus == ServiceStatusEnum.UpdatesRequested
-             || (serviceStatus == ServiceStatusEnum.Resubmitted && certificateReview.CertificateReviewStatus!=CertificateReviewEnum.AmendmentsRequired )))
+
+            bool isCurrentStatusSubmittedOrReceived = serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Resubmitted ||
+            serviceStatus == ServiceStatusEnum.Received;
+
+            bool isPreviousStatusSubmittedOrReceived = previousServiceStatus!=null && (previousServiceStatus == ServiceStatusEnum.Submitted 
+             || previousServiceStatus == ServiceStatusEnum.Resubmitted || previousServiceStatus == ServiceStatusEnum.Received);
+
+            bool isCurrentStatusReceived = serviceStatus == ServiceStatusEnum.Received;
+
+            bool isPreviousStatusReceived = previousServiceStatus!=null && previousServiceStatus == ServiceStatusEnum.Received;
+
+           
+             if ((isCurrentStatusReceived || isPreviousStatusReceived) 
+                && publicInterestCheck != null &&   publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PublicInterestCheckFailed)  // Passed PI check will be displayed as Published
+            {
+                return HtmlExtensions.ToStyledStrongTag(publicInterestCheck.PublicInterestCheckStatus);
+            }
+            else if ((isCurrentStatusSubmittedOrReceived || isPreviousStatusSubmittedOrReceived)
+                    && certificateReview != null && (certificateReview.CertificateReviewStatus == CertificateReviewEnum.Approved || certificateReview.CertificateReviewStatus == CertificateReviewEnum.Rejected))
             {
                 return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
             }
-            // Check for publicInterestCheck whilst service is not ready to publish
-            else if (publicInterestCheck != null && (serviceStatus == ServiceStatusEnum.Submitted || serviceStatus == ServiceStatusEnum.Received || serviceStatus== ServiceStatusEnum.Resubmitted || serviceStatus == ServiceStatusEnum.UpdatesRequested))
+            else if (serviceStatus == ServiceStatusEnum.UpdatesRequested && isCabRequestedEdit == false)
             {
-                if ( publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckFailed
-                     || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PrimaryCheckPassed
-                    || publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.SentBackBySecondReviewer)
-                {
-                    return HtmlExtensions.ToStyledStrongTag(certificateReview.CertificateReviewStatus);
-                }
-                else if(publicInterestCheck.PublicInterestCheckStatus == PublicInterestCheckEnum.PublicInterestCheckPassed)
-                {
-                    return HtmlExtensions.ToStyledStrongTag(ServiceStatusEnum.Published);
-                }
-                else 
-                {
-                    return HtmlExtensions.ToStyledStrongTag(publicInterestCheck.PublicInterestCheckStatus); // passed or failed
-                }
+                return HtmlExtensions.ToStyledStrongTag(previousServiceStatus != null && previousServiceStatus > 0 ?
+                (ServiceStatusEnum)previousServiceStatus
+                : ServiceStatusEnum.Published);
             }
-            // Check if it is being edited and display the status before updates
-            else if (previousServiceStatus > 0 && serviceStatus == ServiceStatusEnum.UpdatesRequested)
+            else
             {
-                return HtmlExtensions.ToStyledStrongTag((ServiceStatusEnum)previousServiceStatus);               
-            }           
-            // Default to displaying the actual ServiceStatus
-            return HtmlExtensions.ToStyledStrongTag(serviceStatus);
+                return HtmlExtensions.ToStyledStrongTag(serviceStatus);
+            }
+           
         }
         private static string GetDescription<TEnum>(TEnum value) where TEnum : struct, Enum
         {
