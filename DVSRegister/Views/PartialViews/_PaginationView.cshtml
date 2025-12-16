@@ -101,7 +101,7 @@
                 <li class="govuk-pagination__item @(pageNum == current ? "govuk-pagination__item--current" : "")">
                     <a class="govuk-link govuk-pagination__link"
                        href="@url"
-                       aria-label="Page @pageNum">@pageNum</a>
+                       aria-label="Page @pageNum" @(pageNum == current ? "aria-current=\"page\"" : "")>@pageNum</a>
                 </li>
             }
         }
