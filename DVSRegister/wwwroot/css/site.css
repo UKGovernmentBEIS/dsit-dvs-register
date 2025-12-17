@@ -1,4 +1,16 @@
-﻿
+﻿@media (min-width: 48.0625em) {
+    .govuk-header__logo {
+        width: auto;
+        padding-right: 15px;
+        float: left;
+        vertical-align: top;
+    }
+    .govuk-header__content {
+        width: auto;
+        padding-left: 15px;
+        float: right;
+    }
+
 :root {
     --brand: #1d70b8;
     --white: #fff;
@@ -6,14 +18,7 @@
     --focus: #ffdd00;
     --black: #0b0c0c;
 }
-.govuk-header__container {
-    display: flex;
-    align-items: baseline;
-    white-space: nowrap
-}
-.govuk-header__container > .govuk-service-navigation__wrapper {
-    margin-left: auto;
-}
+
 .sortable-table [aria-sort] {
     color: #1d70b8;
     cursor: pointer;
