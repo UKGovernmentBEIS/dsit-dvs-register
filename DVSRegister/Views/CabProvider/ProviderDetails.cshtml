@@ -89,7 +89,7 @@
                                                  new
                                                  {
                                                      @class = "govuk-link",
-                                                     @aria_label = "Change digital identity and attribute service provider’s registered company name"
+                                                     @aria_label = "Change registered name"
                                                  })
                                     }
                                     
@@ -111,7 +111,7 @@
                                     new
                                     {
                                         @class = "govuk-link",
-                                        @aria_label = "Change digital identity and attribute service provider’s trading name"
+                                        @aria_label = "Change trading names"
                                     })
                                     }
                                 </dd>
@@ -132,7 +132,7 @@
                                     {
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { sourcePage = @sourcePage }, new
-                                                { @class = "govuk-link", @aria_label = "Change digital identity and attribute service Companies house or charity registration number" })
+                                                { @class = "govuk-link", @aria_label = "Change Companies house or charity registration number" })
                                         </dd>
                                     }
 
@@ -153,7 +153,7 @@
                                     {
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { sourcePage = @sourcePage }, new
-                                                { @class = "govuk-link", @aria_label = "Change digital identity and attribute DUNS number" })
+                                                { @class = "govuk-link", @aria_label = "Change DUNS number" })
                                         </dd>
                                     }
                                 </div>
@@ -171,7 +171,7 @@
                                     {
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "HasRegistrationNumber", "CabProvider", new { sourcePage = @sourcePage }, new
-                                                { @class = "govuk-link", @aria_label = "Change digital identity and attribute service Companies house or charity registration number" })
+                                                { @class = "govuk-link", @aria_label = "Change Companies house or charity registration number" })
                                         </dd>
                                     }
 
@@ -201,7 +201,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "HasParentCompany", "CabProvider", new { sourcePage = @sourcePage }, new
-                                            { @class = "govuk-link", @aria_label = "Change digital identity and attribute parent company" })
+                                            { @class = "govuk-link", @aria_label = "Change parent company" })
                                     </dd>
                                 }
                             </div>
@@ -227,7 +227,7 @@
                             {
                                 <dd class="govuk-summary-list__actions">
                                     @Html.ActionLink("Change", "HasParentCompany", "CabProvider", new { sourcePage = @sourcePage }, new
-                                        { @class = "govuk-link", @aria_label = "Change digital identity and attribute parent company" })
+                                        { @class = "govuk-link", @aria_label = "Change location of parent company" })
                                 </dd>
                             }
                         </div>
@@ -254,7 +254,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "PublicContactEmail", "CabProvider", new { sourcePage = @sourcePage },
-                                                 new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s Public email address" })
+                                                 new { @class = "govuk-link", @aria_label = "Change email address" })
                                     </dd>
                                 }                               
                             </div>
@@ -272,7 +272,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                       @Html.ActionLink("Change", "TelephoneNumber", "CabProvider", new { sourcePage = @sourcePage },
-                                      new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s telephone number" })
+                                      new { @class = "govuk-link", @aria_label = "Change telephone number" })
                                     </dd>
                                 }
                             </div>
@@ -289,7 +289,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "WebsiteAddress", "CabProvider", new { sourcePage = @sourcePage },
-                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
+                                             new { @class = "govuk-link", @aria_label = "Change website address" })
                                     </dd>
                                 }
                             </div>
@@ -306,7 +306,7 @@
                                 {
                                      <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "LinkToContactPage", "CabProvider", new { sourcePage = @sourcePage },
-                                             new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider's public link to contact us page" })
+                                             new { @class = "govuk-link", @aria_label = "Change link to contact page" })
                                     </dd>
                                 }
                             </div>
@@ -373,7 +373,7 @@
                                     @Html.ActionLink("Change", "EditPrimaryContact", "CabProviderEdit", new { providerId = Model.Provider.Id }, new
                                         {
                                             @class = "govuk-link",
-                                            @aria_label = "Change digital identity and attribute service provider's primary contact details"
+                                            @aria_label = "Change primary contact details"
                                         })
                                 </li>
                             </ul>
@@ -406,7 +406,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "PrimaryContact", "CabProvider", new { sourcePage = @sourcePage },
-                                        new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s primary contact full name" })
+                                        new { @class = "govuk-link", @aria_label = "Change full name of primary contact" })
                                     </dd>
                                 }
                             </div>
@@ -423,7 +423,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                     @Html.ActionLink("Change", "PrimaryContact", "CabProvider", new { sourcePage = @sourcePage },
-                                     new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s  primary contact job title" })
+                                     new { @class = "govuk-link", @aria_label = "Change job title of primary contact" })
                                     </dd>
                                 }
                             </div>
@@ -440,7 +440,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                      @Html.ActionLink("Change", "PrimaryContact", "CabProvider", new { sourcePage = @sourcePage },
-                                     new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s primary contact email" })
+                                     new { @class = "govuk-link", @aria_label = "Change email address of primary contact" })
                                     </dd>
                                 }
                             </div>
@@ -456,7 +456,7 @@
                                     {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "PrimaryContact", "CabProvider", new { sourcePage = @sourcePage },
-                                        new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s primary contact telephone number" })
+                                        new { @class = "govuk-link", @aria_label = "Change telephone number of primary contact" })
                                     </dd>
                                     }
                             </div>
@@ -478,7 +478,7 @@
                                     @Html.ActionLink("Change", "EditSecondaryContact", "CabProviderEdit", new { providerId = Model.Provider.Id }, new
                                         {
                                             @class = "govuk-link",
-                                            @aria_label = "Change digital identity and attribute service provider's secondary contact details"
+                                            @aria_label = "Change secondary contact's details"
                                         })
                                 </li>
                             </ul>
@@ -500,7 +500,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "SecondaryContact", "CabProvider", new { sourcePage = @sourcePage },
-                                        new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s secondary contact full name" })
+                                        new { @class = "govuk-link", @aria_label = "Change full name of secondary contact" })
                                     </dd>
                                 }
                             </div>
@@ -517,7 +517,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "SecondaryContact", "CabProvider", new { sourcePage = @sourcePage },
-                                        new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s secondary contact job title" })
+                                        new { @class = "govuk-link", @aria_label = "Change job title of secondary contact" })
                                     </dd>
                                 }
                             </div>
@@ -534,7 +534,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "SecondaryContact", "CabProvider", new { sourcePage = @sourcePage },
-                                         new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s secondary contact email address" })
+                                         new { @class = "govuk-link", @aria_label = "Change email address of secondary contact" })
                                     </dd>
                                 }
                             </div>
@@ -551,7 +551,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "SecondaryContact", "CabProvider", new { sourcePage = @sourcePage },
-                                         new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s secondary contact telephone number" })
+                                         new { @class = "govuk-link", @aria_label = "Change telephone number of secondary contact" })
                                     </dd>
                                 }
                             </div>
