@@ -84,7 +84,7 @@
                     HasError = hasError,
                     ErrorMessage = hasDateError? Html?.ViewData?.ModelState["ValidDate"]?.Errors[0].ErrorMessage ?? string.Empty:string.Empty,
                     FieldsetLegend = "Certificate of conformity expiry date",
-                    Hint = "For example, 27 3 2007",
+                    Hint = "For example, 27 03 2029",
 
                     Day = Convert.ToString(Model.Day)??string.Empty,
                     HasDayError = hasDayError,
