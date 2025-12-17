@@ -1,4 +1,12 @@
-﻿.govuk-header__container {
+﻿
+:root {
+    --brand: #1d70b8;
+    --white: #fff;
+    --grey: #505a5f; /* GOV.UK grey */
+    --focus: #ffdd00;
+    --black: #0b0c0c;
+}
+.govuk-header__container {
     display: flex;
     align-items: baseline;
     white-space: nowrap
@@ -54,22 +62,19 @@
     content: none;
 }
 
+
 .sortable-table [aria-sort] a:focus,
 .sortable-table [aria-sort] a:focus-visible,
 .sortable-table [aria-sort] button:focus,
-.sortable-table [aria-sort] button:focus-visible {
-    outline: 3px solid #fd0;
-    outline-offset: 0;
-    box-shadow: 0 -2px #0b0c0c, 0 4px #fd0;
-    text-decoration: none;
+.sort.sortable-table [aria-sort] button:focus-visible {
+    background-color: var(--focus);
+    color: var(--black);
+    border: none;
+    border-bottom: 3px solid var(--black);
+    outline: none;
+    text-decoration-thickness: .1875rem;
 }
 
-:root {
-    --brand: #1d70b8;
-    --white: #fff;
-    --grey: #505a5f; /* GOV.UK grey */
-    --focus: #fd0;
-}
 
 .dashboard-summary {
     display: grid;
@@ -134,39 +139,51 @@
     display: block;
 }
 
+
 .dashboard-summary__card .govuk-link,
-.dashboard-summary__card .govuk-link:hover,
-.dashboard-summary__card .govuk-link:focus {
+.dashboard-summary__card .govuk-link:hover
+{
     color: inherit;
     text-decoration: none;
 }
 
-.dashboard-summary__card:not(.dashboard-summary__card--emphasised):hover,
-.dashboard-summary__card:not(.dashboard-summary__card--emphasised):focus {
+.dashboard-summary__card:not(.dashboard-summary__card--emphasised):hover
+ {
     color: var(--grey);
     border-color: var(--brand);
     text-decoration: none;
 }
 
-.dashboard-summary__card--emphasised:hover,
-.dashboard-summary__card--emphasised:focus {
+.dashboard-summary__card--emphasised:hover
+{
     background: var(--brand);
     color: var(--white);
     border-color: var(--brand);
     text-decoration: none;
+}   
+
+
+/* Focus and click or tab click */
+.dashboard-summary__card--emphasised:focus,
+.dashboard-summary__card:focus,
+.dashboard-summary__card--emphasised:focus-visible,
+.dashboard-summary__card:focus-visible,
+.dashboard-summary__card--emphasised:active,
+.dashboard.dashboard-summary__card:active,
+.dashboard-summary__card--emphasised:hover:focus,
+.dashboard-summary__card:hover:focus 
+
+{
+    background: var(--focus);
+    border-color: var(--black);
+    color: var(--black);
+    border-style: solid;
+    border-width: 3px;
+    outline: none;
+    text-decoration-thickness: .1875rem;
 }
 
-.dashboard-summary__card:focus-visible {
-    outline: 3px solid var(--focus);
-    box-shadow: 0 -2px #0b0c0c, 0 4px var(--focus);
-}
-
-    .dashboard-summary__card:focus-visible .dashboard-summary__label {
-        text-decoration: underline;
-        text-decoration-thickness: .1875rem;
-        text-underline-offset: .15em;
-    }
-
+  
 @media (prefers-reduced-motion: reduce) {
     .dashboard-summary__card {
         transition: none;
