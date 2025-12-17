@@ -3,6 +3,7 @@
     ViewData["Title"] = "Select the version of the trust framework that you have certified the service against";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
     var hasError = false;
+    var errorMessage = string.Empty;
 }
 
 <div class="govuk-width-container">
@@ -14,11 +15,12 @@
                 @if (ViewData.ModelState.ErrorCount > 0)
                 {
                     hasError = true;
+                    errorMessage = ViewData.ModelState["SelectedTFVersionId"]?.Errors[0].ErrorMessage;
                     ViewData["Title"] = "Error: " + ViewData["Title"];
                     @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                 }
                 <h2 class="govuk-heading-s">Trust framework version</h2>
-                <p class="govuk-hint">
+                <p id="selectedtfversionid-hint" class="govuk-hint">
                     This must match the version of the trust framework that appears on the certificate of conformity for this service.
                 </p>
                 @using (Html.BeginForm("SaveTFVersion", "TrustFramework0_4", FormMethod.Post))
@@ -26,22 +28,36 @@
                     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
                     @Html.HiddenFor(m => m.RefererURL)
-                
-                    <fieldset class="govuk-fieldset">
-                        <legend class="govuk-fieldset__legend govuk-visually-hidden">
-                            Which version did you certify against?
-                        </legend>
-                        <div class="govuk-radios" data-module="govuk-radios">                          
-                            @foreach (var version in Model.AvailableVersions)
+
+                    <div class="govuk-form-group @(hasError ? "govuk-form-group--error" : "")">
+
+                        <fieldset class="govuk-fieldset" aria-describedby="@(hasError ? "selectedtfversionid-error" : "selectedtfversionid-hint")">
+                            <legend class="govuk-fieldset__legend govuk-visually-hidden">
+                                Select the version of the trust framework that you have certified the service against
+                            </legend>
+
+                            @if(hasError)
                             {
-                                <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" type="radio" name="SelectedTFVersionId" value="@version.Id" id="version_@version.Id"
-                                           @(Model.SelectedTFVersionId == version.Id ? "checked" : "") />
-                                    <label class="govuk-label govuk-radios__label" for="version_@version.Id">@version.TrustFrameworkName</label>
-                                </div>
+                                <p id="selectedtfversionid-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>  @errorMessage
+                                </p>
                             }
-                        </div>
-                    </fieldset>
+                           
+
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                @foreach (var version in Model.AvailableVersions)
+                                {
+                                    var radioId = version.Id == 1 ? "selectedtfversionid" : "selectedtfversionid" + version.Id;
+                                    <div class="govuk-radios__item">
+                                        <input class="govuk-radios__input" type="radio" name="SelectedTFVersionId" value="@version.Id" id="@radioId"
+                                        @(Model.SelectedTFVersionId == version.Id ? "checked" : "") />
+                                        <label class="govuk-label govuk-radios__label" for="@radioId">@version.TrustFrameworkName</label>
+                                    </div>
+                                }
+                            </div>
+                        </fieldset>
+                    </div>
+                
                     <div class="govuk-button-group">
                         @if (Model != null && Model.IsAmendment)
                         {  
