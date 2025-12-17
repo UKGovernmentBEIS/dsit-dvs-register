@@ -29,15 +29,16 @@
                 
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend govuk-visually-hidden">
-                            Which version did you certify against?
+                            Select the version of the trust framework that you have certified the service against
                         </legend>
                         <div class="govuk-radios" data-module="govuk-radios">                          
                             @foreach (var version in Model.AvailableVersions)
                             {
+                                var radioId = version.Id == 1 ? "selectedtfversionid" : "selectedtfversionid" + version.Id;
                                 <div class="govuk-radios__item">
-                                    <input class="govuk-radios__input" type="radio" name="SelectedTFVersionId" value="@version.Id" id="version_@version.Id"
+                                    <input class="govuk-radios__input" type="radio" name="SelectedTFVersionId" value="@version.Id" id="@radioId"
                                            @(Model.SelectedTFVersionId == version.Id ? "checked" : "") />
-                                    <label class="govuk-label govuk-radios__label" for="version_@version.Id">@version.TrustFrameworkName</label>
+                                    <label class="govuk-label govuk-radios__label" for="@radioId">@version.TrustFrameworkName</label>
                                 </div>
                             }
                         </div>

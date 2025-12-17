@@ -38,12 +38,14 @@
                     This must match the information on the certificate of conformity.
                 </p>
 
+                    <h2 class="govuk-heading-m"> Select the roles</h2>
+
                 @if (hasError)
                 {
                     <div class="govuk-form-group govuk-form-group--error">
                         <fieldset class="govuk-fieldset" aria-describedby="selectedroleids-hint selectedroleids-error">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                Select the roles
+                                <legend class="govuk-fieldset__legend govuk-visually-hidden">
+                                    Select the applicable roles from the UK digital identity and attributes trust framework for this service
                             </legend>
                             <div id="selectedroleids-hint" class="govuk-hint">
                                 Select all that apply
@@ -72,8 +74,8 @@
                 {
                     <div class="govuk-form-group">
                         <fieldset class="govuk-fieldset" aria-describedby="selectedroleids-hint">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                Select the roles
+                                <legend class="govuk-fieldset__legend govuk-visually-hidden">
+                                    Select the applicable roles from the UK digital identity and attributes trust framework for this service
                             </legend>
                             <div id="selectedroleids-hint" class="govuk-hint">
                                 Select all that apply
