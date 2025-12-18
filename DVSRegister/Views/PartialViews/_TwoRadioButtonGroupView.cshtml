@@ -1,81 +1,52 @@
 ﻿@model TwoRadioButtonGroupViewModel
 @using DVSRegister.Models.UI.Enums
 <div class="govuk-form-group @(Model.HasError ? "govuk-form-group--error" : "")">
-    @if (Model.HasError)
-    {
-        <fieldset class="govuk-fieldset" aria-describedby="@(Model.PropertyName.ToLower())-error">
-
-            @if (!string.IsNullOrEmpty(Model.FieldSet))
-            {
-                <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
-                    @Model.FieldSet
-                </legend>
-                
 
 
-            }
-            <p id="@(Model.PropertyName.ToLower())-error" class="govuk-error-message">
+    <fieldset class="govuk-fieldset" aria-describedby="@(Model.HasError ? Model.PropertyName.ToLower()+"-error"
+        : !string.IsNullOrEmpty(Model.Hint1) ? $"{Model.PropertyName?.ToLower()}-hint": null)">
+        @if (!string.IsNullOrEmpty(Model.FieldSet))
+        {
+            <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
+                @Model.FieldSet
+            </legend>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Hint1))
+        {
+            <div id="@Model.PropertyName?.ToLower()-hint" class="govuk-hint">
+                @Model.Hint1
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.Hint2))
+        {
+            <div id="@Model.PropertyName?.ToLower()-hint2" class="govuk-hint">
+                @Model.Hint2
+            </div>
+        }
+        @if (!string.IsNullOrEmpty(Model.ParagraphText))
+        {
+            <p class="govuk-body">@Model.ParagraphText</p>
+        }
+        @if (Model.HasError)
+        {
+            <p id="@(Model.PropertyName?.ToLower())-error" class="govuk-error-message">
                 <span class="govuk-visually-hidden">Error:</span> @Model.ErrorMessage
             </p>
-            <div class="govuk-radios" data-module="govuk-radios">
-                <div class="govuk-radios__item">
-                    @Html.RadioButton(Model.PropertyName, true, Model.Value == true, new { @id = Model.PropertyName.ToLower(), @class = "govuk-radios__input" })
-                    <label class="govuk-label govuk-radios__label" for="@Model.PropertyName.ToLower()">
-                        @Model.Label1
-                    </label>
-                </div>
-                <div class="govuk-radios__item">
-                    @Html.RadioButton(Model.PropertyName, false, Model.Value == false, new { @id = Model.PropertyName.ToLower() + "-2", @class = "govuk-radios__input" })
-                    <label class="govuk-label govuk-radios__label" for="@Model.PropertyName.ToLower()-2">
-                        @Model.Label2
-                    </label>
-                </div>
+        }
+        <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+                @Html.RadioButton(Model.PropertyName, true, Model.Value == true, new { @id = Model.PropertyName?.ToLower(), @class = "govuk-radios__input" })
+                <label class="govuk-label govuk-radios__label" for="@Model.PropertyName?.ToLower()">
+                    @Model.Label1
+                </label>
             </div>
-        </fieldset>
-    }
-    else
-    {
-        <fieldset class="govuk-fieldset">
-            @if (!string.IsNullOrEmpty(Model.FieldSet))
-            {
-                <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
-                    @Model.FieldSet
-                </legend>
-
-
-
-            }
-
-            @if (!string.IsNullOrEmpty(Model.Hint1))
-            {
-                <div id="contact-hint" class="govuk-hint">
-                    @Model.Hint1
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.Hint2))
-            {
-                <div id="contact-hint" class="govuk-hint">
-                    @Model.Hint2
-                </div>
-            }
-            @if (!string.IsNullOrEmpty(Model.ParagraphText))
-            {
-                <p class="govuk-body">@Model.ParagraphText</p>
-            }
-            <div class="govuk-radios" data-module="govuk-radios">
-                <div class="govuk-radios__item">
-                    @Html.RadioButton(Model.PropertyName, true, Model.Value == true, new { @id = Model.PropertyName.ToLower(), @class = "govuk-radios__input" })
-                    <label class="govuk-label govuk-radios__label" for="@Model.PropertyName.ToLower()">
-                        @Model.Label1
-                    </label>
-                </div>
-                <div class="govuk-radios__item">
-                    @Html.RadioButton(Model.PropertyName, false, Model.Value == false, new { @id = Model.PropertyName.ToLower() + "-2", @class = "govuk-radios__input" })
-                    <label class="govuk-label govuk-radios__label" for="@Model.PropertyName.ToLower()-2">
-                        @Model.Label2
-                    </label>
-                </div>
+            <div class="govuk-radios__item">
+                @Html.RadioButton(Model.PropertyName, false, Model.Value == false, new { @id = Model.PropertyName?.ToLower() + "-2", @class = "govuk-radios__input" })
+                <label class="govuk-label govuk-radios__label" for="@Model.PropertyName?.ToLower()-2">
+                    @Model.Label2
+                </label>
             </div>
-        </fieldset>
-    }
+        </div>
+    </fieldset>
 </div>
