@@ -1,10 +1,26 @@
 ﻿@model TwoRadioButtonGroupViewModel
 @using DVSRegister.Models.UI.Enums
+@using System.Text
+
+@{
+    StringBuilder sb = new();
+    @if (!string.IsNullOrEmpty(Model.Hint1))
+        sb.Append(@Model.PropertyName?.ToLower() + "-hint1");
+  
+
+    @if (!string.IsNullOrEmpty(Model.Hint2))
+    {
+        sb.Append(" ");
+        sb.Append(@Model.PropertyName?.ToLower() + "-hint2");
+    }
+  
+    string hintClass = sb.ToString();
+}
 <div class="govuk-form-group @(Model.HasError ? "govuk-form-group--error" : "")">
 
 
-    <fieldset class="govuk-fieldset" aria-describedby="@(Model.HasError ? Model.PropertyName.ToLower()+"-error"
-        : !string.IsNullOrEmpty(Model.Hint1) ? $"{Model.PropertyName?.ToLower()}-hint": null)">
+    <fieldset class="govuk-fieldset" aria-describedby="@(Model.HasError ? Model.PropertyName?.ToLower()+"-error"
+        :  (!string.IsNullOrEmpty(Model.Hint1) || !string.IsNullOrEmpty(Model.Hint2)) ? hintClass: null)">
         @if (!string.IsNullOrEmpty(Model.FieldSet))
         {
             <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
@@ -14,7 +30,7 @@
 
         @if (!string.IsNullOrEmpty(Model.Hint1))
         {
-            <div id="@Model.PropertyName?.ToLower()-hint" class="govuk-hint">
+            <div id="@Model.PropertyName?.ToLower()-hint1" class="govuk-hint">
                 @Model.Hint1
             </div>
         }
