@@ -7,35 +7,10 @@
 
             @if (!string.IsNullOrEmpty(Model.FieldSet))
             {
-                @switch (Model.Heading)
-                {
-                    case HeadingEnum.None:
-                        <legend class="govuk-fieldset__legend">
-                            @Model.FieldSet
-                        </legend>
-                        break;
-                    case HeadingEnum.H1:
-                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
-                            <h1 class="govuk-fieldset__heading">
-                                @Model.FieldSet
-                            </h1>
-                        </legend>
-                        break;
-                    case HeadingEnum.H2:
-                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
-                            <h2 class="govuk-fieldset__heading">
-                                @Model.FieldSet
-                            </h2>
-                        </legend>
-                        break;
-                    case HeadingEnum.H3:
-                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
-                            <h3 class="govuk-fieldset__heading">
-                                @Model.FieldSet
-                            </h3>
-                        </legend>
-                        break;
-                }
+                <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
+                    @Model.FieldSet
+                </legend>
+                
 
 
             }
@@ -63,36 +38,10 @@
         <fieldset class="govuk-fieldset">
             @if (!string.IsNullOrEmpty(Model.FieldSet))
             {
+                <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
+                    @Model.FieldSet
+                </legend>
 
-                @switch (Model.Heading)
-                {
-                    case HeadingEnum.None:
-                        <legend class="govuk-fieldset__legend">
-                            @Model.FieldSet
-                        </legend>
-                        break;
-                    case HeadingEnum.H1:
-                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
-                            <h1 class="govuk-fieldset__heading">
-                                @Model.FieldSet
-                            </h1>
-                        </legend>
-                        break;
-                    case HeadingEnum.H2:
-                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
-                            <h2 class="govuk-fieldset__heading">
-                                @Model.FieldSet
-                            </h2>
-                        </legend>
-                        break;
-                    case HeadingEnum.H3:
-                        <legend class="govuk-fieldset__legend @Model.LegendStyleClass">
-                            <h3 class="govuk-fieldset__heading">
-                                @Model.FieldSet
-                            </h3>
-                        </legend>
-                        break;
-                }
 
 
             }

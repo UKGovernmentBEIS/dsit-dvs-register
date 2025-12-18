@@ -36,8 +36,7 @@
                        PropertyName = "HasParentCompany",
                        Value = Model.HasParentCompany,
                        HasError = hasError,
-                       FieldSet = "Does the digital identity and attribute service provider have a parent company outside the UK?",
-                       Heading = HeadingEnum.H1,
+                       FieldSet = "Does the digital identity and attribute service provider have a parent company outside the UK?",                 
                        LegendStyleClass = "govuk-fieldset__legend--xl",
                        ErrorMessage = hasError ?
                        Html.ViewData.ModelState["HasParentCompany"].Errors[0].ErrorMessage : string.Empty,
