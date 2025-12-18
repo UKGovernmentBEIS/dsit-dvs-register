@@ -40,9 +40,7 @@
                         Value = Model.HasGPG45,
                         FieldSet = "Does the service prove or verify someone’s identity (GPG 45)?",
                         Hint1 = "Tell us if the service is used to prove or verify someone's identity and is therefore certified against GPG 45.",                    
-                        Hint2 = "This includes verifying an identity in relation to any supplementary codes relevant to this service.",
-                        Heading = HeadingEnum.H1,
-                        LegendStyleClass = "govuk-fieldset__legend--xl",
+                        Hint2 = "This includes verifying an identity in relation to any supplementary codes relevant to this service.",                                               LegendStyleClass = "govuk-fieldset__legend--xl",
                         HasError = hasError,
                         ErrorMessage = Html.ViewData.ModelState.ContainsKey("HasGPG45") && Html.ViewData.ModelState["HasGPG45"].Errors.Count > 0 ?
                         Html.ViewData.ModelState["HasGPG45"].Errors[0].ErrorMessage : string.Empty,
