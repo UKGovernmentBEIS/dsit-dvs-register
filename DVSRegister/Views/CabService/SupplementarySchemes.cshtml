@@ -30,74 +30,46 @@
                 {
                 @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
                 @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
-                    @Html.HiddenFor(m => m.RefererURL)
+                @Html.HiddenFor(m => m.RefererURL)
                 <p class="govuk-body">
                     Select all supplementary codes that the service  is certified against on the certificate of conformity.
                 </p>
 
-                @if(hasError)
-                {
-                    <div class="govuk-form-group govuk-form-group--error">
-                        <fieldset class="govuk-fieldset" aria-describedby="selectedroleids-hint">
+                    <div class="govuk-form-group @(hasError ? "govuk-form-group--error" : "")">
+                        <fieldset class="govuk-fieldset" aria-describedby="@(hasError ? "selectedsupplementaryschemeids-error" : "selectedsupplementaryschemeids-hint")">
+
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
                                 Select all relevant supplementary codes
                             </legend>
-                            <div id="selectedroleids-hint" class="govuk-hint">
+                            <div id="selectedsupplementaryschemeids-hint" class="govuk-hint">
                                 Select all that apply
                             </div>
-                            <p id="selectedroleids-error" class="govuk-error-message">
-                                <span class="govuk-visually-hidden">Error:</span>
+                            @if (hasError)
+                            {
+                                <p id="selectedsupplementaryschemeids-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>
                                     @Html.ValidationMessageFor(m => m.SelectedSupplementarySchemeIds, "", new { @class = "govuk-error-message", id = "selectedsupplementaryschemeids-error" })
-                            </p>
+                                </p>
+                            }
+
                             <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                        @foreach (var item in Model.AvailableSchemes)
-                                        {
-                                            var idSuffix = index > 0 ? $"_{index}" : string.Empty; // added to make the first checkbox id as selectedsupplementaryschemeids so that error summary ahref refers first item
-                                            <div class="govuk-checkboxes__item">
-                                                <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id"
-                                                id="selectedsupplementaryschemeids@(idSuffix)"
-                                                @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
-                                                <label class="govuk-label govuk-checkboxes__label" for="selectedsupplementaryschemeids@(idSuffix)">@item.SchemeName</label>
-                                            </div>
-                                            index++;
-                                        }
-                                    </div>
+                                <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                                    @foreach (var item in Model.AvailableSchemes)
+                                    {
+                                        var idSuffix = index > 0 ? $"_{index}" : string.Empty; // added to make the first checkbox id as selectedsupplementaryschemeids so that error summary ahref refers first item
+                                        <div class="govuk-checkboxes__item">
+                                            <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds" value="@item.Id"
+                                                   id="selectedsupplementaryschemeids@(idSuffix)"
+                                            @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
+                                            <label class="govuk-label govuk-checkboxes__label" for="selectedsupplementaryschemeids@(idSuffix)">@item.SchemeName</label>
+                                        </div>
+                                        index++;
+                                    }
+                                </div>
                             </div>
 
                         </fieldset>
                     </div>
-                }
-                else
-                {
-                    <div class="govuk-form-group">
-                        <fieldset class="govuk-fieldset" aria-describedby="selectedroleids-hint">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-                                Select all relevant supplementary codes
-                            </legend>
-                            <div id="selectedroleids-hint" class="govuk-hint">
-                                Select all that apply
-                            </div>
-
-                            <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
-                                        @foreach (var item in Model.AvailableSchemes)
-                                        {
-                                            var idSuffix = index > 0 ? $"_{index}" : string.Empty;
-                                            <div class="govuk-checkboxes__item">
-                                                <input class="govuk-checkboxes__input" type="checkbox" name="SelectedSupplementarySchemeIds"
-                                                 value="@item.Id" id="selectedsupplementaryschemeids@(idSuffix)"
-                                                @(Model.SelectedSupplementarySchemeIds.Contains(item.Id) ? "checked" : "") />
-                                                <label class="govuk-label govuk-checkboxes__label" for="selectedsupplementaryschemeids@(idSuffix)">@item.SchemeName</label>
-                                            </div>
-                                            index++;
-                                        }
-                                    </div>
-                            </div>
-
-                        </fieldset>
-                    </div>
-                }
 
                     @if (Model != null && Model.IsAmendment)
                     {
