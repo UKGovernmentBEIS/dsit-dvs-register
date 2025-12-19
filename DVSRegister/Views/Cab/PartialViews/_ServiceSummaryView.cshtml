@@ -28,7 +28,7 @@
                 </dd>
                 <dd class="govuk-summary-list__actions">
                     @Html.ActionLink("Change", "SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model?.ProviderProfileId },
-                    new { @class = "govuk-link", @aria_label = "Change selected tf version" })
+                    new { @class = "govuk-link", @aria_label = "Change selected trust framework version" })
                 </dd>
             </div>
 
@@ -41,7 +41,7 @@
                 </dd>
                 <dd class="govuk-summary-list__actions">
                     @Html.ActionLink("Change", "ServiceName", "CabService", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                                               new { @class = "govuk-link", @aria_label = "" })
+                                        new { @class = "govuk-link", @aria_label = "Change name of service" })
                 </dd>
             </div>
 
@@ -78,7 +78,7 @@
                 </dd>
                 <dd class="govuk-summary-list__actions">
                     @Html.ActionLink("Change", "ServiceURL", "CabService", new { fromSummaryPage = true },
-                                               new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
+                                               new { @class = "govuk-link", @aria_label = "Change URL link to the service" })
                 </dd>
             </div>
             <div class="govuk-summary-list__row">
@@ -113,7 +113,7 @@
                 </dd>
                 <dd class="govuk-summary-list__actions">
                     @Html.ActionLink("Change", "ProviderRoles", "CabService", new { fromSummaryPage = true },
-                                               new { @class = "govuk-link", @aria_label = "Change the roles from the UK digital identity and attributes trust framework that apply to the provider's service" })
+                                               new { @class = "govuk-link", @aria_label = "Change roles certified against" })
                 </dd>
             </div>
 
@@ -128,7 +128,7 @@
                     </dd>
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "SelectServiceType", "TrustFramework0_4", new { fromSummaryPage = true, providerProfileId = Model.ProviderProfileId },
-                                 new { @class = "govuk-link", @aria_label = "" })
+                        new { @class = "govuk-link", @aria_label = "change underpinning or white-labelled service" })
                     </dd>
                 </div>
             }
@@ -170,7 +170,7 @@
 
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "ServiceGPG45Input", "TrustFramework0_4", new { fromSummaryPage = true },
-                        new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
+                        new { @class = "govuk-link", @aria_label = "Change GPG 45 identity profiles" })
                 </dd>
             </div>
 
@@ -199,7 +199,7 @@
                     </dd>
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true },
-                                 new { @class = "govuk-link", @aria_label = "Change supplementary code" })
+                        new { @class = "govuk-link", @aria_label = "Change GPG 44 quality of authenticator" })
                     </dd>
                 </div>
 
@@ -260,7 +260,7 @@
                     </dd>
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromSummaryPage = true },
-                                 new { @class = "govuk-link", @aria_label = "Change supplementary code" })
+                        new { @class = "govuk-link", @aria_label = "Change GPG 44 quality of authenticator" })
                     </dd>
                 </div>
 
@@ -317,7 +317,7 @@
                     </dd>
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromSummaryPage = true },
-                                 new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
+                        new { @class = "govuk-link", @aria_label = "Change GPG 45 identity profiles" })
                     </dd>
                 </div>
             }           
@@ -594,7 +594,7 @@
                         @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true}, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change selected CAB of underpinning service" })
                         </dd>
                     }
                 </div>
@@ -609,7 +609,7 @@
                         @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true}, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change selected Underpinning service certificate expiry date" })
                         </dd>
                     }
                 </div>

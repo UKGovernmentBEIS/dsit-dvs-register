@@ -40,14 +40,15 @@
                     <p class="govuk-body">Once you have configured your authenticator app, a six-digit passcode will appear in the authenticator app which you should enter in the box below. This will enable you to
                         sign in to the service.</p>
 
-                    <p class="govuk-body">
-                        <b>Enter the one-time multi-factor code shown in your authenticator app:</b>
-                        <br />
-                        <span id="mfa-hint" class="govuk-hint">
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" for="mfacode">
+                        Enter the one-time multi-factor code shown in your authenticator app:
+                        </label>
+                        <div id="mfa-hint" class="govuk-hint">
                             This is a six-digit passcode. For example, 123456
-                        </span>
+                        </div>
 
-                    </p>
+                 
 
                     <div class="govuk-form-group @(Html.ViewData.ModelState.ContainsKey("MFACode") && Html.ViewData.ModelState["MFACode"].Errors.Count > 0 ? "govuk-form-group--error" : "")">
                         @Html.ValidationMessageFor(m => m.MFACode, "", new { @class = "govuk-error-message" })
@@ -59,6 +60,7 @@
                     </button>
                 </div>
             </div>
+          </div>
         </main>
     </div>
 }
