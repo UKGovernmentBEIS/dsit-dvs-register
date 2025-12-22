@@ -53,7 +53,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public int? UnderPinningServiceId { get; set; }
         public ServiceDto UnderPinningService { get; set; }    
         public int? ManualUnderPinningServiceId { get; set; }
-        public ManualUnderPinningServiceDto ManualUnderPinningService { get; set; }
+        public ManualUnderPinningServiceDto? ManualUnderPinningService { get; set; }
         public bool? IsManualServiceLinkedToMultipleServices { get; set; }
         public bool? IsUnderPinningServicePublished { get; set; }
         public string NewOrResubmission { get; set; }
