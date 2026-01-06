@@ -110,7 +110,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "ServiceURL", "CabService", new { fromDetailsPage = true },
-                                            new { @class = "govuk-link", @aria_label = "Change website address" })
+                                                 new { @class = "govuk-link", @aria_label = "URL link to the service" })
                                     </dd>
                                 }
                             </div>
@@ -157,7 +157,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "ProviderRoles", "CabService", new { fromDetailsPage = true },
-                                            new { @class = "govuk-link", @aria_label = "Change role certified against" })
+                                            new { @class = "govuk-link", @aria_label = "Change roles certified against" })
                                     </dd>
                                 }
                             </div>
@@ -171,7 +171,7 @@
                                     {
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "SelectServiceType", "TrustFramework0_4", new { fromDetailsPage = true },
-                                                new { @class = "govuk-link", @aria_label = "Change the type of service" })
+                                                     new { @class = "govuk-link", @aria_label = "Change Underpinning or white-labelled service" })
                                         </dd>
                                     }
                                 </div>
@@ -240,14 +240,14 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 quality levels" })
+                                                    new { @class = "govuk-link", @aria_label = "Change GPG 44 quality levels" })
                                             </dd>
                                         }
                                         else
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 quality levels" })
+                                                    new { @class = "govuk-link", @aria_label = "Change GPG 44 quality levels" })
                                             </dd>
                                         }
                                     }
@@ -277,14 +277,14 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 quality of authenticator" })
+                                                    new { @class = "govuk-link", @aria_label = "Change GPG 44 quality of authenticator" })
                                             </dd>
                                         }
                                         else
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 quality of authenticator" })
+                                                    new { @class = "govuk-link", @aria_label = "Change GPG 44 quality of authenticator" })
                                             </dd>
                                         }
                                     }
@@ -312,14 +312,14 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 level of protection" })
+                                                    new { @class = "govuk-link", @aria_label = "Change GPG 44 level of protection" })
                                             </dd>
                                         }
                                         else
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 level of protection" })
+                                                    new { @class = "govuk-link", @aria_label = "Change GPG 44 level of protection" })
                                             </dd>
                                         }
                                     }
@@ -337,7 +337,7 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 45 identity profiles" })
+                                                    new { @class = "govuk-link", @aria_label = "Change GPG 45 identity profiles" })
                                             </dd>
                                         }
                                     </div>
@@ -364,7 +364,7 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 45 identity profiles" })
+                                                    new { @class = "govuk-link", @aria_label = "Change GPG 45 identity profiles" })
                                             </dd>
                                         }
                                     </div>
@@ -380,7 +380,7 @@
                                     {
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
-                                                new { @class = "govuk-link", @aria_label = "Change relevant supplementary codes" })
+                                                new { @class = "govuk-link", @aria_label = "Change supplementary codes" })
                                         </dd>
                                     }
                                 </div>
@@ -407,7 +407,7 @@
                                     {
                                         <dd class="govuk-summary-list__actions">
                                             @Html.ActionLink("Change", "HasSupplementarySchemesInput", "CabService", new { fromDetailsPage = true },
-                                                new { @class = "govuk-link", @aria_label = "Change whether certified against supplementary codes" })
+                                                new { @class = "govuk-link", @aria_label = "Change supplementary codes" })
                                         </dd>
                                     }
                                 </div>
@@ -631,7 +631,7 @@
                                     @if (hasValue && !Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault())
                                     {
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                                            @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change underpinning service name " })
                                         </dd>
                                     }
                                 </div>
@@ -652,7 +652,7 @@
                                     @if (hasValue && !Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault())
                                     {
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                            @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change cab of underpinning service " })
                                         </dd>
                                     }
                                 </div>
@@ -673,7 +673,7 @@
                                     @if (hasValue && !Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault())
                                     {
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                            @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change cab of underpinning service " })
                                         </dd>
                                     }
                                 </div>
@@ -694,7 +694,7 @@
                                     @if (hasValue && !Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault())
                                     {
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service provider name " })
+                                            @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change underpinning service expiry date " })
                                         </dd>
                                     }
                                 </div>
@@ -710,7 +710,7 @@
                             <h2 class="govuk-summary-card__title">Underpinning service</h2>
                             <ul class="govuk-summary-card__actions">
                                 <li class="govuk-summary-card__action">
-                                    @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service name " })
+                                    @Html.ActionLink("Change", "StatusOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change selected underpinning service " })
                                 </li>
                             </ul>
                         </div>
