@@ -31,10 +31,18 @@
             <div class="govuk-grid-column-one-third" style="text-align: right;">
                 @using (Html.BeginForm("BeforeYouStart", "CabService", new { providerProfileId = Model.Provider.Id }, FormMethod.Get))
                 {
-                    <button type="submit" draggable="false" class="govuk-button" data-module="govuk-button"
-                            @(isDraft ? "disabled aria-disabled=\"true\" tabindex=\"-1\"" : "")>
-                        Add a new service
-                    </button>
+                    @if (isDraft)
+                    {
+                        <button type="submit" draggable="false" class="govuk-button" data-module="govuk-button" disabled aria-disabled="true" tabindex="-1">
+                            Add a new service
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="submit" draggable="false" class="govuk-button" data-module="govuk-button">
+                            Add a new service
+                        </button>
+                    }
                 }
             </div>
             <div class="govuk-grid-column-full">
