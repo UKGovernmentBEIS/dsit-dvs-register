@@ -107,7 +107,11 @@ namespace DVSRegister.Controllers
                     summaryViewModel.HasGPG44 = null;
                     summaryViewModel.IsTFVersionChanged = true;
                     HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await HandleActions(action, summaryViewModel, false, false, false, "ProviderRoles", "CabService");
+                    if(fromDetailsPage || fromSummaryPage || TFVersionViewModel.IsAmendment)
+                    {
+                        return await HandleActions(action, summaryViewModel, false, false, false, "ProviderRoles", "CabService");
+                    }
+                    return await HandleActions(action, summaryViewModel, false, false, false, "ServiceName", "CabService");
                 }
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
