@@ -134,11 +134,23 @@ namespace DVSRegister.Models
                     {
                         if (summaryViewModel?.SelectedManualUnderPinningServiceId != null && summaryViewModel?.SelectedManualUnderPinningServiceId > 0)
                         {
-                            serviceDto.ManualUnderPinningServiceId = summaryViewModel?.SelectedManualUnderPinningServiceId;                          
+                            serviceDto.ManualUnderPinningServiceId = summaryViewModel?.SelectedManualUnderPinningServiceId;
+                            // Initialize the nested DTO ONLY in amendment flow
+                            if(summaryViewModel?.IsAmendment == true)
+                            {
+                                serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
+                                {
+                                    ServiceName = summaryViewModel?.UnderPinningServiceName,
+                                    ProviderName = summaryViewModel?.UnderPinningProviderName,
+                                    CabId = summaryViewModel?.SelectCabViewModel?.SelectedCabId,
+                                    CertificateExpiryDate = summaryViewModel?.UnderPinningServiceExpiryDate
+                                };
+                            }
 
                         }
                         else
                         {
+                            // Create a new underpinning service when id is null, which means it is created for first time
                             serviceDto.ManualUnderPinningService = new ManualUnderPinningServiceDto
                             {
                                 ServiceName = summaryViewModel?.UnderPinningServiceName,

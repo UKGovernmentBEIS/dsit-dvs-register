@@ -8,7 +8,8 @@
     ViewData["Manual"] = false;
 }
 <div class="govuk-width-container">
-    @Html.ActionLink("Back", "SelectedUnderpinningService", "TrustFramework0_4", new { serviceId = Model.SelectedUnderPinningServiceId, published = Model.IsUnderpinningServicePublished,
+    @Html.ActionLink("Back", "SelectedUnderpinningService", "TrustFramework0_4", new { serviceId = ViewBag.ServiceId,
+    published = Model.IsUnderpinningServicePublished,
     fromSummaryPage = ViewBag.fromSummaryPage, fromDetailsPage = ViewBag.fromDetailsPage }, new { @class = "govuk-back-link" })
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
@@ -17,9 +18,14 @@
                 <p class="govuk-body govuk-hint">
                     The certification of the white-labelled service will be linked to this underpinning service.
                 </p>
-                <p class="govuk-body govuk-hint govuk-!-padding-bottom-6">
-                    Select 'Continue' to provide further details about the white-labelled service.
-                </p>
+
+                @if (Model.IsAmendment != true)
+                {
+                    <p class="govuk-body govuk-hint govuk-!-padding-bottom-6">
+                        Select 'Continue' to provide further details about the white-labelled service.
+                    </p>
+                }
+             
                 @await Html.PartialAsync("PartialViews/_UnderpinningServiceDetails", Model)
 
                 @using (Html.BeginForm("SaveUnderpinningService", "TrustFramework0_4", FormMethod.Post))

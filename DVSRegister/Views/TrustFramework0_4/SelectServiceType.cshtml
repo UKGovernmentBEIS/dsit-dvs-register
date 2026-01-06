@@ -30,7 +30,7 @@
                 <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
                 <div class="govuk-body">
                     <h2 class="govuk-heading-m">Underpinning and white-label services</h2>
-                    <p class="govuk-hint">
+                    <p class="govuk-hint" id="servicetype-hint">
                         An underpinning service can be used by a second-party to white-label and
                         redistribute a product, service, or process.
                     </p>
@@ -45,12 +45,17 @@
                     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
                     @Html.HiddenFor(m => m.RefererURL)
                     <div class="govuk-form-group@(hasError ? " govuk-form-group--error" : "")">
-                        <fieldset class="govuk-fieldset">
+                        <fieldset class="govuk-fieldset" aria-describedby="@(hasError ? "servicetype-error" : "servicetype-hint")">
                             <legend class="govuk-fieldset__legend govuk-visually-hidden">
                                 Tell us if the service is an underpinning or a white-labelled service
                             </legend>
 
-                            
+                            @if(hasError)
+                            {
+                                <p id="servicetype-error" class="govuk-error-message">
+                                    <span class="govuk-visually-hidden">Error:</span>  @Html.ValidationMessageFor(m => m.ServiceType, "", new { @class = "govuk-error-message" })
+                                </p>                                
+                            }                           
 
                             <div class="govuk-radios" data-module="govuk-radios">
                                 @{
@@ -59,7 +64,8 @@
                                     for (int i = 0; i < serviceTypes.Count; i++)
                                     {
                                         var serviceType = serviceTypes[i];
-                                        var radioId = i == 1 ? "servicetype" : "servicetype" + +(int)i;
+                                        var idSuffix = i > 0 ? $"_{i}" : string.Empty;
+                                        var radioId = "servicetype" + idSuffix;
                                         var description = serviceType.GetDescription();
                                         bool isChecked = Model.ServiceType == serviceType;
 

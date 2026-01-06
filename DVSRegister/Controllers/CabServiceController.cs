@@ -606,31 +606,7 @@ namespace DVSRegister.Controllers
 
 
 
-        /// <summary>
-        /// download from s3
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-
-        [HttpGet("download-certificate")]
-        public async Task<IActionResult> DownloadCertificate(string key, string filename)
-        {
-            try
-            {
-                byte[]? fileContent = await bucketService.DownloadFileAsync(key);
-
-                if (fileContent == null || fileContent.Length == 0)
-                {
-                    return RedirectToAction(Constants.CabRegistrationErrorPath);
-                }
-                string contentType = "application/octet-stream";
-                return File(fileContent, contentType, filename);
-            }
-            catch (Exception)
-            {
-                return RedirectToAction(Constants.CabRegistrationErrorPath);
-            }
-        }
+       
 
 
         #endregion

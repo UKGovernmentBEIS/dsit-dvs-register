@@ -26,7 +26,7 @@
                     hasError = true;
                     ViewData["Title"] = "Error: " + ViewData["Title"];
                     @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
-                                new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("RegisteredName", Html.ViewData.ModelState["HasRegistrationNumber"]?.Errors))
+                                 new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("HasRegistrationNumber", Html.ViewData.ModelState["HasRegistrationNumber"]?.Errors))
 
                 }
 
@@ -35,8 +35,7 @@
                 PropertyName = "HasRegistrationNumber",
                 Value = Model.HasRegistrationNumber,
                 HasError = hasError,
-                FieldSet = "Does the digital identity and attribute service provider have a Companies House or charity registration number?",
-                Heading = HeadingEnum.H1,
+                FieldSet = "Does the digital identity and attribute service provider have a Companies House or charity registration number?",          
                 LegendStyleClass = "govuk-fieldset__legend--xl",
                 ErrorMessage = hasError ?
                 Html.ViewData.ModelState["HasRegistrationNumber"].Errors[0].ErrorMessage : string.Empty,
