@@ -5,11 +5,13 @@
         float: left;
         vertical-align: top;
     }
+
     .govuk-header__content {
         width: auto;
         padding-left: 15px;
         float: right;
     }
+}
 
 :root {
     --brand: #1d70b8;

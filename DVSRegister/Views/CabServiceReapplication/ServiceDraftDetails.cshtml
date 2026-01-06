@@ -110,7 +110,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "ServiceURL", "CabService", new { fromDetailsPage = true },
-                                            new { @class = "govuk-link", @aria_label = "Change digital identity and attribute service provider’s website address" })
+                                            new { @class = "govuk-link", @aria_label = "Change website address" })
                                     </dd>
                                 }
                             </div>
@@ -157,7 +157,7 @@
                                 {
                                     <dd class="govuk-summary-list__actions">
                                         @Html.ActionLink("Change", "ProviderRoles", "CabService", new { fromDetailsPage = true },
-                                            new { @class = "govuk-link", @aria_label = "Change the roles from the UK digital identity and attributes trust framework that apply to the provider's service" })
+                                            new { @class = "govuk-link", @aria_label = "Change role certified against" })
                                     </dd>
                                 }
                             </div>
@@ -185,7 +185,7 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG45Input", "TrustFramework0_4", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG45 identity profiles" })
+                                                    new { @class = "govuk-link", @aria_label = "Change GPG 45 identity profiles" })
                                             </dd>
                                         }
                                     </div>
@@ -222,7 +222,7 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG45Input", "TrustFramework0_4", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change the identity profiles for the digital identity and attribute service provider's service" })
+                                                    new { @class = "govuk-link", @aria_label = "Change GPG 45 identity profiles" })
                                             </dd>
                                         }
                                     </div>
@@ -240,14 +240,14 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG44 quality levels" })
+                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 quality levels" })
                                             </dd>
                                         }
                                         else
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG44 quality levels" })
+                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 quality levels" })
                                             </dd>
                                         }
                                     }
@@ -277,14 +277,14 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG44 quality of authenticator" })
+                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 quality of authenticator" })
                                             </dd>
                                         }
                                         else
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG44 quality of authenticator" })
+                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 quality of authenticator" })
                                             </dd>
                                         }
                                     }
@@ -312,14 +312,14 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG44 level of protection" })
+                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 level of protection" })
                                             </dd>
                                         }
                                         else
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG44 level of protection" })
+                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 44 level of protection" })
                                             </dd>
                                         }
                                     }
@@ -337,7 +337,7 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG45 identity profiles" })
+                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 45 identity profiles" })
                                             </dd>
                                         }
                                     </div>
@@ -364,7 +364,7 @@
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "GPG45Input", "CabService", new { fromDetailsPage = true },
-                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG45 identity profiles" })
+                                                    new { @class = "govuk-link", @aria_label = "Change whether certified against GPG 45 identity profiles" })
                                             </dd>
                                         }
                                     </div>
@@ -526,7 +526,7 @@
                                             {
                                                 <dd class="govuk-summary-list__actions">
                                                     @Html.ActionLink("Change", "SchemeGPG45", "TrustFramework0_4", new { fromDetailsPage = true, providerProfileId = Model.ProviderProfileId, schemeId = schemeMapping.SupplementaryScheme.Id },
-                                                        new { @class = "govuk-link", @aria_label = "Change selected GPG45 options for " + schemeMapping.SupplementaryScheme.SchemeName })
+                                                        new { @class = "govuk-link", @aria_label = "Change selected GPG 45 options for " + schemeMapping.SupplementaryScheme.SchemeName })
                                                 </dd>
                                             }
                                         </div>
