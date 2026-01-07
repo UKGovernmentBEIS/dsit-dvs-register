@@ -3,7 +3,7 @@
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 <div class="govuk-width-container">
-    <main class="govuk-main-wrapper">
+    <main id="main-content" class="govuk-main-wrapper">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <div class="govuk-panel govuk-panel--confirmation">
@@ -32,7 +32,7 @@
                 <h2 class="govuk-heading-m">If you need help</h2>
                 <p class="govuk-body">
                     If you need help, you can email the Office for Digital Identities and Attributes
-                    on: <strong>digital.identity.register@dsit.gov.uk.</strong>
+                    on: <strong><a href="mailto:digital.identity.register@dsit.gov.uk">digital.identity.register@dsit.gov.uk.</a></strong>
                 </p>
                 <p class="govuk-body"> You can close this page now.</p>
                 <a href="@Url.Action("PendingReassignmentRequests", "Home")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">

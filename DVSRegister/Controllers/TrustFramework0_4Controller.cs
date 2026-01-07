@@ -107,7 +107,11 @@ namespace DVSRegister.Controllers
                     summaryViewModel.HasGPG44 = null;
                     summaryViewModel.IsTFVersionChanged = true;
                     HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await HandleActions(action, summaryViewModel, false, false, false, "ProviderRoles", "CabService");
+                    if(fromDetailsPage || fromSummaryPage || TFVersionViewModel.IsAmendment)
+                    {
+                        return await HandleActions(action, summaryViewModel, false, false, false, "ProviderRoles", "CabService");
+                    }
+                    return await HandleActions(action, summaryViewModel, false, false, false, "ServiceName", "CabService");
                 }
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
@@ -486,8 +490,9 @@ namespace DVSRegister.Controllers
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
+            ViewBag.ServiceId = serviceId;
             var service = await trustFrameworkService.GetServiceDetails(serviceId);  //service details with manual service details
-            ServiceSummaryViewModel serviceSummary;
+            ServiceSummaryViewModel serviceSummary;           
             if (published)
             {
                  serviceSummary = new()
@@ -517,7 +522,8 @@ namespace DVSRegister.Controllers
                 };
 
             }
-           
+            serviceSummary.RefererURL =  summaryViewModel.IsAmendment == true ? "/cab-service/amend/service-amendments?serviceId=" + summaryViewModel?.ServiceId
+            : GetRefererURL();
             return View(serviceSummary);
         }
 
@@ -656,6 +662,7 @@ namespace DVSRegister.Controllers
             var selectCabViewModel = serviceSummaryViewModel?.SelectCabViewModel ?? new SelectCabViewModel();
             selectCabViewModel.Cabs = allCabs;
             selectCabViewModel.RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/select-underpinning-service";
+            selectCabViewModel.IsAmendment = serviceSummaryViewModel.IsAmendment;
             return View(selectCabViewModel);
         }
 
@@ -1209,8 +1216,8 @@ namespace DVSRegister.Controllers
                     return await SaveAsDraftAndRedirect(serviceSummary);
 
                 case "amend":
-                    return serviceSummary.IsTFVersionChanged.GetValueOrDefault() ? routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues) :
-                    RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    return serviceSummary.IsTFVersionChanged.GetValueOrDefault() ? routeValues == null ? RedirectToAction(nextPage, controller) 
+                   : RedirectToAction(nextPage, controller, routeValues) : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
 
                 default:
                     throw new ArgumentException("Invalid action parameter");
@@ -1234,7 +1241,7 @@ namespace DVSRegister.Controllers
                     return await SaveAsDraftAndRedirect(serviceSummary);
 
                 case "amend":
-                    return fromSummaryPage ? RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment")
+                    return fromSummaryPage || singleChange ? RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment")
                         : routeValues == null ? RedirectToAction(nextPage, controller)
                         : RedirectToAction(nextPage, controller, routeValues);
 

@@ -19,7 +19,7 @@ namespace DVSRegister.CommonUtility.Models.Enums
         AwaitingRemovalConfirmation = 6,
         //[Description("Removal request sent")]
         //CabAwaitingRemovalConfirmation = 7,
-        [Description("Updates requsted")]
+        [Description("Updates requested")]
         UpdatesRequested = 8,
         [Description("Saved as draft")]
         SavedAsDraft = 9

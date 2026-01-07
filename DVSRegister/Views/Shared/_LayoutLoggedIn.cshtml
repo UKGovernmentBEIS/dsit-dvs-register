@@ -71,15 +71,15 @@ await Html.RenderPartialAsync("_CookieBanner");
                 </span>
             </a>
         </div>
-        <nav aria-label="Menu" class="govuk-service-navigation__wrapper">
-            <ul class="govuk-service-navigation__list" id="navigation">
-                <li class="govuk-service-navigation__item">
-                    <a class="govuk-service-navigation__link" href="#">
-                        @Html.ActionLink("Sign\u00A0out", "CabSignOut", "Login", null, new { @class = "govuk-header__link dsit-service-header__sign-out-link" })
-                    </a>
-                </li>
-            </ul>
-        </nav>
+            <div class="govuk-header__content">
+                <nav aria-label="Menu" class="govuk-header__navigation">
+                    <ul class="govuk-header__navigation-list" id="header-navigation">
+                        <li class="govuk-header__navigation-item">
+                            @Html.ActionLink("Sign\u00A0out", "CabSignOut", "Login", null, new { @class = "govuk-header__link dsit-service-header__sign-out-link" })
+                        </li>
+                    </ul>
+                </nav>
+            </div>
     </div>
 </header>
     @if (!String.IsNullOrEmpty(ViewData["ActiveNav"]?.ToString()))
@@ -92,7 +92,7 @@ await Html.RenderPartialAsync("_CookieBanner");
                         <button type="button" class="govuk-service-navigation__toggle govuk-js-service-navigation-toggle" aria-controls="navigation" hidden>
                             Menu
                         </button>
-                        <ul class="govuk-service-navigation__list" id="navigation">
+                        <ul class="govuk-service-navigation__list" id="page-navigation">
                             <li class="govuk-service-navigation__item @(ViewData["ActiveNav"]?.ToString() == "OpenTasks" ? "govuk-service-navigation__item--active" : "")">
                                 <a class="govuk-service-navigation__link" href="@Url.Action("DraftApplications", "Home")" aria-current="@(ViewData["ActiveNav"]?.ToString() == "OpenTasks" ? "true" : "false")">
                                     Open tasks
