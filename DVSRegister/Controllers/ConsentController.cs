@@ -65,11 +65,13 @@ namespace DVSRegister.Controllers
                     await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
                     if(agree == "accept")
                     {
+                        await AddActionLog(serviceDto, ActionDetailsEnum.CR_OpeningLoopAccepted, null);
                         return View("ProceedApplicationConsentSuccess");
                     }
                     else if(agree == "decline")
                     {
-                        await AddActionLog(serviceDto, ActionDetailsEnum.CR_DeclinedByProvider, genericResponse.InstanceId, Constants.InvitationDeclined);
+
+                        await AddActionLog(serviceDto, ActionDetailsEnum.CR_DeclinedByProvider, genericResponse.InstanceId);
                         return View("ProceedApplicationConsentDeclined");
                     }
                     else
@@ -127,18 +129,21 @@ namespace DVSRegister.Controllers
             }
         }
 
-        private async Task AddActionLog(ServiceDto serviceDto, ActionDetailsEnum actionDetails, int reviewId, string displayMessage)
+
+
+        #endregion
+        private async Task AddActionLog(ServiceDto serviceDto, ActionDetailsEnum actionDetails, int? reviewId, string displayMessage="")
         {
 
             ActionLogsDto actionLogsDto = new()
             {
-                
+
                 ActionCategoryEnum = ActionCategoryEnum.CR,
                 ActionDetailsEnum = actionDetails,
                 ServiceId = serviceDto.Id,
                 ProviderId = serviceDto.Provider.Id,
                 ServiceName = serviceDto.ServiceName,
-                ProviderName = serviceDto.Provider.RegisteredName,
+                ProviderName = serviceDto.Provider.RegisteredName!,
                 DisplayMessage = displayMessage,
                 CertificateReviewId = reviewId
             };
@@ -147,9 +152,6 @@ namespace DVSRegister.Controllers
             actionLogsDto.ActionDetailsEnum = actionDetails;
             await actionLogService.SaveActionLogs(actionLogsDto);
         }
-
-        #endregion
-
 
 
 

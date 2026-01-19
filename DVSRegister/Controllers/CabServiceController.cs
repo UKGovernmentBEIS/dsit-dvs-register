@@ -18,12 +18,13 @@ namespace DVSRegister.Controllers
 {
     [Route("cab-service/submit-service")]
   
-    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, CabEmailSender emailSender, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
+    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IActionLogService actionLogService, CabEmailSender emailSender, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;
         private readonly IBucketService bucketService = bucketService;
         private readonly IUserService userService = userService;
+        private readonly IActionLogService actionLogService = actionLogService;
         private readonly CabEmailSender emailSender = emailSender;
         private readonly ILogger<CabServiceController> _logger = logger;
         private readonly IMapper _mapper = mapper;
@@ -846,8 +847,9 @@ namespace DVSRegister.Controllers
             if (genericResponse.Success)
             {
                 ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
-                string providerName = provider?.RegisteredName;
-                int providerId = provider.Id;
+                string providerName = provider?.RegisteredName??string.Empty;
+                int providerId = provider!.Id;
+                await SaveActionLogs(ActionDetailsEnum.CR_Submitted, genericResponse.InstanceId, providerId);
                 return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName, providerId });
             }
             else
@@ -1112,7 +1114,20 @@ namespace DVSRegister.Controllers
         #endregion
 
 
+        private async Task SaveActionLogs(ActionDetailsEnum actionDetailsEnum, int serviceId, int providerId)
+        {
+            ActionLogsDto actionLogsDto = new()
+            {
+                ActionCategoryEnum = ActionCategoryEnum.CR,
+                ActionDetailsEnum = actionDetailsEnum,
+                LoggedInUserEmail = UserEmail,
+                ServiceId = serviceId,
+                ProviderId = providerId,
+                DisplayMessage = string.Empty
 
+            };
+            await actionLogService.SaveActionLogs(actionLogsDto);
+        }
 
 
         #endregion

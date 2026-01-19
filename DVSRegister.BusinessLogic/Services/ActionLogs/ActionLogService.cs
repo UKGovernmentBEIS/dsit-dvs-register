@@ -31,13 +31,16 @@ namespace DVSRegister.BusinessLogic.Services
            
                 string displayMessage = string.Empty;
                 var actionDetailsEnum = actionLogsDto.ActionDetailsEnum;
-                string providerName = actionLogsDto.ProviderName;               
-
-              
-                if (actionLogsDto.ActionCategoryEnum == ActionCategoryEnum.ProviderUpdates)
+                string providerName = actionLogsDto.ProviderName;
+                if (!string.IsNullOrEmpty(actionLogsDto.LoggedInUserEmail))
                 {
                     CabUser user = await userRepository.GetUser(actionLogsDto.LoggedInUserEmail);
                     actionLog.CabUserId = user.Id;
+                }
+
+                if (actionLogsDto.ActionCategoryEnum == ActionCategoryEnum.ProviderUpdates)
+                {
+                    
 
                     actionLog.LoggedTime = DateTime.UtcNow;                    
                     var previousData = actionLogsDto.PreviousData;
