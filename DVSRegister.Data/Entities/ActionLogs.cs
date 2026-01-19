@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DVSRegister.CommonUtility.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 
@@ -59,9 +60,7 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("CertificateReview")]
         public int? CertificateReviewId { get; set; }
         public CertificateReview? CertificateReview { get; set; }
-
-
-
+        public ServiceStatusEnum? ServiceStatus { get; set; }
 
     }
 }

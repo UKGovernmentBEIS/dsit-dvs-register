@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
@@ -16,11 +18,12 @@ namespace DVSRegister.Controllers
 
     [Route("cab-service/amend")]
 
-    public class CabServiceAmendmentController(ICabService cabService, ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger)
+    public class CabServiceAmendmentController(ICabService cabService, IActionLogService actionLogService, ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;    
         private readonly IMapper mapper = mapper;
+        private readonly IActionLogService actionLogService = actionLogService;
        
 
 
@@ -78,7 +81,8 @@ namespace DVSRegister.Controllers
                 if (genericResponse.Success)
                 {
                     ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
-                    string providerName = provider?.RegisteredName;
+                    string providerName = provider?.RegisteredName??string.Empty;
+                    await SaveActionLogs(ActionDetailsEnum.CR_Submitted, genericResponse.InstanceId, provider!.Id);
                     return RedirectToAction("InformationSubmitted", "CabService", new { providerName, serviceName = summaryViewModel.ServiceName });
                 }
                 else
@@ -101,6 +105,24 @@ namespace DVSRegister.Controllers
                 throw new ArgumentException("Invalid action parameter");
             }
 
+        }
+        #endregion
+
+
+        #region private methods
+        private async Task SaveActionLogs(ActionDetailsEnum actionDetailsEnum, int serviceId, int providerId)
+        {
+            ActionLogsDto actionLogsDto = new()
+            {
+                ActionCategoryEnum = ActionCategoryEnum.CR,
+                ActionDetailsEnum = actionDetailsEnum,
+                LoggedInUserEmail = UserEmail,
+                ServiceId = serviceId,
+                ProviderId = providerId,
+                DisplayMessage = string.Empty
+
+            };
+            await actionLogService.SaveActionLogs(actionLogsDto);
         }
         #endregion
     }

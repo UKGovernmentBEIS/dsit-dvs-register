@@ -22,7 +22,20 @@
         BusinessDetailsUpdate,
         PI_SentBackFromPrimary,
         PI_SentBackFromSecondary,
-        PI_RestoreRejectedPICheck
+        PI_RestoreRejectedPICheck,
+        CR_Submitted,
+        CR_OpeningLoopAccepted,
+        PI_SentBackFromPrimaryCheckToCertReview,
+        ServiceRemovalRequestSent,
+        ServiceRemoved,
+        ServiceAndProviderRemoved,
+        ServiceRemovalRequestCancelled,
+        ServiceRemovalRequestDeclined,
+        ReassignmentRequestSent,
+        ServiceReassigned,
+        ReassignRequestCancelled,
+        ReassignRequestRejected,
+        PI_Pass
 
 
     }
