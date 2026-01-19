@@ -6,7 +6,8 @@
         CR,
         PI,
         ServiceUpdates,
-        ProviderUpdates
+        ProviderUpdates,
+        ActionRequests
 
     }
 }
