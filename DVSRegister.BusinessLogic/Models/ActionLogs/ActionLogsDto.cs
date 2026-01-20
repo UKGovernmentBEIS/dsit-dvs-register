@@ -23,9 +23,11 @@ namespace DVSRegister.BusinessLogic.Models
         public DateTime LogDate { get; set; } // Date only
         public DateTime LoggedTime { get; set; } // Date + time
         public string DisplayMessage { get; set; }
+        public string? DisplayMessageAdmin { get; set; }
         public bool ShowInRegisterUpdates { get; set; }
         public int? CertificateReviewId { get; set; }
         public CertificateReviewDto? CertificateReview { get; set; }
         public bool IsProviderPreviouslyPublished { get; set; }
+        public int? CabTransferRequestId { get; set; }
     }
 }

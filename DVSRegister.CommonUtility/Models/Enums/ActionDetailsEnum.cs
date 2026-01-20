@@ -24,8 +24,7 @@
         PI_SentBackFromSecondary,
         PI_RestoreRejectedPICheck,
         CR_Submitted,
-        CR_OpeningLoopAccepted,
-        PI_SentBackFromPrimaryCheckToCertReview,
+        CR_OpeningLoopAccepted,  
         ServiceRemovalRequestSent,
         ServiceRemoved,
         ServiceAndProviderRemoved,
@@ -34,8 +33,8 @@
         ReassignmentRequestSent,
         ServiceReassigned,
         ReassignRequestCancelled,
-        ReassignRequestRejected,
-        PI_Pass
+        ReassignRequestRejected
+        
 
 
     }
