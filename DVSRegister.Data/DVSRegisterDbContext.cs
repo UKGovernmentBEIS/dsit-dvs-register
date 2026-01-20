@@ -319,8 +319,8 @@ namespace DVSRegister.Data
                 new ActionDetails { Id = 28, ActionDetailsKey = nameof(ActionDetailsEnum.ReassignmentRequestSent), ActionDescription = "Reassignment request sent", ActionCategoryId = 5 },
                 new ActionDetails { Id = 29, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceReassigned), ActionDescription = "Service reassigned", ActionCategoryId = 5 },
                 new ActionDetails { Id = 30, ActionDetailsKey = nameof(ActionDetailsEnum.ReassignRequestCancelled), ActionDescription = "Reassignment request cancelled", ActionCategoryId = 5 },
-                new ActionDetails { Id = 31, ActionDetailsKey = nameof(ActionDetailsEnum.ReassignRequestRejected), ActionDescription = "Reassignment request rejected", ActionCategoryId = 5 },
-                new ActionDetails { Id = 32, ActionDetailsKey = nameof(ActionDetailsEnum.PI_Pass), ActionDescription = "Published", ActionCategoryId = 2 }
+                new ActionDetails { Id = 31, ActionDetailsKey = nameof(ActionDetailsEnum.ReassignRequestRejected), ActionDescription = "Reassignment request rejected", ActionCategoryId = 5 }
+             
 
             );
 
