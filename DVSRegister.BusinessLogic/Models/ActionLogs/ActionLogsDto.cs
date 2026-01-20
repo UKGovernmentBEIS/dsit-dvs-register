@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 
@@ -29,5 +30,6 @@ namespace DVSRegister.BusinessLogic.Models
         public CertificateReviewDto? CertificateReview { get; set; }
         public bool IsProviderPreviouslyPublished { get; set; }
         public int? CabTransferRequestId { get; set; }
+        public ServiceStatusEnum? ServiceStatus { get; set; }
     }
 }

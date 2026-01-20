@@ -78,15 +78,17 @@ namespace DVSRegister.BusinessLogic.Services
                         throw new InvalidOperationException("Previous data or updated data null");
                     }
                 }      
-                else if(actionLogsDto.ActionCategoryEnum == ActionCategoryEnum.CR)
+                else if(actionLogsDto.ActionCategoryEnum == ActionCategoryEnum.CR || actionLogsDto.ActionCategoryEnum == ActionCategoryEnum.ActionRequests)
                 {
                    
                     actionLog.ShowInRegisterUpdates = false;
                     actionLog.CertificateReviewId = actionLogsDto.CertificateReviewId;
-                    displayMessage = actionLogsDto.DisplayMessage;
+                    actionLog.CabTransferRequestId = actionLogsDto.CabTransferRequestId;                   
+                    actionLog.DisplayMessageAdmin = actionLogsDto.DisplayMessageAdmin;
+                    actionLog.ServiceStatus = actionLogsDto.ServiceStatus;
                 }
-
-                    actionLog.DisplayMessage = displayMessage;              
+              
+                actionLog.DisplayMessage = displayMessage;              
                 await actionLogRepository.SaveActionLogs(actionLog);
             
             }
@@ -118,7 +120,7 @@ namespace DVSRegister.BusinessLogic.Services
                 LoggedTime = DateTime.UtcNow,                
                 OldValues = null,
                 NewValues = null,
-                ShowInRegisterUpdates = true,
+                ShowInRegisterUpdates = false,
                 ServiceId = serviceId
             };
             return actionLog;

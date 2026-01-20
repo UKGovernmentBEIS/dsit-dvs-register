@@ -41,9 +41,6 @@ namespace DVSRegister.Controllers
         public async Task<IActionResult> AboutToApproveReAssignment(int requestId)
         {           
             var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
-            TempData["ServiceId"] = cabTransferRequest.Service.Id;
-            TempData["ProviderProfileId"] = cabTransferRequest.Service.ProviderProfileId;
-            TempData["Message"] = $"From {cabTransferRequest.FromCabUser.Cab.CabName} to {cabTransferRequest.ToCab.CabName}";
             TempData["ServiceName"] = cabTransferRequest.Service.ServiceName;
             TempData["ProviderName"] = cabTransferRequest.Service.Provider.RegisteredName;
             return View(cabTransferRequest);
@@ -56,7 +53,9 @@ namespace DVSRegister.Controllers
             GenericResponse genericResponse = await cabTransferService.ApproveOrCancelTransferRequest(true,requestId, providerProfileId ,UserEmail);
             if (genericResponse.Success)
             {
-                await AddActionLog(Convert.ToInt32(TempData["ServiceId"]),Convert.ToInt32(TempData["ProviderProfileId"]), ActionDetailsEnum.ServiceReassigned, requestId, Convert.ToString(TempData["Message"])??string.Empty);
+                var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
+                string message = $"From {cabTransferRequest.FromCabUser.Cab.CabName} to {cabTransferRequest.ToCab.CabName}";
+                await AddActionLog(cabTransferRequest.ServiceId, cabTransferRequest.Service.ProviderProfileId, cabTransferRequest.Service.ServiceStatus, ActionDetailsEnum.ServiceReassigned, requestId,message);
                 return RedirectToAction("ReAssignmentSuccess");
             }
                
@@ -75,9 +74,7 @@ namespace DVSRegister.Controllers
         {
             var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
             TempData["ServiceName"] = cabTransferRequest.Service.ServiceName;
-            TempData["ProviderName"] = cabTransferRequest.Service.Provider.RegisteredName;
-            TempData["ServiceId"] = cabTransferRequest.Service.Id;
-            TempData["ProviderProfileId"] = cabTransferRequest.Service.ProviderProfileId;
+            TempData["ProviderName"] = cabTransferRequest.Service.Provider.RegisteredName;           
             return View(cabTransferRequest);
         }
 
@@ -88,7 +85,8 @@ namespace DVSRegister.Controllers
             GenericResponse genericResponse = await cabTransferService.ApproveOrCancelTransferRequest(false, requestId, providerProfileId, UserEmail);
             if (genericResponse.Success)
             {
-                await AddActionLog(Convert.ToInt32(TempData["ServiceId"]), Convert.ToInt32(TempData["ProviderProfileId"]), ActionDetailsEnum.ReassignRequestRejected, requestId, Convert.ToString(TempData["Message"]) ?? string.Empty);
+                var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);               
+                await AddActionLog(cabTransferRequest.ServiceId, cabTransferRequest.Service.ProviderProfileId, cabTransferRequest.Service.ServiceStatus, ActionDetailsEnum.ReassignRequestRejected, requestId);
                 return RedirectToAction("ReAssignmentRejected");
             }
                
@@ -103,7 +101,7 @@ namespace DVSRegister.Controllers
         }
 
 
-        private async Task AddActionLog(int serviceId, int providerId, ActionDetailsEnum actionDetails, int cabtrasfterId, string displayMessageAdmin = "")
+        private async Task AddActionLog(int serviceId, int providerId, ServiceStatusEnum serviceStatus, ActionDetailsEnum actionDetails, int cabtrasfterId, string displayMessageAdmin = "")
         {
 
             ActionLogsDto actionLogsDto = new()
@@ -114,7 +112,9 @@ namespace DVSRegister.Controllers
                 ServiceId = serviceId,
                 ProviderId = providerId,
                 DisplayMessageAdmin = displayMessageAdmin,
-                CabTransferRequestId = cabtrasfterId
+                CabTransferRequestId = cabtrasfterId,
+                ServiceStatus = serviceStatus
+
             };
 
 
