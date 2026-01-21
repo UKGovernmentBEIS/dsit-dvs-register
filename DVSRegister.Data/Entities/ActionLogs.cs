@@ -68,5 +68,9 @@ namespace DVSRegister.Data.Entities
         public int? CabTransferRequestId { get; set; }
         public CabTransferRequest? CabTransferRequest { get; set; }
 
+        [ForeignKey("ServiceRemovalRequest")]
+        public int? ServiceRemovalRequestId { get; set; }
+        public ServiceRemovalRequest? ServiceRemovalRequest { get; set; }
+
     }
 }

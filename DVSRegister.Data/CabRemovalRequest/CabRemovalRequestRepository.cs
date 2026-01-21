@@ -65,8 +65,12 @@ namespace DVSRegister.Data.CabRemovalRequest
                     return genericResponse; 
                 }
 
-                service.ServiceStatus = service.ServiceRemovalRequest.PreviousServiceStatus;
-                context.ServiceRemovalRequest.Remove(service.ServiceRemovalRequest);
+                var serviceRemovalRequest = service.ServiceRemovalRequest?.Where(x => x?.ServiceId == serviceId && x.IsRequestPending==true).FirstOrDefault();
+                if(serviceRemovalRequest == null) { throw new InvalidOperationException("Service removal request returned null"); }
+                service.ServiceStatus = serviceRemovalRequest.PreviousServiceStatus;
+                serviceRemovalRequest.IsRequestPending = false;
+
+             
 
                 await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.CancelRemovalRequest, loggedInUserEmail);
                 await transaction.CommitAsync();

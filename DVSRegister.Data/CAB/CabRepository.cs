@@ -581,8 +581,16 @@ namespace DVSRegister.Data.CAB
             {
                 var removalService = await context.Service
                .Include(s => s.ServiceRemovalRequest)!.Where(x => x.Id == inProgressApplicationParameters.InProgressRemovalRequestServiceId).FirstOrDefaultAsync();
-                removalService.ServiceStatus = removalService.ServiceRemovalRequest.PreviousServiceStatus;
-                context.Remove(removalService.ServiceRemovalRequest);
+
+                var serviceRemovalRequest = removalService?.ServiceRemovalRequest?.Where(x => x.IsRequestPending == true).FirstOrDefault();
+            
+
+                removalService.ServiceStatus = serviceRemovalRequest.PreviousServiceStatus;
+              
+                serviceRemovalRequest.IsRequestPending = false;
+                serviceRemovalRequest.Token = null;
+                serviceRemovalRequest.TokenId = null;
+
                 await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveInProgressApplication, loggedInUserEmail);
             }
 

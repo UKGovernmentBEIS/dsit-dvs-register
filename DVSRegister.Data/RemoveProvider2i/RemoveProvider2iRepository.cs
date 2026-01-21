@@ -184,8 +184,12 @@ namespace DVSRegister.Data
                         service.ServiceStatus = serviceMapping.PreviousServiceStatus;
 
                         if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || service.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
-                        {
-                            service.ServiceRemovalRequest.IsRequestPending = true;
+                        {                         
+
+                            var serviceRemovalRequest = service.ServiceRemovalRequest?.Where(x =>  x?.IsRequestPending == true).FirstOrDefault();
+                            if (serviceRemovalRequest == null) { throw new InvalidOperationException("Service removal request returned null"); }
+                          
+                            serviceRemovalRequest.IsRequestPending = true;
                         }
                         else if (service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
                         {
@@ -339,7 +343,9 @@ namespace DVSRegister.Data
 
                 if(serviceRemoval!=null && service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
                 {
-                    context.ServiceRemovalRequest.Remove(serviceRemoval);
+                    serviceRemoval.IsRequestPending = false;
+                    serviceRemoval.Token = null;
+                    serviceRemoval.TokenId = null;
                     service.ModifiedTime = DateTime.UtcNow;
                     service.ServiceStatus = ServiceStatusEnum.Published;
                     await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.CancelRemovalRequest, loggedInUserEmail);
