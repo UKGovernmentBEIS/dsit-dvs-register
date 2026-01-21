@@ -132,7 +132,7 @@ namespace DVSRegister.Data
                                 if (pendingReassignmentRequest != null)
                                 {
                                     var pendingRequest = await context.RequestManagement.Where(x => x.Id == pendingReassignmentRequest.RequestManagementId).FirstOrDefaultAsync();
-                                    if (pendingRequest != null) { context.RequestManagement.Remove(pendingRequest); }
+                                    if (pendingRequest != null) { pendingRequest.RequestStatus = RequestStatusEnum.Removed; }
 
                                 }
                             }

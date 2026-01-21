@@ -63,7 +63,9 @@ namespace DVSRegister.Data.CabTransfer
         public async Task<CabTransferRequest> GetCabTransferRequestDetails(int requestId)
         {
             return await context.CabTransferRequest.Include(r => r.Service).ThenInclude(r => r.Provider)            
-            .Include(r => r.FromCabUser).ThenInclude(s=>s.Cab).Where(r => r.Id == requestId).FirstOrDefaultAsync() ?? new CabTransferRequest();
+            .Include(r => r.FromCabUser).ThenInclude(s=>s.Cab)
+            .Include(r => r.ToCab)
+            .Where(r => r.Id == requestId).FirstOrDefaultAsync() ?? new CabTransferRequest();
         }
 
         public async Task<GenericResponse> ApproveOrCancelTransferRequest(bool approve, int requestId,int providerProfileId,  string loggedInUserEmail)
