@@ -1,13 +1,14 @@
 ﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Service;
 using DVSRegister.Models.CabTrustFramework;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 namespace DVSRegister.Controllers
 {
 
@@ -15,26 +16,30 @@ namespace DVSRegister.Controllers
     [ValidCognitoToken]
     public class BaseController : Controller
     {
-        private readonly ILogger<BaseController> _logger;
+        private readonly ILogger<BaseController> logger;
+        private readonly IActionLogService? actionLogService;
 
-        public BaseController(ILogger<BaseController> logger)
+        public BaseController(ILogger<BaseController> logger, IActionLogService? actionLogService = null)
         {
-            _logger = logger;
+            this.logger = logger;
+            this.actionLogService = actionLogService;
         }
         protected string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
         protected int CabId => HttpContext.Session.Get<int>("CabId");
 
         protected string ControllerName => ControllerContext.ActionDescriptor.ControllerName;
         protected string ActionName => ControllerContext.ActionDescriptor.ActionName;
-        protected string Cab
-        {
-            get
-            {
-                var identity = HttpContext?.User.Identity as ClaimsIdentity;
-                var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
-                return profileClaim?.Value ?? string.Empty;
-            }
-        }
+
+        protected string Cab = "DSIT";
+        //protected string Cab
+        //{
+        //    get
+        //    {
+        //        var identity = HttpContext?.User.Identity as ClaimsIdentity;
+        //        var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
+        //        return profileClaim?.Value ?? string.Empty;
+        //    }
+        //}
 
         protected bool IsValidCabId(int cabId)
         {
@@ -57,7 +62,7 @@ namespace DVSRegister.Controllers
 
         protected IActionResult HandleInvalidCabId(int cabId)
         {
-            _logger.LogError("Invalid CabId: {CabId}. Controller: {ControllerName}, Action: {ActionName}",
+            logger.LogError("Invalid CabId: {CabId}. Controller: {ControllerName}, Action: {ActionName}",
                 cabId, ControllerName, ActionName);
             return RedirectToAction("CabHandleException", "Error");
         }
@@ -246,6 +251,37 @@ namespace DVSRegister.Controllers
                 CreatedDate = serviceDto.CreatedTime
             };
             HttpContext?.Session.Set("ServiceSummary", serviceSummary);
+        }
+
+        protected Task AddActionLog(ServiceDto serviceDto, ActionCategoryEnum actionCategory, ActionDetailsEnum actionDetails, string? displayMessageAdmin = null)
+        {
+
+        
+
+            ArgumentNullException.ThrowIfNull(serviceDto, nameof(serviceDto));
+            ArgumentNullException.ThrowIfNull(serviceDto.Provider, $"{nameof(serviceDto)}.{nameof(serviceDto.Provider)}");
+
+            var actionLogsDto = new ActionLogsDto
+            {
+                LoggedInUserEmail = UserEmail,
+                ActionCategoryEnum = actionCategory,
+                ActionDetailsEnum = actionDetails,
+                ServiceId = serviceDto.Id,
+                ServiceName = serviceDto.ServiceName,
+                ServiceStatus = serviceDto.ServiceStatus,
+                ProviderId = serviceDto.Provider.Id,
+                ProviderName = serviceDto.Provider.RegisteredName ?? string.Empty,
+                PublicInterestCheckId = serviceDto.PublicInterestCheck?
+                                           .FirstOrDefault(x => x.IsLatestReviewVersion)?.Id,
+                CertificateReviewId = serviceDto.CertificateReview?
+                                           .FirstOrDefault(x => x.IsLatestReviewVersion)?.Id,
+                CabTransferRequestId = serviceDto.CabTransferRequestId,
+                ServiceRemovalRequestId = serviceDto.ServiceRemovalRequestId,
+                DisplayMessageAdmin = displayMessageAdmin
+            };
+
+
+            return actionLogService.SaveActionLogs(actionLogsDto);
         }
 
 

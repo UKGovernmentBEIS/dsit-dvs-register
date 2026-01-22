@@ -35,10 +35,11 @@ namespace DVSRegister.Data.CabRemovalRequest
                 serviceRemovalRequest.RemovalRequestedCabUserId = context.CabUser
                 .Where(u => u.CabEmail == loggedInUserEmail).Select(u => u.Id).FirstOrDefault();
                 serviceRemovalRequest.IsRequestPending = true;
-                await context.ServiceRemovalRequest.AddAsync(serviceRemovalRequest); 
+                var entity = await context.ServiceRemovalRequest.AddAsync(serviceRemovalRequest); 
                 service.ServiceStatus = ServiceStatusEnum.CabAwaitingRemovalConfirmation;
                 service.ModifiedTime = DateTime.UtcNow;
                 await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.RemoveServiceRequestedByCab, loggedInUserEmail);
+                genericResponse.InstanceId = entity.Entity.Id;
                 await transaction.CommitAsync();
                 genericResponse.Success = true;
             }
@@ -74,6 +75,7 @@ namespace DVSRegister.Data.CabRemovalRequest
 
                 await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.CancelRemovalRequest, loggedInUserEmail);
                 await transaction.CommitAsync();
+                genericResponse.InstanceId = serviceRemovalRequest.Id;
                 genericResponse.Success = true;
             }
             catch (Exception ex)

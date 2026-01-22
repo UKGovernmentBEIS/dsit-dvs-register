@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DVSAdmin.CommonUtility.Models.Enums;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Models.Remove2i;
 using DVSRegister.BusinessLogic.Remove2i;
 using DVSRegister.CommonUtility.Email;
@@ -88,6 +89,12 @@ namespace DVSRegister.BusinessLogic.Services
         #endregion
 
         #region Service
+
+        public async Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId)
+        {           
+            Service service = await removeProvider2iRepository.GetServiceDetailsWithProvider(serviceId);         
+            return mapper.Map<ServiceDto>(service);
+        }
         public async Task<ServiceRemovalRequestDto?> GetServiceRemovalDetailsByRemovalToken(string token, string tokenId)
         {
             ServiceRemovalRequest serviceRemovalRequest = await removeProvider2iRepository.GetRemoveServiceToken(token, tokenId);

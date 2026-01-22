@@ -109,8 +109,11 @@ namespace DVSRegister.Data.CAB
             {
 
             Service service = new();
-            service = await context.Service.Include(p => p.CabUser).ThenInclude(p => p.Cab)
+            service = await context.Service.AsNoTracking()
+            .Include(p => p.CabUser).ThenInclude(p => p.Cab)
             .Include(p => p.Provider)
+            .Include(p => p.CertificateReview)
+            .Include(p => p.PublicInterestCheck)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId).FirstOrDefaultAsync() ?? new Service();
             return service;
 
@@ -119,18 +122,18 @@ namespace DVSRegister.Data.CAB
         public async Task<Service> GetServiceDetails(int serviceId, int cabId)
         {
 
-            var baseQuery = context.Service.Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
+            var baseQuery = context.Service.AsNoTracking().Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
             .Where(p => p.Id == serviceId && p.CabUser.CabId == cabId)
-             .Include(p => p.Provider).ThenInclude(p => p.ProviderProfileDraft).AsNoTracking()
-              .Include(p => p.ServiceDraft).AsNoTracking()
-             .Include(p => p.TrustFrameworkVersion).AsNoTracking()
-             .Include(p => p.CertificateReview).AsNoTracking()
-             .Include(p => p.PublicInterestCheck).AsNoTracking()
-              .Include(p => p.CabTransferRequest)!.ThenInclude(x => x.RequestManagement).AsNoTracking()
+            .Include(p => p.Provider).ThenInclude(p => p.ProviderProfileDraft).AsNoTracking()
+            .Include(p => p.ServiceDraft).AsNoTracking()
+            .Include(p => p.TrustFrameworkVersion).AsNoTracking()
+            .Include(p => p.CertificateReview).AsNoTracking()
+            .Include(p => p.PublicInterestCheck).AsNoTracking()
+            .Include(p => p.CabTransferRequest)!.ThenInclude(x => x.RequestManagement).AsNoTracking()
 
-             .Include(p => p.UnderPinningService).ThenInclude(p=>p.Provider).AsNoTracking()
-             .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab).AsNoTracking()
-             .Include(p => p.ManualUnderPinningService) .ThenInclude(ms => ms.Cab).AsNoTracking()
+            .Include(p => p.UnderPinningService).ThenInclude(p=>p.Provider).AsNoTracking()
+            .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab).AsNoTracking()
+            .Include(p => p.ManualUnderPinningService) .ThenInclude(ms => ms.Cab).AsNoTracking()
             .Include(p => p.ServiceRoleMapping)!.ThenInclude(s => s.Role).AsNoTracking();
 
 

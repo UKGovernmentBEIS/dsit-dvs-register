@@ -151,7 +151,11 @@ namespace DVSRegister.Data.Repositories
 
         public async Task<Service> GetService(int serviceId)
         {
-            return await context.Service.FirstOrDefaultAsync(e => e.Id == serviceId)??new();
+            return await context.Service.AsNoTracking()
+                .Include(s=>s.Provider)
+                .Include(s=>s.CertificateReview)
+                .Include(s=>s.PublicInterestCheck)
+                .FirstOrDefaultAsync(e => e.Id == serviceId)??new();
         }
 
         public async Task<List<Service>> GetServiceList(int providerId)

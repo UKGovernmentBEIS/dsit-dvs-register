@@ -1,5 +1,4 @@
-﻿using DVSRegister.BusinessLogic.Models;
-using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.JWT;
@@ -11,12 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("consent")]
-    public class ConsentController(IJwtService jwtService, IConsentService consentService, IActionLogService actionLogService, ILogger<ConsentController> logger) : Controller
+    public class ConsentController(IJwtService jwtService, IConsentService consentService, 
+      IActionLogService actionLogService, ILogger<ConsentController> logger) : ReviewBaseController(actionLogService)
     {
         private readonly IJwtService jwtService = jwtService;        
         private readonly IConsentService consentService = consentService;
-        private readonly ILogger<ConsentController> _logger = logger;
-        private readonly IActionLogService actionLogService = actionLogService;
+        private readonly ILogger<ConsentController> _logger = logger;        
 
 
         #region Opening Loop
@@ -63,15 +62,16 @@ namespace DVSRegister.Controllers
                 if (genericResponse.Success)
                 {
                     await consentService.RemoveProceedApplicationConsentToken(tokenDetails.Token, tokenDetails.TokenId, email);
-                    if(agree == "accept")
+                    var updatedService = await consentService.GetService(serviceDto.Id);
+                    if (agree == "accept")
                     {
-                        await AddActionLog(serviceDto, ActionDetailsEnum.CR_OpeningLoopAccepted, null);
+                       
+                        await AddActionLog(updatedService, ActionCategoryEnum.CR,  ActionDetailsEnum.CR_OpeningLoopAccepted);
                         return View("ProceedApplicationConsentSuccess");
                     }
                     else if(agree == "decline")
-                    {
-
-                        await AddActionLog(serviceDto, ActionDetailsEnum.CR_DeclinedByProvider, genericResponse.InstanceId);
+                    {                       
+                        await AddActionLog(updatedService, ActionCategoryEnum.CR, ActionDetailsEnum.CR_DeclinedByProvider);
                         return View("ProceedApplicationConsentDeclined");
                     }
                     else
@@ -131,27 +131,7 @@ namespace DVSRegister.Controllers
 
 
 
-        #endregion
-        private async Task AddActionLog(ServiceDto serviceDto, ActionDetailsEnum actionDetails, int? reviewId, string displayMessage="")
-        {
-
-            ActionLogsDto actionLogsDto = new()
-            {
-
-                ActionCategoryEnum = ActionCategoryEnum.CR,
-                ActionDetailsEnum = actionDetails,
-                ServiceId = serviceDto.Id,
-                ProviderId = serviceDto.Provider.Id,
-                ServiceName = serviceDto.ServiceName,
-                ProviderName = serviceDto.Provider.RegisteredName!,
-                DisplayMessage = displayMessage,
-                CertificateReviewId = reviewId
-            };
-
-
-            actionLogsDto.ActionDetailsEnum = actionDetails;
-            await actionLogService.SaveActionLogs(actionLogsDto);
-        }
+        #endregion     
 
 
 

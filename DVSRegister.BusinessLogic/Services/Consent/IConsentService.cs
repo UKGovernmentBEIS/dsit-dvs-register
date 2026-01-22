@@ -10,8 +10,7 @@ namespace DVSRegister.BusinessLogic.Services
         public Task<ServiceDto?> GetProviderAndCertificateDetailsByOpeningLoopToken(string token, string tokenId);
         public Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string companyName, string serviceName, string agree);
         public Task<TokenStatusEnum> GetTokenStatus(TokenDetails tokenDetails);
-
-    
+        public Task<ServiceDto> GetService(int serviceId);
 
 
 

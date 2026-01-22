@@ -236,6 +236,19 @@ namespace DVSRegister.Data
             return await context.ServiceRemovalRequest.FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId)??null!;
         }
 
+        public async Task<Service> GetServiceDetailsWithProvider(int serviceId)
+        {
+
+            Service service = new();
+            service = await context.Service.AsNoTracking()
+            .Include(p => p.CabUser)
+            .Include(p => p.Provider)
+            .Include(p => p.CertificateReview)
+            .Include(p => p.PublicInterestCheck)
+            .FirstOrDefaultAsync(p => p.Id == serviceId) ?? new Service();
+            return service;
+
+        }
         public async Task<Service> GetServiceDetails(int serviceId)
         {
             var baseQuery = context.Service
