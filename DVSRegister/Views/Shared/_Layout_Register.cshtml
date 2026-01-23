@@ -98,7 +98,7 @@ await Html.RenderPartialAsync("_CookieBanner");
                             </li>
                             <li class="govuk-service-navigation__item @(ViewData["ActiveNav"]?.ToString() == "Updates" ? "govuk-service-navigation__item--active" : "")">
                                 <a class="govuk-service-navigation__link" href="@Url.Action("Updates", "Register")" aria-current="@(ViewData["ActiveNav"]?.ToString() == "Updates" ? "true" : "false")">
-                                    Updates
+                                    Updates:
                                 </a>
                             </li>
                         </ul>
