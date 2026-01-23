@@ -80,7 +80,7 @@ namespace DVSRegister.Data.Entities
 
         [ForeignKey("User")]
         public int? RemovalRequestedUser{ get; set; }
-       public ServiceRemovalRequest? ServiceRemovalRequest { get; set; }
+        public ICollection<ServiceRemovalRequest?> ServiceRemovalRequest { get; set; }
         public ICollection<ActionLogs> ActionLogs { get; set; }
 
     }

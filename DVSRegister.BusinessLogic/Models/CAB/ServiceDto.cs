@@ -44,9 +44,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public ICollection<CabTransferRequestDto> CabTransferRequest { get; set; }
 
         public int CabTransferRequestId { get; set; }
-        public bool EnableResubmission { get; set; }
-
-      
+        public bool EnableResubmission { get; set; }      
         public int TrustFrameworkVersionId { get; set; }
         public TrustFrameworkVersionDto TrustFrameworkVersion { get; set; }
         public ServiceTypeEnum? ServiceType { get; set; }       
@@ -63,10 +61,9 @@ namespace DVSRegister.BusinessLogic.Models.CAB
 
         [JsonIgnore]
         public ServiceDto? PublishedServiceVersion { get; set; }
-
         public DateTime? LastUpdated { get; set; }
-
-      public bool CertificateUploadRequired { get; set; }
+        public bool CertificateUploadRequired { get; set; }
+        public int? ServiceRemovalRequestId { get; set; }
 
 
     }

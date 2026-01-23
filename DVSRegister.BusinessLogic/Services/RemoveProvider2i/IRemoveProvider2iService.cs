@@ -1,4 +1,5 @@
-﻿using DVSRegister.BusinessLogic.Models.Remove2i;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Models.Remove2i;
 using DVSRegister.BusinessLogic.Remove2i;
 using DVSRegister.CommonUtility.Models;
 
@@ -14,6 +15,7 @@ namespace DVSRegister.BusinessLogic.Services
 
 
         //Remove service
+        public Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId);
         public Task<ServiceRemovalRequestDto?> GetServiceRemovalDetailsByRemovalToken(string token, string tokenId);
         public Task<GenericResponse> ApproveServiceRemoval(ServiceRemovalRequestDto serviceRemovalRequest, string loggedInUserEmail);
         public Task<GenericResponse> CancelServiceRemoval(ServiceRemovalRequestDto serviceRemovalRequest, string loggedInUserEmail);

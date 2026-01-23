@@ -1,5 +1,4 @@
-﻿using DVSRegister.BusinessLogic.Models;
-using DVSRegister.BusinessLogic.Models.CAB;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CabTransfer;
 using DVSRegister.CommonUtility.Models;
@@ -9,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-transfer")]
-    public class CabTransferController(ICabTransferService cabTransferService, IActionLogService actionLogService, IConfiguration configuration, ILogger<CabTransferController> logger) : BaseController(logger)
+    public class CabTransferController(ICabTransferService cabTransferService, IActionLogService actionLogService,
+        IConfiguration configuration, ILogger<CabTransferController> logger) : BaseController(logger,actionLogService)
     {
         private readonly ICabTransferService cabTransferService = cabTransferService; 
         private readonly IActionLogService actionLogService = actionLogService;
@@ -55,7 +55,8 @@ namespace DVSRegister.Controllers
             {
                 var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
                 string message = $"From {cabTransferRequest.FromCabUser.Cab.CabName} to {cabTransferRequest.ToCab.CabName}";
-                await AddActionLog(cabTransferRequest.ServiceId, cabTransferRequest.Service.ProviderProfileId, cabTransferRequest.Service.ServiceStatus, ActionDetailsEnum.ServiceReassigned, requestId,message);
+                cabTransferRequest.Service.CabTransferRequestId = requestId;
+                await AddActionLog(cabTransferRequest.Service, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ServiceReassigned, message);              
                 return RedirectToAction("ReAssignmentSuccess");
             }
                
@@ -85,8 +86,9 @@ namespace DVSRegister.Controllers
             GenericResponse genericResponse = await cabTransferService.ApproveOrCancelTransferRequest(false, requestId, providerProfileId, UserEmail);
             if (genericResponse.Success)
             {
-                var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);               
-                await AddActionLog(cabTransferRequest.ServiceId, cabTransferRequest.Service.ProviderProfileId, cabTransferRequest.Service.ServiceStatus, ActionDetailsEnum.ReassignRequestRejected, requestId);
+                var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
+                cabTransferRequest.Service.CabTransferRequestId = requestId;
+                await AddActionLog(cabTransferRequest.Service, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ReassignRequestRejected);
                 return RedirectToAction("ReAssignmentRejected");
             }
                
@@ -99,27 +101,6 @@ namespace DVSRegister.Controllers
             TempData["CabURL"] = configuration.GetValue<string>("GovUkNotify:CabLoginLink") ?? string.Empty; 
             return View();
         }
-
-
-        private async Task AddActionLog(int serviceId, int providerId, ServiceStatusEnum serviceStatus, ActionDetailsEnum actionDetails, int cabtrasfterId, string displayMessageAdmin = "")
-        {
-
-            ActionLogsDto actionLogsDto = new()
-            {
-                LoggedInUserEmail = UserEmail,
-                ActionCategoryEnum = ActionCategoryEnum.ActionRequests,
-                ActionDetailsEnum = actionDetails,
-                ServiceId = serviceId,
-                ProviderId = providerId,
-                DisplayMessageAdmin = displayMessageAdmin,
-                CabTransferRequestId = cabtrasfterId,
-                ServiceStatus = serviceStatus
-
-            };
-
-
-            actionLogsDto.ActionDetailsEnum = actionDetails;
-            await actionLogService.SaveActionLogs(actionLogsDto);
-        }
+  
     }
 }

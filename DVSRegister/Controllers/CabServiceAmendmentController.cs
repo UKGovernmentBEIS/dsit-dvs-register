@@ -3,7 +3,6 @@ using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
@@ -18,7 +17,8 @@ namespace DVSRegister.Controllers
 
     [Route("cab-service/amend")]
 
-    public class CabServiceAmendmentController(ICabService cabService, IActionLogService actionLogService, ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger)
+    public class CabServiceAmendmentController(ICabService cabService, IActionLogService actionLogService, 
+        ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger,actionLogService)
     {
 
         private readonly ICabService cabService = cabService;    
@@ -80,10 +80,11 @@ namespace DVSRegister.Controllers
 
                 if (genericResponse.Success)
                 {
-                    ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
-                    string providerName = provider?.RegisteredName??string.Empty;
-                    await SaveActionLogs(ActionDetailsEnum.CR_Submitted, genericResponse.InstanceId, provider!.Id);
-                    return RedirectToAction("InformationSubmitted", "CabService", new { providerName, serviceName = summaryViewModel.ServiceName });
+                    ServiceDto submittedService = await cabService.GetServiceDetailsWithProvider(genericResponse.InstanceId, CabId);
+                    string providerName = submittedService.Provider?.RegisteredName ?? string.Empty;                
+
+                    await AddActionLog(submittedService, ActionCategoryEnum.CR, ActionDetailsEnum.CR_Submitted);
+                    return RedirectToAction("InformationSubmitted", "CabService", new { providerName, serviceName = submittedService.ServiceName });
                 }
                 else
                 {
@@ -109,21 +110,6 @@ namespace DVSRegister.Controllers
         #endregion
 
 
-        #region private methods
-        private async Task SaveActionLogs(ActionDetailsEnum actionDetailsEnum, int serviceId, int providerId)
-        {
-            ActionLogsDto actionLogsDto = new()
-            {
-                ActionCategoryEnum = ActionCategoryEnum.CR,
-                ActionDetailsEnum = actionDetailsEnum,
-                LoggedInUserEmail = UserEmail,
-                ServiceId = serviceId,
-                ProviderId = providerId,
-                DisplayMessage = string.Empty
-
-            };
-            await actionLogService.SaveActionLogs(actionLogsDto);
-        }
-        #endregion
+     
     }
 }

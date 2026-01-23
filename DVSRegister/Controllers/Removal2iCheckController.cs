@@ -4,15 +4,17 @@ using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.JWT;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.Controllers
 {
     [Route("provider-requested-removal")]
-    public class Removal2iCheckController(IJwtService jwtService, IRemoveProvider2iService removeProvider2iService, ILogger<Removal2iCheckController> logger) : Controller
+    public class Removal2iCheckController(IJwtService jwtService, IRemoveProvider2iService removeProvider2iService,
+      IActionLogService actionLogService, ILogger<Removal2iCheckController> logger) : ReviewBaseController(actionLogService)
     {
-        private readonly IJwtService jwtService = jwtService;
+        private readonly IJwtService jwtService = jwtService;        
         private readonly IRemoveProvider2iService removeProvider2iService = removeProvider2iService;
         private readonly ILogger<Removal2iCheckController> _logger = logger;
         #region Remove provider - Approve removal by Provider 2i check
@@ -135,6 +137,9 @@ namespace DVSRegister.Controllers
                         GenericResponse genericResponse = await removeProvider2iService.ApproveServiceRemoval(removalRequest, user);
                         if (genericResponse.Success)
                         {
+                            var serviceDto = await removeProvider2iService.GetServiceDetailsWithProvider(removalRequest.ServiceId);
+                            serviceDto.ServiceRemovalRequestId = removalRequest.Id;
+                            await AddActionLog(serviceDto, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ServiceRemoved);
                             return View("RemoveServiceSuccess");
                         }
                         else
@@ -153,6 +158,9 @@ namespace DVSRegister.Controllers
                     GenericResponse genericResponse = await removeProvider2iService.CancelServiceRemoval(removalRequest, user);
                     if (genericResponse.Success)
                     {
+                        var serviceDto = await removeProvider2iService.GetServiceDetailsWithProvider(removalRequest.ServiceId);
+                        serviceDto.ServiceRemovalRequestId = removalRequest.Id;
+                        await AddActionLog(serviceDto, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ServiceRemovalRequestDeclined);
                         return View("RemovalRequestCancelled");
                     }
                     else
@@ -220,6 +228,9 @@ namespace DVSRegister.Controllers
                 return null!;
             }
         }
+
+
+       
 
 
         #endregion

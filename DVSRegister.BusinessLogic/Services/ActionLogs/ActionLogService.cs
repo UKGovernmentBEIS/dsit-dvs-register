@@ -27,22 +27,15 @@ namespace DVSRegister.BusinessLogic.Services
         {
             try
             {
-                ActionLogs actionLog = await InitializeActionLogs(actionLogsDto.ActionCategoryEnum, actionLogsDto.ActionDetailsEnum, actionLogsDto.ProviderId, actionLogsDto.ServiceId);
-           
+              
+
+                ActionLogs actionLog = await InitializeActionLogs(actionLogsDto);
                 string displayMessage = string.Empty;
                 var actionDetailsEnum = actionLogsDto.ActionDetailsEnum;
-                string providerName = actionLogsDto.ProviderName;
-                if (!string.IsNullOrEmpty(actionLogsDto.LoggedInUserEmail))
-                {
-                    CabUser user = await userRepository.GetUser(actionLogsDto.LoggedInUserEmail);
-                    actionLog.CabUserId = user.Id;
-                }
+                string providerName = actionLogsDto.ProviderName;               
 
                 if (actionLogsDto.ActionCategoryEnum == ActionCategoryEnum.ProviderUpdates)
                 {
-                    
-
-                    actionLog.LoggedTime = DateTime.UtcNow;                    
                     var previousData = actionLogsDto.PreviousData;
                     var updatedData = actionLogsDto.UpdatedData;
                     if (previousData != null && updatedData != null && previousData.Count>0 && updatedData.Count>0)
@@ -79,13 +72,8 @@ namespace DVSRegister.BusinessLogic.Services
                     }
                 }      
                 else if(actionLogsDto.ActionCategoryEnum == ActionCategoryEnum.CR || actionLogsDto.ActionCategoryEnum == ActionCategoryEnum.ActionRequests)
-                {
-                   
-                    actionLog.ShowInRegisterUpdates = false;
-                    actionLog.CertificateReviewId = actionLogsDto.CertificateReviewId;
-                    actionLog.CabTransferRequestId = actionLogsDto.CabTransferRequestId;                   
-                    actionLog.DisplayMessageAdmin = actionLogsDto.DisplayMessageAdmin;
-                    actionLog.ServiceStatus = actionLogsDto.ServiceStatus;
+                {                   
+                    actionLog.ShowInRegisterUpdates = false;                  
                 }
               
                 actionLog.DisplayMessage = displayMessage;              
@@ -105,23 +93,34 @@ namespace DVSRegister.BusinessLogic.Services
         
 
         #region Private methods
-        private async Task<ActionLogs> InitializeActionLogs(ActionCategoryEnum actionCategoryEnum, ActionDetailsEnum actionDetailsEnum, int providerId, int? serviceId)
+        private async Task<ActionLogs> InitializeActionLogs(ActionLogsDto actionLogsDto)
         {
-            ActionCategory actionCategory = await actionLogRepository.GetActionCategory(actionCategoryEnum);
-            ActionDetails actionDetails = await actionLogRepository.GetActionDetails(actionDetailsEnum);
-
+            ActionCategory actionCategory = await actionLogRepository.GetActionCategory(actionLogsDto.ActionCategoryEnum);
+            ActionDetails actionDetails = await actionLogRepository.GetActionDetails(actionLogsDto.ActionDetailsEnum);
+            if (!string.IsNullOrEmpty(actionLogsDto.LoggedInUserEmail))
+            {
+                CabUser user = await userRepository.GetUser(actionLogsDto.LoggedInUserEmail);
+                actionLogsDto.CabUserId = user.Id;
+            }
 
             ActionLogs actionLog = new()
             {
                 ActionCategoryId = actionCategory.Id,
-                ActionDetailsId = actionDetails.Id,                
-                ProviderProfileId = providerId,
+                ActionDetailsId = actionDetails.Id,
+                ServiceId = actionLogsDto.ServiceId,
+                ProviderProfileId = actionLogsDto.ProviderId,
                 LogDate = DateTime.UtcNow.Date,
                 LoggedTime = DateTime.UtcNow,                
                 OldValues = null,
                 NewValues = null,
                 ShowInRegisterUpdates = false,
-                ServiceId = serviceId
+                PublicInterestCheckId = actionLogsDto.PublicInterestCheckId > 0 ? actionLogsDto.PublicInterestCheckId : null,
+                CertificateReviewId = actionLogsDto.CertificateReviewId > 0 ? actionLogsDto.CertificateReviewId : null,
+                CabTransferRequestId = actionLogsDto.CabTransferRequestId > 0 ? actionLogsDto.CabTransferRequestId : null,
+                ServiceRemovalRequestId = actionLogsDto.ServiceRemovalRequestId > 0 ? actionLogsDto.ServiceRemovalRequestId : null,
+                CabUserId = actionLogsDto.CabUserId > 0 ? actionLogsDto.CabUserId : null,
+                DisplayMessageAdmin = actionLogsDto.DisplayMessageAdmin,
+                ServiceStatus = actionLogsDto.ServiceStatus
             };
             return actionLog;
         }
