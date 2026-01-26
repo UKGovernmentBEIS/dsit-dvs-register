@@ -72,5 +72,9 @@ namespace DVSRegister.Data.Entities
         public int? ServiceRemovalRequestId { get; set; }
         public ServiceRemovalRequest? ServiceRemovalRequest { get; set; }
 
+        [ForeignKey("ProviderRemovalRequest")]
+        public int? ProviderRemovalRequestId { get; set; }
+        public ProviderRemovalRequest? ProviderRemovalRequest { get; set; }
+
     }
 }
