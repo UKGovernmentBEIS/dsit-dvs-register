@@ -82,6 +82,7 @@ namespace DVSRegister.Data.Entities
         public int? RemovalRequestedUser{ get; set; }
         public ICollection<ServiceRemovalRequest?> ServiceRemovalRequest { get; set; }
         public ICollection<ActionLogs> ActionLogs { get; set; }
+        public ProviderRemovalRequestServiceMapping? ProviderRemovalRequestServiceMapping { get; set; }
 
     }
 }
