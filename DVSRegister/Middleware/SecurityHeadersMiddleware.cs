@@ -25,7 +25,7 @@ namespace DVSRegister.Middleware
                 context.Response.Headers["Content-Security-Policy"] =
                 "object-src 'none'; " +
                 "base-uri 'none';" +
-                $"script-src 'nonce-{nonce}' 'unsafe-inline' 'strict-dynamic' https:; ";
+                $"script-src 'nonce-{nonce}' 'strict-dynamic' https:; ";
 
             }
 
