@@ -32,5 +32,6 @@ namespace DVSRegister.BusinessLogic.Models
         public int? ServiceRemovalRequestId { get; set; }
         public bool IsProviderPreviouslyPublished { get; set; }
         public ServiceStatusEnum? ServiceStatus { get; set; }
+        public int? ProviderRemovalRequestId { get; set; }
     }
 }

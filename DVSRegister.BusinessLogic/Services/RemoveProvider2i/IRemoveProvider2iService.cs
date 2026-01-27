@@ -11,6 +11,7 @@ namespace DVSRegister.BusinessLogic.Services
         public Task<ProviderRemovalRequestDto?> GetProviderRemovalDetailsByRemovalToken(string token, string tokenId);
         public Task<GenericResponse> ApproveProviderRemoval(ProviderRemovalRequestDto providerRemovalRequest, string loggedInUserEmail); 
         public Task<GenericResponse> CancelProviderRemoval(ProviderRemovalRequestDto providerRemovalRequest, string loggedInUserEmail);
+        public Task<ProviderProfileDto> GetProviderDetailsWithRemovedServices(int providerId, List<int> serviceIds);
 
 
 

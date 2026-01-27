@@ -22,7 +22,18 @@ namespace DVSRegister.Data
             return await context.ProviderRemovalRequest.Include(p => p.Provider)
             .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId)??null!;
         }
-     
+
+        public async Task<ProviderProfile> GetProviderDetailsWithRemovedServices(int providerId, List<int> serviceIds)
+        {
+
+            return await context.ProviderProfile.AsNoTracking()
+                .Include(p => p.Services!.Where(s => serviceIds.Contains(s.Id))).ThenInclude(s=>s.ProviderRemovalRequestServiceMapping)
+                .Include(p => p.Services!.Where(s => serviceIds.Contains(s.Id))).ThenInclude(s => s.PublicInterestCheck)
+                .Include(p => p.Services!.Where(s => serviceIds.Contains(s.Id))).ThenInclude(s => s.CertificateReview)
+                .FirstOrDefaultAsync(p=>p.Id==providerId)??null!;
+        }
+
+
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
         {
             ProviderProfile provider = new();

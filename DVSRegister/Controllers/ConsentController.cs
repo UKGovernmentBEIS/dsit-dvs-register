@@ -11,11 +11,12 @@ namespace DVSRegister.Controllers
 {
     [Route("consent")]
     public class ConsentController(IJwtService jwtService, IConsentService consentService, 
-      IActionLogService actionLogService, ILogger<ConsentController> logger) : ReviewBaseController(actionLogService)
+      IActionLogService actionLogService, ILogger<ConsentController> logger):Controller
     {
         private readonly IJwtService jwtService = jwtService;        
         private readonly IConsentService consentService = consentService;
-        private readonly ILogger<ConsentController> _logger = logger;        
+        private readonly IActionLogService actionLogService = actionLogService;
+        private readonly ILogger<ConsentController> _logger = logger;      
 
 
         #region Opening Loop
@@ -66,12 +67,12 @@ namespace DVSRegister.Controllers
                     if (agree == "accept")
                     {
                        
-                        await AddActionLog(updatedService, ActionCategoryEnum.CR,  ActionDetailsEnum.CR_OpeningLoopAccepted);
+                        await actionLogService.AddActionLog(updatedService, ActionCategoryEnum.CR,  ActionDetailsEnum.CR_OpeningLoopAccepted,string.Empty);
                         return View("ProceedApplicationConsentSuccess");
                     }
                     else if(agree == "decline")
                     {                       
-                        await AddActionLog(updatedService, ActionCategoryEnum.CR, ActionDetailsEnum.CR_DeclinedByProvider);
+                        await actionLogService.AddActionLog(updatedService, ActionCategoryEnum.CR, ActionDetailsEnum.CR_DeclinedByProvider,string.Empty);
                         return View("ProceedApplicationConsentDeclined");
                     }
                     else

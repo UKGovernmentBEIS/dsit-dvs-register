@@ -39,7 +39,13 @@ namespace DVSRegister.BusinessLogic.Services
             providerRemovalRequest.Provider = providerWithServiceDetails;
              return mapper.Map<ProviderRemovalRequestDto>(providerRemovalRequest);           
         }
-       
+
+        public async Task<ProviderProfileDto> GetProviderDetailsWithRemovedServices(int providerId, List<int> serviceIds)
+        {          
+            ProviderProfile providerWithRemovedServiceDetails = await removeProvider2iRepository.GetProviderDetailsWithRemovedServices(providerId,serviceIds);           
+            return mapper.Map<ProviderProfileDto>(providerWithRemovedServiceDetails);
+        }
+
         public async Task<GenericResponse> ApproveProviderRemoval(ProviderRemovalRequestDto providerRemovalRequest, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();

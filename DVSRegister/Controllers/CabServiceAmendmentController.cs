@@ -18,7 +18,7 @@ namespace DVSRegister.Controllers
     [Route("cab-service/amend")]
 
     public class CabServiceAmendmentController(ICabService cabService, IActionLogService actionLogService, 
-        ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger,actionLogService)
+        ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;    
@@ -83,7 +83,7 @@ namespace DVSRegister.Controllers
                     ServiceDto submittedService = await cabService.GetServiceDetailsWithProvider(genericResponse.InstanceId, CabId);
                     string providerName = submittedService.Provider?.RegisteredName ?? string.Empty;                
 
-                    await AddActionLog(submittedService, ActionCategoryEnum.CR, ActionDetailsEnum.CR_Submitted);
+                    await actionLogService.AddActionLog(submittedService, ActionCategoryEnum.CR, ActionDetailsEnum.CR_Submitted,UserEmail);
                     return RedirectToAction("InformationSubmitted", "CabService", new { providerName, serviceName = submittedService.ServiceName });
                 }
                 else

@@ -1,10 +1,7 @@
-﻿using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.CommonUtility.Models;
-using DVSRegister.Controllers;
+﻿using DVSRegister.Controllers;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using NSubstitute;
 
 namespace DVSRegister.UnitTests.DVSRegister
 {
@@ -13,7 +10,7 @@ namespace DVSRegister.UnitTests.DVSRegister
         public CabRemovalRequestControllerTests()
         {
             ConfigureFakes(() =>
-            new CabRemovalRequestController(CabService, CabRemovalRequestService, Logger));
+            new CabRemovalRequestController(CabService, CabRemovalRequestService, ActionLogService, Logger));
         }
 
         #region ReasonForRemoval GET

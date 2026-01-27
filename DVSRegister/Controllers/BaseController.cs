@@ -2,7 +2,6 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
@@ -20,18 +19,17 @@ namespace DVSRegister.Controllers
         private readonly ILogger<BaseController> logger;
         private readonly IActionLogService? actionLogService;
 
-        public BaseController(ILogger<BaseController> logger, IActionLogService? actionLogService = null)
+        public BaseController(ILogger<BaseController> logger)
         {
-            this.logger = logger;
-            this.actionLogService = actionLogService;
+            this.logger = logger;           
         }
         protected string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
         protected int CabId => HttpContext.Session.Get<int>("CabId");
 
         protected string ControllerName => ControllerContext.ActionDescriptor.ControllerName;
         protected string ActionName => ControllerContext.ActionDescriptor.ActionName;
+    
 
-       
         protected string Cab
         {
             get
@@ -254,36 +252,7 @@ namespace DVSRegister.Controllers
             HttpContext?.Session.Set("ServiceSummary", serviceSummary);
         }
 
-        protected Task AddActionLog(ServiceDto serviceDto, ActionCategoryEnum actionCategory, ActionDetailsEnum actionDetails, string? displayMessageAdmin = null)
-        {
-
-        
-
-            ArgumentNullException.ThrowIfNull(serviceDto, nameof(serviceDto));
-            ArgumentNullException.ThrowIfNull(serviceDto.Provider, $"{nameof(serviceDto)}.{nameof(serviceDto.Provider)}");
-
-            var actionLogsDto = new ActionLogsDto
-            {
-                LoggedInUserEmail = UserEmail,
-                ActionCategoryEnum = actionCategory,
-                ActionDetailsEnum = actionDetails,
-                ServiceId = serviceDto.Id,
-                ServiceName = serviceDto.ServiceName,
-                ServiceStatus = serviceDto.ServiceStatus,
-                ProviderId = serviceDto.Provider.Id,
-                ProviderName = serviceDto.Provider.RegisteredName ?? string.Empty,
-                PublicInterestCheckId = serviceDto.PublicInterestCheck?
-                                           .FirstOrDefault(x => x.IsLatestReviewVersion)?.Id,
-                CertificateReviewId = serviceDto.CertificateReview?
-                                           .FirstOrDefault(x => x.IsLatestReviewVersion)?.Id,
-                CabTransferRequestId = serviceDto.CabTransferRequestId,
-                ServiceRemovalRequestId = serviceDto.ServiceRemovalRequestId,
-                DisplayMessageAdmin = displayMessageAdmin
-            };
-
-
-            return actionLogService.SaveActionLogs(actionLogsDto);
-        }
+       
 
 
     }

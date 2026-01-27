@@ -64,6 +64,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime? LastUpdated { get; set; }
         public bool CertificateUploadRequired { get; set; }
         public int? ServiceRemovalRequestId { get; set; }
+        public ProviderRemovalRequestServiceMappingDto? ProviderRemovalRequestServiceMapping { get; set; }
 
 
     }

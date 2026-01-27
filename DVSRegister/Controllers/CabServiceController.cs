@@ -18,7 +18,8 @@ namespace DVSRegister.Controllers
 {
     [Route("cab-service/submit-service")]
   
-    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IActionLogService actionLogService, CabEmailSender emailSender, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger,actionLogService)
+    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IActionLogService actionLogService,
+    CabEmailSender emailSender, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;
@@ -850,7 +851,7 @@ namespace DVSRegister.Controllers
                 string providerName = submittedService.Provider?.RegisteredName ?? string.Empty;
                 int providerId = submittedService.Provider!.Id;
 
-                await AddActionLog(submittedService, ActionCategoryEnum.CR, ActionDetailsEnum.CR_Submitted);
+                await actionLogService.AddActionLog(submittedService, ActionCategoryEnum.CR, ActionDetailsEnum.CR_Submitted,UserEmail);
                 return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName, providerId });
             }
             else
