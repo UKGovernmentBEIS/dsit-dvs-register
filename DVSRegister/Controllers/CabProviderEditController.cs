@@ -56,14 +56,21 @@ namespace DVSRegister.Controllers
             if (genericResponse.Success)
             {
 
-                var isProviderPublishedBefore = providerDto.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
                 var (currentCompanyInfo, previousCompanyInfo) = editService.GetCompanyValueUpdates(updatedInfo, providerDto);
                 if(currentCompanyInfo.Count>0 && previousCompanyInfo.Count>0)
-                await SaveActionLogs(ActionDetailsEnum.BusinessDetailsUpdate, providerDto, currentCompanyInfo, previousCompanyInfo, isProviderPublishedBefore);
+                {
+                    ChangeSet changeSet = new(currentCompanyInfo, previousCompanyInfo);
+                    await actionLogService.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.BusinessDetailsUpdate, UserEmail, changeSet, providerDto);
+                }
+                    
 
                 var (currentPublicContact, previousPublicContact) = editService.GetPublicContactUpdates(updatedInfo, providerDto);
                 if(currentPublicContact.Count>0 && previousPublicContact.Count>0)
-                await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, providerDto, currentPublicContact, previousPublicContact, isProviderPublishedBefore);
+                {
+                    ChangeSet changeSet = new(currentPublicContact, previousPublicContact);
+                    await actionLogService.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, UserEmail, changeSet, providerDto);
+                }
+         
 
                 return RedirectToAction("ProviderDetails", "CabProvider", new { providerId = providerDto.Id});
             }
@@ -146,10 +153,11 @@ namespace DVSRegister.Controllers
                 GenericResponse genericResponse = await editService.UpdatePrimaryContact(providerProfileDto, UserEmail);
                 if (genericResponse.Success)
                 {
-                    var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
+                   
                     var (current, previous) = editService.GetPrimaryContactUpdates(providerProfileDto, previousData);
-                    await editService.ConfirmPrimaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);
-                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
+                    await editService.ConfirmPrimaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);                   
+                    ChangeSet changeSet = new(current, previous);
+                    await actionLogService.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, UserEmail, changeSet, previousData);
                     var url = Url.Action("ProviderDetails", "CabProvider", new { providerId = providerProfileDto.Id });
                     return Redirect(url + "#contact-information");
 
@@ -243,7 +251,10 @@ namespace DVSRegister.Controllers
                     var isProviderPublishedBefore = previousData.Services?.Any(x => x.IsInRegister || x.ServiceStatus == ServiceStatusEnum.Removed) ?? false;
                     var (current, previous) = editService.GetSecondaryContactUpdates(providerProfileDto, previousData);
                     await editService.ConfirmSecondaryContactUpdates(current, previous, UserEmail, UserEmail, previousData.RegisteredName);
-                    await SaveActionLogs(ActionDetailsEnum.ProviderContactUpdate, previousData, current, previous, isProviderPublishedBefore);
+
+                    ChangeSet changeSet = new(current, previous);
+                    await actionLogService.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, UserEmail, changeSet, previousData);
+
                     var url = Url.Action("ProviderDetails", "CabProvider", new { providerId = providerProfileDto.Id });
                     return Redirect(url + "#contact-information");
                 }
@@ -347,22 +358,6 @@ namespace DVSRegister.Controllers
            ? (updatedService.LinkToContactPage ?? Constants.NullFieldsDisplay)
            : null;          
             return draft;
-        }
-        private async Task SaveActionLogs(ActionDetailsEnum actionDetailsEnum, ProviderProfileDto providerProfileDto,
-          Dictionary<string, List<string>> current, Dictionary<string, List<string>> previous, bool isProviderPublishedBefore)
-        {
-            ActionLogsDto actionLogsDto = new()
-            {
-                ActionCategoryEnum = ActionCategoryEnum.ProviderUpdates,
-                ActionDetailsEnum = actionDetailsEnum,
-                LoggedInUserEmail = UserEmail,
-                ProviderId = providerProfileDto.Id,
-                ProviderName = providerProfileDto.RegisteredName,
-                PreviousData = previous,
-                UpdatedData = current,
-                IsProviderPreviouslyPublished = isProviderPublishedBefore
-            };
-            await actionLogService.SaveActionLogs(actionLogsDto);
-        }
+        }       
     }
 }

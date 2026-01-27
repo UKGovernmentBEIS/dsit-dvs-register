@@ -141,6 +141,8 @@ namespace DVSRegister.BusinessLogic
 
             CreateMap<ProviderProfileDraft, ProviderProfileDraftDto>();
             CreateMap<ProviderProfileDraftDto, ProviderProfileDraft>();
+            CreateMap<ProviderRemovalRequestServiceMapping, ProviderRemovalRequestServiceMappingDto>();
+            CreateMap<ProviderRemovalRequestServiceMappingDto, ProviderRemovalRequestServiceMapping>();
 
 
         }

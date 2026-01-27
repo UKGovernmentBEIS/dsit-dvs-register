@@ -9,7 +9,7 @@ namespace DVSRegister.Controllers
 {
     [Route("cab-transfer")]
     public class CabTransferController(ICabTransferService cabTransferService, IActionLogService actionLogService,
-        IConfiguration configuration, ILogger<CabTransferController> logger) : BaseController(logger,actionLogService)
+        IConfiguration configuration, ILogger<CabTransferController> logger) : BaseController(logger)
     {
         private readonly ICabTransferService cabTransferService = cabTransferService; 
         private readonly IActionLogService actionLogService = actionLogService;
@@ -56,7 +56,7 @@ namespace DVSRegister.Controllers
                 var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
                 string message = $"From {cabTransferRequest.FromCabUser.Cab.CabName} to {cabTransferRequest.ToCab.CabName}";
                 cabTransferRequest.Service.CabTransferRequestId = requestId;
-                await AddActionLog(cabTransferRequest.Service, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ServiceReassigned, message);              
+                await actionLogService.AddActionLog(cabTransferRequest.Service, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ServiceReassigned,UserEmail,message);              
                 return RedirectToAction("ReAssignmentSuccess");
             }
                
@@ -88,7 +88,7 @@ namespace DVSRegister.Controllers
             {
                 var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
                 cabTransferRequest.Service.CabTransferRequestId = requestId;
-                await AddActionLog(cabTransferRequest.Service, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ReassignRequestRejected);
+                await actionLogService.AddActionLog(cabTransferRequest.Service, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ReassignRequestRejected,UserEmail);
                 return RedirectToAction("ReAssignmentRejected");
             }
                

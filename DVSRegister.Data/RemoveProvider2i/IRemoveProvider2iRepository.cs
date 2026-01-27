@@ -16,6 +16,7 @@ namespace DVSRegister.Data
         public Task<Service> GetServiceDetails(int serviceId);
         public Task<GenericResponse> ApproveServiceRemoval(int serviceId, int serviceRemovalRequestId, string loggedInUserEmail);
         public Task<GenericResponse> CancelRemoveServiceRequest(int serviceId, int serviceRemovalRequestId, string loggedInUserEmail);
+        public Task<ProviderProfile> GetProviderDetailsWithRemovedServices(int providerId, List<int> serviceIds);
 
 
         #endregion
