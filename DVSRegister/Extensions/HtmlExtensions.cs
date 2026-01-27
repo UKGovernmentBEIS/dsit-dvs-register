@@ -13,15 +13,15 @@ namespace DVSRegister.Extensions
     {
         public static HtmlString ToStringWithLineBreaks(string input)
         {
-           
-            string output = input?.Replace("\r", "<br>")??string.Empty;
+            string encoded = HttpUtility.HtmlEncode(input ?? string.Empty);
+            string output = encoded.Replace("\r", "<br>");
             return new HtmlString(output);
         }
 
         public static HtmlString ToStringWithNewLineBreaks(string input)
         {
-
-            string output = input?.Replace("\n", "<br>") ?? string.Empty;
+            string encoded = HttpUtility.HtmlEncode(input ?? string.Empty);
+            string output = encoded.Replace("\n", "<br>");
             return new HtmlString(output);
         }
         private static string GetTagClass<TEnum>(TEnum value) where TEnum : struct, Enum

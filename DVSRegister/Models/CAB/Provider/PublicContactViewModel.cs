@@ -10,12 +10,14 @@ namespace DVSRegister.Models.CAB
         [MaximumLength(255, ErrorMessage = "Enter an email address that is less than 255 characters")]
         public string? PublicContactEmail { get; set; }
 
+        [UKPhoneNumber(ErrorMessage = "Enter a valid UK telephone number")]
         public string? ProviderTelephoneNumber { get; set; }
 
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's website address")]
         [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address")]
         public string? ProviderWebsiteAddress { get; set; }
 
+        [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address")]
         public string? LinkToContactPage { get; set; }
         
         public int ProviderId { get; set; }

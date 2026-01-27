@@ -10,7 +10,10 @@ namespace DVSRegister.Models.CAB
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
         [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
         public string? RegisteredName { get; set; }
-        public string? TradingName { get; set; }       
+
+        [MaximumLength(160, ErrorMessage = "The trading name must be less than 161 characters")]
+        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]!«»""'''?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The trading name must contain only letters, numbers and accepted characters")]
+        public string? TradingName { get; set; }
         public bool? HasRegistrationNumber { get; set; }
 
         [RequiredIf("HasRegistrationNumber", true, ErrorMessage = "Enter a Companies House or charity registration number")]
