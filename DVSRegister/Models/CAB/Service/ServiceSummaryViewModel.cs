@@ -20,8 +20,7 @@ namespace DVSRegister.Models.CAB
         [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address")]
         public string? ServiceURL { get; set; }
 
-        [Required(ErrorMessage = "Enter the company address")]
-        [AcceptedCharacters(@"^[A-Za-zÀ-ž0-9 &@£$€¥(){}!«»""'''?""/*=#%+.,:;\r\n\\/-]+$", ErrorMessage = "The company address must contain only letters, numbers and accepted characters")]
+        [Required(ErrorMessage = "Enter the company address")]       
         public string? CompanyAddress { get; set; }
         public RoleViewModel? RoleViewModel { get; set; }
 
@@ -68,7 +67,7 @@ namespace DVSRegister.Models.CAB
 
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
-        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]!«»""'''?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
+        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
         public string? UnderPinningProviderName { get; set; }
         public SelectCabViewModel? SelectCabViewModel { get; set; }
         public DateTime? UnderPinningServiceExpiryDate { get; set; }

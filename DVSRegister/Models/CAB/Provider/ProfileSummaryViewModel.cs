@@ -9,12 +9,10 @@ namespace DVSRegister.Models.CAB
     {
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
-        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]!«»""'''?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
+        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
         public string? RegisteredName { get; set; }
 
         [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
-        [MaximumLength(160, ErrorMessage = "The trading name must be less than 161 characters")]
-        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]!«»""'''?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The trading name must contain only letters, numbers and accepted characters")]
         public string? TradingName { get; set; }
 
         [Required(ErrorMessage = "Select ‘Yes’ if the provider has either a Companies House or charity registration number")]
@@ -35,7 +33,7 @@ namespace DVSRegister.Models.CAB
 
         [Required(ErrorMessage = "Enter the registered name of the parent company")]
         [MaximumLength(160, ErrorMessage = "Your company's registered name must be less than 161 characters")]
-        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]!«»""'''?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "Your parent company's registered name must contain only letters, numbers and accepted characters")]
+        [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "Your parent company's registered name must contain only letters, numbers and accepted characters")]
         
         public string? ParentCompanyRegisteredName { get; set; }
 
@@ -53,7 +51,6 @@ namespace DVSRegister.Models.CAB
         public string? PublicContactEmail { get; set; }
 
         [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
-        [UKPhoneNumber(ErrorMessage = "Enter a valid UK telephone number")]
         public string? ProviderTelephoneNumber { get; set; }
 
         [Required(ErrorMessage = "Enter the digital identity and attribute provider's website address")]
@@ -61,7 +58,6 @@ namespace DVSRegister.Models.CAB
         public string? ProviderWebsiteAddress { get; set; }
         
         [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
-        [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address")]
         public string? LinkToContactPage { get; set; }
 
        
