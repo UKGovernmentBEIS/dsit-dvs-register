@@ -282,18 +282,19 @@ namespace DVSRegister.Data
                 new ActionCategory { Id = 1, ActionKey = nameof(ActionCategoryEnum.CR), ActionName = "Certificate review" },
                 new ActionCategory { Id = 2, ActionKey = nameof(ActionCategoryEnum.PI), ActionName = "Public interest checks" },
                 new ActionCategory { Id = 3, ActionKey = nameof(ActionCategoryEnum.ServiceUpdates), ActionName = "Service updates" },
-                new ActionCategory { Id = 4, ActionKey = nameof(ActionCategoryEnum.ProviderUpdates), ActionName = "Provider updates" });
+                new ActionCategory { Id = 4, ActionKey = nameof(ActionCategoryEnum.ProviderUpdates), ActionName = "Provider updates" },
+                new ActionCategory { Id = 5, ActionKey = nameof(ActionCategoryEnum.ActionRequests), ActionName = "Service removal, reassign" });
 
-                modelBuilder.Entity<ActionDetails>().HasData(
-                new ActionDetails { Id = 1, ActionDetailsKey = nameof(ActionDetailsEnum.CR_APR), ActionDescription = "Passed", ActionCategoryId = 1},
-                new ActionDetails { Id = 2, ActionDetailsKey = nameof(ActionDetailsEnum.CR_Rej), ActionDescription = "Rejected", ActionCategoryId = 1 },
-                new ActionDetails { Id = 3, ActionDetailsKey = nameof(ActionDetailsEnum.CR_Restore), ActionDescription = "Restored", ActionCategoryId = 1 },
+            modelBuilder.Entity<ActionDetails>().HasData(
+                new ActionDetails { Id = 1, ActionDetailsKey = nameof(ActionDetailsEnum.CR_APR), ActionDescription = "Certificate review passed\nInvitation email sent", ActionCategoryId = 1},
+                new ActionDetails { Id = 2, ActionDetailsKey = nameof(ActionDetailsEnum.CR_Rej), ActionDescription = "Certificate review rejected", ActionCategoryId = 1 },
+                new ActionDetails { Id = 3, ActionDetailsKey = nameof(ActionDetailsEnum.CR_Restore), ActionDescription = "Submission back to certificate review\nSubmission restored from rejected certificate review", ActionCategoryId = 1 },
                 new ActionDetails { Id = 4, ActionDetailsKey = nameof(ActionDetailsEnum.CR_SentBack), ActionDescription = "Sent back to CAB", ActionCategoryId = 1},
-                new ActionDetails { Id = 5, ActionDetailsKey = nameof(ActionDetailsEnum.CR_DeclinedByProvider), ActionDescription = "Declined by provider", ActionCategoryId = 1 },
+                new ActionDetails { Id = 5, ActionDetailsKey = nameof(ActionDetailsEnum.CR_DeclinedByProvider), ActionDescription = "Submission back to certificate review\nInvitation declined by provider", ActionCategoryId = 1 },
                 new ActionDetails { Id = 6, ActionDetailsKey = nameof(ActionDetailsEnum.PI_Primary_Pass), ActionDescription = "Primary check passed", ActionCategoryId = 2 },
-                new ActionDetails { Id = 7, ActionDetailsKey = nameof(ActionDetailsEnum.PI_SentBack), ActionDescription = "Sent back by second reviewer", ActionCategoryId = 2 },
+                new ActionDetails { Id = 7, ActionDetailsKey = nameof(ActionDetailsEnum.PI_SentBack), ActionDescription = "Application sent back to primary review", ActionCategoryId = 2 },
                 new ActionDetails { Id = 8, ActionDetailsKey = nameof(ActionDetailsEnum.PI_Primary_Fail), ActionDescription = "Primary check failed", ActionCategoryId = 2 },
-                new ActionDetails { Id = 9, ActionDetailsKey = nameof(ActionDetailsEnum.PI_Fail), ActionDescription = "Application rejected", ActionCategoryId = 2 },
+                new ActionDetails { Id = 9, ActionDetailsKey = nameof(ActionDetailsEnum.PI_Fail), ActionDescription = "Public interest checks failed", ActionCategoryId = 2 },
                 new ActionDetails { Id = 10, ActionDetailsKey = nameof(ActionDetailsEnum.PI_ProviderPublish), ActionDescription = "Publication of provider", ActionCategoryId = 2 },
                 new ActionDetails { Id = 11, ActionDetailsKey = nameof(ActionDetailsEnum.PI_ServicePublish), ActionDescription = "Service published", ActionCategoryId = 2 },
                 new ActionDetails { Id = 12, ActionDetailsKey = nameof(ActionDetailsEnum.PI_ServiceRePublish), ActionDescription = "Service updated", ActionCategoryId = 2 },
@@ -301,10 +302,25 @@ namespace DVSRegister.Data
                 new ActionDetails { Id = 14, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceUpdates), ActionDescription = "Updates published", ActionCategoryId = 3 },
                 new ActionDetails { Id = 15, ActionDetailsKey = nameof(ActionDetailsEnum.ProviderContactUpdate), ActionDescription = "Contact details changed", ActionCategoryId = 4 },
                 new ActionDetails { Id = 16, ActionDetailsKey = nameof(ActionDetailsEnum.BusinessDetailsUpdate), ActionDescription = "Business details changed", ActionCategoryId = 4 },
-                new ActionDetails { Id = 17, ActionDetailsKey = nameof(ActionDetailsEnum.CR_InvitationCancelled), ActionDescription = "Invitation cancelled", ActionCategoryId = 1 },
-                new ActionDetails { Id = 18, ActionDetailsKey = nameof(ActionDetailsEnum.PI_SentBackFromPrimary), ActionDescription = "Send back to certificate review from primary public checks", ActionCategoryId = 2 },
-                new ActionDetails { Id = 19, ActionDetailsKey = nameof(ActionDetailsEnum.PI_SentBackFromSecondary), ActionDescription = "Send back to certificate review from  secondary public interest checks", ActionCategoryId = 2 },
-                new ActionDetails { Id = 20, ActionDetailsKey = nameof(ActionDetailsEnum.PI_RestoreRejectedPICheck), ActionDescription = "Restore rejected public interest check", ActionCategoryId = 2 }
+                new ActionDetails { Id = 17, ActionDetailsKey = nameof(ActionDetailsEnum.CR_InvitationCancelled), ActionDescription = "Submission back to certificate review\nInvitation to join register cancelled", ActionCategoryId = 1 },
+                new ActionDetails { Id = 18, ActionDetailsKey = nameof(ActionDetailsEnum.PI_SentBackFromPrimary), ActionDescription = "Submission back to certificate review\nSubmission sent back from primary review in public interest checks", ActionCategoryId = 2 },
+                new ActionDetails { Id = 19, ActionDetailsKey = nameof(ActionDetailsEnum.PI_SentBackFromSecondary), ActionDescription = "Submission back to certificate review\nSubmission sent back from secondary review in public interest checks", ActionCategoryId = 2 },
+                new ActionDetails { Id = 20, ActionDetailsKey = nameof(ActionDetailsEnum.PI_RestoreRejectedPICheck), ActionDescription = "Submission back to certificate review\nSubmission restored from failed public interest checks", ActionCategoryId = 2 },
+
+
+                new ActionDetails { Id = 21, ActionDetailsKey = nameof(ActionDetailsEnum.CR_Submitted), ActionDescription = "Submission received", ActionCategoryId = 1 },
+                new ActionDetails { Id = 22, ActionDetailsKey = nameof(ActionDetailsEnum.CR_OpeningLoopAccepted), ActionDescription = "Invitation accepted", ActionCategoryId = 1 },
+
+                new ActionDetails { Id = 23, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceRemovalRequestSent), ActionDescription = "Service removal request sent", ActionCategoryId = 5 },
+                new ActionDetails { Id = 24, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceAndProviderRemoved), ActionDescription = "Provider removed from register\nService removed from register", ActionCategoryId = 5 },
+                new ActionDetails { Id = 25, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceRemoved), ActionDescription = "Service removed from register", ActionCategoryId = 5 },
+                new ActionDetails { Id = 26, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceRemovalRequestCancelled), ActionDescription = "Service removal request cancelled", ActionCategoryId = 5 },
+                new ActionDetails { Id = 27, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceRemovalRequestDeclined), ActionDescription = "Service removal request declined", ActionCategoryId = 5 },
+                new ActionDetails { Id = 28, ActionDetailsKey = nameof(ActionDetailsEnum.ReassignmentRequestSent), ActionDescription = "Reassignment request sent", ActionCategoryId = 5 },
+                new ActionDetails { Id = 29, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceReassigned), ActionDescription = "Service reassigned", ActionCategoryId = 5 },
+                new ActionDetails { Id = 30, ActionDetailsKey = nameof(ActionDetailsEnum.ReassignRequestCancelled), ActionDescription = "Reassignment request cancelled", ActionCategoryId = 5 },
+                new ActionDetails { Id = 31, ActionDetailsKey = nameof(ActionDetailsEnum.ReassignRequestRejected), ActionDescription = "Reassignment request rejected", ActionCategoryId = 5 }
+             
 
             );
 

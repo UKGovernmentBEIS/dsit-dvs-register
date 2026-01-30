@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
 using DVSRegister.Models.CAB;
@@ -16,11 +17,13 @@ namespace DVSRegister.Controllers
 
     [Route("cab-service/amend")]
 
-    public class CabServiceAmendmentController(ICabService cabService, ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger)
+    public class CabServiceAmendmentController(ICabService cabService, IActionLogService actionLogService, 
+        ILogger<CabServiceAmendmentController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;    
         private readonly IMapper mapper = mapper;
+        private readonly IActionLogService actionLogService = actionLogService;
        
 
 
@@ -77,9 +80,11 @@ namespace DVSRegister.Controllers
 
                 if (genericResponse.Success)
                 {
-                    ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
-                    string providerName = provider?.RegisteredName;
-                    return RedirectToAction("InformationSubmitted", "CabService", new { providerName, serviceName = summaryViewModel.ServiceName });
+                    ServiceDto submittedService = await cabService.GetServiceDetailsWithProvider(genericResponse.InstanceId, CabId);
+                    string providerName = submittedService.Provider?.RegisteredName ?? string.Empty;                
+
+                    await actionLogService.AddActionLog(submittedService, ActionCategoryEnum.CR, ActionDetailsEnum.CR_Submitted,UserEmail);
+                    return RedirectToAction("InformationSubmitted", "CabService", new { providerName, serviceName = submittedService.ServiceName });
                 }
                 else
                 {
@@ -103,5 +108,8 @@ namespace DVSRegister.Controllers
 
         }
         #endregion
+
+
+     
     }
 }

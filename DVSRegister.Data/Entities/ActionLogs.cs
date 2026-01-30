@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DVSRegister.CommonUtility.Models;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 
@@ -45,6 +46,7 @@ namespace DVSRegister.Data.Entities
         public int? CabUserId { get; set; }
         public CabUser? CabUser { get; set; }     
         public string DisplayMessage { get; set; }
+        public string? DisplayMessageAdmin { get; set; }
         public JsonDocument? OldValues {  get; set; }
         public JsonDocument? NewValues { get; set; }
         public DateTime LogDate { get; set; } // Date only
@@ -59,9 +61,20 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("CertificateReview")]
         public int? CertificateReviewId { get; set; }
         public CertificateReview? CertificateReview { get; set; }
+        public ServiceStatusEnum? ServiceStatus { get; set; }      
+    
 
+        [ForeignKey("CabTransferRequest")]
+        public int? CabTransferRequestId { get; set; }
+        public CabTransferRequest? CabTransferRequest { get; set; }
 
+        [ForeignKey("ServiceRemovalRequest")]
+        public int? ServiceRemovalRequestId { get; set; }
+        public ServiceRemovalRequest? ServiceRemovalRequest { get; set; }
 
+        [ForeignKey("ProviderRemovalRequest")]
+        public int? ProviderRemovalRequestId { get; set; }
+        public ProviderRemovalRequest? ProviderRemovalRequest { get; set; }
 
     }
 }

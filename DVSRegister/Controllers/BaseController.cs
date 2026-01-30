@@ -1,5 +1,6 @@
 ﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
@@ -15,17 +16,20 @@ namespace DVSRegister.Controllers
     [ValidCognitoToken]
     public class BaseController : Controller
     {
-        private readonly ILogger<BaseController> _logger;
+        private readonly ILogger<BaseController> logger;
+        private readonly IActionLogService? actionLogService;
 
         public BaseController(ILogger<BaseController> logger)
         {
-            _logger = logger;
+            this.logger = logger;           
         }
         protected string UserEmail => HttpContext.Session.Get<string>("Email") ?? string.Empty;
         protected int CabId => HttpContext.Session.Get<int>("CabId");
 
         protected string ControllerName => ControllerContext.ActionDescriptor.ControllerName;
         protected string ActionName => ControllerContext.ActionDescriptor.ActionName;
+    
+
         protected string Cab
         {
             get
@@ -57,7 +61,7 @@ namespace DVSRegister.Controllers
 
         protected IActionResult HandleInvalidCabId(int cabId)
         {
-            _logger.LogError("Invalid CabId: {CabId}. Controller: {ControllerName}, Action: {ActionName}",
+            logger.LogError("Invalid CabId: {CabId}. Controller: {ControllerName}, Action: {ActionName}",
                 cabId, ControllerName, ActionName);
             return RedirectToAction("CabHandleException", "Error");
         }
@@ -247,6 +251,8 @@ namespace DVSRegister.Controllers
             };
             HttpContext?.Session.Set("ServiceSummary", serviceSummary);
         }
+
+       
 
 
     }

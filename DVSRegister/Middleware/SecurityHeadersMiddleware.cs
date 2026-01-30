@@ -19,13 +19,14 @@ namespace DVSRegister.Middleware
                 context.Items["Nonce"] = nonce;
 
                 context.Response.Headers["X-Frame-Options"] = "DENY";
+                context.Response.Headers["X-Content-Type-Options"] = "nosniff";
                 context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private";
                 context.Response.Headers["Pragma"] = "no-cache";
                 context.Response.Headers["Expires"] = "-1";
                 context.Response.Headers["Content-Security-Policy"] =
                 "object-src 'none'; " +
                 "base-uri 'none';" +
-                $"script-src 'nonce-{nonce}' 'unsafe-inline' 'strict-dynamic' https:; ";
+                $"script-src 'nonce-{nonce}' 'strict-dynamic' https:; ";
 
             }
 

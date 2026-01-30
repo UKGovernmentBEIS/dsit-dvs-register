@@ -42,6 +42,12 @@ namespace DVSRegister.BusinessLogic.Services
             return (openingLoopStatus);
         }
 
+        public async Task<ServiceDto> GetService(int serviceId)
+        {
+            var service = await consentRepository.GetService(serviceId);
+            return mapper.Map<ServiceDto>(service);
+        }
+
         //opening loop
         public async Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, string loggedInUserEmail)
         {

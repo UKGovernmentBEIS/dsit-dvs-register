@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models;
+using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models.Enums;
@@ -69,7 +70,7 @@ namespace DVSRegister.UnitTests.Services
             _actionLogRepository.GetActionCategory(dto.ActionCategoryEnum).Returns(category);
             _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
           
-            await _service.SaveActionLogs(dto);          
+            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new CommonUtility.Models.ChangeSet(updatedData,previousData), new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" }) ;          
             await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
                 log.ActionCategoryId == category.Id &&
                 log.ActionDetailsId == details.Id &&
@@ -120,9 +121,9 @@ namespace DVSRegister.UnitTests.Services
             _actionLogRepository.GetActionCategory(dto.ActionCategoryEnum).Returns(category);
             _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
           
-            await _service.SaveActionLogs(dto);
+            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new CommonUtility.Models.ChangeSet(updatedData, previousData), new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
 
-            
+
             await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
                 log.ShowInRegisterUpdates == false &&
                 log.DisplayMessage == dto.ProviderName
@@ -167,7 +168,7 @@ namespace DVSRegister.UnitTests.Services
             _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
 
             // Act
-            await _service.SaveActionLogs(dto);
+            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new CommonUtility.Models.ChangeSet(updatedData, previousData), new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
 
             // Assert
             await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
@@ -215,7 +216,7 @@ namespace DVSRegister.UnitTests.Services
 
             _actionLogRepository.SaveActionLogs(Arg.Any<ActionLogs>()).Throws(new Exception("DB error"));
         
-            await _service.SaveActionLogs(dto);
+            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new CommonUtility.Models.ChangeSet(updatedData, previousData), new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
 
             _logger.Received(1).Log(LogLevel.Error, Arg.Any<EventId>(),Arg.Is<object>(o => o.ToString().Contains("DB error")),Arg.Any<Exception>(),Arg.Any<Func<object, Exception, string>>() );
         }
