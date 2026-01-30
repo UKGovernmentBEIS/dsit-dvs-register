@@ -56,6 +56,35 @@ namespace DVSRegister.Data.Repositories
         }
 
 
+        public async Task<GenericResponse> SaveMultipleActionLogs(List<ActionLogs> actionLogs)
+        {
+            GenericResponse genericResponse = new();
+            using var transaction = await context.Database.BeginTransactionAsync();
+            try
+            {
+                if (actionLogs?.Count() > 0)
+                {
+
+                    await context.ActionLogs.AddRangeAsync(actionLogs);
+                    await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    genericResponse.Success = true;
+
+                }
+                else
+                {
+                    genericResponse.Success = false;
+                    await transaction.RollbackAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                await transaction.RollbackAsync();
+                logger.LogError("SaveMultipleActionLogs failed with {exception} ", ex.Message);
+            }
+            return genericResponse;
+        }
 
 
     }

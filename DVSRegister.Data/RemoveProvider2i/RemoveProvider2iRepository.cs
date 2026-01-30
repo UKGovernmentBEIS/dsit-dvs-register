@@ -22,7 +22,18 @@ namespace DVSRegister.Data
             return await context.ProviderRemovalRequest.Include(p => p.Provider)
             .FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId)??null!;
         }
-     
+
+        public async Task<ProviderProfile> GetProviderDetailsWithRemovedServices(int providerId, List<int> serviceIds)
+        {
+
+            return await context.ProviderProfile.AsNoTracking()
+                .Include(p => p.Services!.Where(s => serviceIds.Contains(s.Id))).ThenInclude(s=>s.ProviderRemovalRequestServiceMapping)
+                .Include(p => p.Services!.Where(s => serviceIds.Contains(s.Id))).ThenInclude(s => s.PublicInterestCheck)
+                .Include(p => p.Services!.Where(s => serviceIds.Contains(s.Id))).ThenInclude(s => s.CertificateReview)
+                .FirstOrDefaultAsync(p=>p.Id==providerId)??null!;
+        }
+
+
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
         {
             ProviderProfile provider = new();
@@ -79,6 +90,17 @@ namespace DVSRegister.Data
 
             return provider;
         }
+
+        /// <summary>
+        /// Set Provider status to NA
+        /// Pending requests are set to false - providerremovalrequests, serviceremovalrequest , reassignment requets
+        /// providerremovalrequest should not be deleted as ProviderRemovalRequestId is required to capture ActionLogs for Service History 
+        /// Pending update requests drafts deleted
+        /// </summary>
+        /// <param name="providerProfileId"></param>
+        /// <param name="providerRemovalRequestId"></param>
+        /// <param name="loggedInUserEmail"></param>
+        /// <returns></returns>
         public async Task<GenericResponse> ApproveProviderRemoval(int providerProfileId, int providerRemovalRequestId,  string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();
@@ -99,6 +121,7 @@ namespace DVSRegister.Data
                     if (providerRemovalRequest.PreviousProviderStatus == ProviderStatusEnum.UpdatesRequested)
                     {
                         var pendingProvidereUpdateRequest = await context.ProviderProfileDraft.FirstOrDefaultAsync(p => p.ProviderProfileId == providerProfileId);
+                        if(pendingProvidereUpdateRequest!=null)
                         context.ProviderProfileDraft.Remove(pendingProvidereUpdateRequest);
                     }
 
@@ -115,11 +138,13 @@ namespace DVSRegister.Data
                             if (mapping.PreviousServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || mapping.PreviousServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
                             {
                                 var pendingRemovalRequest = await context.ServiceRemovalRequest.FirstOrDefaultAsync(s => s.ServiceId == service.Id);
-                                context.ServiceRemovalRequest.Remove(pendingRemovalRequest);
+                                if (pendingRemovalRequest != null)
+                                    pendingRemovalRequest.IsRequestPending = false;
                             }
                             if (mapping.PreviousServiceStatus == ServiceStatusEnum.UpdatesRequested)
                             {
                                 var pendingServiceUpdateRequest = await context.ServiceDraft.FirstOrDefaultAsync(s => s.ServiceId == service.Id);
+                                if(pendingServiceUpdateRequest!=null)
                                 context.ServiceDraft.Remove(pendingServiceUpdateRequest);
                             }
                             if (mapping.PreviousServiceStatus == ServiceStatusEnum.PublishedUnderReassign || mapping.PreviousServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
@@ -132,7 +157,7 @@ namespace DVSRegister.Data
                                 if (pendingReassignmentRequest != null)
                                 {
                                     var pendingRequest = await context.RequestManagement.Where(x => x.Id == pendingReassignmentRequest.RequestManagementId).FirstOrDefaultAsync();
-                                    if (pendingRequest != null) { context.RequestManagement.Remove(pendingRequest); }
+                                    if (pendingRequest != null) { pendingRequest.RequestStatus = RequestStatusEnum.Removed; }
 
                                 }
                             }
@@ -154,10 +179,21 @@ namespace DVSRegister.Data
             {
                 genericResponse.Success = false;
                 await transaction.RollbackAsync();
-                logger.LogError(ex.Message);
+                Console.WriteLine($"Exception ApproveProviderRemoval - {ex}");
             }
             return genericResponse;
         }
+
+        /// <summary>
+        ///  ProviderRemovalRequests -IsPending set to false and provider status set to previous status
+        /// Set pending service removal requests back to true and get previous service status ProviderRemovalRequestServiceMappings and assign back to service
+        /// Remove ProviderRemovalRequestServiceMappings - service id providerpremovalrequests has one to one mapping.
+        /// set pending transfer requests back to previous status
+        /// </summary>
+        /// <param name="providerProfileId"></param>
+        /// <param name="providerRemovalRequestId"></param>
+        /// <param name="loggedInUserEmail"></param>
+        /// <returns></returns>
         public async Task<GenericResponse> CancelRemoveProviderRequest(int providerProfileId, int providerRemovalRequestId, string loggedInUserEmail)
         {
             var genericResponse = new GenericResponse();
@@ -175,17 +211,23 @@ namespace DVSRegister.Data
                     provider.ModifiedTime = DateTime.UtcNow;
                     provider.ProviderStatus = ProviderStatusEnum.NA;
 
-                    context.ProviderRemovalRequest.Remove(currentRequest);
+                    currentRequest.IsRequestPending = false;
+                    currentRequest.Token = null;
+                    currentRequest.TokenId = null;
+
 
                     foreach (var service in provider.Services.Where(s => s.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation))
                     {
                         var serviceMapping = currentRequest.ProviderRemovalRequestServiceMapping?.FirstOrDefault(m => m.ServiceId == service.Id);
                         service.ModifiedTime = DateTime.UtcNow;
                         service.ServiceStatus = serviceMapping.PreviousServiceStatus;
-
+                        context.Remove(serviceMapping);
                         if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || service.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
-                        {
-                            service.ServiceRemovalRequest.IsRequestPending = true;
+                        {                         
+
+                            var serviceRemovalRequest = service.ServiceRemovalRequest?.Where(x =>  x?.IsRequestPending == true).FirstOrDefault();
+                            if (serviceRemovalRequest != null)                           
+                            serviceRemovalRequest.IsRequestPending = true;
                         }
                         else if (service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
                         {
@@ -212,7 +254,7 @@ namespace DVSRegister.Data
             {
                 genericResponse.Success = false;
                 await transaction.RollbackAsync();
-                logger.LogError(ex.Message);
+                Console.WriteLine($"Exception CancelRemoveProviderRequest - {ex}");
             }
             return genericResponse;
         }
@@ -232,6 +274,19 @@ namespace DVSRegister.Data
             return await context.ServiceRemovalRequest.FirstOrDefaultAsync(e => e.Token == token && e.TokenId == tokenId)??null!;
         }
 
+        public async Task<Service> GetServiceDetailsWithProvider(int serviceId)
+        {
+
+            Service service = new();
+            service = await context.Service.AsNoTracking()
+            .Include(p => p.CabUser)
+            .Include(p => p.Provider)
+            .Include(p => p.CertificateReview)
+            .Include(p => p.PublicInterestCheck)
+            .FirstOrDefaultAsync(p => p.Id == serviceId) ?? new Service();
+            return service;
+
+        }
         public async Task<Service> GetServiceDetails(int serviceId)
         {
             var baseQuery = context.Service
@@ -339,7 +394,9 @@ namespace DVSRegister.Data
 
                 if(serviceRemoval!=null && service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
                 {
-                    context.ServiceRemovalRequest.Remove(serviceRemoval);
+                    serviceRemoval.IsRequestPending = false;
+                    serviceRemoval.Token = null;
+                    serviceRemoval.TokenId = null;
                     service.ModifiedTime = DateTime.UtcNow;
                     service.ServiceStatus = ServiceStatusEnum.Published;
                     await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.CancelRemovalRequest, loggedInUserEmail);

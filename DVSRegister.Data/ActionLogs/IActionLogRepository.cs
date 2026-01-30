@@ -9,5 +9,6 @@ namespace DVSRegister.Data.Repositories
         public Task<ActionCategory> GetActionCategory(ActionCategoryEnum actionCategory);
         public Task<ActionDetails> GetActionDetails(ActionDetailsEnum actionDetails);
         public Task<GenericResponse> SaveActionLogs(ActionLogs actionLogs);
+        public Task<GenericResponse> SaveMultipleActionLogs(List<ActionLogs> actionLogs);
     }
 }

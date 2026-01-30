@@ -10,10 +10,12 @@ using DVSRegister.CommonUtility;
 namespace DVSRegister.Controllers
 {
     [Route("cab-service/remove")]
-    public class CabRemovalRequestController(ICabService cabService, ICabRemovalRequestService cabRemovalRequestService, ILogger<CabRemovalRequestController> logger) : BaseController(logger)
+    public class CabRemovalRequestController(ICabService cabService, ICabRemovalRequestService cabRemovalRequestService,
+        IActionLogService actionLogService, ILogger<CabRemovalRequestController> logger) : BaseController(logger)
     {
         private readonly ICabService cabService = cabService;
         private readonly ICabRemovalRequestService cabRemovalRequestService = cabRemovalRequestService;
+        private readonly IActionLogService actionLogService = actionLogService;
         private readonly ILogger<CabRemovalRequestController> logger = logger;
 
 
@@ -97,7 +99,9 @@ namespace DVSRegister.Controllers
             if (genericResponse.Success)
             {
                 ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);
-                         return View("RemovalRequested", serviceDto);
+                serviceDto.ServiceRemovalRequestId = genericResponse.InstanceId;
+                await actionLogService.AddActionLog(serviceDto, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ServiceRemovalRequestSent,UserEmail);
+                return View("RemovalRequested", serviceDto);
             }
             else
             {
@@ -119,6 +123,8 @@ namespace DVSRegister.Controllers
             if (genericResponse.Success)
             {
                 ServiceDto serviceDto = await cabService.GetServiceDetailsWithProvider(serviceId, CabId);
+                serviceDto.ServiceRemovalRequestId = genericResponse.InstanceId;
+                await actionLogService.AddActionLog(serviceDto, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ServiceRemovalRequestCancelled,UserEmail);
                 return View("RemovalRequestCancelled", serviceDto);
             }
             else

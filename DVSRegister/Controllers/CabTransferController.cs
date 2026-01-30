@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CabTransfer;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
@@ -7,9 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace DVSRegister.Controllers
 {
     [Route("cab-transfer")]
-    public class CabTransferController(ICabTransferService cabTransferService, IConfiguration configuration, ILogger<CabTransferController> logger) : BaseController(logger)
+    public class CabTransferController(ICabTransferService cabTransferService, IActionLogService actionLogService,
+        IConfiguration configuration, ILogger<CabTransferController> logger) : BaseController(logger)
     {
-        private readonly ICabTransferService cabTransferService = cabTransferService;        
+        private readonly ICabTransferService cabTransferService = cabTransferService; 
+        private readonly IActionLogService actionLogService = actionLogService;
         private readonly IConfiguration configuration = configuration;               
       
       
@@ -49,7 +52,14 @@ namespace DVSRegister.Controllers
             TempData.Keep();
             GenericResponse genericResponse = await cabTransferService.ApproveOrCancelTransferRequest(true,requestId, providerProfileId ,UserEmail);
             if (genericResponse.Success)
+            {
+                var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
+                string message = $"From {cabTransferRequest.FromCabUser.Cab.CabName} to {cabTransferRequest.ToCab.CabName}";
+                cabTransferRequest.Service.CabTransferRequestId = requestId;
+                await actionLogService.AddActionLog(cabTransferRequest.Service, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ServiceReassigned,UserEmail,message);              
                 return RedirectToAction("ReAssignmentSuccess");
+            }
+               
             else throw new InvalidOperationException("ApproveReAssignment failed");           
         }
 
@@ -65,7 +75,7 @@ namespace DVSRegister.Controllers
         {
             var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
             TempData["ServiceName"] = cabTransferRequest.Service.ServiceName;
-            TempData["ProviderName"] = cabTransferRequest.Service.Provider.RegisteredName;         
+            TempData["ProviderName"] = cabTransferRequest.Service.Provider.RegisteredName;           
             return View(cabTransferRequest);
         }
 
@@ -75,7 +85,13 @@ namespace DVSRegister.Controllers
             TempData.Keep();
             GenericResponse genericResponse = await cabTransferService.ApproveOrCancelTransferRequest(false, requestId, providerProfileId, UserEmail);
             if (genericResponse.Success)
+            {
+                var cabTransferRequest = await cabTransferService.GetCabTransferRequestDetails(requestId);
+                cabTransferRequest.Service.CabTransferRequestId = requestId;
+                await actionLogService.AddActionLog(cabTransferRequest.Service, ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ReassignRequestRejected,UserEmail);
                 return RedirectToAction("ReAssignmentRejected");
+            }
+               
             else throw new InvalidOperationException("ApproveReAssignment failed");
         }
 
@@ -85,5 +101,6 @@ namespace DVSRegister.Controllers
             TempData["CabURL"] = configuration.GetValue<string>("GovUkNotify:CabLoginLink") ?? string.Empty; 
             return View();
         }
+  
     }
 }

@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260121163612_UpdateServiceRemovalRequestMapping")]
+    partial class UpdateServiceRemovalRequestMapping
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,7 +115,7 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 1,
                             ActionCategoryId = 1,
-                            ActionDescription = "Certificate review passed\nInvitation email sent",
+                            ActionDescription = "Certificate review passed\r\nInvitation email sent",
                             ActionDetailsKey = "CR_APR"
                         },
                         new
@@ -126,7 +129,7 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 3,
                             ActionCategoryId = 1,
-                            ActionDescription = "Submission back to certificate review\nSubmission restored from rejected certificate review",
+                            ActionDescription = "Submission restored from rejected certificate review",
                             ActionDetailsKey = "CR_Restore"
                         },
                         new
@@ -140,7 +143,7 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 5,
                             ActionCategoryId = 1,
-                            ActionDescription = "Submission back to certificate review\nInvitation declined by provider",
+                            ActionDescription = "Invitation declined by provider",
                             ActionDetailsKey = "CR_DeclinedByProvider"
                         },
                         new
@@ -224,28 +227,28 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 17,
                             ActionCategoryId = 1,
-                            ActionDescription = "Submission back to certificate review\nInvitation to join register cancelled",
+                            ActionDescription = "Invitation to join register cancelled",
                             ActionDetailsKey = "CR_InvitationCancelled"
                         },
                         new
                         {
                             Id = 18,
                             ActionCategoryId = 2,
-                            ActionDescription = "Submission back to certificate review\nSubmission sent back from primary review in public interest checks",
+                            ActionDescription = "Submission sent back from primary review in public interest checks",
                             ActionDetailsKey = "PI_SentBackFromPrimary"
                         },
                         new
                         {
                             Id = 19,
                             ActionCategoryId = 2,
-                            ActionDescription = "Submission back to certificate review\nSubmission sent back from secondary review in public interest checks",
+                            ActionDescription = "Submission sent back from secondary review in public interest checks",
                             ActionDetailsKey = "PI_SentBackFromSecondary"
                         },
                         new
                         {
                             Id = 20,
                             ActionCategoryId = 2,
-                            ActionDescription = "Submission back to certificate review\nSubmission restored from failed public interest checks",
+                            ActionDescription = "Submission restored from failed public interest checks",
                             ActionDetailsKey = "PI_RestoreRejectedPICheck"
                         },
                         new
@@ -273,7 +276,7 @@ namespace DVSRegister.Data.Migrations
                         {
                             Id = 24,
                             ActionCategoryId = 5,
-                            ActionDescription = "Provider removed from register\nService removed from register",
+                            ActionDescription = "Provider removed from register\r\nService removed from register",
                             ActionDetailsKey = "ServiceAndProviderRemoved"
                         },
                         new
@@ -372,9 +375,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("ProviderProfileId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ProviderRemovalRequestId")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("PublicInterestCheckId")
                         .HasColumnType("integer");
 
@@ -418,8 +418,6 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("CertificateReviewId");
 
                     b.HasIndex("ProviderProfileId");
-
-                    b.HasIndex("ProviderRemovalRequestId");
 
                     b.HasIndex("PublicInterestCheckId");
 
@@ -1454,8 +1452,7 @@ namespace DVSRegister.Data.Migrations
 
                     b.HasIndex("ProviderRemovalRequestId");
 
-                    b.HasIndex("ServiceId")
-                        .IsUnique();
+                    b.HasIndex("ServiceId");
 
                     b.ToTable("ProviderRemovalRequestServiceMapping");
                 });
@@ -2509,10 +2506,6 @@ namespace DVSRegister.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DVSRegister.Data.Entities.ProviderRemovalRequest", "ProviderRemovalRequest")
-                        .WithMany()
-                        .HasForeignKey("ProviderRemovalRequestId");
-
                     b.HasOne("DVSRegister.Data.Entities.PublicInterestCheck", "PublicInterestCheck")
                         .WithMany()
                         .HasForeignKey("PublicInterestCheckId");
@@ -2548,8 +2541,6 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("CertificateReview");
 
                     b.Navigation("ProviderProfile");
-
-                    b.Navigation("ProviderRemovalRequest");
 
                     b.Navigation("PublicInterestCheck");
 
@@ -2792,8 +2783,8 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("DVSRegister.Data.Entities.Service", "Service")
-                        .WithOne("ProviderRemovalRequestServiceMapping")
-                        .HasForeignKey("DVSRegister.Data.Entities.ProviderRemovalRequestServiceMapping", "ServiceId")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -3294,8 +3285,6 @@ namespace DVSRegister.Data.Migrations
 
                     b.Navigation("ProceedApplicationConsentToken")
                         .IsRequired();
-
-                    b.Navigation("ProviderRemovalRequestServiceMapping");
 
                     b.Navigation("PublicInterestCheck");
 

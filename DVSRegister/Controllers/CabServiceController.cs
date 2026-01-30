@@ -18,12 +18,14 @@ namespace DVSRegister.Controllers
 {
     [Route("cab-service/submit-service")]
   
-    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, CabEmailSender emailSender, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
+    public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IActionLogService actionLogService,
+    CabEmailSender emailSender, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;
         private readonly IBucketService bucketService = bucketService;
         private readonly IUserService userService = userService;
+        private readonly IActionLogService actionLogService = actionLogService;
         private readonly CabEmailSender emailSender = emailSender;
         private readonly ILogger<CabServiceController> _logger = logger;
         private readonly IMapper _mapper = mapper;
@@ -844,10 +846,12 @@ namespace DVSRegister.Controllers
                 genericResponse = await cabService.SaveService(serviceDto, UserEmail);
             }
             if (genericResponse.Success)
-            {
-                ProviderProfileDto provider = await cabService.GetProvider(summaryViewModel.ProviderProfileId, summaryViewModel.CabId);
-                string providerName = provider?.RegisteredName;
-                int providerId = provider.Id;
+            { 
+                ServiceDto submittedService = await cabService.GetServiceDetailsWithProvider(genericResponse.InstanceId, CabId);
+                string providerName = submittedService.Provider?.RegisteredName ?? string.Empty;
+                int providerId = submittedService.Provider!.Id;
+
+                await actionLogService.AddActionLog(submittedService, ActionCategoryEnum.CR, ActionDetailsEnum.CR_Submitted,UserEmail);
                 return RedirectToAction("InformationSubmitted", new { providerName, serviceName = summaryViewModel.ServiceName, providerId });
             }
             else
@@ -1112,7 +1116,7 @@ namespace DVSRegister.Controllers
         #endregion
 
 
-
+       
 
 
         #endregion
