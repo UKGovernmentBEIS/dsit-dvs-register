@@ -1,7 +1,6 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using NpgsqlTypes;
 using DVSRegister.CommonUtility.Models.Enums;
 
 namespace DVSRegister.Data.Entities
@@ -83,6 +82,11 @@ namespace DVSRegister.Data.Entities
         public ICollection<ServiceRemovalRequest?> ServiceRemovalRequest { get; set; }
         public ICollection<ActionLogs> ActionLogs { get; set; }
         public ProviderRemovalRequestServiceMapping? ProviderRemovalRequestServiceMapping { get; set; }
+        public string? TOUFileName { get; set; }
+        public string? TOUFileLink { get; set; }
+
+        [Column(TypeName = "decimal(10, 1)")]
+        public decimal? TOUFileSizeInKb { get; set; }
 
     }
 }

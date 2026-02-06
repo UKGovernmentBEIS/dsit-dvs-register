@@ -14,14 +14,25 @@
                 </strong>
             </dd>
         </div>
-    }
-   
-
+    }   
     @if (!Convert.ToBoolean(Model.InformationMatched))
     {
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
                 Information match
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (!Convert.ToBoolean(Model.TOUValid))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Terms of Use validation
             </dt>
             <dd class="govuk-summary-list__value">
                 <strong class="govuk-tag govuk-tag--red">

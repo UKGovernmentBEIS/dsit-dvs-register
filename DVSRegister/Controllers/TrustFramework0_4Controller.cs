@@ -123,6 +123,105 @@ namespace DVSRegister.Controllers
             }
         }
 
+        #region Terms Of Use
+        [HttpGet("terms-of-use-upload")]
+        public async Task<IActionResult> TermsOfUseUpload(bool fromSummaryPage, bool remove, bool fromDetailsPage)
+        {
+            ViewBag.fromSummaryPage = fromSummaryPage;
+            ViewBag.fromDetailsPage = fromDetailsPage;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            ViewBag.IsTFVersionChanged = summaryViewModel.IsTFVersionChanged;
+            var lastScheme = summaryViewModel?.SchemeQualityLevelMapping?.LastOrDefault() ?? null;
+            TOUFileViewModel TOUFileViewModel = new()
+            {
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/company-address",
+                IsAmendment = summaryViewModel.IsAmendment
+            };
+
+            if (remove)
+            {
+                summaryViewModel.TOUFileLink = null;
+                summaryViewModel.TOUFileName = null;
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                TOUFileViewModel.FileRemoved = true;
+                TOUFileViewModel.IsAmendment = summaryViewModel.IsAmendment;
+                return View(TOUFileViewModel);
+            }
+            if (!string.IsNullOrEmpty(summaryViewModel.TOUFileName) && !string.IsNullOrEmpty(summaryViewModel.TOUFileLink))
+            {
+                TOUFileViewModel.FileName = summaryViewModel.TOUFileName;
+                TOUFileViewModel.FileUrl = summaryViewModel.TOUFileLink;
+                var fileContent = await bucketService.DownloadFileAsync(summaryViewModel.TOUFileLink);
+                var stream = new MemoryStream(fileContent);
+                IFormFile formFile = new FormFile(stream, 0, fileContent.Length, "File", summaryViewModel.TOUFileName)
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "application/pdf"
+                };
+                TOUFileViewModel.FileUploadedSuccessfully = true;
+                TOUFileViewModel.File = formFile;
+                TOUFileViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            }
+            return View(TOUFileViewModel);
+        }
+
+        [HttpPost("terms-of-use-upload")]
+        public async Task<IActionResult> SaveTermsOfUse(TOUFileViewModel TOUFileViewModel, string action)
+        {
+            bool fromSummaryPage = TOUFileViewModel.FromSummaryPage;
+            bool fromDetailsPage = TOUFileViewModel.FromDetailsPage;
+            TOUFileViewModel.FromSummaryPage = false;
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+            TOUFileViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            if (Convert.ToBoolean(TOUFileViewModel.FileUploadedSuccessfully) == false)
+            {
+                if (ModelState["File"].Errors.Count == 0)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await TOUFileViewModel.File.CopyToAsync(memoryStream);
+                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, TOUFileViewModel.File.FileName);
+                    if (genericResponse.Success)
+                    {
+                        summaryViewModel.TOUFileName = TOUFileViewModel.File.FileName;
+                        summaryViewModel.TOUFileSizeInKb = Math.Round((decimal)TOUFileViewModel.File.Length / 1024, 1);
+                        summaryViewModel.TOUFileLink = genericResponse.Data;
+                        TOUFileViewModel.FileUploadedSuccessfully = true;
+                        TOUFileViewModel.FileName = TOUFileViewModel.File.FileName;
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+
+
+                        if (action == "continue" || action == "amend")
+                        {
+                            return View("TermsOfUseUpload", TOUFileViewModel);
+                        }
+                        else if (action == "draft")
+                        {
+                            return await SaveAsDraftAndRedirect(summaryViewModel);
+                        }
+                        else
+                        {
+                            throw new ArgumentException("Invalid action parameter");
+                        }
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("File", "Unable to upload the file provided");
+                        return View("TermsOfUseUpload", TOUFileViewModel);
+                    }
+                }
+                else
+                {
+                    return View("TermsOfUseUpload", TOUFileViewModel);
+                }
+            }
+            else
+            {
+                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ProviderRoles", "CabService");
+            }
+        }
+
+        #endregion
+
         #region Select service type     
 
 
@@ -270,7 +369,6 @@ namespace DVSRegister.Controllers
         }
         #endregion
     
-
         #region GPG44 - input
 
         [HttpGet("service/gpg44-input")]

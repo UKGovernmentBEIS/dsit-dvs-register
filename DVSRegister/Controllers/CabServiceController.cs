@@ -140,11 +140,18 @@ namespace DVSRegister.Controllers
             serviceSummaryViewModel.FromDetailsPage = false;
             serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
             if (ModelState["CompanyAddress"].Errors.Count == 0)
-            {
-               
+            {               
                 serviceSummary.CompanyAddress = serviceSummaryViewModel.CompanyAddress;
-                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "ProviderRoles");      
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);            
+
+                if (serviceSummary.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
+                {
+                    return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "TermsOfUseUpload", "TrustFramework0_4");
+                }
+                else
+                {
+                    return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "ProviderRoles");
+                }
             }
             else
             {
@@ -168,6 +175,7 @@ namespace DVSRegister.Controllers
                 IsAmendment = summaryViewModel.IsAmendment,
                 RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : 
                 summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? "/cab-service/submit-service/tf-version?providerProfileId=" + summaryViewModel.ProviderProfileId :
+                summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 ? "/cab-service/submit-service/terms-of-use-upload" :
                 "/cab-service/submit-service/company-address"
             };
             return View(roleViewModel);
@@ -394,7 +402,6 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
-
         #region Supplemetary schemes
 
         [HttpGet("supplementary-schemes-input")]
@@ -589,26 +596,17 @@ namespace DVSRegister.Controllers
                         ModelState.AddModelError("File", "Unable to upload the file provided");
                         return View("CertificateUploadPage", certificateFileViewModel);
                     }
-
-                }
-               
+                }               
                 else
                 {
                     return View("CertificateUploadPage", certificateFileViewModel);
                 }
             }
-
             else 
             {
                 return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ConfirmityIssueDate");
-            }
-            
-        }
-
-
-
-
-       
+            }            
+        }      
 
 
         #endregion

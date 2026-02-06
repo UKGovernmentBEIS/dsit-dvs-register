@@ -15,6 +15,7 @@ namespace DVSRegister.BusinessLogic.Models
         public ProviderProfileDto ProviderProfile { get; set; }
         public string? Comments { get; set; }
         public bool? CertificateValid { get; set; }
+        public bool? TOUValid { get; set; }
         public bool? InformationMatched { get; set; }
         public string CommentsForIncorrect { get; set; }
         public string? RejectionComments { get; set; }      

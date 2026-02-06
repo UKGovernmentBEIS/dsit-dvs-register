@@ -36,13 +36,12 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime? PublishedTime { get; set; }
         public ICollection<CertificateReviewDto> CertificateReview { get; set; }
         public ICollection<PublicInterestCheckDto> PublicInterestCheck { get; set; }
+
         [JsonIgnore]
-        public ProceedApplicationConsentTokenDto ProceedApplicationConsentToken { get; set; }   
-      
-   
+        public ProceedApplicationConsentTokenDto ProceedApplicationConsentToken { get; set; } 
+        
         [JsonIgnore]
         public ICollection<CabTransferRequestDto> CabTransferRequest { get; set; }
-
         public int CabTransferRequestId { get; set; }
         public bool EnableResubmission { get; set; }      
         public int TrustFrameworkVersionId { get; set; }
@@ -65,7 +64,9 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public bool CertificateUploadRequired { get; set; }
         public int? ServiceRemovalRequestId { get; set; }
         public ProviderRemovalRequestServiceMappingDto? ProviderRemovalRequestServiceMapping { get; set; }
-
+        public string? TOUFileName { get; set; }
+        public string? TOUFileLink { get; set; }
+        public decimal? TOUFileSizeInKb { get; set; }
 
     }
 }
