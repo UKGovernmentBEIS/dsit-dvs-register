@@ -88,7 +88,6 @@
 
                     </dd>
                 </div>
-
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Company address details
@@ -103,7 +102,22 @@
                             hasValue = false;
                             @:Incomplete
                         }
-
+                    </dd>
+                </div>               
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Signed Terms of Use for the UK CertifID trust mark
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                         @if (!string.IsNullOrEmpty(Model?.TOUFileName))
+                        {
+                            @Model.TOUFileName
+                        }
+                        else
+                        {
+                            hasValue = false;
+                            @:Incomplete
+                        }
                     </dd>
                 </div>
                 <div class="govuk-summary-list__row">
@@ -308,24 +322,6 @@
                     </div>
 
                 }
-
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Service provider’s certificate of conformity
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        @if (!string.IsNullOrEmpty(Model?.FileName))
-                        {
-                            @Model.FileName
-                        }
-                        else
-                        {
-                            hasValue = false;
-                            @:Incomplete
-                        }
-                    </dd>
-                </div>
-
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Date of issue
@@ -371,7 +367,6 @@
             </h2>
         </div>
         <div class="govuk-summary-card__content">
-
             <p class="govuk-body-l govuk-!-margin-bottom-2">
                 @Model.FileName
             </p>
@@ -390,10 +385,8 @@
             <div class="govuk-inset-text" style="color:	#d4351c">
                 This service has been reassigned to you. You need to replace the certificate of conformity for it to remain
                 eligible to appear on the register.
-            </div>
-            
+            </div>            
         }
-
 
         <a href="@Url.Action("DownloadCertificate", "TrustFramework0_4", new { key = Model.FileLink, filename = Model.FileName })"
                role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button" target="_blank">
