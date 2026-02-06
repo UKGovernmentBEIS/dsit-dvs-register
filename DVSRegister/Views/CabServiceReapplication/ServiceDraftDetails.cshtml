@@ -8,6 +8,7 @@
 @{
     bool hasValue = true;
     bool is0_4GammaVersion = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
+    bool is1_0Version = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion1_0;
 
     var notificationBanner = new NotificationBannerViewModel
     {
@@ -136,6 +137,33 @@
                                     </dd>
                                 }
                             </div>
+
+                             @if(is1_0Version)
+                             {
+                                 <div class="govuk-summary-list__row">
+                                     <dt class="govuk-summary-list__key">
+                                         Signed Terms of Use for the UK CertifID trust mark
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">                                      
+                                       @if (!string.IsNullOrEmpty(Model?.TOUFileName))
+                                       {
+                                           @Model.TOUFileName
+                                       }
+                                       else
+                                       {
+                                           hasValue = false;
+                                           @:Incomplete
+                                       }
+                                    </dd>
+                                    @if (hasValue)
+                                    {
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "TermsOfUseUpload", "TrustFramework0_4", new { fromDetailsPage = true },
+                                            new { @class = "govuk-link", @aria_label = "Change service's signed terms of use for the UK CertifID trust mark" })
+                                        </dd>
+                                    }                                    
+                                </div>
+                             } 
 
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Roles certified against</dt>

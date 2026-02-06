@@ -1,5 +1,4 @@
-﻿using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
+﻿using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models.CAB.Service;
 using DVSRegister.Models.CabTrustFramework;
 using DVSRegister.Validations;
@@ -27,7 +26,6 @@ namespace DVSRegister.Models.CAB
         [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG44")]
         public bool? HasGPG44 { get; set; }
     
-
         [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG45")]
         public bool? HasGPG45 { get; set; }
         public QualityLevelViewModel? QualityLevelViewModel { get; set; }
@@ -47,7 +45,6 @@ namespace DVSRegister.Models.CAB
         public int ServiceKey { get; set; }      
         public DateTime? CreatedDate { get; set; }
         public TFVersionViewModel? TFVersionViewModel { get; set; }
-
         public int? SelectedUnderPinningServiceId { get; set; }
         public int? SelectedManualUnderPinningServiceId { get; set; }
         public bool? IsManualServiceLinkedToMultipleServices { get; set; }
@@ -73,7 +70,8 @@ namespace DVSRegister.Models.CAB
         public DateTime? UnderPinningServiceExpiryDate { get; set; }
         public bool? IsTFVersionChanged { get; set; }
         public bool? IsReupload { get; set; }
-
-       
+        public string? TOUFileName { get; set; }
+        public string? TOUFileLink { get; set; }
+        public decimal? TOUFileSizeInKb { get; set; }
     }
 }
