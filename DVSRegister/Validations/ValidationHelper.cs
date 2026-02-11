@@ -171,6 +171,27 @@ public class ValidationHelper
         }
         return date;
     }
+    public static bool ValidatePdfSignature(Stream stream)
+    {
+        if (stream == null || stream.Length < 5) return false;
 
+        long originalPos = stream.Position;
+        try
+        {
+            Span<byte> header = stackalloc byte[5];
+            stream.Position = 0;
+            int read = stream.Read(header);
+            if (read < 5) return false;
 
+            return header[0] == 0x25 && // %
+                   header[1] == 0x50 && // P
+                   header[2] == 0x44 && // D
+                   header[3] == 0x46 && // F
+                   header[4] == 0x2D;   // -
+        }
+        finally
+        {
+            stream.Position = originalPos;
+        }
+    }
 }
