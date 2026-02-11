@@ -8,6 +8,7 @@
 @{
     bool is0_4GammaVersion = Model?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_4;
     bool is1_0Version = Model?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion1_0;
+    bool isSupportedTFVersion = is0_4GammaVersion || is1_0Version;
 }
 
 
@@ -128,7 +129,7 @@
                 </dd>
             </div>
 
-            @if(is0_4GammaVersion)
+            @if (isSupportedTFVersion)
             {
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -144,7 +145,7 @@
                 </div>
             }
 
-            @if (is0_4GammaVersion)
+            @if (isSupportedTFVersion)
             {
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -406,7 +407,7 @@
 </div>
 
 
-@if (is0_4GammaVersion)
+@if (isSupportedTFVersion)
 {
     @if(Model?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count>0)
     {
