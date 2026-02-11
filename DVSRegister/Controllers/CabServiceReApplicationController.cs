@@ -89,7 +89,6 @@ namespace DVSRegister.Controllers
                  || inProgressApplicationParameters.HasActiveRemovalRequest || inProgressApplicationParameters.InProgressAndUpdateRequested)
                 {
                     return RedirectToAction("StartInProgressApplicationRemoval");
-
                 }
                 else
                 {
@@ -99,9 +98,7 @@ namespace DVSRegister.Controllers
             else
             {
                 return RedirectToAction("SelectVersionOfTrustFrameWork", "TrustFramework0_4", new { providerProfileId = serviceSummary.ProviderProfileId });
-            }
-            
-          
+            }           
         }
 
 
@@ -118,13 +115,11 @@ namespace DVSRegister.Controllers
             return View(serviceDetails);
         }
 
-   
-
 
         #region Private method
         private IActionResult RedirectToNextEmptyField(ServiceSummaryViewModel serviceSummary)
         {
-            if (serviceSummary.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+            if (serviceSummary.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 || serviceSummary.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
             {
                 bool isPublished = serviceSummary.IsUnderpinningServicePublished != null && serviceSummary.IsUnderpinningServicePublished == true;
                 bool isSelected = serviceSummary.SelectedUnderPinningServiceId != null;
@@ -151,6 +146,10 @@ namespace DVSRegister.Controllers
                 else if (string.IsNullOrEmpty(serviceSummary.CompanyAddress))
                 {
                     return RedirectToAction("CompanyAddress", "CabService");
+                }
+                else if (serviceSummary.TOUFileName == null && serviceSummary.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0 )
+                {
+                    return RedirectToAction("TermsOfUseUpload", "TrustFramework0_4");
                 }
                 else if (serviceSummary.RoleViewModel.SelectedRoles == null || serviceSummary.RoleViewModel.SelectedRoles.Count == 0)
                 {
@@ -184,7 +183,6 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("UnderPinningServiceExpiryDate", "TrustFramework0_4");
                 }
-
                 else if (serviceSummary.HasGPG45 == null)
                 {
                     return RedirectToAction("ServiceGPG45Input", "TrustFramework0_4");
@@ -193,7 +191,6 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("ServiceGPG45", "TrustFramework0_4");
                 }
-
                 else if (serviceSummary.HasGPG44 == null)
                 {
                     return RedirectToAction("ServiceGPG44Input", "TrustFramework0_4");
