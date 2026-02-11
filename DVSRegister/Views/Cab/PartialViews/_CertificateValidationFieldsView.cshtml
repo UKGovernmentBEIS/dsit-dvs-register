@@ -1,5 +1,10 @@
-﻿@using DVSRegister.BusinessLogic.Models
-@model CertificateReviewDto
+﻿@model CertificateReviewDto
+@using DVSRegister.BusinessLogic.Models
+@using DVSRegister.CommonUtility
+@{
+    var tfVersion = ViewBag.TFVersion ?? Model.Service.TrustFrameworkVersion.Version;
+    bool isTFv1 = tfVersion == Constants.TFVersion1_0;
+}
 
 <dl class="govuk-summary-list">
     @if (!Convert.ToBoolean(Model.CertificateValid))
@@ -28,7 +33,7 @@
             </dd>
         </div>
     }
-    @if (!Convert.ToBoolean(Model.TOUValid))
+    @if (isTFv1 && !Convert.ToBoolean(Model.TOUValid))
     {
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">

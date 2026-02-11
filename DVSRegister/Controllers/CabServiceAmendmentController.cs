@@ -49,7 +49,7 @@ namespace DVSRegister.Controllers
             }
 
 
-            [HttpGet("service-amendments-summary")]
+        [HttpGet("service-amendments-summary")]
         public IActionResult ServiceAmendmentsSummary()
         {
             SetRefererURL();
@@ -57,6 +57,7 @@ namespace DVSRegister.Controllers
             AmendmentViewModel amendmentViewModel = new AmendmentViewModel();
             amendmentViewModel.CertificateReview = HttpContext?.Session.Get<CertificateReviewDto>("CertificateReviewDetails") ?? new CertificateReviewDto();
             amendmentViewModel.ServiceSummary = GetServiceSummary();
+            ViewBag.TFVersion = amendmentViewModel.ServiceSummary.TFVersionViewModel.SelectedTFVersion.Version;
             return View(amendmentViewModel);
 
         }
