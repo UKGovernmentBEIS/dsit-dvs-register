@@ -203,7 +203,7 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 || summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
                 {
                     return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SelectServiceType", "TrustFramework0_4");
                 }
@@ -475,7 +475,7 @@ namespace DVSRegister.Controllers
                 string controller;
                 object routeValues = null;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 || summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
                 {                   
                     HttpContext?.Session.Set("SelectedSchemeIds", supplementarySchemeViewModel.SelectedSupplementarySchemeIds);
                     int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];
