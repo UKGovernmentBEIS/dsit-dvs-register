@@ -122,7 +122,7 @@ namespace DVSRegister.Models
 
         public static void MapTFVersion0_4Fields(ServiceSummaryViewModel summaryViewModel, ServiceDto serviceDto)
         {
-            if (summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_4)
+            if (summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version >= Constants.TFVersion0_4)
             {
                 serviceDto.ServiceType = summaryViewModel?.ServiceType;
 
@@ -317,8 +317,6 @@ namespace DVSRegister.Models
                     inProgressApplicationParameters.HasActiveReassignmentRequest = true;
                     inProgressApplicationParameters.InProgressReassignmentRequestServiceId = reassginmentRequestService.Id;
                     inProgressApplicationParameters.ServiceId = inProgressApplicationParameters.ServiceId == 0? reassginmentRequestService.Id : inProgressApplicationParameters.ServiceId;
-
-
                 }
 
                 ServiceDto removalrequestService = serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation || x.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation).FirstOrDefault() ?? null!;
@@ -327,10 +325,8 @@ namespace DVSRegister.Models
                     inProgressApplicationParameters.HasActiveRemovalRequest = true;
                     inProgressApplicationParameters.InProgressRemovalRequestServiceId = removalrequestService.Id;
                     inProgressApplicationParameters.ServiceId = inProgressApplicationParameters.ServiceId == 0 ? removalrequestService.Id : inProgressApplicationParameters.ServiceId;
-                }
+                }  
 
-
-               
 
                 ServiceDto inprogresAndUpdateRequestedService = serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested &&
                 x?.serviceDraft?.PreviousServiceStatus != ServiceStatusEnum.Published && (x?.serviceDraft?.PreviousServiceStatus == ServiceStatusEnum.Submitted
@@ -342,10 +338,8 @@ namespace DVSRegister.Models
                     inProgressApplicationParameters.InProgressAndUpdateRequested = true;
                     inProgressApplicationParameters.InProgressAndUpdateRequestedId = inprogresAndUpdateRequestedService.Id;
                     inProgressApplicationParameters.ServiceId = inprogresAndUpdateRequestedService.Id;
-                }
+                }  
                 
-
-
 
                 List<ServiceDto> updateRequestServices = inProgressApplicationParameters.InProgressAndUpdateRequested ?
                 serviceList?.Where(x => x.ServiceStatus == ServiceStatusEnum.UpdatesRequested && x.IsCurrent == false).ToList() ?? null! :
