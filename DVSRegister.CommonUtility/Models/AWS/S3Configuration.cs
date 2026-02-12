@@ -5,7 +5,7 @@
         public const string ConfigSection = "S3Config";
 
         public string BucketName { get; set; }
-
+        public string TOUBucketName { get; set; }
         public string Region { get; set; }
     }
 }

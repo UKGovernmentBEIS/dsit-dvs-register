@@ -84,7 +84,8 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest))
             .ForMember(dest => dest.CreatedTime, opt => opt.MapFrom<CreatedTimeResolver>())
             .ForMember(dest => dest.NewOrResubmission, opt => opt.MapFrom<NewOrResubmissionResolver>())
-            .ForMember(dest => dest.TrustFrameworkVersion, opt => opt.MapFrom(src => src.TrustFrameworkVersion));
+            .ForMember(dest => dest.TrustFrameworkVersion, opt => opt.MapFrom(src => src.TrustFrameworkVersion))
+            .ForMember(dest => dest.TrustmarkNumber, opt => opt.MapFrom(src => src.TrustmarkNumber));
 
             CreateMap<ServiceDto, Service>()
            .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src => src.ServiceQualityLevelMapping))
@@ -96,7 +97,7 @@ namespace DVSRegister.BusinessLogic
            .ForMember(dest => dest.CertificateReview, opt => opt.MapFrom(src => src.CertificateReview))
            .ForMember(dest => dest.PublicInterestCheck, opt => opt.MapFrom(src => src.PublicInterestCheck))
            .ForMember(dest => dest.CabTransferRequest, opt => opt.MapFrom(src => src.CabTransferRequest))
-           .ForMember(dest => dest.TrustFrameworkVersion, opt => opt.MapFrom(src => src.TrustFrameworkVersion));
+           .ForMember(dest => dest.TrustmarkNumber, opt => opt.MapFrom(src => src.TrustmarkNumber));
 
 
             CreateMap<ProceedApplicationConsentToken, ProceedApplicationConsentTokenDto>()
@@ -143,6 +144,10 @@ namespace DVSRegister.BusinessLogic
             CreateMap<ProviderProfileDraftDto, ProviderProfileDraft>();
             CreateMap<ProviderRemovalRequestServiceMapping, ProviderRemovalRequestServiceMappingDto>();
             CreateMap<ProviderRemovalRequestServiceMappingDto, ProviderRemovalRequestServiceMapping>();
+
+
+            CreateMap<TrustmarkNumber, TrustmarkNumberDto>();
+            CreateMap<TrustmarkNumberDto, TrustmarkNumber>();
 
 
         }

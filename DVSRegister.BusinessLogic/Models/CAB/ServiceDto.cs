@@ -28,8 +28,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public DateTime ConformityIssueDate { get; set; }
         public DateTime ConformityExpiryDate { get; set; }      
         public int CabUserId { get; set; }
-        public CabUserDto CabUser { get; set; }      
-        public int TrustMarkNumber { get; set; }
+        public CabUserDto CabUser { get; set; }           
         public ServiceStatusEnum ServiceStatus { get; set; }
         public DateTime? CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
@@ -67,6 +66,8 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public string? TOUFileName { get; set; }
         public string? TOUFileLink { get; set; }
         public decimal? TOUFileSizeInKb { get; set; }
+
+        public TrustmarkNumberDto TrustmarkNumber { get; set; }
 
     }
 }
