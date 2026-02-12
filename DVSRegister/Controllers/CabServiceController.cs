@@ -12,6 +12,7 @@ using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 
 namespace DVSRegister.Controllers
@@ -19,7 +20,7 @@ namespace DVSRegister.Controllers
     [Route("cab-service/submit-service")]
   
     public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IActionLogService actionLogService,
-    CabEmailSender emailSender, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
+    CabEmailSender emailSender, IOptions<S3Configuration> config, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;
@@ -28,6 +29,7 @@ namespace DVSRegister.Controllers
         private readonly IActionLogService actionLogService = actionLogService;
         private readonly CabEmailSender emailSender = emailSender;
         private readonly ILogger<CabServiceController> _logger = logger;
+        private readonly S3Configuration config = config.Value;
         private readonly IMapper _mapper = mapper;
 
         [HttpGet("before-you-start/{providerProfileId}")]
@@ -533,7 +535,7 @@ namespace DVSRegister.Controllers
             {
                 certificateFileViewModel.FileName = summaryViewModel.FileName;
                 certificateFileViewModel.FileUrl = summaryViewModel.FileLink;                
-                var fileContent = await bucketService.DownloadFileAsync(summaryViewModel.FileLink);
+                var fileContent = await bucketService.DownloadFileAsync(summaryViewModel.FileLink, config.BucketName);
                 var stream = new MemoryStream(fileContent);
                 IFormFile formFile = new FormFile(stream, 0, fileContent.Length, "File", summaryViewModel.FileName)
                 {
@@ -567,7 +569,7 @@ namespace DVSRegister.Controllers
                 {
                     using var memoryStream = new MemoryStream();
                     await certificateFileViewModel.File.CopyToAsync(memoryStream);
-                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName,config.BucketName);
                     if (genericResponse.Success)
                     {
                         summaryViewModel.FileName = certificateFileViewModel.File.FileName;
@@ -681,7 +683,7 @@ namespace DVSRegister.Controllers
             {
                 dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
             }
-            if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+            if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version >= Constants.TFVersion0_4)
             {
                 dateViewModel.IsTfVersion0_4 = true;
             }

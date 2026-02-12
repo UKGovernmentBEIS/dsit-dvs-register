@@ -13,6 +13,7 @@ using DVSRegister.Models.CAB.Service;
 using DVSRegister.Models.CabTrustFramework;
 using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace DVSRegister.Controllers
 {
@@ -22,14 +23,16 @@ namespace DVSRegister.Controllers
     /// </summary>
     /// <param name="logger"></param>
     [Route("cab-service/submit-service")]
-    public class TrustFramework0_4Controller(ITrustFrameworkService trustFrameworkService, ICabService cabService, IUserService userService,IBucketService bucketService, IMapper mapper, ILogger<TrustFramework0_4Controller> logger) : BaseController(logger)
+    public class TrustFramework0_4Controller(ITrustFrameworkService trustFrameworkService, ICabService cabService, IUserService userService
+        ,IBucketService bucketService, IOptions<S3Configuration> config, IMapper mapper, ILogger<TrustFramework0_4Controller> logger) : BaseController(logger)
     {
         private readonly ILogger<TrustFramework0_4Controller> logger = logger;        
         private readonly ITrustFrameworkService trustFrameworkService = trustFrameworkService;
         private readonly ICabService cabService = cabService;
         private readonly IUserService userService = userService;
         private readonly IBucketService bucketService = bucketService;
-        private readonly IMapper mapper = mapper;     
+        private readonly IMapper mapper = mapper;
+        private readonly S3Configuration config = config.Value;
 
         [HttpGet("tf-version/{providerProfileId}/{fromSummaryPage?}/{fromDetailsPage?}")]
         public async Task<IActionResult> SelectVersionOfTrustFrameWork(int providerProfileId, bool fromSummaryPage=false,  bool fromDetailsPage=false)
@@ -151,7 +154,7 @@ namespace DVSRegister.Controllers
             {
                 TOUFileViewModel.FileName = summaryViewModel.TOUFileName;
                 TOUFileViewModel.FileUrl = summaryViewModel.TOUFileLink;
-                var fileContent = await bucketService.DownloadFileAsync(summaryViewModel.TOUFileLink);
+                var fileContent = await bucketService.DownloadFileAsync(summaryViewModel.TOUFileLink, config.TOUBucketName);
                 var stream = new MemoryStream(fileContent);
                 IFormFile formFile = new FormFile(stream, 0, fileContent.Length, "File", summaryViewModel.TOUFileName)
                 {
@@ -179,7 +182,7 @@ namespace DVSRegister.Controllers
                 {
                     using var memoryStream = new MemoryStream();
                     await TOUFileViewModel.File.CopyToAsync(memoryStream);
-                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, TOUFileViewModel.File.FileName);
+                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, TOUFileViewModel.File.FileName, config.TOUBucketName);
                     if (genericResponse.Success)
                     {
                         summaryViewModel.TOUFileName = TOUFileViewModel.File.FileName;
@@ -878,7 +881,7 @@ namespace DVSRegister.Controllers
         {
             try
             {
-                byte[]? fileContent = await bucketService.DownloadFileAsync(key);
+                byte[]? fileContent = await bucketService.DownloadFileAsync(key, config.BucketName);
 
                 if (fileContent == null || fileContent.Length == 0)
                     throw new InvalidOperationException($"Failed to download certificate: Empty or null content for key.");
