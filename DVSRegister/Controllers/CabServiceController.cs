@@ -1078,7 +1078,7 @@ namespace DVSRegister.Controllers
                  vm.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null);
 
             bool hasTfVersion04Data = true;
-            if (vm.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+            if (vm.TFVersionViewModel.SelectedTFVersion.Version >= Constants.TFVersion0_4)
             {
                 hasTfVersion04Data =
                     vm.ServiceType.HasValue &&
@@ -1105,20 +1105,22 @@ namespace DVSRegister.Controllers
                              sc.QualityLevel?.SelectedQualityofAuthenticators != null)))))));
             }
 
+            bool hasTfVersion1_0Data = true;
+            if (vm.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
+            {
+                hasTfVersion1_0Data = vm.TOUFileName != null;
+            }
+
             return hasBasicInfo
                 && hasGpg44Data
                 && hasGpg45Data
                 && hasSupplementaryData
-                && hasTfVersion04Data;
+                && hasTfVersion04Data
+                && hasTfVersion1_0Data;
         }
 
 
         #endregion
-
-
-       
-
-
         #endregion
     }
 }

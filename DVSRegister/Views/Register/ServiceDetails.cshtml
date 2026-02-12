@@ -5,7 +5,7 @@
 @using DVSRegister.Extensions
 @model ServiceDto
 @{
-    bool is0_4GammaVersion = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
+    bool isAbove0_3 = Model?.TrustFrameworkVersion?.Version >= Constants.TFVersion0_4;
     ViewData["Title"] = "Service details";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
     ViewData["ActiveNav"] = "AllServices";
@@ -212,7 +212,7 @@
                     </div>
                 </div>
 
-                @if (is0_4GammaVersion && Model.ServiceType != ServiceTypeEnum.UnderPinning)
+                @if (isAbove0_3 && Model.ServiceType != ServiceTypeEnum.UnderPinning)
                 {
                     @if (Model?.ServiceSupSchemeMapping != null && Model.ServiceSupSchemeMapping.Count > 0)
                     {

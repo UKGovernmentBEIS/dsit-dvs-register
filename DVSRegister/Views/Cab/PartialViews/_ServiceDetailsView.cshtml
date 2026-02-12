@@ -8,7 +8,8 @@
 @{
     bool hasRemovalRequest = Model.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation ? true : false;
     bool hasValue = true;
-    bool is0_4GammaVersion = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
+    bool is1_0Version = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion1_0;
+    bool isAbove0_3 = Model?.TrustFrameworkVersion?.Version >= Constants.TFVersion0_4;
     bool isEdit = Model.ServiceStatus == ServiceStatusEnum.UpdatesRequested ? true : false;
     bool cabRequestedEdit = Model.Provider.ProviderProfileDraft != null && Model.Provider.ProviderProfileDraft.IsCabRequested;
     var latestCabTransferRequest = Model?.CabTransferRequest?.OrderByDescending(c => c.Id).FirstOrDefault();
@@ -103,23 +104,26 @@
                             @:Incomplete
                         }
                     </dd>
-                </div>               
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
+                </div>    
+                @if(is1_0Version)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
                         Signed Terms of Use for the UK CertifID trust mark
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                         @if (!string.IsNullOrEmpty(Model?.TOUFileName))
-                        {
-                            @Model.TOUFileName
-                        }
-                        else
-                        {
-                            hasValue = false;
-                            @:Incomplete
-                        }
-                    </dd>
-                </div>
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @if (!string.IsNullOrEmpty(Model?.TOUFileName))
+                            {
+                                @Model.TOUFileName
+                            }
+                            else
+                            {
+                                hasValue = false;
+                                @:Incomplete
+                            }
+                        </dd>
+                    </div>                
+                }            
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
                         Roles certified against
@@ -140,7 +144,7 @@
                     </dd>
                 </div>
 
-                @if(is0_4GammaVersion)
+                @if(isAbove0_3)
                 {
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
@@ -251,7 +255,7 @@
                     </div>
 
                 }
-                @if (!is0_4GammaVersion)
+                @if (!isAbove0_3)
                 {
                     @if (Model.HasGPG45 == false)
                     {
@@ -394,7 +398,7 @@
             </a>
         </div>
 </div>
-@if (is0_4GammaVersion)
+@if (isAbove0_3)
 {
    @if (Model?.ServiceSupSchemeMapping != null && Model.ServiceSupSchemeMapping.Count > 0)
    {
@@ -646,5 +650,4 @@
             </div>
         </div>
     }
-
 }

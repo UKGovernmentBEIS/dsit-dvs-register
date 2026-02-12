@@ -9,7 +9,8 @@
                            Model?.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign) &&
                            (Model?.CabTransferRequest?.Any(x => x.ServiceId == Model.Id && x.Id == Model.CabTransferRequestId && x.CertificateUploaded == false) == true);
 
-    bool is0_4GammaVersion = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
+    bool is1_0Version = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion1_0;
+    bool isAbove0_3 = Model?.TrustFrameworkVersion?.Version >= Constants.TFVersion0_4;
 }
 
 <div class="govuk-width-container">
@@ -70,7 +71,6 @@
                                     @HtmlExtensions.ToStringWithLineBreaks(Model?.CompanyAddress ?? string.Empty)
                                 </dd>
                             </div>
-
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     Trust framework version
@@ -78,9 +78,18 @@
                                 <dd class="govuk-summary-list__value">
                                     @Model.TrustFrameworkVersion.TrustFrameworkName
                                 </dd>
-
                             </div>
-
+                            @if(is1_0Version)
+                            {
+                                <div class="govuk-summary-list__row">
+                                <dt class="govuk-summary-list__key">
+                                    Signed Terms of Use for the UK CertifID trust mark
+                                </dt>
+                                <dd class="govuk-summary-list__value">
+                                    @Model.TOUFileName
+                                </dd>
+                            </div>
+                            }
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">
                                     Roles certified
@@ -100,7 +109,7 @@
                                 </dd>
                             </div>
 
-                            @if (is0_4GammaVersion)
+                            @if (isAbove0_3)
                             {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">
@@ -241,18 +250,15 @@
                 </div>
             </div>
 
-            @if (is0_4GammaVersion)
+            @if (isAbove0_3)
             {
-
                 <div class="govuk-grid-column-full">
                     @await Html.PartialAsync("~/Views/CabTransfer/PartialViews/_SchemeMappingView.cshtml", Model)
                 </div>
                 <div class="govuk-grid-column-full">
                     @await Html.PartialAsync("~/Views/CabTransfer/PartialViews/_UnderpinningServiceDetailsView.cshtml", Model)
                 </div>
-
             }
-
 
             @if (canApproveReject)
             {
