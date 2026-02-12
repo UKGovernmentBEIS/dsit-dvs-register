@@ -87,6 +87,7 @@ namespace DVSRegister.Data.Entities
 
         [Column(TypeName = "decimal(10, 1)")]
         public decimal? TOUFileSizeInKb { get; set; }
+        public TrustmarkNumber? TrustmarkNumber { get; set; }
 
     }
 }

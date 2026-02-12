@@ -170,10 +170,7 @@ namespace DVSRegister.Data
             });
 
 
-
-            modelBuilder.Entity<TrustmarkNumber>()
-            .Property(t => t.TrustMarkNumber)
-            .HasComputedColumnSql("LPAD(\"CompanyId\"::VARCHAR(4), 4, '0') || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", stored: true);
+           
 
             modelBuilder.Entity<TrustmarkNumber>()
             .HasIndex(b => b.TrustMarkNumber)
