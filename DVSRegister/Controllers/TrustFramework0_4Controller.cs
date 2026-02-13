@@ -182,7 +182,13 @@ namespace DVSRegister.Controllers
                 {
                     using var memoryStream = new MemoryStream();
                     await TOUFileViewModel.File.CopyToAsync(memoryStream);
+                    if (!ValidationHelper.ValidatePdfSignature(memoryStream))
+                    {
+                        ModelState.AddModelError("File", "The uploaded file does not appear to be a valid PDF.");
+                        return View("TermsOfUseUpload", TOUFileViewModel);
+                    }
                     GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, TOUFileViewModel.File.FileName, config.TOUBucketName);
+
                     if (genericResponse.Success)
                     {
                         summaryViewModel.TOUFileName = TOUFileViewModel.File.FileName;

@@ -569,7 +569,13 @@ namespace DVSRegister.Controllers
                 {
                     using var memoryStream = new MemoryStream();
                     await certificateFileViewModel.File.CopyToAsync(memoryStream);
-                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName,config.BucketName);
+                    if (!ValidationHelper.ValidatePdfSignature(memoryStream))
+                    {
+                        ModelState.AddModelError("File", "The uploaded file does not appear to be a valid PDF.");
+                        return View("CertificateUploadPage", certificateFileViewModel);
+                    }
+                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName, config.BucketName);
+
                     if (genericResponse.Success)
                     {
                         summaryViewModel.FileName = certificateFileViewModel.File.FileName;
