@@ -149,6 +149,9 @@ namespace DVSRegister.BusinessLogic
             CreateMap<TrustmarkNumber, TrustmarkNumberDto>();
             CreateMap<TrustmarkNumberDto, TrustmarkNumber>();
 
+            CreateMap<DownloadLogoToken, DownloadLogoTokenDto>();
+            CreateMap<DownloadLogoTokenDto, DownloadLogoToken>();
+
 
         }
     }

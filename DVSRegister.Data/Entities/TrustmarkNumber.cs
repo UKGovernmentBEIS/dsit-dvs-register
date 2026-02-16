@@ -26,6 +26,7 @@ namespace DVSRegister.Data.Entities
         public string SvgLogoLink { get; set; }
         public bool TrustMarkNumberVerified { get; set; }
         public bool LogoVerified { get; set; }
+        public bool IsActive { get; set; }
         public DateTime TimeStamp { get; set; } 
     }
 }

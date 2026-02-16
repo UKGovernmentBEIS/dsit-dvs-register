@@ -68,6 +68,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
         public decimal? TOUFileSizeInKb { get; set; }
 
         public TrustmarkNumberDto TrustmarkNumber { get; set; }
+        public DownloadLogoTokenDto DownloadLogoToken { get; set; }
 
     }
 }

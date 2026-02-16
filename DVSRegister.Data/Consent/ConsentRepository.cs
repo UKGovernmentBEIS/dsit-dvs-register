@@ -154,8 +154,16 @@ namespace DVSRegister.Data.Repositories
             return await context.Service.AsNoTracking()
                 .Include(s=>s.Provider)
                 .Include(s=>s.CertificateReview)
+                  .Include(s => s.TrustmarkNumber)
                 .Include(s=>s.PublicInterestCheck)
                 .FirstOrDefaultAsync(e => e.Id == serviceId)??new();
+        }
+
+        public async Task<Service> GetServiceWithTrustMark(int serviceId)
+        {
+            return await context.Service.AsNoTracking()
+                .Include(s => s.TrustmarkNumber)              
+                .FirstOrDefaultAsync(e => e.Id == serviceId) ?? new();
         }
 
         public async Task<List<Service>> GetServiceList(int providerId)
@@ -163,5 +171,13 @@ namespace DVSRegister.Data.Repositories
             return await context.Service.Where(s => s.ProviderProfileId == providerId).ToListAsync();
         }
 
+        #region Download Logo
+        public async Task<DownloadLogoToken?> GetDownloadLogoToken(string tokenId)
+        {
+            return await context.DownloadLogoToken
+            .FirstOrDefaultAsync(e => e.TokenId == tokenId);
+        }
+
+        #endregion
     }
 }

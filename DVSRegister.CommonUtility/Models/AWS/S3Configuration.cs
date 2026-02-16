@@ -7,5 +7,6 @@
         public string BucketName { get; set; }
         public string TOUBucketName { get; set; }
         public string Region { get; set; }
+        public string LogoBucketName { get; set; }
     }
 }
