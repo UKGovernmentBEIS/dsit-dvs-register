@@ -16,5 +16,9 @@ namespace DVSRegister.Data.Repositories
         public Task<List<Service>> GetServiceList(int providerId);
 
         public Task<Service> GetService(int serviceId);
+
+        #region Download Logo
+        public Task<DownloadLogoToken?> GetDownloadLogoToken(string tokenId);
+        #endregion
     }
 }

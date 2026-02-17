@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
@@ -95,9 +96,15 @@ namespace DVSRegister.BusinessLogic.Services
         }
 
 
-       
+        //Download logo methods
+        public async Task<DownloadLogoTokenDto?> GetDownloadTokenFromTokenId(string tokenId)
+        {
+            DownloadLogoToken? downloadLogoToken = await consentRepository.GetDownloadLogoToken( tokenId);
+            DownloadLogoTokenDto downloadLogoTokenDto = mapper.Map<DownloadLogoTokenDto>(downloadLogoToken);
+            return downloadLogoTokenDto;
+        }
 
-       
+
 
     }
 }

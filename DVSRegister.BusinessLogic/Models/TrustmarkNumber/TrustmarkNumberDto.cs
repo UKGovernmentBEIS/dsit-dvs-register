@@ -1,4 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models.CAB;
+using System.Text.Json.Serialization;
 
 namespace DVSRegister.BusinessLogic.Models
 {
@@ -7,6 +8,8 @@ namespace DVSRegister.BusinessLogic.Models
         public int ProviderProfileId { get; set; }
         public ProviderProfileDto Provider { get; set; }
         public int ServiceId { get; set; }
+
+        [JsonIgnore]
         public ServiceDto Service { get; set; }
         public int CompanyId { get; set; }
         public int ServiceNumber { get; set; }    

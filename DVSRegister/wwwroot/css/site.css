@@ -82,6 +82,21 @@
     text-decoration-thickness: .1875rem;
 }
 
+.image-logo-block {
+    width: 359px;
+    height: 107px;
+}
+
+.image-logo-block-medium {
+    width: 369px;
+    height: 110px;
+}
+
+.image-logo {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
 
 .dashboard-summary {
     display: grid;

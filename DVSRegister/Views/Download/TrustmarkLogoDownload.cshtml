@@ -1,0 +1,167 @@
+﻿@model DVSRegister.BusinessLogic.Models.CAB.ServiceDto
+@{
+    ViewData["Title"] = "UK CertifID trust mark for "+@Model.ServiceName ;
+    Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
+}
+
+<div class="govuk-width-container">
+
+       
+    <main id="main-content" class="govuk-main-wrapper" role="main">
+        <div class="govuk-grid-row">
+            
+                <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
+                <p class="govuk-body">
+                    The Office for Digital Identity and Attributes has issued a UK CertifID trust
+                    mark for this service.
+                </p>
+                </div>
+                <div class="govuk-grid-column-full">
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Service name
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.ServiceName
+                        </dd>
+                    </div>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Service Provider
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.Provider.RegisteredName
+                        </dd>
+                    </div>              
+                </dl>
+                </div>
+            <div class="govuk-grid-column-full">
+            <div class="govuk-summary-card">        
+                <div class="govuk-summary-card__title-wrapper">
+                    <h2 class="govuk-summary-card__title">
+                        Trustmark number
+                    </h2>
+                </div>
+                <div class="govuk-summary-card__content">
+                    <dl class="govuk-summary-list">
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                @Model.TrustmarkNumber?.TrustMarkNumber
+                            </dt>
+                        </div>                      
+                    </dl>
+                </div>
+            </div>
+            </div>
+
+            <div class="govuk-grid-column-full">
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                    <h2 class="govuk-summary-card__title">
+                        Trustmark logo
+                    </h2>
+                </div>
+                <div class="govuk-summary-card__content">
+                    <dl class="govuk-summary-list">
+                        <div class="govuk-summary-list__row">
+                            <p class="govuk-body">
+                                Please check that the number found in the logo matches the trust mark number for this service.
+                            </p>
+                                <div class="image-logo-block-medium">
+                                    <img src="/download/download-logo" alt="Logo with trustmark number: @Model?.TrustmarkNumber?.TrustMarkNumber" class="image-logo">
+                                </div>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            </div>
+
+                   <div class="govuk-grid-column-full">
+                    <div class="govuk-summary-card">
+                        <div class="govuk-summary-card__title-wrapper">
+                            <h2 class="govuk-summary-card__title">
+                                Trust Mark Logo Files
+                            </h2>
+                        <ul class="govuk-summary-card__actions">
+                            <li class="govuk-summary-card__action">
+                                <a class="govuk-link" href="@Url.Action("DownloadLogoVariants", "Download", new{fileType = "all", serviceId = Model?.Id, tokenId = Model?.DownloadLogoToken.TokenId})">Download<span class="govuk-visually-hidden">Download all variations of logo</span></a>
+                            </li>
+                          
+                        </ul>
+                        </div>
+                        <div class="govuk-summary-card__content">
+                        <h2 class="govuk-heading-m">Access the trust mark logo in all formats</h2>
+                        <p class="govuk-body">
+                            Please download the trust mark logo files below. Review each format (JPEG, PNG, SVG) to
+                            ensure correct appearance, resolution, and compatibility across print and digital platforms.
+                        </p>
+                        <p class="govuk-body govuk-!-margin-bottom-0">
+                            Please note that each format comes as a ZIP file and contains
+                            four variations of the trust mark logo:
+                        </p>
+                        <ul class="govuk-list govuk-list--bullet">
+                            <li>The full colour 'main brand' variation for primary use
+                            <li>A mono white variation to be used on dark backgrounds only</li>
+                            <li>A mono black and a black-grey variation to be used on light backgrounds only</li>
+                        </ul>
+                            <dl class="govuk-summary-list">
+                           
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        .jpeg
+                                    </dt>
+                                    <dd class="govuk-summary-list__actions">
+                                    <a class="govuk-link" href="@Url.Action("DownloadLogoVariants", "Download", new{fileType = "jpeg", serviceId = Model?.Id, tokenId = Model?.DownloadLogoToken.TokenId})">Download<span class="govuk-visually-hidden">Download jpeg variations of logo</span></a>
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        .png
+                                    </dt>
+                                    <dd class="govuk-summary-list__actions">
+                                    <a class="govuk-link" href="@Url.Action("DownloadLogoVariants", "Download", new{fileType = "png", serviceId = Model?.Id, tokenId = Model?.DownloadLogoToken.TokenId})">Download<span class="govuk-visually-hidden">Download png variations of logo</span></a>
+                                    </dd>
+                                </div>
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        .svg
+                                    </dt>
+                                    <dd class="govuk-summary-list__actions">
+                                    <a class="govuk-link" href="@Url.Action("DownloadLogoVariants", "Download", new{fileType = "svg", serviceId = Model?.Id, tokenId = Model?.DownloadLogoToken.TokenId})">Download<span class="govuk-visually-hidden">Download svg variations of logo</span></a>
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>                
+
+               
+                
+                   </div>
+            <div class="govuk-grid-column-full">
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                    <h2 class="govuk-summary-card__title">
+                        Trustmark logo
+                    </h2>
+                </div>
+                <div class="govuk-summary-card__content">
+                    <dl class="govuk-summary-list">
+                        <div class="govuk-summary-list__row">
+                            <p class="govuk-body">
+                                When using the trust mark, you should refer to the Terms of Use you signed with your Conformity Assessment
+                                Body and to the .
+                            </p>
+                           
+                        </div>
+                    </dl>
+                </div>
+            </div>
+            </div>
+        </div>
+    </main>
+    
+</div>
