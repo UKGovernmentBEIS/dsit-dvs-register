@@ -88,6 +88,9 @@
 }
 
 .image-logo-block-medium {
+    max-width: 100%;
+    height: auto;
+    display: block;
     width: 369px;
     height: 110px;
 }
