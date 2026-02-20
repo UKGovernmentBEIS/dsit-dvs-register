@@ -18,14 +18,15 @@ namespace DVSRegister.Controllers
 {
     [Route("")]
     [Route("register")]
-    public class RegisterController(IRegisterService registerService, ICabService cabService, IBucketService bucketService, IOptions<S3Configuration> config) : Controller
+    public class RegisterController(IRegisterService registerService, ICabService cabService, IBucketService bucketService, IOptions<S3Configuration> config, ILogger<RegisterController> logger) : Controller
     {
         
         private readonly IRegisterService registerService = registerService;
         private readonly ICabService cabService = cabService;
         private readonly IBucketService bucketService = bucketService;
+        private readonly ILogger<RegisterController> logger = logger;
         private readonly S3Configuration config = config.Value;
-        private readonly decimal TFVersionNumber = 0.4m;
+        private readonly decimal TFVersionNumber = 0.4m;      
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10);
 
 
@@ -215,10 +216,15 @@ namespace DVSRegister.Controllers
             try
             {
                 var stream = await bucketService.DownloadFileStreamAsync(logoKey, config.LogoBucketName);
-                stream.Position = 0;
-                using var reader = new StreamReader(stream);
-                string svgXml = await reader.ReadToEndAsync();
-                return Content(svgXml, "image/svg+xml");
+                if (stream == null) logger.LogWarning($"Logo not found : {logoKey}", Helper.SanitizeForLog(logoKey));
+                else
+                {
+                    stream.Position = 0;
+                    using var reader = new StreamReader(stream);
+                    string svgXml = await reader.ReadToEndAsync();
+                    return Content(svgXml, "image/svg+xml");
+                }
+                return null!;
 
             }
             catch (Exception ex)
