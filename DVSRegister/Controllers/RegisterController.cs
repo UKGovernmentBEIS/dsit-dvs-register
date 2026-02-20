@@ -216,7 +216,11 @@ namespace DVSRegister.Controllers
             try
             {
                 var stream = await bucketService.DownloadFileStreamAsync(logoKey, config.LogoBucketName);
-                if (stream == null) logger.LogWarning($"Logo not found : {logoKey}", Helper.SanitizeForLog(logoKey));
+                if (stream == null)
+                {
+                    var sanitizedLogoKey = Helper.SanitizeForLog(logoKey);
+                    logger.LogWarning($"Logo not found : {sanitizedLogoKey}", sanitizedLogoKey);
+                }
                 else
                 {
                     stream.Position = 0;
