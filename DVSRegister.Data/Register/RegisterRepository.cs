@@ -29,7 +29,8 @@ namespace DVSRegister.Data
              (!hasSearch
                  || ci.ServiceName!.ToLower().Contains(lowerSearchText)
                  || ci.Provider.RegisteredName.ToLower().Contains(lowerSearchText)
-                 || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)) &&
+                 || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)
+                 || ci.TrustmarkNumber.TrustMarkNumber == lowerSearchText) &&
              (!hasRoles || ci.ServiceRoleMapping!.Any(r => roles.Contains(r.RoleId))) &&
              (!hasSchemes || ci.ServiceSupSchemeMapping!.Any(s => schemes.Contains(s.SupplementarySchemeId))) &&
              (!hasTfVersions || tfVersions.Contains(ci.TrustFrameworkVersionId)) ))
@@ -39,12 +40,13 @@ namespace DVSRegister.Data
              (!hasSearch
                  || ci.ServiceName!.ToLower().Contains(lowerSearchText)
                  || ci.Provider.RegisteredName.ToLower().Contains(lowerSearchText)
-                 || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)) &&
+                 || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)
+                 || ci.TrustmarkNumber.TrustMarkNumber == lowerSearchText) &&
              (!hasRoles || ci.ServiceRoleMapping!.Any(r => roles.Contains(r.RoleId))) &&
              (!hasSchemes || ci.ServiceSupSchemeMapping!.Any(s => schemes.Contains(s.SupplementarySchemeId))) &&
              (!hasTfVersions || tfVersions.Contains(ci.TrustFrameworkVersionId)) ) )
             .Include(p => p.Services!).ThenInclude(ci => ci.ServiceRoleMapping!)
-            .Include(p => p.Services!).ThenInclude(ci => ci.ServiceSupSchemeMapping!)
+            .Include(p => p.Services!).ThenInclude(ci => ci.TrustmarkNumber!)
             .AsSplitQuery();
              
 
@@ -77,9 +79,13 @@ namespace DVSRegister.Data
 
             var query = context.Service
                 .Include(s => s.Provider)
+                .Include(s => s.TrustmarkNumber)
                 .Where(s => s.IsInRegister)
-                .Where(s => string.IsNullOrEmpty(searchText) || s.ServiceName.ToUpper().Contains(trimmedSearchText) ||
-                s.Provider.RegisteredName.ToUpper().Contains(trimmedSearchText))
+                .Where(s => string.IsNullOrEmpty(searchText) 
+                    || s.ServiceName.ToUpper().Contains(trimmedSearchText) 
+                    || s.Provider.RegisteredName.ToUpper().Contains(trimmedSearchText)
+                    || s.Provider.TradingName.ToUpper().Contains(trimmedSearchText)
+                    || s.TrustmarkNumber.TrustMarkNumber == trimmedSearchText)
                 .Where(s => !roles.Any() || s.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))
                 .Where(s => !schemes.Any() || s.ServiceSupSchemeMapping.Any(sc => schemes.Contains(sc.SupplementarySchemeId)))
                 .Where(s => !tfVersions.Any() || tfVersions.Contains(s.TrustFrameworkVersionId));

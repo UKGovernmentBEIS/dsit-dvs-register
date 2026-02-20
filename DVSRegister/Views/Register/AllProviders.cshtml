@@ -38,7 +38,7 @@
                     <div class="govuk-form-group search-bar-width">
                         <h2 class="govuk-label-wrapper">
                             <label class="govuk-label govuk-label--s" for="Search">
-                                Search for a service provider or service
+                                Search for a provider, service or trust mark number
                             </label>
                         </h2>
                         <div class="govuk-input__wrapper" style="display:flex;">
@@ -269,12 +269,19 @@
                                             @foreach (var service in provider.Services)
                                             {
                                                 <li class="govuk-!-margin-bottom-3">
-                                                    <p class="govuk-body govuk-!-font-weight-bold">
+                                                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">
                                                         Service: @service.ServiceName
                                                     </p>
-                                                    <p class="govuk-body-s dsit-secondary-text-colour">
+                                                    <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-bottom-0">
                                                         Role types: @string.Join(", ", service.ServiceRoleMapping.Select(x => Enum.GetName(typeof(RoleEnum), x.RoleId)))
                                                     </p>
+
+                                                    @if (service.TrustmarkNumber != null && service.TrustFrameworkVersion.Version == Constants.TFVersion1_0)
+                                                    {
+                                                        <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-top-0 govuk-!-margin-bottom-0">
+                                                            Trust mark number: @service.TrustmarkNumber.TrustMarkNumber
+                                                        </p>
+                                                    }
                                                 </li>
                                             }
                                         </ul>
