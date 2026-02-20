@@ -68,7 +68,6 @@ namespace DVSRegister.Models.CAB
         public string? UnderPinningProviderName { get; set; }
         public SelectCabViewModel? SelectCabViewModel { get; set; }
         public DateTime? UnderPinningServiceExpiryDate { get; set; }
-        public bool? IsTFVersionChanged { get; set; }
         public bool? IsReupload { get; set; }
         public string? TOUFileName { get; set; }
         public string? TOUFileLink { get; set; }

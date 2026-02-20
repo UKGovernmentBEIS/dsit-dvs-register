@@ -176,7 +176,6 @@ namespace DVSRegister.Controllers
                 AvailableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version),
                 IsAmendment = summaryViewModel.IsAmendment,
                 RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : 
-                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? "/cab-service/submit-service/tf-version?providerProfileId=" + summaryViewModel.ProviderProfileId :
                 summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 ? "/cab-service/submit-service/terms-of-use-upload" :
                 "/cab-service/submit-service/company-address"
             };
@@ -511,7 +510,6 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;            
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            ViewBag.IsTFVersionChanged = summaryViewModel.IsTFVersionChanged;
             var lastScheme = summaryViewModel?.SchemeQualityLevelMapping?.LastOrDefault() ?? null;
             CertificateFileViewModel certificateFileViewModel = new()
             {
@@ -726,7 +724,6 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 summaryViewModel.ConformityExpiryDate = conformityExpiryDate;
-                summaryViewModel.IsTFVersionChanged = false;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 return await HandleActions(action, summaryViewModel, true, fromDetailsPage, "ServiceSummary");               
             }
@@ -891,8 +888,7 @@ namespace DVSRegister.Controllers
                     return await SaveAsDraftAndRedirect(serviceSummary);
 
                 case "amend":
-                    return serviceSummary.IsTFVersionChanged.GetValueOrDefault() ? routeValues == null ? RedirectToAction(nextPage, controller) : RedirectToAction(nextPage, controller, routeValues) :
-                    RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
 
                 default:
                     throw new ArgumentException("Invalid action parameter");
@@ -936,7 +932,7 @@ namespace DVSRegister.Controllers
                     {
                         ViewModelHelper.ClearGpg44(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("GPG45Input", new {fromSummaryPage, fromDetailsPage }) : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:
@@ -980,7 +976,7 @@ namespace DVSRegister.Controllers
                     {
                         ViewModelHelper.ClearGpg45(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("HasSupplementarySchemesInput") : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:
@@ -1024,7 +1020,7 @@ namespace DVSRegister.Controllers
                     {
                         ViewModelHelper.ClearSchemes(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("CertificateUploadPage") : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:

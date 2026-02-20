@@ -48,9 +48,9 @@ namespace DVSRegister.Controllers
                 AvailableVersions = await trustFrameworkService.GetTrustFrameworkVersions(),
                 IsAmendment = summaryViewModel.IsAmendment,
                 RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() :
-                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && summaryViewModel.IsAmendment ? "/cab-service/amend/service-amendments?serviceId=" + summaryViewModel.ServiceId :
-                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && !summaryViewModel.IsAmendment && summaryViewModel.TFVersionViewModel.FromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel.ServiceKey :
-                summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && !summaryViewModel.IsAmendment && summaryViewModel.TFVersionViewModel.FromSummaryPage ? "/cab-service/submit-service/check-your-answers" :
+                summaryViewModel.IsAmendment ? "/cab-service/amend/service-amendments?serviceId=" + summaryViewModel.ServiceId :
+                summaryViewModel.TFVersionViewModel.FromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel.ServiceKey :
+                summaryViewModel.TFVersionViewModel.FromSummaryPage ? "/cab-service/submit-service/check-your-answers" :
                 "/cab-service/submit-service/before-you-start/" + summaryViewModel.ProviderProfileId
             }; 
 
@@ -62,69 +62,159 @@ namespace DVSRegister.Controllers
         {
             bool fromSummaryPage = TFVersionViewModel.FromSummaryPage;
             bool fromDetailsPage = TFVersionViewModel.FromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            List<TrustFrameworkVersionDto> availableVersion = await trustFrameworkService.GetTrustFrameworkVersions();
-            TFVersionViewModel.AvailableVersions = availableVersion;
-            TFVersionViewModel.SelectedTFVersionId = TFVersionViewModel.SelectedTFVersionId ?? null;
-            TFVersionViewModel.IsAmendment = summaryViewModel.IsAmendment;
 
+            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
+
+            List<TrustFrameworkVersionDto> availableVersions = await trustFrameworkService.GetTrustFrameworkVersions();
+            TFVersionViewModel.AvailableVersions = availableVersions;
+            TFVersionViewModel.IsAmendment = summaryViewModel.IsAmendment;
             TrustFrameworkVersionDto previousSelection = new();
+
             if (TFVersionViewModel.SelectedTFVersionId != null)
             {
                 previousSelection = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion;
-                summaryViewModel.TFVersionViewModel = new();              
-                summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);// current selection
+
+                summaryViewModel.TFVersionViewModel = new();
+                summaryViewModel.TFVersionViewModel.SelectedTFVersion =
+                    availableVersions.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId); // current selection
                 summaryViewModel.TFVersionViewModel.FromDetailsPage = TFVersionViewModel.FromDetailsPage;
                 summaryViewModel.TFVersionViewModel.FromSummaryPage = TFVersionViewModel.FromSummaryPage;
             }
-            if (ModelState.IsValid)
-            {
-                if (String.IsNullOrEmpty(summaryViewModel.ServiceName))
-                {
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
-                }
-                else if (String.IsNullOrEmpty(summaryViewModel.ServiceURL))
-                {
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceURL", "CabService");
-                }
-                else if (String.IsNullOrEmpty(summaryViewModel.CompanyAddress))
-                {
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "CompanyAddress", "CabService");
-                }
 
-                if (previousSelection.Version > 0 && previousSelection.Version != summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version)
-                {
-                    ViewModelHelper.ClearTFVersion0_4Fields(summaryViewModel); // clear extra fields value changed from 0.4 to 0.3
-                    ViewModelHelper.ClearSchemes(summaryViewModel);
-                    ViewModelHelper.ClearGpg44(summaryViewModel);
-                    ViewModelHelper.ClearGpg45(summaryViewModel);
-                    var availableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version);
-                    summaryViewModel.RoleViewModel.SelectedRoles = summaryViewModel.RoleViewModel.SelectedRoles
-                        .Where(selectedRole => availableRoles.Any(availableRole => availableRole.Id == selectedRole.Id))
-                        .ToList();
-                    summaryViewModel.HasSupplementarySchemes = null;
-                    summaryViewModel.HasGPG45 = null;
-                    summaryViewModel.HasGPG44 = null;
-                    summaryViewModel.IsTFVersionChanged = true;
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    if(fromDetailsPage || fromSummaryPage || TFVersionViewModel.IsAmendment)
-                    {
-                        return await HandleActions(action, summaryViewModel, false, false, false, "ProviderRoles", "CabService");
-                    }
-                    return await HandleActions(action, summaryViewModel, false, false, false, "ServiceName", "CabService");
-                }
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
-
-            }
-            else
+            if (!ModelState.IsValid)
             {
                 return View("SelectVersionOfTrustFrameWork", TFVersionViewModel);
             }
+
+            var prevVersion = previousSelection?.Version;
+            var newVersion = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version;
+            var isAmendment = TFVersionViewModel.IsAmendment;
+            var isExistingFlow = fromDetailsPage || fromSummaryPage || isAmendment;
+
+            // user saves as draft
+            if (action == "draft")
+            {
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return await SaveAsDraftAndRedirect(summaryViewModel);
+            }
+
+            if (prevVersion == Constants.TFVersion1_0 && newVersion == Constants.TFVersion0_4)
+            {
+                // Downgrade: TF 1.0 → 0.4
+                // Rules:
+                // - If the change was triggered from Details, Summary:
+                //       → Delete the TOU
+                //       → Navigate back to the originating flow:
+                //            * Details   → Save draft and return to details
+                //            * Summary   → Return to Service Summary
+                //            * Amendment → Return to Amendment Summary
+                // - If the change was made during new-service creation:
+                //       → Keep existing TOU and continue the standard creation flow
+
+                if (isExistingFlow)
+                {
+                    summaryViewModel.TOUFileLink = null;
+                    summaryViewModel.TOUFileName = null;
+                    summaryViewModel.TOUFileSizeInKb = null;
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    if (fromDetailsPage)
+                    {
+                        return await SaveAsDraftAndRedirect(summaryViewModel);
+                    }
+                    else if (fromSummaryPage)
+                    {
+                        return RedirectToAction("ServiceSummary", "CabService");
+                    }
+                    else
+                    {
+                        
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    }
+                }
+                else
+                {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return RedirectToAction("ServiceName", "CabService");
+                }
+            }
+            else if (prevVersion == Constants.TFVersion0_4 && newVersion == Constants.TFVersion1_0)
+            {
+                // Upgrade: TF 0.4 → 1.0
+                // - If triggered from Details, Summary:
+                //       * Details   → Save draft and return to details
+                //       * Summary/Amendment → Proceed to TOU upload
+                // - If from new-service flow:
+                //       → Continue with normal creation flow
+
+                if (fromDetailsPage || fromSummaryPage)
+                {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+
+                    if (fromDetailsPage)
+                    {
+                        return await SaveAsDraftAndRedirect(summaryViewModel);
+                    }
+                    else
+                    {
+                        return RedirectToAction("TermsOfUseUpload");
+                    }
+                }
+                else
+                {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return RedirectToAction("ServiceName", "CabService");
+                }
+            }
+            else if (prevVersion == Constants.TFVersion0_3 && (newVersion == Constants.TFVersion1_0 || newVersion == Constants.TFVersion0_4))
+            {
+                // Upgrade from deprecated TF 0.3 → 1.0 or 0.4
+                // This can only occur during new-service creation (0.3 is not selectable elsewhere).
+                // Clear all version-dependent flags/data and continue normal creation flow.
+
+                ViewModelHelper.ClearSchemes(summaryViewModel);
+                ViewModelHelper.ClearGpg44(summaryViewModel);
+                ViewModelHelper.ClearGpg45(summaryViewModel);
+                summaryViewModel.HasSupplementarySchemes = null;
+                summaryViewModel.HasGPG45 = null;
+                summaryViewModel.HasGPG44 = null;
+
+                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                return RedirectToAction("ServiceName", "CabService");
+            }
+            else
+            {
+                // No TF version change, or case does not match any specific version transition above.
+                // Behaviour:
+                // - If triggered from Details/Summary/Amendment flows:
+                //       → Return to the originating flow
+                // - If part of new-service creation:
+                //       → Continue normal creation flow
+
+                if (isExistingFlow)
+                {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+
+                    if (fromDetailsPage)
+                    {
+                        return await SaveAsDraftAndRedirect(summaryViewModel);
+                    }
+                    else if (fromSummaryPage)
+                    {
+                        return RedirectToAction("ServiceSummary", "CabService");
+                    }
+                    else
+                    {
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    }
+                }
+                else
+                {
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    return RedirectToAction("ServiceName", "CabService");
+                }
+            }
         }
+
 
         #region Terms Of Use
         [HttpGet("terms-of-use-upload")]
@@ -133,7 +223,6 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            ViewBag.IsTFVersionChanged = summaryViewModel.IsTFVersionChanged;
             var lastScheme = summaryViewModel?.SchemeQualityLevelMapping?.LastOrDefault() ?? null;
             TOUFileViewModel TOUFileViewModel = new()
             {
@@ -225,7 +314,7 @@ namespace DVSRegister.Controllers
             }
             else
             {
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ProviderRoles", "CabService");
+                return await HandleActions(action, summaryViewModel, summaryViewModel.TFVersionViewModel.FromSummaryPage, fromDetailsPage, false, "ProviderRoles", "CabService");
             }
         }
 
@@ -1205,7 +1294,7 @@ namespace DVSRegister.Controllers
                     {
                         ViewModelHelper.ClearGpg45(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("ServiceGPG44Input") : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:
@@ -1249,7 +1338,7 @@ namespace DVSRegister.Controllers
                     {
                         ViewModelHelper.ClearGpg44(summaryViewModel);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("HasSupplementarySchemesInput", "CabService") :  RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
 
                 default:
@@ -1299,10 +1388,8 @@ namespace DVSRegister.Controllers
                         var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");
                         ViewModelHelper.ClearSchemeGpg44(summaryViewModel, schemeId);
                         HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return hasRemainingSchemes ? RedirectToAction("SchemeGPG45", new { schemeId = selectedSchemeIds[0] }) : summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("CertificateUploadPage", "CabService"):
-                            RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                        return hasRemainingSchemes ? RedirectToAction("SchemeGPG45", new { schemeId = selectedSchemeIds[0] }) : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
                     }
-
                 default:
                     throw new ArgumentException("Invalid action parameter");
             }
@@ -1323,8 +1410,7 @@ namespace DVSRegister.Controllers
                     return await SaveAsDraftAndRedirect(serviceSummary);
 
                 case "amend":
-                    return serviceSummary.IsTFVersionChanged.GetValueOrDefault() ? routeValues == null ? RedirectToAction(nextPage, controller) 
-                   : RedirectToAction(nextPage, controller, routeValues) : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
+                    return RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
 
                 default:
                     throw new ArgumentException("Invalid action parameter");
