@@ -85,9 +85,15 @@
 .image-logo-block {
     width: 359px;
     height: 107px;
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
 .image-logo-block-medium {
+    max-width: 100%;
+    height: auto;
+    display: block;
     width: 369px;
     height: 110px;
 }
