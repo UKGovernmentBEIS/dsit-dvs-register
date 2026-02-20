@@ -73,5 +73,14 @@ namespace DVSRegister.CommonUtility
             return result;
         }
 
+        public static string SanitizeForLog(string? value)
+        {
+            if (string.IsNullOrEmpty(value)) return string.Empty;
+
+            return value
+                .Replace("\r", "\\r")
+                .Replace("\n", "\\n");
+        }
+
     }
 }

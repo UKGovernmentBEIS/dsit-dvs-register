@@ -46,13 +46,13 @@ namespace DVSRegister.CommonUtility
             }
             catch (AmazonS3Exception e)
             {
-                logger.LogError("AWS S3 error when writing  file to bucket: '{BucketName}', key: '{keyName}'. Message:'{Message}'", bucketName, keyName, e.Message);
+                logger.LogError(e, "AWS S3 error when writing  file to bucket: '{BucketName}', key: '{keyName}'", Helper.SanitizeForLog(bucketName), Helper.SanitizeForLog(keyName));
                 return new GenericResponse { Success = false };
             }
             catch (Exception e)
             {
-                logger.LogError("Error when writing file to bucket: '{BucketName}', key: '{keyName}'. Message:'{Message}'", bucketName, keyName, e.Message);
-                return new GenericResponse { Success = false };               
+                logger.LogError(e, "Error when writing file to bucket: '{BucketName}', key: '{keyName}'", Helper.SanitizeForLog(bucketName), Helper.SanitizeForLog(keyName));
+                return new GenericResponse { Success = false };
             }
         }
 
@@ -79,12 +79,12 @@ namespace DVSRegister.CommonUtility
             }
             catch (AmazonS3Exception e)
             {
-                logger.LogError("AWS S3 error when deleting  file from bucket: '{BucketName}', key: '{keyName}'. Message:'{Message}'", bucketName, keyName, e.Message);
+                logger.LogError(e, "AWS S3 error when deleting  file from bucket: '{BucketName}', key: '{keyName}'.", Helper.SanitizeForLog(bucketName), Helper.SanitizeForLog(keyName));
                 return new GenericResponse { Success = false };
             }
             catch (Exception e)
             {
-                logger.LogError("Error when deleting file from bucket: '{BucketName}', key: '{keyName}'. Message:'{Message}'", bucketName, keyName, e.Message);
+                logger.LogError(e, "Error when deleting file from bucket: '{BucketName}', key: '{keyName}'.", Helper.SanitizeForLog(bucketName), Helper.SanitizeForLog(keyName));
                 return new GenericResponse { Success = false };
             }
         }
@@ -117,12 +117,12 @@ namespace DVSRegister.CommonUtility
             }
             catch (AmazonS3Exception e)
             {
-                logger.LogError("AWS S3 error when reading  file from bucket: '{0}', Message:'{1}'", bucketName,  e.Message);
+                logger.LogError(e, "AWS S3 error in DownloadFileAsync: '{BucketName}', key: '{keyName}'.", Helper.SanitizeForLog(bucketName), Helper.SanitizeForLog(keyName));
                 return null;
             }
             catch (Exception e)
             {
-                logger.LogError("Error when reading file from bucket: '{0}',  Message:'{1}'", bucketName,  e.Message);
+                logger.LogError(e, "Error in DownloadFileAsync: '{BucketName}', key: '{keyName}'.", Helper.SanitizeForLog(bucketName), Helper.SanitizeForLog(keyName));
                 return null;
             }
         }
@@ -173,7 +173,7 @@ namespace DVSRegister.CommonUtility
             }
             catch (Exception ex)
             {
-                logger.LogError("AWS S3 error GetPrefixZipAsync : '{Message}'", ex.Message);
+                logger.LogError(ex, "AWS S3 error GetPrefixZipAsync");
                 return null!;
             }
         }
@@ -203,15 +203,20 @@ namespace DVSRegister.CommonUtility
             }
             catch (AmazonS3Exception e)
             {
-                logger.LogError(e, "S3 read error. Bucket: {Bucket}, Key: {Key}", bucketName, keyName);
+                logger.LogError(e, "S3 read error. Bucket: {Bucket}, Key: {Key}", Helper.SanitizeForLog(bucketName), Helper.SanitizeForLog(keyName));
                 return null;
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Read error. Bucket: {Bucket}, Key: {Key}", bucketName, keyName);
+                logger.LogError(e, "Read error. Bucket: {Bucket}, Key: {Key}", Helper.SanitizeForLog(bucketName), Helper.SanitizeForLog(keyName));
                 return null;
             }
         }
+
+
+
+       
+
     }
 }
 
