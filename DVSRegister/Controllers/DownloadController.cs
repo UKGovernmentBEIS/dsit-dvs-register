@@ -37,7 +37,7 @@ namespace DVSRegister.Controllers
 
                 if (invalidRequest != null) return invalidRequest;
 
-                ServiceDto? serviceDto = await consentService.GetService(downloadLogoTokenDto.ServiceId);
+                ServiceDto? serviceDto = await consentService.GetService(downloadLogoTokenDto!.ServiceId);
                 serviceDto.DownloadLogoToken = downloadLogoTokenDto;
                 HttpContext.Session.Set("LogoKey", serviceDto.TrustmarkNumber.SvgLogoLink);
                 HttpContext.Session.Set("TrustmarkNumber", serviceDto.TrustmarkNumber);
@@ -97,34 +97,7 @@ namespace DVSRegister.Controllers
             }
         }
 
-        /// <summary>
-        /// Download logo from s3
-        /// Passing key as parameter not recommended
-        /// Before using this method set logokey in session    
-        /// </summary>        
-        /// <returns></returns>
-
-        [HttpGet("download-logo")]
-        public async Task<IActionResult> DownloadSvgLogo()
-        {
-            try
-            {
-                string logoKey = HttpContext?.Session.Get<string>("LogoKey")!;
-                HttpContext?.Session.Remove("LogoKey");
-                var stream = await bucketService.DownloadFileStreamAsync(logoKey, config.LogoBucketName);
-                stream.Position = 0;
-                using var reader = new StreamReader(stream);
-                string svgXml = await reader.ReadToEndAsync();
-                return Content(svgXml, "image/svg+xml");
-
-            }
-            catch (Exception ex)
-            {
-                logger.LogError("{Message}", ex.Message);
-                return View("ServiceError");
-            }
-        }
-
+  
         private async Task<ActionResult> ValidateRequest(DownloadLogoTokenDto? downloadLogoTokenDto)
         {
             if (downloadLogoTokenDto == null)
@@ -132,10 +105,8 @@ namespace DVSRegister.Controllers
                 return View("ServiceRemoved");
             }
 
-            TokenDetails tokenDetails = await jwtService.ValidateToken(downloadLogoTokenDto.Token);
-            if (tokenDetails.IsExpired)
-                return View("URLExpired");
-            if (!tokenDetails.IsAuthorised || (tokenDetails.ServiceIds != null && tokenDetails.ServiceIds[0] != downloadLogoTokenDto.ServiceId))
+            TokenDetails tokenDetails = await jwtService.ValidateToken(downloadLogoTokenDto.Token);          
+            if (!tokenDetails.IsAuthorised)
                 return View("ServiceError");
 
             return null!;

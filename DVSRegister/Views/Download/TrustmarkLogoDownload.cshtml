@@ -65,16 +65,12 @@
                     </h2>
                 </div>
                 <div class="govuk-summary-card__content">
-                    <dl class="govuk-summary-list">
-                        <div class="govuk-summary-list__row">
-                            <p class="govuk-body">
-                                Please check that the number found in the logo matches the trust mark number for this service.
-                            </p>
-                                <div class="image-logo-block-medium">
-                                    <img src="/download/download-logo" alt="Logo with trustmark number: @Model?.TrustmarkNumber?.TrustMarkNumber" class="image-logo">
-                                </div>
+                        <p class="govuk-body">
+                            Please check that the number found in the logo matches the trust mark number for this service.
+                        </p>
+                        <div class="image-logo-block-medium">
+                            <img src="/register/download-logo?logoKey=@Model?.TrustmarkNumber?.SvgLogoLink" alt="Logo with trustmark number: @Model?.TrustmarkNumber?.TrustMarkNumber" class="image-logo">
                         </div>
-                    </dl>
                 </div>
             </div>
 
@@ -153,7 +149,7 @@
                         <div class="govuk-summary-list__row">
                             <p class="govuk-body">
                                 When using the trust mark, you should refer to the Terms of Use you signed with your Conformity Assessment
-                                Body and to the .
+                                    Body and to the <a href="#" class="govuk-link">usage guidelines found on the GOV.UK website.</a>
                             </p>
                            
                         </div>

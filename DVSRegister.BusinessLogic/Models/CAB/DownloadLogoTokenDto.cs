@@ -1,4 +1,4 @@
-﻿using DVSRegister.Data.Entities;
+﻿using DVSRegister.BusinessLogic.Models.CAB;
 
 namespace DVSRegister.BusinessLogic.Models
 {
@@ -9,7 +9,7 @@ namespace DVSRegister.BusinessLogic.Models
         public string Token { get; set; }
      
         public int ServiceId { get; set; }
-        public Service Service { get; set; }
+        public ServiceDto Service { get; set; }
         public DateTime CreatedTime { get; set; }
         public DateTime? ModifiedTime { get; set; }
     }
