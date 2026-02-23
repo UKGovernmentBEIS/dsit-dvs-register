@@ -268,7 +268,7 @@
                                                 @service.Provider.RegisteredName
                                             </a>
                                         </p>
-                                        @if (service.TrustmarkNumber != null && service.TrustFrameworkVersion.Version == Constants.TFVersion1_0)
+                                        @if (service.TrustmarkNumber != null && service.TrustmarkNumber.IsActive)
                                         {
                                             <div class="image-logo-block-small">    
                                                 <img src="/register/download-logo?logoKey=@service.TrustmarkNumber.SvgLogoLink" alt="Logo with trustmark number: @service.TrustmarkNumber.TrustMarkNumber" class="image-logo" loading="lazy">
@@ -276,21 +276,16 @@
                                         }
                                     </div>
                                     <div class="govuk-grid-column-one-half visible-column dsit-secondary-text-colour govuk-body-s">
-                                        @if (service.TrustmarkNumber != null && service.TrustFrameworkVersion.Version == Constants.TFVersion1_0)
+                                        @if (service.TrustmarkNumber != null && service.TrustmarkNumber.IsActive)
                                         {
                                             <span> Trust mark number: @service.TrustmarkNumber.TrustMarkNumber
                                             </span> <br/>
-                                        }
+                                        }                                        
                                         <span>Role types: @string.Join(", ", service.ServiceRoleMapping.Select(x => Enum.GetName(typeof(RoleEnum), x.RoleId)))</span><br />
                                         @if (service.ServiceSupSchemeMapping != null && service.ServiceSupSchemeMapping.Any())
                                         {
                                             <span> Supplementary codes: @string.Join(", ", service.ServiceSupSchemeMapping.Select(x => x.SupplementaryScheme.SchemeName))
                                             </span> <br />
-                                        }
-                                        else
-                                        {
-                                            <span>Supplementary codes: @Constants.NullFieldsDisplay</span>                            
-                                            <br />
                                         }
                                         <span>Date of certification: @DateTimeExtensions.FormatDateTime(service.ConformityIssueDate, "dd MMMM yyyy") </span><br />
                                         <span>Date of expiry: @DateTimeExtensions.FormatDateTime(service.ConformityExpiryDate, "dd MMMM yyyy")</span>                 

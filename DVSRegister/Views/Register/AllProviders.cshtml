@@ -276,7 +276,7 @@
                                                         Role types: @string.Join(", ", service.ServiceRoleMapping.Select(x => Enum.GetName(typeof(RoleEnum), x.RoleId)))
                                                     </p>
 
-                                                    @if (service.TrustmarkNumber != null && service.TrustFrameworkVersion.Version == Constants.TFVersion1_0)
+                                                    @if (service.TrustmarkNumber != null && service.TrustmarkNumber.IsActive)
                                                     {
                                                         <p class="govuk-body-s dsit-secondary-text-colour govuk-!-margin-top-0 govuk-!-margin-bottom-0">
                                                             Trust mark number: @service.TrustmarkNumber.TrustMarkNumber
