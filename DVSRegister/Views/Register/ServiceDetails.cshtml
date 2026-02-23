@@ -6,6 +6,7 @@
 @model ServiceDto
 @{
     bool isAbove0_3 = Model?.TrustFrameworkVersion?.Version >= Constants.TFVersion0_4;
+    bool showTmNumber = Model?.TrustmarkNumber != null;
     ViewData["Title"] = "Service details";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
     ViewData["ActiveNav"] = "AllServices";
@@ -26,12 +27,24 @@
     }
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
+            <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">
                     <span class="govuk-caption-l">Service</span>
                     @Model.ServiceName
                     <span class="govuk-caption-m">Last updated @DateTimeExtensions.FormatDateTime(@Model.LastUpdated, "d MMM yyyy, hh:mm tt") (GMT)</span>
-                </h1>
+                </h1>               
+            </div>
+            @if (showTmNumber)
+            {
+                <div class="govuk-grid-column-one-third">
+                    <div class="image-logo-block-register-details govuk-!-margin-top-5">   
+                        <img src="/register/download-logo?logoKey=@Model.TrustmarkNumber.SvgLogoLink" alt="Logo with trustmark number: @Model.TrustmarkNumber.TrustMarkNumber" class="image-logo" loading="lazy">
+                   </div>
+               </div>
+            }            
+        </div>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
                         <h2 class="govuk-summary-card__title">
@@ -97,6 +110,13 @@
                     </div>
                     <div class="govuk-summary-card__content">
                         <dl class="govuk-summary-list govuk-!-margin-bottom-8">
+                            @if (showTmNumber)
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">Trust mark Number</dt>
+                                    <dd class="govuk-summary-list__value">@Model?.TrustmarkNumber?.TrustMarkNumber</dd>
+                                </div>
+                            }
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Trust framework version</dt>
                                 <dd class="govuk-summary-list__value">@Model?.TrustFrameworkVersion?.TrustFrameworkName</dd>
