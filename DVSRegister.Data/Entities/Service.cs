@@ -51,10 +51,8 @@ namespace DVSRegister.Data.Entities
         public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
         public string? RemovalReasonByCab { get; set; }
         public DateTime? RemovalRequestTime { get; set; }
-        public DateTime? RemovedTime { get; set; }
-       
-        public DateTime? ResubmissionTime { get; set; }
-      
+        public DateTime? RemovedTime { get; set; }       
+        public DateTime? ResubmissionTime { get; set; }      
         public TokenStatusEnum OpeningLoopTokenStatus { get; set; }
    
         public bool IsInRegister { get; set; }
@@ -88,6 +86,7 @@ namespace DVSRegister.Data.Entities
         [Column(TypeName = "decimal(10, 1)")]
         public decimal? TOUFileSizeInKb { get; set; }
         public TrustmarkNumber? TrustmarkNumber { get; set; }
+        public DownloadLogoToken? DownloadLogoToken { get; set; }
 
     }
 }

@@ -14,13 +14,11 @@ namespace DVSRegister.Data.Entities
 
         [ForeignKey("Service")]
         public int ServiceId { get; set; }
-        public Service Service { get; set; }     
-     
+        public Service Service { get; set; }  
         public int CompanyId { get; set; }       
         public int ServiceNumber { get; set; }
         public string TrustMarkNumber { get; set; }
         public int ServiceKey { get; set; }
-
         public string PngLogoLink { get; set; }
         public string JpegLogoLink { get; set; }
         public string SvgLogoLink { get; set; }
