@@ -107,7 +107,10 @@ namespace DVSRegister.Data
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var existingProvider = await context.ProviderProfile.Include(p=>p.ProviderRemovalRequests).ThenInclude(r=> r.ProviderRemovalRequestServiceMapping).Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == providerProfileId);
+                var existingProvider = await context.ProviderProfile.Include(p=>p.ProviderRemovalRequests)!.ThenInclude(r=> r.ProviderRemovalRequestServiceMapping)
+                    .Include(p => p.Services)!.ThenInclude(s=> s.TrustmarkNumber)
+                    .Include(p => p.Services)!.ThenInclude(s => s.DownloadLogoToken)
+                    .FirstOrDefaultAsync(p => p.Id == providerProfileId);
                 var providerRemovalRequest = await context.ProviderRemovalRequest.FirstOrDefaultAsync(p => p.Id == providerRemovalRequestId && p.ProviderProfileId == providerProfileId);
                 if (existingProvider != null && providerRemovalRequest!=null)
                 {
@@ -133,6 +136,16 @@ namespace DVSRegister.Data
                             service.ServiceStatus = ServiceStatusEnum.Removed;
                             service.ModifiedTime = DateTime.UtcNow;
                             service.IsInRegister = false;
+
+                            if (service.TrustmarkNumber != null)
+                            {
+                                service.TrustmarkNumber.IsActive = false;
+                                var token = service.DownloadLogoToken;
+                                if (token != null)
+                                {
+                                    context.DownloadLogoToken.Remove(token);
+                                }
+                            }
 
                             var mapping = providerRemovalRequest.ProviderRemovalRequestServiceMapping?.FirstOrDefault(m => m.ServiceId == service.Id);
                             if (mapping.PreviousServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || mapping.PreviousServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
@@ -335,7 +348,7 @@ namespace DVSRegister.Data
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                var existingService = await context.Service.Include(p => p.ServiceRemovalRequest).FirstOrDefaultAsync(p => p.Id == serviceId);
+                var existingService = await context.Service.Include(s => s.TrustmarkNumber).Include(s => s.DownloadLogoToken).FirstOrDefaultAsync(p => p.Id == serviceId);
                 var provider = await context.ProviderProfile.Include(p => p.Services).FirstOrDefaultAsync(p => p.Id == existingService.ProviderProfileId);
                 var serviceRemovalRequest = await context.ServiceRemovalRequest.FirstOrDefaultAsync(p => p.Id == serviceRemovalRequestId && p.ServiceId == serviceId);
                 if (existingService != null && serviceRemovalRequest != null && existingService.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
@@ -346,9 +359,19 @@ namespace DVSRegister.Data
                     serviceRemovalRequest.RemovedTime = DateTime.UtcNow;
                     serviceRemovalRequest.Token = null;
                     serviceRemovalRequest.TokenId = null;
-                    serviceRemovalRequest.IsRequestPending = false;                   
+                    serviceRemovalRequest.IsRequestPending = false;
 
-                    if( provider.Services.Where(s => s.Id != serviceId).All(s => s.IsInRegister == false))
+                    if (existingService.TrustmarkNumber != null)
+                    {
+                        existingService.TrustmarkNumber.IsActive = false;
+                        var token = existingService.DownloadLogoToken;
+                        if (token != null)
+                        {
+                            context.DownloadLogoToken.Remove(token);
+                        }
+                    }
+
+                    if ( provider.Services.Where(s => s.Id != serviceId).All(s => s.IsInRegister == false))
                     {                      
 
                         ProviderRemovalRequest providerRemovalRequest = new ();
