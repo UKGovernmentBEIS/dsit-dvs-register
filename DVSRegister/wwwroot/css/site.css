@@ -692,3 +692,8 @@ details[open] > .app-c-filter-section__summary .app-c-filter-section__summary-he
         display: none !important;
     }
 }
+
+.govuk-notification-banner {
+    max-width: 950px;
+    margin: 0 auto;
+}
