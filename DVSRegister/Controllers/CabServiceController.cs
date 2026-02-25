@@ -175,9 +175,9 @@ namespace DVSRegister.Controllers
                 SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList(),
                 AvailableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version),
                 IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : 
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() :
+                summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0 ? "/cab-service/submit-service/terms-of-use-upload" :
                 summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? "/cab-service/submit-service/tf-version?providerProfileId=" + summaryViewModel.ProviderProfileId :
-                summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 ? "/cab-service/submit-service/terms-of-use-upload" :
                 "/cab-service/submit-service/company-address"
             };
             return View(roleViewModel);

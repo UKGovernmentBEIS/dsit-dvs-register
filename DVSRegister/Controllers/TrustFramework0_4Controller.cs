@@ -58,72 +58,98 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("tf-version")]
-        public async Task<IActionResult> SaveTFVersion(TFVersionViewModel TFVersionViewModel, string action)
+        public async Task<IActionResult> SaveTFVersion(TFVersionViewModel model, string action)
         {
-            bool fromSummaryPage = TFVersionViewModel.FromSummaryPage;
-            bool fromDetailsPage = TFVersionViewModel.FromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            List<TrustFrameworkVersionDto> availableVersion = await trustFrameworkService.GetTrustFrameworkVersions();
-            TFVersionViewModel.AvailableVersions = availableVersion;
-            TFVersionViewModel.SelectedTFVersionId = TFVersionViewModel.SelectedTFVersionId ?? null;
-            TFVersionViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            var summary = GetServiceSummary() ?? new ServiceSummaryViewModel();
+            List<TrustFrameworkVersionDto> availableVersions = await trustFrameworkService.GetTrustFrameworkVersions();
+            model.AvailableVersions = availableVersions;
+            summary.TFVersionViewModel ??= new TFVersionViewModel();
+            model.IsAmendment = summary.IsAmendment;
 
-            TrustFrameworkVersionDto previousSelection = new();
-            if (TFVersionViewModel.SelectedTFVersionId != null)
+            if (!ModelState.IsValid)
             {
-                previousSelection = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion;
-                summaryViewModel.TFVersionViewModel = new();              
-                summaryViewModel.TFVersionViewModel.SelectedTFVersion = availableVersion.FirstOrDefault(c => c.Id == TFVersionViewModel.SelectedTFVersionId);// current selection
-                summaryViewModel.TFVersionViewModel.FromDetailsPage = TFVersionViewModel.FromDetailsPage;
-                summaryViewModel.TFVersionViewModel.FromSummaryPage = TFVersionViewModel.FromSummaryPage;
+                return View("SelectVersionOfTrustFrameWork", model);
             }
-            if (ModelState.IsValid)
+
+            bool fromSummaryPage = model.FromSummaryPage;
+            bool fromDetailsPage = model.FromDetailsPage;
+
+            var prevVersion = summary.TFVersionViewModel?.SelectedTFVersion?.Version;
+            var selected = availableVersions.FirstOrDefault(v => v.Id == model.SelectedTFVersionId);
+
+            summary.TFVersionViewModel = new TFVersionViewModel
             {
-                if (String.IsNullOrEmpty(summaryViewModel.ServiceName))
+                SelectedTFVersion = selected,
+                FromDetailsPage = fromDetailsPage,
+                FromSummaryPage = fromSummaryPage
+            };
+
+            var newVersion = selected?.Version; 
+            bool isExistingFlow = fromDetailsPage || fromSummaryPage || model.IsAmendment;
+
+            // If not coming from intermediate flow, go back to the full flow start
+            if (!isExistingFlow)
+            {
+                return RedirectToAction("ServiceName", "CabService");
+            }
+
+            // 0) No change → persist and go back to previous page they came from
+            // service name page as saftey net
+            if (prevVersion == newVersion)
+            {
+                HttpContext?.Session.Set("ServiceSummary", summary);
+                return await HandleActions(action, summary, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
+            }
+
+            // 1) Downgrade to 0.3 (from 0.4 or 1.0)
+            if (newVersion == Constants.TFVersion0_3)
+            {
+                // fields that only exist for >= 0.4
+                ViewModelHelper.ClearTFVersion0_4Fields(summary);
+                ClearSchemesAndGpg(summary);
+                await KeepOnlyRolesSupportedByAsync(summary, newVersion);
+
+                HttpContext?.Session.Set("ServiceSummary", summary);
+                return await HandleActions(action, summary, false, fromDetailsPage, false, "ProviderRoles", "CabService");
+            }
+
+            // 2) Upgrade from 0.3 to either 0.4 or 1.0
+            if (prevVersion == Constants.TFVersion0_3 && newVersion != Constants.TFVersion0_3)
+            {
+                ClearSchemesAndGpg(summary);
+                await KeepOnlyRolesSupportedByAsync(summary, newVersion);
+
+                HttpContext?.Session.Set("ServiceSummary", summary);
+
+                if (newVersion == Constants.TFVersion0_4)
                 {
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
-                }
-                else if (String.IsNullOrEmpty(summaryViewModel.ServiceURL))
-                {
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceURL", "CabService");
-                }
-                else if (String.IsNullOrEmpty(summaryViewModel.CompanyAddress))
-                {
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "CompanyAddress", "CabService");
+                    return await HandleActions(action, summary, false, fromDetailsPage, false, "ProviderRoles", "CabService");
                 }
 
-                if (previousSelection.Version > 0 && previousSelection.Version != summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Version)
-                {
-                    ViewModelHelper.ClearTFVersion0_4Fields(summaryViewModel); // clear extra fields value changed from 0.4 to 0.3
-                    ViewModelHelper.ClearSchemes(summaryViewModel);
-                    ViewModelHelper.ClearGpg44(summaryViewModel);
-                    ViewModelHelper.ClearGpg45(summaryViewModel);
-                    var availableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version);
-                    summaryViewModel.RoleViewModel.SelectedRoles = summaryViewModel.RoleViewModel.SelectedRoles
-                        .Where(selectedRole => availableRoles.Any(availableRole => availableRole.Id == selectedRole.Id))
-                        .ToList();
-                    summaryViewModel.HasSupplementarySchemes = null;
-                    summaryViewModel.HasGPG45 = null;
-                    summaryViewModel.HasGPG44 = null;
-                    summaryViewModel.IsTFVersionChanged = true;
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    if(fromDetailsPage || fromSummaryPage || TFVersionViewModel.IsAmendment)
-                    {
-                        return await HandleActions(action, summaryViewModel, false, false, false, "ProviderRoles", "CabService");
-                    }
-                    return await HandleActions(action, summaryViewModel, false, false, false, "ServiceName", "CabService");
-                }
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
+                return await HandleActions(action, summary, false, fromDetailsPage, false, "TermsOfUseUpload");
+            }
 
-            }
-            else
+            // 3) Upgrade from 0.4 to 1.0
+            if (prevVersion == Constants.TFVersion0_4 && newVersion == Constants.TFVersion1_0)
             {
-                return View("SelectVersionOfTrustFrameWork", TFVersionViewModel);
+                HttpContext?.Session.Set("ServiceSummary", summary);
+                return await HandleActions(action, summary, false, fromDetailsPage, false, "TermsOfUseUpload");
             }
+
+            // 4) Downgrade from 1.0 to 0.4
+            if (prevVersion == Constants.TFVersion1_0 && newVersion == Constants.TFVersion0_4)
+            {
+                summary.TOUFileLink = null;
+                summary.TOUFileName = null;
+                summary.TOUFileSizeInKb = null;
+
+                HttpContext?.Session.Set("ServiceSummary", summary);
+                return await HandleActions(action, summary, fromSummaryPage, fromDetailsPage, false, "TermsOfUseUpload");
+            }
+
+            // 5) Fallback: unknown transition go back to normal full flow
+            HttpContext?.Session.Set("ServiceSummary", summary);
+            return await HandleActions(action, summary, fromSummaryPage, fromDetailsPage, false, "ServiceName", "CabService");
         }
 
         #region Terms Of Use
@@ -1427,6 +1453,35 @@ namespace DVSRegister.Controllers
             bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
             if (!isValid)
                 throw new InvalidOperationException("Invalid provider profile ID for Cab ID");
+        }
+
+        /// <summary>
+        /// Restrict selected roles to those supported by the given TF version.
+        /// </summary>
+        private async Task KeepOnlyRolesSupportedByAsync(ServiceSummaryViewModel summary, decimal? version)
+        {
+            if (version is null) return;
+
+            var availableRoles = await cabService.GetRoles(version.Value);
+            var selectedRoles = summary.RoleViewModel?.SelectedRoles ?? new List<RoleDto>();
+
+            summary.RoleViewModel ??= new RoleViewModel();
+            summary.RoleViewModel.SelectedRoles = selectedRoles.Where(sr => availableRoles.Any(ar => ar.Id == sr.Id)).ToList();
+        }
+
+        /// <summary>
+        /// Clear schemes and GPG-related fields when a TF version transition requires resetting state.
+        /// </summary>
+        private void ClearSchemesAndGpg(ServiceSummaryViewModel summary)
+        {
+            ViewModelHelper.ClearSchemes(summary);
+            ViewModelHelper.ClearGpg44(summary);
+            ViewModelHelper.ClearGpg45(summary);
+
+            summary.HasSupplementarySchemes = null;
+            summary.HasGPG45 = null;
+            summary.HasGPG44 = null;
+            summary.IsTFVersionChanged = true;
         }
 
         #endregion
