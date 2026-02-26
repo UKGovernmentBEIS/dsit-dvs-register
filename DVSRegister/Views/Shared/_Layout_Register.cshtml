@@ -120,15 +120,15 @@ await Html.RenderPartialAsync("_CookieBanner");
     </div>
 </div>
     @{
-        DateTime startDate = new DateTime(2026, 02, 27, 04, 00, 00, DateTimeKind.Utc);
+
         DateTime endDate = new DateTime(2026, 02, 27, 05, 00, 00, DateTimeKind.Utc);
         DateTime currentDateTime = DateTime.UtcNow;
 
-        bool isBetween = currentDateTime >= startDate && currentDateTime <= endDate;
+        bool showBanner = currentDateTime < endDate;
 
     }
 
-    @if (isBetween)
+    @if (showBanner)
     {
         <main class="govuk-main-wrapper govuk-main-wrapper--1" id="main-content" role="main">
             <div class="govuk-notification-banner" role="region" aria - labelledby="govuk-notification-banner-title" data - module="govuk-notification-banner">
