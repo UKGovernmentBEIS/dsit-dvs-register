@@ -870,14 +870,17 @@ namespace DVSRegister.Controllers
 
             if (ModelState.IsValid)
             {
-                if(summaryViewModel.HasGPG44 == false)
+                if(summaryViewModel?.HasGPG44 == false)
                 {
-                    SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = new();
-                    schemeQualityLevelMappingViewModel.HasGPG44 = false;
-                    schemeQualityLevelMappingViewModel.SchemeId = identityProfileViewModel.SchemeId;
-                    schemeQualityLevelMappingViewModel.RefererURL = identityProfileViewModel.RefererURL;
-                    summaryViewModel?.SchemeQualityLevelMapping?.Add(schemeQualityLevelMappingViewModel);
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    if(summaryViewModel?.SchemeQualityLevelMapping?.Any(x=>x.SchemeId == identityProfileViewModel.SchemeId) == false)
+                    {
+                        SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = new();
+                        schemeQualityLevelMappingViewModel.HasGPG44 = false;
+                        schemeQualityLevelMappingViewModel.SchemeId = identityProfileViewModel.SchemeId;                    
+                        summaryViewModel?.SchemeQualityLevelMapping?.Add(schemeQualityLevelMappingViewModel);
+                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
+                    }
+                   
                     bool hasRemainingSchemes = HasRemainingSchemes(identityProfileViewModel.SchemeId);
                     var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");
                     if (hasRemainingSchemes)
