@@ -90,6 +90,7 @@ namespace DVSRegister.Controllers
             // If not coming from intermediate flow, go back to the full flow start
             if (!isExistingFlow)
             {
+                HttpContext?.Session.Set("ServiceSummary", summary);
                 return RedirectToAction("ServiceName", "CabService");
             }
 
