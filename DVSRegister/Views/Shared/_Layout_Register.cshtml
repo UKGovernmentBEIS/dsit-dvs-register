@@ -119,6 +119,32 @@ await Html.RenderPartialAsync("_CookieBanner");
         </p>
     </div>
 </div>
+    @{
+
+        DateTime endDate = new DateTime(2026, 02, 27, 05, 00, 00, DateTimeKind.Utc);
+        DateTime currentDateTime = DateTime.UtcNow;
+
+        bool showBanner = currentDateTime < endDate;
+
+    }
+
+    @if (showBanner)
+    {
+        <main class="govuk-main-wrapper govuk-main-wrapper--1" id="main-content" role="main">
+            <div class="govuk-notification-banner" role="region" aria - labelledby="govuk-notification-banner-title" data - module="govuk-notification-banner">
+                <div class="govuk-notification-banner__header">
+                    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                        Important
+                    </h2>
+                </div>
+                <div class="govuk-notification-banner__content">
+                    <p class="govuk-notification-banner__heading">
+                        The register of digital identities and attributes will be unavailable between 4am and 5am on 27 February 2026 due to scheduled maintenance
+                    </p>
+                </div>
+            </div>
+        </main>
+    }
 
 
 @RenderBody()
