@@ -86,14 +86,7 @@ namespace DVSRegister.Controllers
 
             var newVersion = selected?.Version; 
             bool isExistingFlow = fromDetailsPage || fromSummaryPage || model.IsAmendment;
-
-            // If not coming from intermediate flow, go back to the full flow start
-            if (!isExistingFlow)
-            {
-                HttpContext?.Session.Set("ServiceSummary", summary);
-                return RedirectToAction("ServiceName", "CabService");
-            }
-
+            
             // 0) No change → persist and go back to previous page they came from
             // service name page as saftey net
             if (prevVersion == newVersion)
@@ -111,6 +104,10 @@ namespace DVSRegister.Controllers
                 await KeepOnlyRolesSupportedByAsync(summary, newVersion);
 
                 HttpContext?.Session.Set("ServiceSummary", summary);
+                if (!isExistingFlow)
+                {
+                    return RedirectToAction("ServiceName", "CabService");
+                }
                 return await HandleActions(action, summary, false, fromDetailsPage, false, "ProviderRoles", "CabService");
             }
 
@@ -121,7 +118,11 @@ namespace DVSRegister.Controllers
                 await KeepOnlyRolesSupportedByAsync(summary, newVersion);
 
                 HttpContext?.Session.Set("ServiceSummary", summary);
-
+                
+                if (!isExistingFlow)
+                {
+                    return RedirectToAction("ServiceName", "CabService");
+                }
                 if (newVersion == Constants.TFVersion0_4)
                 {
                     return await HandleActions(action, summary, false, fromDetailsPage, false, "ProviderRoles", "CabService");
@@ -134,7 +135,25 @@ namespace DVSRegister.Controllers
             if (prevVersion == Constants.TFVersion0_4 && newVersion == Constants.TFVersion1_0)
             {
                 HttpContext?.Session.Set("ServiceSummary", summary);
-                return await HandleActions(action, summary, false, fromDetailsPage, false, "TermsOfUseUpload");
+                if (!isExistingFlow)
+                {
+                    return RedirectToAction("ServiceName", "CabService");
+                }
+
+                switch (action)
+                {
+                    case "continue":
+                        return fromSummaryPage ? RedirectToAction("TermsOfUseUpload")
+                               : fromDetailsPage ? await SaveAsDraftAndRedirect(summary)
+                               : RedirectToAction("TermsOfUseUpload");    
+                    case "draft":
+                        return await SaveAsDraftAndRedirect(summary);
+                    case "amend":
+                        return RedirectToAction("TermsOfUseUpload");
+
+                    default:
+                        throw new ArgumentException("Invalid action parameter");
+                }
             }
 
             // 4) Downgrade from 1.0 to 0.4
@@ -145,6 +164,10 @@ namespace DVSRegister.Controllers
                 summary.TOUFileSizeInKb = null;
 
                 HttpContext?.Session.Set("ServiceSummary", summary);
+                if (!isExistingFlow)
+                {
+                    return RedirectToAction("ServiceName", "CabService");
+                }
                 return await HandleActions(action, summary, fromSummaryPage, fromDetailsPage, false, "TermsOfUseUpload");
             }
 
