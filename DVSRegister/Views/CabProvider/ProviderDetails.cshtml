@@ -347,7 +347,9 @@
                                         "ProviderServiceDetails",
                                         "Cab",
                                         new { serviceKey = service.ServiceKey },
-                                        new { @class = "govuk-link" }
+                                        new { @class = "govuk-link",
+                                              @aria_label = "View details for [service name]"  
+                                        }
                                     )
                                 </td>
                                 <td class="govuk-table__cell" data-sort-value="@service.ServiceStatus">

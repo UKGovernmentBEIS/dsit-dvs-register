@@ -115,7 +115,9 @@
                                                 published = published,
                                                 fromSummaryPage = ViewBag.FromSummaryPage,
                                                             fromDetailsPage = ViewBag.FromDetailsPage
-                                            }, new { @class = "govuk-link" })
+                                            }, new { @class = "govuk-link",
+                                                     @aria_label = "View underpinning service details for {ServiceName}"   
+                                            })
                                     </td>
                                     <td class="govuk-table__cell">@item.Provider.RegisteredName</td>
                                     <td class="govuk-table__cell">@item.CabUser.Cab.CabName</td>
