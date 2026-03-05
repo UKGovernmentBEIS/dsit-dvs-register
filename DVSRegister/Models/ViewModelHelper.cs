@@ -89,6 +89,9 @@ namespace DVSRegister.Models
             summaryViewModel.UnderPinningProviderName=null;
             summaryViewModel.SelectCabViewModel=null;
             summaryViewModel.UnderPinningServiceExpiryDate = null;
+            summaryViewModel.TOUFileLink = null;
+            summaryViewModel.TOUFileName = null;
+            summaryViewModel.TOUFileSizeInKb = null;
 
 
         }
