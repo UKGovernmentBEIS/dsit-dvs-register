@@ -115,7 +115,7 @@
                                                 published = published,
                                                 fromSummaryPage = ViewBag.FromSummaryPage,
                                                             fromDetailsPage = ViewBag.FromDetailsPage
-                                            }, new { @class = "govuk-link" })
+                                            }, new { @class = "govuk-link", @aria_label = "View underpinning service of "+item.ServiceName })
                                     </td>
                                     <td class="govuk-table__cell">@item.Provider.RegisteredName</td>
                                     <td class="govuk-table__cell">@item.CabUser.Cab.CabName</td>
@@ -149,7 +149,7 @@
                                                             published = published,
                                                             fromSummaryPage = ViewBag.fromSummaryPage,
                                                             fromDetailsPage = ViewBag.fromDetailsPage
-                                                        }, new { @class = "govuk-link" })
+                                                        }, new { @class = "govuk-link", @aria_label = "View manualunderpinning service of "+item.ManualUnderPinningService.ServiceName })
                                                 </td>
                                                 <td class="govuk-table__cell">@item.ManualUnderPinningService.ProviderName</td>
                                                 <td class="govuk-table__cell">@item.ManualUnderPinningService.Cab.CabName</td>

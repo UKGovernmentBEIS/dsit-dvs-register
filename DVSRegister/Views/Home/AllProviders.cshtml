@@ -84,7 +84,7 @@
                                     "ProviderDetails",
                                     "CabProvider",
                                     new { providerId = provider.Id },
-                                    new { @class = "govuk-link" })
+                                    new { @class = "govuk-link", @aria_label = "View provider details of "+provider.RegisteredName  })
                         </td>
                         <td class="govuk-table__cell">@DateTimeExtensions.FormatDateTime(provider.ModifiedTime ?? provider.CreatedTime)</td>
                     </tr>
