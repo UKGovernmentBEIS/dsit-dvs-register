@@ -35,5 +35,6 @@ namespace DVSRegister.Data.Entities
         [ForeignKey("User")]
         public int? RemovedByUserId { get; set; }
         public User? RemovedByUser { get; set; }
+        public ServiceBulkRemovalRequest? ServiceBulkRemovalRequest { get; set; }
     }
 }
