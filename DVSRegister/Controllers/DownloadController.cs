@@ -87,7 +87,7 @@ namespace DVSRegister.Controllers
                 var zipStream = await bucketService.GetPrefixZipAsync(config.LogoBucketName, prefix);
 
 
-                return File(zipStream, "application/zip", $"{trustmarkNumberDto.TrustMarkNumber}-{fileType}.zip");
+                return File(zipStream, "application/zip", fileName);
 
             }
             catch (Exception ex)
