@@ -84,7 +84,7 @@ namespace DVSRegister.Controllers
                 else
                     throw new Exception("Invalid file type");
 
-                var zipStream = await bucketService.GetPrefixZipAsync(config.LogoBucketName, prefix);
+                var zipStream = await bucketService.GetPrefixZipAsync(config.LogoBucketName, prefix,trustmarkNumberDto.TrustMarkNumber, trustmarkNumberDto.PngLogoLink, trustmarkNumberDto.SvgLogoLink, trustmarkNumberDto.JpegLogoLink);
 
 
                 return File(zipStream, "application/zip", fileName);
