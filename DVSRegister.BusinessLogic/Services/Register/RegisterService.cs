@@ -1,22 +1,24 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace DVSRegister.BusinessLogic.Services
 {
     public class RegisterService : IRegisterService
     {
-        private readonly IRegisterRepository registerRepository;      
+        private readonly IRegisterRepository registerRepository; 
+        private readonly IConfiguration configuration;
         private readonly IMapper automapper;
 
 
-        public RegisterService(IRegisterRepository registerRepository, IMapper automapper, ICabService cabService)
+        public RegisterService(IRegisterRepository registerRepository, IMapper automapper, IConfiguration configuration)
         {
             this.registerRepository = registerRepository;
+            this.configuration = configuration; 
             this.automapper = automapper;
          }
         public async Task<PaginatedResult<ProviderProfileDto>> GetProviders(List<int> roles, List<int> schemes, List<int> tfVersions, int pageNum, string searchText = "", string sortBy = "")
@@ -34,6 +36,12 @@ namespace DVSRegister.BusinessLogic.Services
         {
             var services = await registerRepository.GetServices(roles, schemes, tfVersions, pageNum, searchText, sortBy);
             List<ServiceDto> serviceDtos = automapper.Map<List<ServiceDto>>(services.Items);
+
+            var servicesWithTrustMark = serviceDtos.Where(x=>x.TrustmarkNumber!=null).ToList();
+            foreach (ServiceDto serviceDto in servicesWithTrustMark)
+            {
+                serviceDto.TrustmarkNumber.SvgLogoLink = GetSVGLogoEndPoint(serviceDto.TrustmarkNumber.SvgLogoLink);
+            }
             return new PaginatedResult<ServiceDto>
             {
                 Items = serviceDtos,
@@ -63,6 +71,10 @@ namespace DVSRegister.BusinessLogic.Services
             var service = await registerRepository.GetServiceDetails(serviceId);
             ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
         
+            if(serviceDto.TrustmarkNumber!=null)
+            {
+                serviceDto.TrustmarkNumber.SvgLogoLink = GetSVGLogoEndPoint(serviceDto.TrustmarkNumber.SvgLogoLink);
+            }
              if(service.IsCurrent &&  service.ServiceStatus!= ServiceStatusEnum.PublishedUnderReassign 
                 && service.ServiceStatus != ServiceStatusEnum.RemovedUnderReassign && service.ServiceStatus != ServiceStatusEnum.UpdatesRequested)
             {
@@ -104,6 +116,20 @@ namespace DVSRegister.BusinessLogic.Services
             List<ServiceDto> serviceDtos = automapper.Map<List<ServiceDto>>(services);
             return serviceDtos;
 
+        }
+
+        public string GetSVGLogoEndPoint(string svgLink)
+        {
+            bool useCloudFront = Convert.ToBoolean(configuration["UseCloudFront"]);
+            if (useCloudFront)
+            {
+                string cloudFrontBaseUrl = configuration["CloudfrontDomain"]!;
+               return  $"https://{cloudFrontBaseUrl}/{svgLink}";
+            }
+            else
+            {
+               return "/register/download-logo?logoKey=" + svgLink;
+            }
         }
 
     }

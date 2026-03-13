@@ -251,9 +251,7 @@ namespace DVSRegister.CommonUtility
 
 
 
-        /// <summary>
-        /// Download file as stream useCloudFront = true - from cloud front
-        /// useCloudFront = true - from local stack
+      
         /// </summary>
         /// <param name="bucketName"></param>
         /// <param name="keyName"></param>
@@ -263,38 +261,19 @@ namespace DVSRegister.CommonUtility
         {
             try
             {
-                bool useCloudFront = Convert.ToBoolean(configuration["UseCloudFront"]);
-                if (useCloudFront)
-                {
-                    string cloudFrontBaseUrl = configuration["CloudfrontDomain"]!;
-                    var fileUrl = $"https://{cloudFrontBaseUrl}/{keyName}";
 
-                    using var http = new HttpClient();
-
-                    var response = await http.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead, ct);
-                    response.EnsureSuccessStatusCode();
-
-                    var ms = new MemoryStream();
-                    await response.Content.CopyToAsync(ms, ct);
-                    ms.Position = 0;
-                    return ms; 
-
-                }
-                else
-                {
-                    var request = new GetObjectRequest { BucketName = bucketName, Key = keyName };
-                    var response = await s3Client.GetObjectAsync(request, ct);
+                var request = new GetObjectRequest { BucketName = bucketName, Key = keyName };
+                var response = await s3Client.GetObjectAsync(request, ct);
 
 
-                    var ms = new MemoryStream();
-                    await response.ResponseStream.CopyToAsync(ms, ct);
-                    ms.Position = 0;
+                var ms = new MemoryStream();
+                await response.ResponseStream.CopyToAsync(ms, ct);
+                ms.Position = 0;
 
 
-                    response.Dispose();
+                response.Dispose();
 
-                    return ms; // caller disposes this stream
-                }              
+                return ms; // caller disposes this stream            
             }
             catch (AmazonS3Exception e)
             {

@@ -271,7 +271,7 @@
                                         @if (service.TrustmarkNumber != null && service.TrustmarkNumber.IsActive)
                                         {
                                             <div class="image-logo-block-small">    
-                                                <img src="/register/download-logo?logoKey=@service.TrustmarkNumber.SvgLogoLink" alt="Logo with trustmark number: @service.TrustmarkNumber.TrustMarkNumber" class="image-logo" loading="lazy">
+                                                <img src="@service.TrustmarkNumber.SvgLogoLink" alt="Logo with trustmark number: @service.TrustmarkNumber.TrustMarkNumber" class="image-logo" loading="lazy">
                                             </div>
                                         }
                                     </div>
