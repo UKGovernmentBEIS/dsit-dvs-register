@@ -6,7 +6,8 @@
 @using DVSRegister.Extensions
 
 @{
-    bool is0_4GammaVersion = Model?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion0_4;
+    bool isAbove0_3 = Model?.TFVersionViewModel?.SelectedTFVersion?.Version >= Constants.TFVersion0_4;
+    bool is1_0Version = Model?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion1_0;
 }
 
 
@@ -45,8 +46,6 @@
                 </dd>
             </div>
 
-
-
             @if (Model.ServiceStatus == ServiceStatusEnum.AmendmentsRequired )
             {
                 <div class="govuk-summary-list__row">
@@ -67,8 +66,6 @@
                     </dd>
                 </div>
             }
-
-
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">
                     URL link to the service
@@ -93,7 +90,21 @@
                                                new { @class = "govuk-link", @aria_label = "Change company address details" })
                 </dd>
             </div>
-
+            @if(is1_0Version)
+            {
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Signed Terms of Use for the UK CertifID trust mark
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @Model?.TOUFileName
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @Html.ActionLink("Change", "TermsOfUseUpload", "TrustFramework0_4", new { fromSummaryPage = true },
+                        new { @class = "govuk-link", @aria_label = "Change service's signed terms of use for the UK CertifID trust mark" })
+                </dd>
+            </div>
+            }
             <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">
                     Roles certified
@@ -117,7 +128,7 @@
                 </dd>
             </div>
 
-            @if(is0_4GammaVersion)
+            @if (isAbove0_3)
             {
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -133,7 +144,7 @@
                 </div>
             }
 
-            @if (is0_4GammaVersion)
+            @if (isAbove0_3)
             {
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
@@ -228,7 +239,7 @@
                     </dd>
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromSummaryPage = true },
-                                 new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
+                                 new { @class = "govuk-link", @aria_label = "Change GPG 44 level of protection" })
                     </dd>
                 </div>
 
@@ -289,7 +300,7 @@
                     </dd>
                     <dd class="govuk-summary-list__actions">
                         @Html.ActionLink("Change", "GPG44Input", "CabService", new { fromSummaryPage = true },
-                                 new { @class = "govuk-link", @aria_label = "Change GPG44 level of protection" })
+                                 new { @class = "govuk-link", @aria_label = "Change GPG 44 level of protection" })
                     </dd>
                 </div>
 
@@ -395,7 +406,7 @@
 </div>
 
 
-@if (is0_4GammaVersion)
+@if (isAbove0_3)
 {
     @if(Model?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null && Model.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count>0)
     {
@@ -578,7 +589,7 @@
                         @if (isFieldEditable || isManualUnderPinningService)
                     {
                         <dd class="govuk-summary-list__actions">
-                                @Html.ActionLink("Change", "UnderPinningProviderName", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true}, new { @class = "govuk-link", @aria_label = "Change underpinning service provider name " })
+                                @Html.ActionLink("Change", "UnderPinningProviderName", "TrustFramework0_4", new { singleChange = true, fromSummaryPage = true}, new { @class = "govuk-link", @aria_label = "Change underpinning service provider name" })
                         </dd>
                     }
 

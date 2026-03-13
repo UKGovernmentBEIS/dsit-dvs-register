@@ -1,5 +1,10 @@
-﻿@using DVSRegister.BusinessLogic.Models
-@model CertificateReviewDto
+﻿@model CertificateReviewDto
+@using DVSRegister.BusinessLogic.Models
+@using DVSRegister.CommonUtility
+@{
+    var tfVersion = ViewBag.TFVersion ?? Model.Service.TrustFrameworkVersion.Version;
+    bool isTFv1 = tfVersion == Constants.TFVersion1_0;
+}
 
 <dl class="govuk-summary-list">
     @if (!Convert.ToBoolean(Model.CertificateValid))
@@ -14,14 +19,25 @@
                 </strong>
             </dd>
         </div>
-    }
-   
-
+    }   
     @if (!Convert.ToBoolean(Model.InformationMatched))
     {
         <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
                 Information match
+            </dt>
+            <dd class="govuk-summary-list__value">
+                <strong class="govuk-tag govuk-tag--red">
+                    Amendments needed
+                </strong>
+            </dd>
+        </div>
+    }
+    @if (isTFv1 && !Convert.ToBoolean(Model.TOUValid))
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Terms of Use validation
             </dt>
             <dd class="govuk-summary-list__value">
                 <strong class="govuk-tag govuk-tag--red">

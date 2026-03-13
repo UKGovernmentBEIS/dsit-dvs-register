@@ -4,22 +4,29 @@ using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.Models;
 using DVSRegister.Models.Register;
 using DVSRegister.Models.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 using System.Globalization;
 
 namespace DVSRegister.Controllers
 {
     [Route("")]
     [Route("register")]
-    public class RegisterController(IRegisterService registerService, ICabService cabService) : Controller
-    {         
+    public class RegisterController(IRegisterService registerService, ICabService cabService, IBucketService bucketService, IOptions<S3Configuration> config, ILogger<RegisterController> logger) : Controller
+    {
+        
         private readonly IRegisterService registerService = registerService;
-        private readonly ICabService cabService = cabService;        
-        private readonly decimal TFVersionNumber = 0.4m;
+        private readonly ICabService cabService = cabService;
+        private readonly IBucketService bucketService = bucketService;
+        private readonly ILogger<RegisterController> logger = logger;
+        private readonly S3Configuration config = config.Value;
+        private readonly decimal TFVersionNumber = 0.4m;      
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10);
 
 
@@ -201,8 +208,35 @@ namespace DVSRegister.Controllers
             {
                 _semaphore.Release();
             }
-
         }
+
+        [HttpGet("download-logo")]
+        public async Task<IActionResult> DownloadSvgLogo(string logoKey = "")
+        {
+            try
+            {
+                var stream = await bucketService.DownloadFileStreamAsync(logoKey, config.LogoBucketName);
+                if (stream == null)
+                {
+                    var sanitizedLogoKey = Helper.SanitizeForLog(logoKey);
+                    logger.LogWarning($"Logo not found : {sanitizedLogoKey}", sanitizedLogoKey);
+                }
+                else
+                {
+                    stream.Position = 0;
+                    using var reader = new StreamReader(stream);
+                    string svgXml = await reader.ReadToEndAsync();
+                    return Content(svgXml, "image/svg+xml");
+                }
+                return null!;
+
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("An error occurred while downloading the logo file.", ex);
+            }
+        }
+
 
         #region Private methods
         private async Task SetSchemes(List<int>? selectedIds, int removeId, PaginationAndFilteringParameters vm)

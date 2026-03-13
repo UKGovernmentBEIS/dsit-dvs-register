@@ -7,7 +7,8 @@
 
 @{
     bool hasValue = true;
-    bool is0_4GammaVersion = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion0_4;
+    bool isAbove0_3 = Model?.TrustFrameworkVersion?.Version >= Constants.TFVersion0_4;
+    bool is1_0Version = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion1_0;
 
     var notificationBanner = new NotificationBannerViewModel
     {
@@ -137,6 +138,33 @@
                                 }
                             </div>
 
+                             @if(is1_0Version)
+                             {
+                                 <div class="govuk-summary-list__row">
+                                     <dt class="govuk-summary-list__key">
+                                         Signed Terms of Use for the UK CertifID trust mark
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">                                      
+                                       @if (!string.IsNullOrEmpty(Model?.TOUFileName))
+                                       {
+                                           @Model.TOUFileName
+                                       }
+                                       else
+                                       {
+                                           hasValue = false;
+                                           @:Incomplete
+                                       }
+                                    </dd>
+                                    @if (hasValue)
+                                    {
+                                        <dd class="govuk-summary-list__actions">
+                                            @Html.ActionLink("Change", "TermsOfUseUpload", "TrustFramework0_4", new { fromDetailsPage = true },
+                                            new { @class = "govuk-link", @aria_label = "Change service's signed terms of use for the UK CertifID trust mark" })
+                                        </dd>
+                                    }                                    
+                                </div>
+                             } 
+
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Roles certified against</dt>
                                 <dd class="govuk-summary-list__value">
@@ -162,7 +190,7 @@
                                 }
                             </div>
 
-                            @if (is0_4GammaVersion)
+                            @if (isAbove0_3)
                             {
                                 <div class="govuk-summary-list__row">
                                     <dt class="govuk-summary-list__key">Underpinning or white-labelled service</dt>
@@ -236,7 +264,7 @@
                                     <dd class="govuk-summary-list__value">@Constants.NullFieldsDisplay</dd>
                                     @if (hasValue)
                                     {
-                                        @if (is0_4GammaVersion)
+                                        @if (isAbove0_3)
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true },
@@ -273,7 +301,7 @@
                                     </dd>
                                     @if (hasValue)
                                     {
-                                        @if (is0_4GammaVersion)
+                                        @if (isAbove0_3)
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true },
@@ -308,7 +336,7 @@
                                     </dd>
                                     @if (hasValue)
                                     {
-                                        @if (is0_4GammaVersion)
+                                        @if (isAbove0_3)
                                         {
                                             <dd class="govuk-summary-list__actions">
                                                 @Html.ActionLink("Change", "ServiceGPG44Input", "TrustFramework0_4", new { fromDetailsPage = true },
@@ -326,7 +354,7 @@
                                 </div>
                             }
 
-                            @if (!is0_4GammaVersion)
+                            @if (!isAbove0_3)
                             {
                                 @if (Model.HasGPG45 == false)
                                 {
@@ -482,7 +510,7 @@
                     </div>
                 </div>
 
-                @if (is0_4GammaVersion)
+                @if (isAbove0_3)
                 {
                     @if (Model?.ServiceSupSchemeMapping != null && Model.ServiceSupSchemeMapping.Count > 0)
                     {
@@ -631,7 +659,7 @@
                                     @if (hasValue && !Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault())
                                     {
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change underpinning service name " })
+                                            @Html.ActionLink("Change", "UnderPinningServiceName", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change underpinning service name" })
                                         </dd>
                                     }
                                 </div>
@@ -652,7 +680,7 @@
                                     @if (hasValue && !Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault())
                                     {
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change cab of underpinning service " })
+                                            @Html.ActionLink("Change", "SelectCabOfUnderpinningService", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change cab of underpinning service" })
                                         </dd>
                                     }
                                 </div>
@@ -694,7 +722,7 @@
                                     @if (hasValue && !Model.IsManualServiceLinkedToMultipleServices.GetValueOrDefault())
                                     {
                                         <dd class="govuk-summary-list__actions">
-                                            @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change underpinning service expiry date " })
+                                            @Html.ActionLink("Change", "UnderPinningServiceExpiryDate", "TrustFramework0_4", new { fromDetailsPage = true }, new { @class = "govuk-link", @aria_label = "Change underpinning service expiry date" })
                                         </dd>
                                     }
                                 </div>

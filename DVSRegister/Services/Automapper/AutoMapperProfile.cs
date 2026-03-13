@@ -14,6 +14,7 @@ namespace DVSRegister.Services
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ServiceId))
             .ForMember(dest => dest.WebSiteAddress, opt => opt.MapFrom(src => src.ServiceURL))
             .ForMember(dest => dest.TrustFrameworkVersionId, opt => opt.MapFrom(src => src.TFVersionViewModel.SelectedTFVersion.Id))
+            .ForMember(dest => dest.TOUFileSizeInKb, opt => opt.MapFrom(src => src.TOUFileSizeInKb ?? 0))
            .ForMember(dest => dest.ServiceRoleMapping, opt => opt.MapFrom(src =>
             src.RoleViewModel.SelectedRoles.Select(role => new ServiceRoleMappingDto { RoleId = role.Id })))
            .ForMember(dest => dest.ServiceQualityLevelMapping, opt => opt.MapFrom(src =>

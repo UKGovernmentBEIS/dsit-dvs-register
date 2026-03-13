@@ -12,6 +12,7 @@ using DVSRegister.Models;
 using DVSRegister.Models.CAB;
 using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 
 namespace DVSRegister.Controllers
@@ -19,7 +20,7 @@ namespace DVSRegister.Controllers
     [Route("cab-service/submit-service")]
   
     public class CabServiceController(ICabService cabService, IBucketService bucketService, IUserService userService, IActionLogService actionLogService,
-    CabEmailSender emailSender, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
+    CabEmailSender emailSender, IOptions<S3Configuration> config, ILogger<CabServiceController> logger, IMapper mapper) : BaseController(logger)
     {
 
         private readonly ICabService cabService = cabService;
@@ -28,6 +29,7 @@ namespace DVSRegister.Controllers
         private readonly IActionLogService actionLogService = actionLogService;
         private readonly CabEmailSender emailSender = emailSender;
         private readonly ILogger<CabServiceController> _logger = logger;
+        private readonly S3Configuration config = config.Value;
         private readonly IMapper _mapper = mapper;
 
         [HttpGet("before-you-start/{providerProfileId}")]
@@ -140,11 +142,18 @@ namespace DVSRegister.Controllers
             serviceSummaryViewModel.FromDetailsPage = false;
             serviceSummaryViewModel.IsAmendment = serviceSummary.IsAmendment;
             if (ModelState["CompanyAddress"].Errors.Count == 0)
-            {
-               
+            {               
                 serviceSummary.CompanyAddress = serviceSummaryViewModel.CompanyAddress;
-                HttpContext?.Session.Set("ServiceSummary", serviceSummary);
-                return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "ProviderRoles");      
+                HttpContext?.Session.Set("ServiceSummary", serviceSummary);            
+
+                if (serviceSummary.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
+                {
+                    return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "TermsOfUseUpload", "TrustFramework0_4");
+                }
+                else
+                {
+                    return await HandleActions(action, serviceSummary, fromSummaryPage, fromDetailsPage, "ProviderRoles");
+                }
             }
             else
             {
@@ -166,7 +175,8 @@ namespace DVSRegister.Controllers
                 SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList(),
                 AvailableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version),
                 IsAmendment = summaryViewModel.IsAmendment,
-                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : 
+                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() :
+                summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0 ? "/cab-service/submit-service/terms-of-use-upload" :
                 summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? "/cab-service/submit-service/tf-version?providerProfileId=" + summaryViewModel.ProviderProfileId :
                 "/cab-service/submit-service/company-address"
             };
@@ -195,7 +205,7 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 || summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
                 {
                     return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SelectServiceType", "TrustFramework0_4");
                 }
@@ -394,7 +404,6 @@ namespace DVSRegister.Controllers
         }
         #endregion
 
-
         #region Supplemetary schemes
 
         [HttpGet("supplementary-schemes-input")]
@@ -468,7 +477,7 @@ namespace DVSRegister.Controllers
                 string controller;
                 object routeValues = null;
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 || summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
                 {                   
                     HttpContext?.Session.Set("SelectedSchemeIds", supplementarySchemeViewModel.SelectedSupplementarySchemeIds);
                     int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];
@@ -526,7 +535,7 @@ namespace DVSRegister.Controllers
             {
                 certificateFileViewModel.FileName = summaryViewModel.FileName;
                 certificateFileViewModel.FileUrl = summaryViewModel.FileLink;                
-                var fileContent = await bucketService.DownloadFileAsync(summaryViewModel.FileLink);
+                var fileContent = await bucketService.DownloadFileAsync(summaryViewModel.FileLink, config.BucketName);
                 var stream = new MemoryStream(fileContent);
                 IFormFile formFile = new FormFile(stream, 0, fileContent.Length, "File", summaryViewModel.FileName)
                 {
@@ -560,7 +569,13 @@ namespace DVSRegister.Controllers
                 {
                     using var memoryStream = new MemoryStream();
                     await certificateFileViewModel.File.CopyToAsync(memoryStream);
-                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName);
+                    if (!ValidationHelper.ValidatePdfSignature(memoryStream))
+                    {
+                        ModelState.AddModelError("File", "The uploaded file does not appear to be a valid PDF.");
+                        return View("CertificateUploadPage", certificateFileViewModel);
+                    }
+                    GenericResponse genericResponse = await bucketService.WriteToS3Bucket(memoryStream, certificateFileViewModel.File.FileName, config.BucketName);
+
                     if (genericResponse.Success)
                     {
                         summaryViewModel.FileName = certificateFileViewModel.File.FileName;
@@ -589,26 +604,17 @@ namespace DVSRegister.Controllers
                         ModelState.AddModelError("File", "Unable to upload the file provided");
                         return View("CertificateUploadPage", certificateFileViewModel);
                     }
-
-                }
-               
+                }               
                 else
                 {
                     return View("CertificateUploadPage", certificateFileViewModel);
                 }
             }
-
             else 
             {
                 return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "ConfirmityIssueDate");
-            }
-            
-        }
-
-
-
-
-       
+            }            
+        }      
 
 
         #endregion
@@ -652,7 +658,7 @@ namespace DVSRegister.Controllers
             dateViewModel.PropertyName = "ConfirmityIssueDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             DateTime? conformityIssueDate = ValidationHelper.ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage,ModelState,
-            summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4);
+            summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version >= Constants.TFVersion0_4);
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
@@ -683,7 +689,7 @@ namespace DVSRegister.Controllers
             {
                 dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
             }
-            if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+            if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version >= Constants.TFVersion0_4)
             {
                 dateViewModel.IsTfVersion0_4 = true;
             }
@@ -1078,7 +1084,7 @@ namespace DVSRegister.Controllers
                  vm.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null);
 
             bool hasTfVersion04Data = true;
-            if (vm.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
+            if (vm.TFVersionViewModel.SelectedTFVersion.Version >= Constants.TFVersion0_4)
             {
                 hasTfVersion04Data =
                     vm.ServiceType.HasValue &&
@@ -1105,20 +1111,22 @@ namespace DVSRegister.Controllers
                              sc.QualityLevel?.SelectedQualityofAuthenticators != null)))))));
             }
 
+            bool hasTfVersion1_0Data = true;
+            if (vm.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
+            {
+                hasTfVersion1_0Data = vm.TOUFileName != null;
+            }
+
             return hasBasicInfo
                 && hasGpg44Data
                 && hasGpg45Data
                 && hasSupplementaryData
-                && hasTfVersion04Data;
+                && hasTfVersion04Data
+                && hasTfVersion1_0Data;
         }
 
 
         #endregion
-
-
-       
-
-
         #endregion
     }
 }

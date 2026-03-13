@@ -1,7 +1,6 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using NpgsqlTypes;
 using DVSRegister.CommonUtility.Models.Enums;
 
 namespace DVSRegister.Data.Entities
@@ -52,10 +51,8 @@ namespace DVSRegister.Data.Entities
         public ServiceRemovalReasonEnum? ServiceRemovalReason { get; set; }
         public string? RemovalReasonByCab { get; set; }
         public DateTime? RemovalRequestTime { get; set; }
-        public DateTime? RemovedTime { get; set; }
-       
-        public DateTime? ResubmissionTime { get; set; }
-      
+        public DateTime? RemovedTime { get; set; }       
+        public DateTime? ResubmissionTime { get; set; }      
         public TokenStatusEnum OpeningLoopTokenStatus { get; set; }
    
         public bool IsInRegister { get; set; }
@@ -83,6 +80,13 @@ namespace DVSRegister.Data.Entities
         public ICollection<ServiceRemovalRequest?> ServiceRemovalRequest { get; set; }
         public ICollection<ActionLogs> ActionLogs { get; set; }
         public ProviderRemovalRequestServiceMapping? ProviderRemovalRequestServiceMapping { get; set; }
+        public string? TOUFileName { get; set; }
+        public string? TOUFileLink { get; set; }
+
+        [Column(TypeName = "decimal(10, 1)")]
+        public decimal? TOUFileSizeInKb { get; set; }
+        public TrustmarkNumber? TrustmarkNumber { get; set; }
+        public DownloadLogoToken? DownloadLogoToken { get; set; }
 
     }
 }

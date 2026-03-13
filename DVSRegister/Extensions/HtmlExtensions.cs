@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Html;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Web;
 
 namespace DVSRegister.Extensions
@@ -13,17 +14,13 @@ namespace DVSRegister.Extensions
     {
         public static HtmlString ToStringWithLineBreaks(string input)
         {
-           
-            string output = input?.Replace("\r", "<br>")??string.Empty;
-            return new HtmlString(output);
-        }
 
-        public static HtmlString ToStringWithNewLineBreaks(string input)
-        {
-
-            string output = input?.Replace("\n", "<br>") ?? string.Empty;
+            var output = HtmlEncoder.Default.Encode(input);
+            output = output.Replace("&#xD;&#xA;", "<br>").Replace("&#xA;", "<br>");
             return new HtmlString(output);
+
         }
+    
         private static string GetTagClass<TEnum>(TEnum value) where TEnum : struct, Enum
         {
 
