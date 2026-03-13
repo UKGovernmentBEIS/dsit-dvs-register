@@ -12,14 +12,16 @@ namespace DVSRegister.BusinessLogic.Services
     {
 
         private readonly IConsentRepository consentRepository;     
+        private readonly IRegisterService registerService;
         private readonly IMapper mapper;
         private readonly ConsentEmailSender emailSender;
 
 
-        public ConsentService(IConsentRepository consentRepository, IMapper mapper, ConsentEmailSender emailSender)
+        public ConsentService(IConsentRepository consentRepository, IRegisterService registerService, IMapper mapper, ConsentEmailSender emailSender)
         {           
             this.consentRepository = consentRepository;    
             this.mapper = mapper;
+            this.registerService = registerService;
             this.emailSender = emailSender;
         }
 
@@ -46,7 +48,12 @@ namespace DVSRegister.BusinessLogic.Services
         public async Task<ServiceDto> GetService(int serviceId)
         {
             var service = await consentRepository.GetService(serviceId);
-            return mapper.Map<ServiceDto>(service);
+            ServiceDto serviceDto = mapper.Map<ServiceDto>(service);
+            if (serviceDto.TrustmarkNumber != null)
+            {
+                serviceDto.TrustmarkNumber.SvgLogoLink = registerService.GetSVGLogoEndPoint(serviceDto.TrustmarkNumber.SvgLogoLink);
+            }
+            return serviceDto;
         }
 
         //opening loop

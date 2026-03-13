@@ -14,5 +14,6 @@ namespace DVSRegister.BusinessLogic.Services
         public Task<ProviderProfileDto> GetProviderWithServiceDeatils(int providerId);
         public Task<ServiceDto> GetServiceDetails(int serviceId);
         public Task<List<ServiceDto>> GetPublishedServices();
+        public string GetSVGLogoEndPoint(string svgLink);
     }
 }
