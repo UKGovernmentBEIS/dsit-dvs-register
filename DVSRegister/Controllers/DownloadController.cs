@@ -73,12 +73,12 @@ namespace DVSRegister.Controllers
                 if (fileType == "all")
                 {
                     fileType = string.Empty;
-                    prefix = $"processed/{trustmarkNumberDto.TrustMarkNumber}/";
+                    prefix = $"processed/{trustmarkNumberDto.TrustMarkID}/";
                     fileName = $"{trustmarkNumberDto.TrustMarkNumber}.zip";
                 }
                 else if (fileType == "png" || fileType == "svg" || fileType == "jpeg")
                 {
-                    prefix = $"processed/{trustmarkNumberDto.TrustMarkNumber}/{fileType}/";
+                    prefix = $"processed/{trustmarkNumberDto.TrustMarkID}/{fileType}/";
                     fileName = $"{trustmarkNumberDto.TrustMarkNumber}-{fileType}.zip";
                 }
                 else
