@@ -146,7 +146,7 @@ namespace DVSRegister.CommonUtility
                 if(useCloudFront)
                 {
 
-                    string cloudFrontDomain = configuration["CloudFrontDomain"]!;
+                    string cloudFrontDomain = configuration["CloudfrontDomain"]!;
                     string[] pngArray = {
                            $"https://{cloudFrontDomain}/{pngMainKey}",
                            $"https://{cloudFrontDomain}/{pngMainKey.Replace("main","mono-black")}",
@@ -266,7 +266,7 @@ namespace DVSRegister.CommonUtility
                 bool useCloudFront = Convert.ToBoolean(configuration["UseCloudFront"]);
                 if (useCloudFront)
                 {
-                    string cloudFrontBaseUrl = configuration["CloudFrontDomain"]!;
+                    string cloudFrontBaseUrl = configuration["CloudfrontDomain"]!;
                     var fileUrl = $"https://{cloudFrontBaseUrl}/{keyName}";
 
                     using var http = new HttpClient();
