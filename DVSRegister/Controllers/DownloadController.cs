@@ -73,18 +73,18 @@ namespace DVSRegister.Controllers
                 if (fileType == "all")
                 {
                     fileType = string.Empty;
-                    prefix = $"processed/{trustmarkNumberDto.TrustMarkNumber}/";
+                    prefix = $"processed/{trustmarkNumberDto.TrustMarkID}/";
                     fileName = $"{trustmarkNumberDto.TrustMarkNumber}.zip";
                 }
                 else if (fileType == "png" || fileType == "svg" || fileType == "jpeg")
                 {
-                    prefix = $"processed/{trustmarkNumberDto.TrustMarkNumber}/{fileType}/";
+                    prefix = $"processed/{trustmarkNumberDto.TrustMarkID}/{fileType}/";
                     fileName = $"{trustmarkNumberDto.TrustMarkNumber}-{fileType}.zip";
                 }
                 else
                     throw new Exception("Invalid file type");
 
-                var zipStream = await bucketService.GetPrefixZipAsync(config.LogoBucketName, prefix);
+                var zipStream = await bucketService.GetPrefixZipAsync(config.LogoBucketName, prefix,trustmarkNumberDto.TrustMarkNumber, trustmarkNumberDto.PngLogoLink, trustmarkNumberDto.SvgLogoLink, trustmarkNumberDto.JpegLogoLink);
 
 
                 return File(zipStream, "application/zip", fileName);
