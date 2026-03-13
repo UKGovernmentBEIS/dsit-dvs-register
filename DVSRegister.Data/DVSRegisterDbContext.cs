@@ -70,6 +70,8 @@ namespace DVSRegister.Data
         public DbSet<ActionDetails> ActionDetails { get; set; }
         public DbSet<ActionLogs> ActionLogs { get; set; }
         public DbSet<DownloadLogoToken> DownloadLogoToken { get; set; }
+        public DbSet<ServiceBulkRemovalRequest> ServiceBulkRemovalRequest { get; set; }
+        public DbSet<ServiceBulkRemovalRequestDraft> ServiceBulkRemovalRequestDraft { get; set; }
 
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
