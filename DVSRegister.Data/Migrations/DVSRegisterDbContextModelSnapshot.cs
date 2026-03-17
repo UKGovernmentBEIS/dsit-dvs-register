@@ -624,6 +624,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("ServiceId")
                         .HasColumnType("integer");
 
+                    b.Property<bool?>("TOUValid")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("VerifiedUser")
                         .HasColumnType("integer");
 
@@ -701,6 +704,37 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("CetificateReviewId");
 
                     b.ToTable("CertificateReviewRejectionReasonMapping");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.DownloadLogoToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("ModifiedTime")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TokenId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceId")
+                        .IsUnique();
+
+                    b.ToTable("DownloadLogoToken");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.Event", b =>
@@ -1929,6 +1963,15 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("ServiceVersion")
                         .HasColumnType("integer");
 
+                    b.Property<string>("TOUFileLink")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TOUFileName")
+                        .HasColumnType("text");
+
+                    b.Property<decimal?>("TOUFileSizeInKb")
+                        .HasColumnType("decimal(10, 1)");
+
                     b.Property<int>("TrustFrameworkVersionId")
                         .HasColumnType("integer");
 
@@ -2354,16 +2397,23 @@ namespace DVSRegister.Data.Migrations
                         new
                         {
                             Id = 1,
-                            Order = 1,
+                            Order = 2,
                             TrustFrameworkName = "0.4 gamma",
-                            Version = 0m
+                            Version = 0.4m
                         },
                         new
                         {
                             Id = 2,
-                            Order = 2,
+                            Order = 1,
                             TrustFrameworkName = "0.3 beta",
-                            Version = 0m
+                            Version = 0.3m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Order = 3,
+                            TrustFrameworkName = "1.0",
+                            Version = 1.0m
                         });
                 });
 
@@ -2375,6 +2425,20 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("ServiceNumber")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("JpegLogoLink")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("LogoVerified")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("PngLogoLink")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("ProviderProfileId")
                         .HasColumnType("integer");
 
@@ -2384,18 +2448,28 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("ServiceKey")
                         .HasColumnType("integer");
 
+                    b.Property<string>("SvgLogoLink")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("TrustMarkID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("TrustMarkNumber")
                         .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("text")
-                        .HasComputedColumnSql("LPAD(\"CompanyId\"::VARCHAR(4), 4, '0') || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", true);
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TrustMarkNumberVerified")
+                        .HasColumnType("boolean");
 
                     b.HasKey("CompanyId", "ServiceNumber");
 
-                    b.HasIndex("ServiceId");
+                    b.HasIndex("ServiceId")
+                        .IsUnique();
 
                     b.HasIndex("TrustMarkNumber")
                         .IsUnique();
@@ -2646,6 +2720,17 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("CertificateReviewRejectionReason");
 
                     b.Navigation("CetificateReview");
+                });
+
+            modelBuilder.Entity("DVSRegister.Data.Entities.DownloadLogoToken", b =>
+                {
+                    b.HasOne("DVSRegister.Data.Entities.Service", "Service")
+                        .WithOne("DownloadLogoToken")
+                        .HasForeignKey("DVSRegister.Data.Entities.DownloadLogoToken", "ServiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Service");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.IdentityProfile", b =>
@@ -3252,8 +3337,8 @@ namespace DVSRegister.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("DVSRegister.Data.Entities.Service", "Service")
-                        .WithMany()
-                        .HasForeignKey("ServiceId")
+                        .WithOne("TrustmarkNumber")
+                        .HasForeignKey("DVSRegister.Data.Entities.TrustmarkNumber", "ServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -3292,6 +3377,8 @@ namespace DVSRegister.Data.Migrations
 
                     b.Navigation("CertificateReview");
 
+                    b.Navigation("DownloadLogoToken");
+
                     b.Navigation("ProceedApplicationConsentToken")
                         .IsRequired();
 
@@ -3311,6 +3398,8 @@ namespace DVSRegister.Data.Migrations
                     b.Navigation("ServiceRoleMapping");
 
                     b.Navigation("ServiceSupSchemeMapping");
+
+                    b.Navigation("TrustmarkNumber");
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.ServiceDraft", b =>

@@ -44,7 +44,7 @@ namespace DVSRegister.Data.TrustFramework
                 .Include(s => s.CabUser).ThenInclude(s => s.Cab);
 
             var filteredQuery = baseQuery
-                .Where(s => s.TrustFrameworkVersion.Version == Constants.TFVersion0_4 && s.ServiceType == ServiceTypeEnum.UnderPinning 
+                .Where(s => s.TrustFrameworkVersion.Version >= Constants.TFVersion0_4 && s.ServiceType == ServiceTypeEnum.UnderPinning 
                  && s.ServiceStatus == ServiceStatusEnum.Published);
 
             if (searchText == "All")

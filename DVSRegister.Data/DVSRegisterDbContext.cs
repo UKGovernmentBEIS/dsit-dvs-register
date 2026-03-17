@@ -69,6 +69,7 @@ namespace DVSRegister.Data
         public DbSet<ActionCategory> ActionCategory { get; set; }
         public DbSet<ActionDetails> ActionDetails { get; set; }
         public DbSet<ActionLogs> ActionLogs { get; set; }
+        public DbSet<DownloadLogoToken> DownloadLogoToken { get; set; }
 
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
@@ -170,10 +171,7 @@ namespace DVSRegister.Data
             });
 
 
-
-            modelBuilder.Entity<TrustmarkNumber>()
-            .Property(t => t.TrustMarkNumber)
-            .HasComputedColumnSql("LPAD(\"CompanyId\"::VARCHAR(4), 4, '0') || LPAD(\"ServiceNumber\"::VARCHAR(2), 2, '0')", stored: true);
+           
 
             modelBuilder.Entity<TrustmarkNumber>()
             .HasIndex(b => b.TrustMarkNumber)
@@ -275,10 +273,11 @@ namespace DVSRegister.Data
                 new SupplementaryScheme { Id =3, SchemeName = "Disclosure and Barring Service", Order =3 });
 
                 modelBuilder.Entity<TrustFrameworkVersion>().HasData(
-                new TrustFrameworkVersion { Id = 1, TrustFrameworkName = "0.4 gamma", Order = 1 },
-                new TrustFrameworkVersion { Id = 2, TrustFrameworkName = "0.3 beta", Order = 2 });
+                new TrustFrameworkVersion { Id = 1, TrustFrameworkName = "0.4 gamma", Order = 2, Version = 0.4m },
+                new TrustFrameworkVersion { Id = 2, TrustFrameworkName = "0.3 beta", Order = 1, Version = 0.3m }, 
+                new TrustFrameworkVersion { Id = 3, TrustFrameworkName = "1.0", Order = 3, Version = 1.0m });
 
-                modelBuilder.Entity<ActionCategory>().HasData(
+            modelBuilder.Entity<ActionCategory>().HasData(
                 new ActionCategory { Id = 1, ActionKey = nameof(ActionCategoryEnum.CR), ActionName = "Certificate review" },
                 new ActionCategory { Id = 2, ActionKey = nameof(ActionCategoryEnum.PI), ActionName = "Public interest checks" },
                 new ActionCategory { Id = 3, ActionKey = nameof(ActionCategoryEnum.ServiceUpdates), ActionName = "Service updates" },

@@ -21,6 +21,7 @@ namespace DVSRegister.Data.Entities
         public string? Comments { get; set; }
         public bool? InformationMatched { get; set; }
         public bool? CertificateValid { get; set; }
+        public bool? TOUValid { get; set; }
         public string? CommentsForIncorrect { get; set; }
         public string? RejectionComments { get; set; }
         public string? Amendments { get; set; }
