@@ -156,11 +156,12 @@ namespace DVSRegister.CommonUtility
                         };
 
 
+                    //svg links are already appended with cloudfront end point in service layer
                     string[] svgArray = {
-                           $"https://{cloudFrontDomain}/{svgMainKey}",
-                           $"https://{cloudFrontDomain}/{svgMainKey.Replace("main","mono-black")}",
-                           $"https://{cloudFrontDomain}/{svgMainKey.Replace("main","mono-white")}",
-                           $"https://{cloudFrontDomain}/{svgMainKey.Replace("main","black-grey")}"
+                           $"{svgMainKey}",
+                           $"{svgMainKey.Replace("main","mono-black")}",
+                           $"{svgMainKey.Replace("main","mono-white")}",
+                           $"{svgMainKey.Replace("main","black-grey")}"
 
                         };
 

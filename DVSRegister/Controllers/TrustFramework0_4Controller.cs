@@ -1028,15 +1028,14 @@ namespace DVSRegister.Controllers
             {
                 if(summaryViewModel?.HasGPG44 == false)
                 {
-                    if(summaryViewModel?.SchemeQualityLevelMapping?.Any(x=>x.SchemeId == identityProfileViewModel.SchemeId) == false)
+                    if (summaryViewModel?.SchemeQualityLevelMapping?.Any(x=>x.SchemeId == identityProfileViewModel.SchemeId) == false)
                     {
                         SchemeQualityLevelMappingViewModel schemeQualityLevelMappingViewModel = new();
                         schemeQualityLevelMappingViewModel.HasGPG44 = false;
                         schemeQualityLevelMappingViewModel.SchemeId = identityProfileViewModel.SchemeId;                    
                         summaryViewModel?.SchemeQualityLevelMapping?.Add(schemeQualityLevelMappingViewModel);
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     }
-                   
+                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                     bool hasRemainingSchemes = HasRemainingSchemes(identityProfileViewModel.SchemeId);
                     var selectedSchemeIds = HttpContext?.Session.Get<List<int>>("SelectedSchemeIds");
                     if (hasRemainingSchemes)
