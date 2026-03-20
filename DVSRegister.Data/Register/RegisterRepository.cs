@@ -30,7 +30,7 @@ namespace DVSRegister.Data
                  || ci.ServiceName!.ToLower().Contains(lowerSearchText)
                  || ci.Provider.RegisteredName.ToLower().Contains(lowerSearchText)
                  || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)
-                 || ci.TrustmarkNumber.TrustMarkNumber == lowerSearchText) &&
+                 || ci.TrustmarkNumber.TrustMarkNumber.Contains(lowerSearchText)) &&
              (!hasRoles || ci.ServiceRoleMapping!.Any(r => roles.Contains(r.RoleId))) &&
              (!hasSchemes || ci.ServiceSupSchemeMapping!.Any(s => schemes.Contains(s.SupplementarySchemeId))) &&
              (!hasTfVersions || tfVersions.Contains(ci.TrustFrameworkVersionId)) ))
@@ -41,7 +41,7 @@ namespace DVSRegister.Data
                  || ci.ServiceName!.ToLower().Contains(lowerSearchText)
                  || ci.Provider.RegisteredName.ToLower().Contains(lowerSearchText)
                  || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)
-                 || ci.TrustmarkNumber.TrustMarkNumber == lowerSearchText) &&
+                 || ci.TrustmarkNumber.TrustMarkNumber.Contains(lowerSearchText)) &&
              (!hasRoles || ci.ServiceRoleMapping!.Any(r => roles.Contains(r.RoleId))) &&
              (!hasSchemes || ci.ServiceSupSchemeMapping!.Any(s => schemes.Contains(s.SupplementarySchemeId))) &&
              (!hasTfVersions || tfVersions.Contains(ci.TrustFrameworkVersionId)) ) )
@@ -85,7 +85,7 @@ namespace DVSRegister.Data
                     || s.ServiceName.ToUpper().Contains(trimmedSearchText) 
                     || s.Provider.RegisteredName.ToUpper().Contains(trimmedSearchText)
                     || s.Provider.TradingName.ToUpper().Contains(trimmedSearchText)
-                    || s.TrustmarkNumber.TrustMarkNumber == trimmedSearchText)
+                    || s.TrustmarkNumber.TrustMarkNumber.Contains(trimmedSearchText))
                 .Where(s => !roles.Any() || s.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))
                 .Where(s => !schemes.Any() || s.ServiceSupSchemeMapping.Any(sc => schemes.Contains(sc.SupplementarySchemeId)))
                 .Where(s => !tfVersions.Any() || tfVersions.Contains(s.TrustFrameworkVersionId));
