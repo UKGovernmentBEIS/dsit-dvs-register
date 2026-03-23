@@ -170,8 +170,7 @@ namespace DVSRegister
         }
         public void ConfigureAutomapperServices(IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(DVSRegister.Services.AutoMapperProfile),
-                          typeof(DVSRegister.BusinessLogic.AutoMapperProfile));
+            services.AddAutoMapper(cfg => { }, typeof(DVSRegister.Services.AutoMapperProfile), typeof(DVSRegister.BusinessLogic.AutoMapperProfile));      
         }
         public void ConfigureDatabaseHealthCheck(DVSRegisterDbContext? dbContext)
         {
