@@ -66,7 +66,7 @@ namespace DVSRegister.Controllers
                         {
                             ProviderProfileDto providerWithRemovedServices = await removeProvider2iService.GetProviderDetailsWithRemovedServices(removalRequest.Provider.Id, serviceIdsToBeRemoved);
                             await actionLogService.AddMultipleActionLogs(providerWithRemovedServices?.Services?.ToList()!,
-                            ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ServiceAndProviderRemoved, string.Empty);
+                            ActionCategoryEnum.ActionRequests, ActionDetailsEnum.ProviderAndServiceRemoved, string.Empty);
                             return View("RemoveProviderSuccess");
                         }
                         else

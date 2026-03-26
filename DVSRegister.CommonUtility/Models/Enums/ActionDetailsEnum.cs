@@ -33,8 +33,9 @@
         ReassignmentRequestSent,
         ServiceReassigned,
         ReassignRequestCancelled,
-        ReassignRequestRejected
-        
+        ReassignRequestRejected,
+        ProviderAndServiceRemoved
+
 
 
     }
