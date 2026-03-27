@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260313161827_AddServiceBulkRemovalTables")]
+    partial class AddServiceBulkRemovalTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -324,13 +327,6 @@ namespace DVSRegister.Data.Migrations
                             ActionCategoryId = 5,
                             ActionDescription = "Reassignment request rejected",
                             ActionDetailsKey = "ReassignRequestRejected"
-                        },
-                        new
-                        {
-                            Id = 32,
-                            ActionCategoryId = 5,
-                            ActionDescription = "Service removed from register\nProvider removed from register",
-                            ActionDetailsKey = "ProviderAndServiceRemoved"
                         });
                 });
 
