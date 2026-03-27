@@ -4,9 +4,11 @@ namespace DVSRegister.CommonUtility
 {
     public interface IBucketService
     {
-        public Task<GenericResponse> WriteToS3Bucket(Stream fileStream, string fileName);
-        public Task<byte[]?> DownloadFileAsync(string keyName);
-        public Task<GenericResponse> DeleteFromS3Bucket(string keyName);
+        public Task<GenericResponse> WriteToS3Bucket(Stream fileStream, string fileName, string bucketName);
+        public Task<byte[]?> DownloadFileAsync(string keyName, string bucketName);
+        public Task<GenericResponse> DeleteFromS3Bucket(string keyName, string bucketName);
+        public Task<MemoryStream> GetPrefixZipAsync(string bucket, string prefix, string trustmarkNumber, string pngMainKey, string svgMainKey, string jpegMainKey, CancellationToken cancellationToken = default);
+        public Task<MemoryStream?> DownloadFileStreamAsync(string keyName, string bucketName, CancellationToken ct = default);
 
     }
 }

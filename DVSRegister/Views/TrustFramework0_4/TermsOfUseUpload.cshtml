@@ -1,0 +1,118 @@
+﻿@model DVSRegister.Models.CAB.TOUFileViewModel
+
+@{
+    ViewData["Title"] = "Upload the signed Terms of Use for the UK CertifID trust mark";
+    Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
+    bool hasError = false;
+}
+
+@using (Html.BeginForm("SaveTermsOfUse", "TrustFramework0_4", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
+    @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
+    @Html.HiddenFor(m => m.RefererURL)
+    @Html.HiddenFor(m => m.FileRemoved)
+
+    <div class="govuk-width-container">
+        <a href="@Model.RefererURL" class="govuk-back-link">
+            Back
+        </a>
+
+        <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+
+                    @if (Html.ViewData?.ModelState.ContainsKey("File") == true && Html.ViewData.ModelState["File"].Errors.Count > 0)
+                    {
+                        var errors = Html.ViewData?.ModelState["File"]?.Errors;
+                        if (errors != null && errors.Count > 0)
+                        {
+                            hasError = true;
+                            ViewData["Title"] = "Error: " + ViewData["Title"];
+                            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
+                            new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("File", errors))
+                                }
+                    }
+                    <h1 class="govuk-heading-xl">Upload the signed Terms of Use for the UK CertifID trust mark</h1>
+
+                    <p class="govuk-body">
+                        Please upload a Terms of Use document signed by an authorised party from the provider.
+                    </p>
+
+                    <p class="govuk-body">
+                        Please use the following standardised format to name your file: TrustMarkToU-DateOfIssue-RegisteredName-ServiceName.pdf
+                    </p>               
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-!-margin-bottom-4" for="file">
+                            <strong>Upload the signed Terms of Use for the UK CertifID trust mark</strong>
+                        </label>
+                        <div id="file-hint" class="govuk-hint">
+                            This file should be in PDF format and no bigger than 5MB
+                        </div>
+
+                        @if (hasError)
+
+                        {
+                            <p id="file-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span> @Html.ViewData?.ModelState["File"]?.Errors[0].ErrorMessage
+                            </p>
+
+                        }
+
+                        @if(Model.FileUploadedSuccessfully!=true)
+                        {
+                            <div class="govuk-drop-zone" data-module="govuk-file-upload">
+                                <input class="govuk-file-upload" id="file" name="file" type="file"
+                                       aria-describedby="@((hasError ? "file-error " : "") + "file-hint")">
+                            </div>
+                        }
+                       
+                    </div>
+
+                    @if (ViewData.Model?.FileUploadedSuccessfully == true)
+                    {
+                        <p class="govuk-body">1 document</p>
+                        <dl class="govuk-summary-list">
+                            <div class="govuk-summary-list__row">
+                                <dd class="govuk-summary-list__value">
+                                    @Model.FileName
+                                </dd>
+                                <dd class="govuk-summary-list__actions">
+                                    <a class="govuk-link" href="/cab-service/submit-service/terms-of-use-upload?fromSummaryPage=@ViewBag.fromSummaryPage&remove=true&fromDetailsPage=@ViewBag.fromDetailsPage" aria-label="Remove service provider’s certificate of conformity ">Remove<span class="govuk-visually-hidden"> Remove file</span></a>
+
+                                </dd>
+                            </div>
+                        </dl>
+                        @Html.HiddenFor(m => m.FileUploadedSuccessfully)
+
+                    }
+
+                    @if (Model != null && Model.IsAmendment)
+                    {
+                        <div class="govuk-button-group">
+                            @if (Model.FileRemoved || ViewBag.IsTFVersionChanged == true)
+                            {
+                                <button type="submit" class="govuk-button govuk-!-margin-top-2" name="action" value="amend">Save changes</button>
+                            }
+                            <a href="@Model.RefererURL" class="govuk-button govuk-button--secondary" role="button" draggable="false" data-module="govuk-button">
+                                Cancel
+                            </a>
+                         
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-button-group">
+                            <button type="submit" class="govuk-button govuk-!-margin-top-6" data-module="govuk-button" name="action" value="continue">
+                                Continue
+                            </button>
+                            <button type="submit" role="link" class="govuk-button govuk-button--secondary" name="action" value="draft">  Save and complete later </button>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </main>
+    </div>
+}
+

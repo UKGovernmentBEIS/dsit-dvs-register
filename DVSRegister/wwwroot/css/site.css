@@ -82,6 +82,45 @@
     text-decoration-thickness: .1875rem;
 }
 
+.image-logo-block {
+    width: 359px;
+    height: 107px;
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.image-logo-block-medium {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    width: 369px;
+    height: 110px;
+}
+
+.image-logo-block-small {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    width: 168px;
+    height: 50px;
+    padding:0px;
+}
+
+.image-logo-block-register-details {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    width: 270px;
+    height: 80px;
+    padding: 0px;
+}
+
+.image-logo {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
 
 .dashboard-summary {
     display: grid;

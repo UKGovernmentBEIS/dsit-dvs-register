@@ -48,14 +48,11 @@
                         enter 150623.
                     </p>
 
-
                     <div class="govuk-form-group">
                         <label class="govuk-label" for="file">
-
-                            Upload a file
+                            <strong>Upload the certificate of conformity for this service</strong>
                         </label>
                         <div id="file-hint" class="govuk-hint">
-
                             This file should be in PDF format and no bigger than 5MB
                         </div>
 
@@ -67,10 +64,14 @@
                             </p>
 
                         }
-                        <div class="govuk-drop-zone" data-module="govuk-file-upload">
-                            <input class="govuk-file-upload" id="file" name="file" type="file"
-                                   aria-describedby="@((hasError ? "file-error " : "") + "file-hint")">
-                        </div>
+                        @if(Model.FileUploadedSuccessfully!=true)
+                        {
+                            <div class="govuk-drop-zone" data-module="govuk-file-upload">
+                                <input class="govuk-file-upload" id="file" name="file" type="file"
+                                       aria-describedby="@((hasError ? "file-error " : "") + "file-hint")">
+                            </div>
+                        }
+                       
                     </div>
 
 

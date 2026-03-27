@@ -34,7 +34,12 @@ namespace DVSRegister.Data.CAB
         }
         public async Task<List<TrustFrameworkVersion>> GetTfVersion()
         {
-            return await context.TrustFrameworkVersion.OrderBy(c => c.Order).ToListAsync();
+
+            var tfVersionIds = await context.Service.AsNoTracking()                
+                .Select(s => s.TrustFrameworkVersionId).Distinct().ToListAsync();
+
+            return await context.TrustFrameworkVersion.AsNoTracking()
+                .Where(x=> tfVersionIds.Contains(x.Id)).OrderBy(c => c.Order).ToListAsync();
         }
         public async Task<List<QualityLevel>> QualityLevels()
         {
@@ -646,6 +651,9 @@ namespace DVSRegister.Data.CAB
             existingService.ServiceName = service.ServiceName;
             existingService.WebSiteAddress = service.WebSiteAddress;
             existingService.CompanyAddress = service.CompanyAddress;
+            existingService.TOUFileLink = service.TOUFileLink;
+            existingService.TOUFileName = service.TOUFileName;
+            existingService.TOUFileSizeInKb = service.TOUFileSizeInKb;
 
             if (existingService.ServiceRoleMapping != null & existingService.ServiceRoleMapping?.Count > 0)
                 context.ServiceRoleMapping.RemoveRange(existingService.ServiceRoleMapping);

@@ -29,7 +29,8 @@ namespace DVSRegister.Data
              (!hasSearch
                  || ci.ServiceName!.ToLower().Contains(lowerSearchText)
                  || ci.Provider.RegisteredName.ToLower().Contains(lowerSearchText)
-                 || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)) &&
+                 || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)
+                 || ci.TrustmarkNumber.TrustMarkNumber.Contains(lowerSearchText)) &&
              (!hasRoles || ci.ServiceRoleMapping!.Any(r => roles.Contains(r.RoleId))) &&
              (!hasSchemes || ci.ServiceSupSchemeMapping!.Any(s => schemes.Contains(s.SupplementarySchemeId))) &&
              (!hasTfVersions || tfVersions.Contains(ci.TrustFrameworkVersionId)) ))
@@ -39,12 +40,13 @@ namespace DVSRegister.Data
              (!hasSearch
                  || ci.ServiceName!.ToLower().Contains(lowerSearchText)
                  || ci.Provider.RegisteredName.ToLower().Contains(lowerSearchText)
-                 || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)) &&
+                 || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)
+                 || ci.TrustmarkNumber.TrustMarkNumber.Contains(lowerSearchText)) &&
              (!hasRoles || ci.ServiceRoleMapping!.Any(r => roles.Contains(r.RoleId))) &&
              (!hasSchemes || ci.ServiceSupSchemeMapping!.Any(s => schemes.Contains(s.SupplementarySchemeId))) &&
              (!hasTfVersions || tfVersions.Contains(ci.TrustFrameworkVersionId)) ) )
             .Include(p => p.Services!).ThenInclude(ci => ci.ServiceRoleMapping!)
-            .Include(p => p.Services!).ThenInclude(ci => ci.ServiceSupSchemeMapping!)
+            .Include(p => p.Services!).ThenInclude(ci => ci.TrustmarkNumber!)
             .AsSplitQuery();
              
 
@@ -77,9 +79,13 @@ namespace DVSRegister.Data
 
             var query = context.Service
                 .Include(s => s.Provider)
+                .Include(s => s.TrustmarkNumber)
                 .Where(s => s.IsInRegister)
-                .Where(s => string.IsNullOrEmpty(searchText) || s.ServiceName.ToUpper().Contains(trimmedSearchText) ||
-                s.Provider.RegisteredName.ToUpper().Contains(trimmedSearchText))
+                .Where(s => string.IsNullOrEmpty(searchText) 
+                    || s.ServiceName.ToUpper().Contains(trimmedSearchText) 
+                    || s.Provider.RegisteredName.ToUpper().Contains(trimmedSearchText)
+                    || s.Provider.TradingName.ToUpper().Contains(trimmedSearchText)
+                    || s.TrustmarkNumber.TrustMarkNumber.Contains(trimmedSearchText))
                 .Where(s => !roles.Any() || s.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))
                 .Where(s => !schemes.Any() || s.ServiceSupSchemeMapping.Any(sc => schemes.Contains(sc.SupplementarySchemeId)))
                 .Where(s => !tfVersions.Any() || tfVersions.Contains(s.TrustFrameworkVersionId));
@@ -178,41 +184,48 @@ namespace DVSRegister.Data
         public async Task<Service> GetServiceDetails(int serviceId)
         {
             var baseQuery = context.Service
-            .Where(p => p.Id == serviceId && p.IsInRegister == true)
-            .Include(p => p.CabUser).ThenInclude(cu => cu.Cab)
-            .Include(p => p.Provider)
-            .Include(p => p.TrustFrameworkVersion)
-            .Include(p => p.ServiceRoleMapping)
-            .ThenInclude(s => s.Role);
+            .Where(s => s.Id == serviceId && s.IsInRegister == true)
+            .Include(s => s.CabUser).ThenInclude(cu => cu.Cab)
+            .Include(s => s.Provider)
+            .Include(s => s.TrustFrameworkVersion)
+            .Include(p => p.ServiceRoleMapping).ThenInclude(s => s.Role);
 
             IQueryable<Service> queryWithOptionalIncludes = baseQuery;
-            if (await baseQuery.AnyAsync(p => p.ServiceQualityLevelMapping != null && p.ServiceQualityLevelMapping.Any()))
+            var flags = await baseQuery.Select(s => new
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping)
-                    .ThenInclude(sq => sq.QualityLevel);
-            }
-            if (await baseQuery.AnyAsync(p => p.ServiceSupSchemeMapping != null && p.ServiceSupSchemeMapping.Any()))
-            {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
-                    .ThenInclude(ssm => ssm.SupplementaryScheme);
+                HasQuality = s.ServiceQualityLevelMapping.Any(),
+                HasSupScheme = s.ServiceSupSchemeMapping.Any(),
+                HasIdentity = s.ServiceIdentityProfileMapping.Any(),
+                IsWhiteLabel = s.ServiceType == ServiceTypeEnum.WhiteLabelled,
+                HasActiveTrustmark = s.TrustmarkNumber != null && s.TrustmarkNumber.IsActive
+            }).SingleAsync();
 
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
-                    .ThenInclude(ssm => ssm.SchemeGPG44Mapping).ThenInclude(ssm => ssm.QualityLevel);
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping)
-                    .ThenInclude(ssm => ssm.SchemeGPG45Mapping).ThenInclude(ssm => ssm.IdentityProfile);
-            }
-            if (await baseQuery.AnyAsync(p => p.ServiceIdentityProfileMapping != null && p.ServiceIdentityProfileMapping.Any()))
+            if (flags.HasQuality)
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping)
-                    .ThenInclude(ssm => ssm.IdentityProfile);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceQualityLevelMapping).ThenInclude(sq => sq.QualityLevel);
             }
-            if (await baseQuery.AnyAsync(p => p.ServiceType == ServiceTypeEnum.WhiteLabelled))
+            if (flags.HasSupScheme)
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.UnderPinningService).ThenInclude(p => p.Provider)
-             .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
-             .Include(p => p.ManualUnderPinningService).ThenInclude(ms => ms.Cab);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping).ThenInclude(ssm => ssm.SupplementaryScheme)
+                    .Include(p => p.ServiceSupSchemeMapping).ThenInclude(ssm => ssm.SchemeGPG44Mapping).ThenInclude(ssm => ssm.QualityLevel)
+                    .Include(p => p.ServiceSupSchemeMapping).ThenInclude(ssm => ssm.SchemeGPG45Mapping).ThenInclude(ssm => ssm.IdentityProfile);
+            }
+            if (flags.HasIdentity)
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceIdentityProfileMapping).ThenInclude(ssm => ssm.IdentityProfile);
             }
 
+            if (flags.IsWhiteLabel)
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes
+                    .Include(p => p.UnderPinningService).ThenInclude(p => p.Provider)
+                    .Include(p => p.UnderPinningService).ThenInclude(p => p.CabUser).ThenInclude(cu => cu.Cab)
+                    .Include(p => p.ManualUnderPinningService).ThenInclude(ms => ms.Cab);
+            }
+            if (flags.HasActiveTrustmark)
+            {
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(s => s.TrustmarkNumber);
+            }
             var service = await queryWithOptionalIncludes.SingleOrDefaultAsync();
             return service!;
         }

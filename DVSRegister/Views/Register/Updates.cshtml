@@ -39,7 +39,7 @@
                                     @foreach (var item in group.Items)
                                     {
                                         <h2 class="govuk-heading-m govuk-!-margin-bottom-0 govuk-!-margin-top-5">@item.ActionDetails.ActionDescription</h2>
-                                        <p class="govuk-hint govuk-!-margin-top-0">@HtmlExtensions.ToStringWithNewLineBreaks(item.DisplayMessage)</p>
+                                        <p class="govuk-hint govuk-!-margin-top-0">@HtmlExtensions.ToStringWithLineBreaks(item.DisplayMessage)</p>
                                     }
 
                                 </li>
