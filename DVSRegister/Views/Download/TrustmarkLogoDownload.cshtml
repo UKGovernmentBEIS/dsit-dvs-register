@@ -14,7 +14,7 @@
                 <h1 class="govuk-heading-xl">@ViewData["Title"]</h1>
                 <p class="govuk-body">
                     The Office for Digital Identity and Attributes has issued a UK CertifID trust
-                    mark for this service.
+                    mark number and logo for this service.
                 </p>
                 </div>
                 <div class="govuk-grid-column-full">
@@ -30,7 +30,7 @@
 
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
-                            Service Provider
+                            Service provider
                         </dt>
                         <dd class="govuk-summary-list__value">
                             @Model.Provider.RegisteredName
@@ -42,7 +42,7 @@
             <div class="govuk-summary-card">        
                 <div class="govuk-summary-card__title-wrapper">
                     <h2 class="govuk-summary-card__title">
-                        Trustmark number
+                        Trust mark number
                     </h2>
                 </div>
                 <div class="govuk-summary-card__content">
@@ -61,7 +61,7 @@
             <div class="govuk-summary-card">
                 <div class="govuk-summary-card__title-wrapper">
                     <h2 class="govuk-summary-card__title">
-                        Trustmark logo
+                        Trust mark logo
                     </h2>
                 </div>
                 <div class="govuk-summary-card__content">
@@ -84,7 +84,7 @@
                             </h2>
                         <ul class="govuk-summary-card__actions">
                             <li class="govuk-summary-card__action">
-                                <a class="govuk-link" href="@Url.Action("DownloadLogoVariants", "Download", new{fileType = "all", serviceId = Model?.Id, tokenId = Model?.DownloadLogoToken.TokenId})">Download<span class="govuk-visually-hidden">Download all variations of logo</span></a>
+                                <a class="govuk-link" href="@Url.Action("DownloadLogoVariants", "Download", new{fileType = "all", serviceId = Model?.Id, tokenId = Model?.DownloadLogoToken.TokenId})">Download all<span class="govuk-visually-hidden">Download all variations of logo</span></a>
                             </li>
                           
                         </ul>
