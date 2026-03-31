@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic;
-using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services.CAB;
-using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Entities;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 
 namespace DVSRegister.UnitTests.Services
@@ -23,8 +21,12 @@ namespace DVSRegister.UnitTests.Services
 
         public CabServiceTests()
         {
-            this.cabRepository = Substitute.For<ICabRepository>();  
-            var config = new MapperConfiguration(cfg => cfg.AddProfile<AutoMapperProfile>());
+            this.cabRepository = Substitute.For<ICabRepository>();
+            var loggerFactory = new NullLoggerFactory();
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile(new AutoMapperProfile());
+            }, loggerFactory);
             this.automapper = config.CreateMapper();            
             this.cabService = new CabService(this.cabRepository, this.automapper);
 
