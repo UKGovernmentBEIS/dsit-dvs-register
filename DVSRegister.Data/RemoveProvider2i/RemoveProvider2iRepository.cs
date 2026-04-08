@@ -93,7 +93,7 @@ namespace DVSRegister.Data
 
         /// <summary>
         /// Set Provider status to NA
-        /// Pending requests are set to false - providerremovalrequests, serviceremovalrequest , reassignment requets
+        /// Pending requests are set to false - providerremovalrequests
         /// providerremovalrequest should not be deleted as ProviderRemovalRequestId is required to capture ActionLogs for Service History 
         /// Pending update requests drafts deleted
         /// </summary>
@@ -148,12 +148,7 @@ namespace DVSRegister.Data
                             }
 
                             var mapping = providerRemovalRequest.ProviderRemovalRequestServiceMapping?.FirstOrDefault(m => m.ServiceId == service.Id);
-                            if (mapping.PreviousServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || mapping.PreviousServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
-                            {
-                                var pendingRemovalRequest = await context.ServiceRemovalRequest.FirstOrDefaultAsync(s => s.ServiceId == service.Id);
-                                if (pendingRemovalRequest != null)
-                                    pendingRemovalRequest.IsRequestPending = false;
-                            }
+    
                             if (mapping.PreviousServiceStatus == ServiceStatusEnum.UpdatesRequested)
                             {
                                 var pendingServiceUpdateRequest = await context.ServiceDraft.FirstOrDefaultAsync(s => s.ServiceId == service.Id);
@@ -199,7 +194,7 @@ namespace DVSRegister.Data
 
         /// <summary>
         ///  ProviderRemovalRequests -IsPending set to false and provider status set to previous status
-        /// Set pending service removal requests back to true and get previous service status ProviderRemovalRequestServiceMappings and assign back to service
+        /// Set pending service removal requests/ bulkremovalrequests back to true and get previous service status ProviderRemovalRequestServiceMappings and assign back to service
         /// Remove ProviderRemovalRequestServiceMappings - service id providerpremovalrequests has one to one mapping.
         /// set pending transfer requests back to previous status
         /// </summary>
@@ -236,11 +231,17 @@ namespace DVSRegister.Data
                         service.ServiceStatus = serviceMapping.PreviousServiceStatus;
                         context.Remove(serviceMapping);
                         if (service.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation || service.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation)
-                        {                         
+                        {
 
-                            var serviceRemovalRequest = service.ServiceRemovalRequest?.Where(x =>  x?.IsRequestPending == true).FirstOrDefault();
-                            if (serviceRemovalRequest != null)                           
-                            serviceRemovalRequest.IsRequestPending = true;
+                            var serviceRemovalRequest = service?.ServiceRemovalRequest?.OrderByDescending(x => x.Id).FirstOrDefault();
+                            if (serviceRemovalRequest != null)
+                            {
+                                serviceRemovalRequest.IsRequestPending = true;
+                                if (serviceRemovalRequest.ServiceBulkRemovalRequest != null && serviceRemovalRequest.ServiceBulkRemovalRequest.IsRequestPending == false)
+                                {
+                                    serviceRemovalRequest.ServiceBulkRemovalRequest.IsRequestPending = true;
+                                }
+                            }
                         }
                         else if (service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign)
                         {
