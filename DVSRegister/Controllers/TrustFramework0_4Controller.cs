@@ -391,7 +391,7 @@ namespace DVSRegister.Controllers
             {
                 IsAmendment = summaryViewModel.IsAmendment,
                 SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList(),
-                AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
+                AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),                
                 RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/service/gpg45-input"
             };
             return View(identityProfileViewModel);
@@ -972,6 +972,7 @@ namespace DVSRegister.Controllers
                 SchemeName = summaryViewModel?.SupplementarySchemeViewModel?.SelectedSupplementarySchemes?.Where(scheme => scheme.Id == schemeId)
                 .Select(scheme => scheme.SchemeName).FirstOrDefault() ?? string.Empty,
                 IsAmendment = summaryViewModel.IsAmendment,
+                IsTfVersion0_4 = summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4,
                 SelectedIdentityProfileIds = identityProfile?.SelectedIdentityProfiles?.Select(c => c.Id)?.ToList() ?? [],
                 AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
                 RefererURL = summaryViewModel.RefererURL
