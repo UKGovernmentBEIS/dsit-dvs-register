@@ -20,6 +20,7 @@ using DVSRegister.Data.TrustFramework;
 using DVSRegister.Middleware;
 using DVSRegister.Services.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
@@ -50,6 +51,11 @@ namespace DVSRegister
                 options.Preload = true;
                 options.IncludeSubDomains = true;
                 options.MaxAge = TimeSpan.FromDays(1);
+            });
+            
+            services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             });
             string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));
             services.AddDbContext<DVSRegisterDbContext>(opt =>
