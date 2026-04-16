@@ -155,6 +155,10 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("ProviderRoles", "CabService");
                 }
+                else if (!serviceSummary.HasVouchingGuidance.HasValue && serviceSummary.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
+                {
+                    return RedirectToAction("VouchingGuidance", "TrustFramework0_4");
+                }
                 else if (serviceSummary.ServiceType == 0)
                 {
                     return RedirectToAction("SelectServiceType", "TrustFramework0_4");

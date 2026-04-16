@@ -28,11 +28,17 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             var list = await cabRepository.GetSupplementarySchemes();
             return automapper.Map<List<SupplementarySchemeDto>>(list);
         }
-        public async Task<List<IdentityProfileDto>> GetIdentityProfiles()
+        
+        public Task<List<IdentityProfileDto>> GetIdentityProfiles()
         {
-            var list = await cabRepository.GetIdentityProfiles();
-            return automapper.Map<List<IdentityProfileDto>>(list);
-        }        
+            return GetIdentityProfilesInternal(null);
+        }
+
+        public Task<List<IdentityProfileDto>> GetIdentityProfiles(decimal tfVersion)
+        {
+            return GetIdentityProfilesInternal(tfVersion);
+        }
+
         public async Task<List<TrustFrameworkVersionDto>> GetTfVersion()
         {
             var list = await cabRepository.GetTfVersion();
@@ -123,8 +129,6 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return providerDto;
         }
 
-
-
         #region Save/ update
         public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
         {
@@ -178,7 +182,16 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return canDelete;
         }
 
-       
-        #endregion        
+        #endregion
+
+
+        #region Private methods
+        private async Task<List<IdentityProfileDto>> GetIdentityProfilesInternal(decimal? tfVersion)
+        {
+            var list = await cabRepository.GetIdentityProfiles(tfVersion);
+            return automapper.Map<List<IdentityProfileDto>>(list);
+        }
+
+        #endregion
     }
 }

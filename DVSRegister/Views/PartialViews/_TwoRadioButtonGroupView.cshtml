@@ -44,6 +44,10 @@
         {
             <p class="govuk-body">@Model.ParagraphText</p>
         }
+        @if (!string.IsNullOrEmpty(Model.ParagraphText2))
+        {
+            <p class="govuk-body">@Model.ParagraphText2</p>
+        }
         @if (Model.HasError)
         {
             <p id="@(Model.PropertyName?.ToLower())-error" class="govuk-error-message">

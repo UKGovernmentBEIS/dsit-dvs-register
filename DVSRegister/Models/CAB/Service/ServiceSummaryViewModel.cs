@@ -23,8 +23,11 @@ namespace DVSRegister.Models.CAB
         public string? CompanyAddress { get; set; }
         public RoleViewModel? RoleViewModel { get; set; }
 
+        [Required(ErrorMessage = "Select if the service follows the vouching guidance")]
+        public bool? HasVouchingGuidance { get; set; }
+
         [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG44")]
-        public bool? HasGPG44 { get; set; }
+        public bool? HasGPG44 { get; set; }        
     
         [Required(ErrorMessage = "Select ‘Yes’ if the service is certified against GPG45")]
         public bool? HasGPG45 { get; set; }

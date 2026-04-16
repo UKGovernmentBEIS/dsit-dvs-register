@@ -23,9 +23,13 @@ namespace DVSRegister.Data.CAB
             return await context.Role.Include(x=>x.TrustFrameworkVersion).Where(x=>x.TrustFrameworkVersion.Version <= tfVersion).OrderBy(c => c.Order).ToListAsync();
         }
 
-        public async Task<List<IdentityProfile>> GetIdentityProfiles()
+        public async Task<List<IdentityProfile>> GetIdentityProfiles(decimal? tfVersion)
         {
-            return await context.IdentityProfile.OrderBy(c => c.IdentityProfileName).ToListAsync();
+            return await context.IdentityProfile
+                .Include(x => x.TrustFrameworkVersion)
+                .Where(x => !tfVersion.HasValue || x.TrustFrameworkVersion.Version >= tfVersion.Value)
+                .OrderBy(x => x.IdentityProfileName)
+                .ToListAsync();
         }
 
         public async Task<List<SupplementaryScheme>> GetSupplementarySchemes()
@@ -651,6 +655,7 @@ namespace DVSRegister.Data.CAB
             existingService.ServiceName = service.ServiceName;
             existingService.WebSiteAddress = service.WebSiteAddress;
             existingService.CompanyAddress = service.CompanyAddress;
+            existingService.HasVouchingGuidance = service.HasVouchingGuidance;
             existingService.TOUFileLink = service.TOUFileLink;
             existingService.TOUFileName = service.TOUFileName;
             existingService.TOUFileSizeInKb = service.TOUFileSizeInKb;
