@@ -59,14 +59,31 @@ namespace DVSRegister.BusinessLogic.Services
                         actionLog.NewValues = JsonDocument.Parse(JsonSerializer.Serialize(updatedData));
                          if (actionDetailsEnum == ActionDetailsEnum.BusinessDetailsUpdate)
                         {
-                            StringBuilder stringBuilder = new();
-                            foreach (var item in previousData)
+
+                            if (!previousData.ContainsKey(Constants.RegisteredName) && !previousData.ContainsKey(Constants.TradingName))
                             {
-                                stringBuilder.Append(previousData[item.Key].FirstOrDefault() + " to " + updatedData[item.Key].FirstOrDefault() + " (" + item.Key + ")");
-                                stringBuilder.AppendLine();
+                                actionLog.DisplayMessage = string.Empty;
+                                actionLog.ShowInRegisterUpdates = false;
                             }
-                            displayMessage = stringBuilder.ToString();
-                            actionLog.ShowInRegisterUpdates = actionLogsDto.IsProviderPreviouslyPublished ? true : false;
+                            else
+                            {
+                                StringBuilder stringBuilder = new();
+                                if (previousData.ContainsKey(Constants.RegisteredName))
+                                {
+                                    stringBuilder.Append(previousData[Constants.RegisteredName].FirstOrDefault() + " to " + updatedData[Constants.RegisteredName].FirstOrDefault() + " (" + Constants.RegisteredName + ")");
+                                }
+
+                                if (previousData.ContainsKey(Constants.TradingName))
+                                {
+                                    if (!string.IsNullOrEmpty(stringBuilder.ToString()))
+                                        stringBuilder.AppendLine();
+
+                                    stringBuilder.Append(previousData[Constants.TradingName].FirstOrDefault() + " to " + updatedData[Constants.TradingName].FirstOrDefault() + " (" + Constants.TradingName + ")");
+                                }
+                                displayMessage = stringBuilder.ToString();
+                                actionLog.ShowInRegisterUpdates = actionLogsDto.IsProviderPreviouslyPublished ? true : false;
+                            }                       
+                         
                         }
                         else if (actionDetailsEnum == ActionDetailsEnum.ProviderContactUpdate)
                         {
