@@ -5,8 +5,8 @@ namespace DVSRegister.BusinessLogic.Services.CAB
 {
     public interface ICabService
     {
-        public Task<List<RoleDto>> GetRoles(decimal tfVersion);
-        public Task<List<IdentityProfileDto>> GetIdentityProfiles();
+        public Task<List<RoleDto>> GetRoles(decimal tfVersion);     
+        public Task<List<IdentityProfileDto>> GetIdentityProfiles(decimal? tfVersion = null);
         public Task<List<SupplementarySchemeDto>> GetSupplementarySchemes();
         public Task<List<TrustFrameworkVersionDto>> GetTfVersion();
         public Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId = 0);       

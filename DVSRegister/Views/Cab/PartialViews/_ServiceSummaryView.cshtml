@@ -399,7 +399,20 @@
                     @Html.ActionLink("Change", "ConfirmityExpiryDate", "CabService", new { fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change date of expiry" })
                 </dd>
             </div>
-
+            @if(is1_0Version)
+            {
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        Following vouching guidance
+                    </dt>
+                    <dd class="govuk-summary-list__value">
+                        @(Model.HasVouchingGuidance.GetValueOrDefault() ? "Yes" : "No")
+                    </dd>
+                    <dd class="govuk-summary-list__actions">
+                        @Html.ActionLink("Change", "VouchingGuidance", "TrustFramework0_4", new { fromSummaryPage = true }, new { @class = "govuk-link", @aria_label = "Change whether service is assessed against the vouching guidance" })
+                    </dd>
+                </div>
+            }
         </dl>
     </div>
 

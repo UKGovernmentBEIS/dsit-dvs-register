@@ -506,6 +506,35 @@
                                     </dd>
                                 }
                             </div>
+
+                             @if(is1_0Version)
+                             {
+                                 <div class="govuk-summary-list__row">
+                                     <dt class="govuk-summary-list__key">
+                                         Following vouching guidance
+                                     </dt>
+                                     <dd class="govuk-summary-list__value">
+                                            @if (Model.HasVouchingGuidance.HasValue)
+                                            {
+                                                hasValue = true;
+                                                @(Model.HasVouchingGuidance.Value ? "Yes" : "No")
+                                            }
+                                            else
+                                            {
+                                                hasValue = false;
+                                                @:Incomplete
+                                            }
+                                     </dd>
+                                      @if (hasValue)
+                                      {
+                                          <dd class="govuk-summary-list__actions">
+                                              @Html.ActionLink("Change", "VouchingGuidance", "TrustFramework0_4", new { fromDetailsPage = true },
+                                              new { @class = "govuk-link", @aria_label = "Change whether service is assessed against the vouching guidance" })
+                                          </dd>
+                                      }
+                                 </div>
+                              }
+
                         </dl>
                     </div>
                 </div>
