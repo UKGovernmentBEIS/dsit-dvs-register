@@ -23,7 +23,7 @@ namespace DVSRegister.Data.CAB
             return await context.Role.Include(x=>x.TrustFrameworkVersion).Where(x=>x.TrustFrameworkVersion.Version <= tfVersion).OrderBy(c => c.Order).ToListAsync();
         }
 
-        public async Task<List<IdentityProfile>> GetIdentityProfiles(decimal? tfVersion)
+        public async Task<List<IdentityProfile>> GetIdentityProfiles(decimal? tfVersion = null)
         {
             return await context.IdentityProfile
                 .Include(x => x.TrustFrameworkVersion)

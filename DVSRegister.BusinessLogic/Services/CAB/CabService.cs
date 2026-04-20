@@ -28,15 +28,12 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             var list = await cabRepository.GetSupplementarySchemes();
             return automapper.Map<List<SupplementarySchemeDto>>(list);
         }
-        
-        public Task<List<IdentityProfileDto>> GetIdentityProfiles()
-        {
-            return GetIdentityProfilesInternal(null);
-        }
+     
 
-        public Task<List<IdentityProfileDto>> GetIdentityProfiles(decimal tfVersion)
+        public async Task<List<IdentityProfileDto>> GetIdentityProfiles(decimal? tfVersion = null)
         {
-            return GetIdentityProfilesInternal(tfVersion);
+            var list = await cabRepository.GetIdentityProfiles(tfVersion);
+            return automapper.Map<List<IdentityProfileDto>>(list);
         }
 
         public async Task<List<TrustFrameworkVersionDto>> GetTfVersion()
@@ -185,13 +182,5 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         #endregion
 
 
-        #region Private methods
-        private async Task<List<IdentityProfileDto>> GetIdentityProfilesInternal(decimal? tfVersion)
-        {
-            var list = await cabRepository.GetIdentityProfiles(tfVersion);
-            return automapper.Map<List<IdentityProfileDto>>(list);
-        }
-
-        #endregion
     }
 }
