@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
-public class ValidCognitoTokenAttribute : ActionFilterAttribute
+public class ValidCognitoTokenAttribute : Attribute, IAuthorizationFilter
 {   
-    public override void OnActionExecuting(ActionExecutingContext context)
-    {
+    public void OnAuthorization(AuthorizationFilterContext context)
+{
         try
         {
             var sessionToken = context.HttpContext.Session.GetString("IdToken");
@@ -33,8 +33,7 @@ public class ValidCognitoTokenAttribute : ActionFilterAttribute
             {
                 throw new UnauthorizedAccessException("Invalid token");
             }
-
-            base.OnActionExecuting(context);
+        
         }
         catch (Exception ex)
         {
