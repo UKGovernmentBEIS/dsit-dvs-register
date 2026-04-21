@@ -205,19 +205,15 @@ namespace DVSRegister.Controllers
             if (ModelState.IsValid)
             {
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 || summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
-                {
+                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
                     return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SelectServiceType", "TrustFramework0_4");
-                }
+                else if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "VouchingGuidance", "TrustFramework0_4");
                 else
-                {
                     return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");                
-                }
             }
             else
-            {
                 return View("ProviderRoles", roleViewModel);
-            }
         }
         #endregion
 
@@ -421,23 +417,28 @@ namespace DVSRegister.Controllers
         }
 
         [HttpPost("supplementary-schemes-input")]
-        public async Task<IActionResult> SaveHasSupplementarySchemesInput(ServiceSummaryViewModel viewModel, string action)
+        public async Task<IActionResult> SaveHasSupplementarySchemesInput(ServiceSummaryViewModel viewModel,  string action)
         {
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            bool fromSummaryPage = viewModel.FromSummaryPage;
-            bool fromDetailsPage = viewModel.FromDetailsPage;
-            viewModel.IsAmendment = summaryViewModel.IsAmendment;           
-            if (ModelState["HasSupplementarySchemes"].Errors.Count == 0)
+            var summaryViewModel = GetServiceSummary();
+            viewModel.IsAmendment = summaryViewModel.IsAmendment;
+
+            bool allLowGPG45 = summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles.All(ip => ip.IdentityProfileType == IdentityProfileTypeEnum.Low);
+            bool isTFVersion1_0 = summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version ==  Constants.TFVersion1_0;
+
+            if (ModelState["HasSupplementarySchemes"].Errors.Count > 0)
+                return View("HasSupplementarySchemesInput", viewModel);
+
+            if (viewModel.HasSupplementarySchemes == true &&  isTFVersion1_0 && allLowGPG45)
             {
-                summaryViewModel.IsSchemeEditedFromSummary = viewModel.FromSummaryPage;
-                summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
-                summaryViewModel.RefererURL = viewModel.RefererURL;
-                return await HandleSchemeActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage);     
-            }
-            else
-            {
+               
+                ModelState.AddModelError("HasSupplementarySchemes", "The service cannot be certified against any supplementary codes. Select ‘No’ to proceed or change your GPG45 identity profiles selection");
                 return View("HasSupplementarySchemesInput", viewModel);
             }
+            summaryViewModel.IsSchemeEditedFromSummary = viewModel.FromSummaryPage;
+            summaryViewModel.HasSupplementarySchemes = viewModel.HasSupplementarySchemes;
+            summaryViewModel.RefererURL = viewModel.RefererURL;
+
+            return await HandleSchemeActions(action, summaryViewModel, viewModel.FromSummaryPage, viewModel.FromDetailsPage);
         }
 
         [HttpGet("supplementary-schemes")]
@@ -1114,7 +1115,7 @@ namespace DVSRegister.Controllers
             bool hasTfVersion1_0Data = true;
             if (vm.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
             {
-                hasTfVersion1_0Data = vm.TOUFileName != null;
+                hasTfVersion1_0Data = vm.TOUFileName != null && vm.HasVouchingGuidance.HasValue;
             }
 
             return hasBasicInfo

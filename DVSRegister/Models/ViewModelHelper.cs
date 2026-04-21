@@ -70,11 +70,9 @@ namespace DVSRegister.Models
                     {
                         schemeQualityLevelMapping.QualityLevel.SelectedQualityofAuthenticators = [];
                         schemeQualityLevelMapping.QualityLevel.SelectedLevelOfProtections = [];
-                    }
-                   
+                    }                   
                 }
             }
-
         }
 
         public static void ClearTFVersion0_4Fields(ServiceSummaryViewModel summaryViewModel)
@@ -92,8 +90,7 @@ namespace DVSRegister.Models
             summaryViewModel.TOUFileLink = null;
             summaryViewModel.TOUFileName = null;
             summaryViewModel.TOUFileSizeInKb = null;
-
-
+            summaryViewModel.HasVouchingGuidance = null;
         }
         public static void ClearUnderPinningServiceFields(ServiceSummaryViewModel summaryViewModel)
         {

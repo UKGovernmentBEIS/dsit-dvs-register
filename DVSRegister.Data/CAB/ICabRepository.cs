@@ -6,7 +6,7 @@ namespace DVSRegister.Data.CAB
     public interface ICabRepository
     { 
         public Task<List<Role>> GetRoles(decimal tfVersion);
-        public Task<List<IdentityProfile>> GetIdentityProfiles();
+        public Task<List<IdentityProfile>> GetIdentityProfiles(decimal? tfVersion = null);
         public Task<List<SupplementaryScheme>> GetSupplementarySchemes();
         public Task<List<TrustFrameworkVersion>> GetTfVersion();
         public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
