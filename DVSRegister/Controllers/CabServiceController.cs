@@ -430,8 +430,8 @@ namespace DVSRegister.Controllers
 
             if (viewModel.HasSupplementarySchemes == true &&  isTFVersion1_0 && allLowGPG45)
             {
-                // placeholder error message, can be updated with design team's wording
-                ModelState.AddModelError("HasSupplementarySchemes", "Supplementary schemes are not applicable for services with GPG45 no higher than low confidence");
+               
+                ModelState.AddModelError("HasSupplementarySchemes", "The service cannot be certified against any supplementary codes. Select ‘No’ to proceed or change your GPG45 identity profiles selection");
                 return View("HasSupplementarySchemesInput", viewModel);
             }
             summaryViewModel.IsSchemeEditedFromSummary = viewModel.FromSummaryPage;
