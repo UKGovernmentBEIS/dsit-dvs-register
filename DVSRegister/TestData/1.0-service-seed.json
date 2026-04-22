@@ -1,0 +1,235 @@
+{
+  "services": [
+    {
+      "Id": 0,
+      "ProviderProfileId": 0,
+      "Provider": null,
+      "ServiceName": "1.0 underpinning service ",
+      "ServiceKey": 0,
+      "ServiceVersion": 1,
+      "IsCurrent": true,
+      "WebSiteAddress": "www.yourcompanyexpress.co.uk",
+      "CompanyAddress": "address",
+      "ServiceRoleMapping": [
+        {
+          "RoleId": 1
+        },
+        {
+          "RoleId": 2
+        }
+      ],
+      "HasVouchingGuidance": true,
+      "HasGPG44": true,
+      "ServiceQualityLevelMapping": [
+        {
+          "QualityLevelId": 1
+        },
+        {
+          "QualityLevelId": 2
+        },
+        {
+          "QualityLevelId": 4
+        },
+        {
+          "QualityLevelId": 5
+        }
+      ],
+      "HasGPG45": true,
+      "ServiceIdentityProfileMapping": [
+        {
+          "IdentityProfileId": 1
+        },
+        {
+          "IdentityProfileId": 2
+        },
+        {
+          "IdentityProfileId": 7
+        },
+        {
+          "IdentityProfileId": 8
+        }
+      ],
+      "HasSupplementarySchemes": true,
+      "ServiceSupSchemeMapping": [
+        {
+          "SupplementarySchemeId": 3,
+          "HasGpg44Mapping": true,
+          "SchemeGPG44Mapping": [
+            {
+              "QualityLevelId": 1
+            },
+            {
+              "QualityLevelId": 2
+            },
+            {
+              "QualityLevelId": 4
+            },
+            {
+              "QualityLevelId": 5
+            }
+          ],
+          "SchemeGPG45Mapping": [
+            {
+              "IdentityProfileId": 7
+            },
+            {
+              "IdentityProfileId": 8
+            }
+          ]
+        }
+      ],
+      "FileName": "New cert.pdf",
+      "FileLink": "New cert_639123811103299567.pdf",
+      "FileSizeInKb": 306.0,
+      "ConformityIssueDate": "2026-04-12T00:00:00",
+      "ConformityExpiryDate": "2028-05-12T00:00:00",
+      "CabUserId": 0,
+      "ServiceStatus": 1,
+      "TrustFrameworkVersionId": 3,
+      "ServiceType": 1,
+      "IsInRegister": false,
+      "TOUFileName": "New cert.pdf",
+      "TOUFileLink": "termsofuse/New cert_639123811724850971.pdf",
+      "TOUFileSizeInKb": 306.0
+
+    },
+    {
+
+      "ProviderProfileId": 0,
+      "ServiceName": "1.0 white label with manual underpinning",
+      "WebSiteAddress": "www.yourcompanyexpress.co.uk",
+      "CompanyAddress": "address",
+      "ServiceRoleMapping": [
+        {
+          "RoleId": 1
+        },
+        {
+          "RoleId": 2
+        },
+        {
+          "RoleId": 3
+        }
+      ],
+      "HasVouchingGuidance": true,
+      "HasGPG44": true,
+      "ServiceQualityLevelMapping": [
+        {
+          "QualityLevelId": 1
+        },
+        {
+          "QualityLevelId": 2
+        },
+        {
+          "QualityLevelId": 4
+        },
+        {
+          "QualityLevelId": 5
+        }
+      ],
+      "HasGPG45": true,
+      "ServiceIdentityProfileMapping": [
+        {
+          "IdentityProfileId": 1
+        },
+        {
+          "IdentityProfileId": 2
+        },
+        {
+          "IdentityProfileId": 7
+        },
+        {
+          "IdentityProfileId": 8
+        }
+      ],
+      "HasSupplementarySchemes": true,
+      "ServiceSupSchemeMapping": [
+        {
+          "SupplementarySchemeId": 1,
+          "HasGpg44Mapping": false,
+          "SchemeGPG44Mapping": [],
+          "SchemeGPG45Mapping": [
+            {
+              "IdentityProfileId": 7
+            },
+            {
+              "IdentityProfileId": 8
+            }
+          ]
+        }
+      ],
+      "FileName": "New cert.pdf",
+      "FileLink": "New cert_639123824843570542.pdf",
+      "FileSizeInKb": 306.0,
+      "ConformityIssueDate": "2026-04-12T00:00:00",
+      "ConformityExpiryDate": "2028-05-12T00:00:00",
+      "CabUserId": 0,
+      "ServiceStatus": 1,
+      "EnableResubmission": false,
+      "TrustFrameworkVersionId": 3,
+      "ServiceType": 2,
+
+      "ManualUnderPinningService": {
+
+        "ServiceName": "Test underpinning service",
+        "ProviderName": "provider123",
+        "CabId": 6,
+        "CertificateExpiryDate": "2028-05-12T00:00:00"
+      },
+      "IsManualServiceLinkedToMultipleServices": false,
+      "IsUnderPinningServicePublished": false,
+      "TOUFileName": "New TOU.pdf",
+      "TOUFileLink": "termsofuse/New TOU_639123823341331822.pdf",
+      "TOUFileSizeInKb": 306.0
+
+    },
+    {
+      
+      "ProviderProfileId": 0, 
+      "ServiceName": "1.0 Neither service",     
+      "WebSiteAddress": "www.yourcompanyexpress.co.uk",
+      "CompanyAddress": "address",
+      "ServiceRoleMapping": [
+        {
+          "RoleId": 1
+        },
+        {
+          "RoleId": 2
+        }
+      ],
+      "HasVouchingGuidance": false,
+      "HasGPG44": true,
+      "ServiceQualityLevelMapping": [
+        {
+          "QualityLevelId": 1
+        },
+        {
+          "QualityLevelId": 2
+        },
+        {
+          "QualityLevelId": 4
+        },
+        {
+          "QualityLevelId": 5
+        }
+      ],
+      "HasGPG45": false,
+      "ServiceIdentityProfileMapping": [],
+      "HasSupplementarySchemes": false,
+      "ServiceSupSchemeMapping": [],
+      "FileName": "New cert.pdf",
+      "FileLink": "New cert_639123840099530738.pdf",
+      "FileSizeInKb": 306.0,
+      "ConformityIssueDate": "2026-04-12T00:00:00",
+      "ConformityExpiryDate": "2029-05-12T00:00:00",
+      "CabUserId": 0,  
+      "ServiceStatus": 1,
+      "EnableResubmission": false,
+      "TrustFrameworkVersionId": 3,
+      "ServiceType": 3, 
+      "TOUFileName": "New TOU.pdf",
+      "TOUFileLink": "termsofuse/New TOU_639123839835802551.pdf",
+      "TOUFileSizeInKb": 306.0
+     
+    }
+  ]
+}

@@ -5,6 +5,7 @@ using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.CabTransfer;
 using DVSRegister.BusinessLogic.Services.Edit;
+using DVSRegister.BusinessLogic.Services.TestData;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.GoogleAnalytics;
@@ -158,6 +159,7 @@ namespace DVSRegister
             services.AddScoped<IHomeRepository, HomeRepository>();
             services.AddScoped<IEditService, EditService>();
             services.AddScoped<IEditRepository, EditRepository>();
+            services.AddScoped<ITestDataService, TestDataService>();
             services.AddTransient<LoginEmailSender>();
             services.AddTransient<CabEmailSender>();
             services.AddTransient<Removal2iCheckEmailSender>();
