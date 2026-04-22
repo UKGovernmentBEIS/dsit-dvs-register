@@ -130,7 +130,7 @@ namespace DVSRegister.Controllers
             TempData.Keep("TestDataEnabled");
 
             var returnUrl = Request.Headers["Referer"].ToString();
-            if (!string.IsNullOrEmpty(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
