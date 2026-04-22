@@ -3,13 +3,15 @@
 @using DVSRegister.Extensions;
 @using DVSRegister.Models.Register
 @using DVSRegister.Models.UI
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
 
 @model AllProvidersViewModel
 
 @{
     ViewData["Title"] = "All providers";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-    ViewData["ActiveNav"] = "AllProviders";
+    ViewData["ActiveNav"] = "AllProviders";   
+    bool testDataEnabled = Convert.ToBoolean(TempData["TestDataEnabled"]);
 }
 
 <div class="govuk-width-container">
@@ -24,6 +26,20 @@
             <div class="govuk-grid-column-one-third govuk-!-text-align-right">
                 @Html.ActionLink("Create a provider profile", "BeforeYouStart", "CabProvider", null, new { @class = "govuk-button" })
             </div>
+
+            @if ((WebHostEnvironment.IsDevelopment() || WebHostEnvironment.IsStaging()) && testDataEnabled)
+            {
+                TempData.Keep("TestDataEnabled");
+                <div class="govuk-grid-column-one-third govuk-!-text-align-right">
+                @using (Html.BeginForm("CreateTestProvider", "TestData", FormMethod.Post))
+                {
+                    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                        Create test provider profile
+                    </button>
+                }
+                </div>
+
+            }
             @using (Html.BeginForm("AllProviders", "Home", FormMethod.Get))
             {
                 <div class="govuk-grid-column-two-thirds">

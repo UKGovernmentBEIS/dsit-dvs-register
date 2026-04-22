@@ -4,6 +4,7 @@
 
 @inject GoogleAnalyticsService GoogleAnalytics
 @inject CookieService CookieService
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
 <!DOCTYPE html>
 <html lang="en" class="govuk-template govuk-template--rebranded">
 <head>
@@ -162,7 +163,17 @@ await Html.RenderPartialAsync("_CookieBanner");
                             Privacy
                         </a>
                     </li>
-                </ul>
+                    @if(WebHostEnvironment.IsDevelopment() || WebHostEnvironment.IsStaging())
+                        {
+                            <li class="govuk-footer__inline-list-item">
+                                <form asp-controller="TestData" asp-action="Toggle" method="post" class="govuk-!-display-inline">
+                                    <button type="submit"  class="govuk-link govuk-link--no-visited-state govuk-button--link">
+                                        Toggle test data
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                    </ul>
                 <svg
                     aria-hidden="true"
                     focusable="false"

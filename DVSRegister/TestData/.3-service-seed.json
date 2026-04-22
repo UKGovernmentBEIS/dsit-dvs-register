@@ -1,0 +1,106 @@
+{
+  "services": [
+    {
+      "ProviderProfileId": 0,
+      "ServiceName": ".3 service full data",
+      "WebSiteAddress": "www.yourcompanyexpress.co.uk",
+      "CompanyAddress": "address",
+      "ServiceRoleMapping": [
+        {
+          "RoleId": 1
+        },
+        {
+          "RoleId": 2
+        }
+      ],
+      "HasVouchingGuidance": null,
+      "HasGPG44": true,
+      "ServiceQualityLevelMapping": [
+        {
+          "QualityLevelId": 1
+        },
+        {
+          "QualityLevelId": 2
+        },
+        {
+          "QualityLevelId": 4
+        },
+        {
+          "QualityLevelId": 5
+        }
+      ],
+      "HasGPG45": true,
+      "ServiceIdentityProfileMapping": [
+        {
+          "IdentityProfileId": 1
+        },
+        {
+          "IdentityProfileId": 2
+        }
+      ],
+      "HasSupplementarySchemes": true,
+      "ServiceSupSchemeMapping": [
+        {
+          "SupplementarySchemeId": 1
+        },
+        {
+          "SupplementarySchemeId": 2
+        }
+      ],
+      "FileName": "New cert.pdf",
+      "FileLink": "New cert_639123100905349369.pdf",
+      "FileSizeInKb": 306.0,
+      "ConformityIssueDate": "2026-04-12T00:00:00",
+      "ConformityExpiryDate": "2028-04-12T00:00:00",
+      "CabUserId": 0,
+      "ServiceStatus": 1,
+      "TrustFrameworkVersionId": 2
+
+    },
+    {
+
+      "ProviderProfileId": 140,
+      "ServiceName": ".3 no gpg44  service",
+      "WebSiteAddress": "www.yourcompanyexpress.co.uk",
+      "CompanyAddress": "address",
+      "ServiceRoleMapping": [
+        {
+          "RoleId": 1
+        },
+        {
+          "RoleId": 2
+        }
+      ],
+      "HasVouchingGuidance": null,
+      "HasGPG44": false,
+      "ServiceQualityLevelMapping": [],
+      "HasGPG45": true,
+      "ServiceIdentityProfileMapping": [
+        {
+          "IdentityProfileId": 1
+        },
+        {
+          "IdentityProfileId": 2
+        }
+      ],
+      "HasSupplementarySchemes": true,
+      "ServiceSupSchemeMapping": [
+        {
+          "SupplementarySchemeId": 1
+        },
+        {
+          "SupplementarySchemeId": 2
+        }
+      ],
+      "FileName": "New cert.pdf",
+      "FileLink": "New cert_639123169874489115.pdf",
+      "FileSizeInKb": 306.0,
+      "ConformityIssueDate": "2026-04-12T00:00:00",
+      "ConformityExpiryDate": "2028-05-12T00:00:00",
+      "CabUserId": 0,
+      "ServiceStatus": 1,   
+      "TrustFrameworkVersionId": 2
+
+    }
+  ]
+}
