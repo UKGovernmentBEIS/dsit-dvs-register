@@ -13,7 +13,7 @@
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
     <div class="govuk-width-container">
-        <a href="/cab-service/submit-service/provider-roles" class="govuk-back-link">
+        <a href="@Model.RefererURL" class="govuk-back-link">
             Back
         </a>
         <main id="main-content" class="govuk-main-wrapper" role="main">
