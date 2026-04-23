@@ -1,7 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @using DVSRegister.Models.UI.Enums
 @{
-    ViewData["Title"] = "Is the service certified against GPG 44";
+    ViewData["Title"] = "Does this service follow the vouching guidance";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -13,7 +13,7 @@
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
     <div class="govuk-width-container">
-        <a href="#" class="govuk-back-link">
+        <a href="@Model.RefererURL" class="govuk-back-link">
             Back
         </a>
         <main id="main-content" class="govuk-main-wrapper" role="main">

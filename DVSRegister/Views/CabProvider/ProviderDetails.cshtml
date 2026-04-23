@@ -4,6 +4,7 @@
 @using DVSRegister.Models.CAB.Provider
 @using DVSRegister.CommonUtility.Models.Enums;
 @model ProviderDetailsViewModel
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment WebHostEnvironment
 
 @{
     ViewData["Title"] = "Provider Details";
@@ -15,6 +16,8 @@
     bool isDraft = Model.Provider.ProviderStatus == ProviderStatusEnum.SavedAsDraft;
     bool hasValue = true;
     SourcePageEnum sourcePage = SourcePageEnum.profiledetails;
+
+    bool testDataEnabled = Convert.ToBoolean(TempData["TestDataEnabled"]);
 }
 
 
@@ -44,7 +47,10 @@
                         </button>
                     }
                 }
+               
             </div>
+          
+               
             <div class="govuk-grid-column-full">
                 <p class="govuk-body govuk-!-margin-bottom-7">
                     View or amend information about this provider, their services, or primary and secondary contacts.
@@ -368,6 +374,27 @@
                 {
                     <p class="govuk-body govuk-!-font-weight-bold">No services have been added yet.</p>
                 }
+                @if ((WebHostEnvironment.IsDevelopment() || WebHostEnvironment.IsStaging()) && testDataEnabled)
+                {
+                    TempData.Keep("TestDataEnabled");
+                    <div>
+                        @using (Html.BeginForm("CreateTestServices", "TestData", FormMethod.Post))
+                        {
+                            @Html.Hidden("providerId", Model.Provider.Id)
+                            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="version" value=".3">
+                                Add .3 test services
+                            </button>
+                            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="version" value=".4">
+                                Add .4 test services
+                            </button>
+                            <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button" name="version" value="1.0">
+                                Add 1.0 test services
+                            </button>
+                           @*  add new buttons for new tf versions *@
+                        }
+                    </div>
+
+                }
             </div>
             <div class="govuk-tabs__panel govuk-tabs__panel--hidden govuk-!-padding-0" id="contact-information">
                 <div class="govuk-summary-card">
@@ -569,5 +596,8 @@
                 </div>
             </div>
         </div>
+
+      
+
     </main>
 </div>

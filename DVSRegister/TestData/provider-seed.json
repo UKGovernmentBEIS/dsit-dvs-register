@@ -1,0 +1,27 @@
+{
+  "RegisteredName": "Test provider",
+  "TradingName": "Test provider Trading name",
+  "HasRegistrationNumber": true,
+  "CompanyRegistrationNumber": "AC012345",
+  "DUNSNumber": null,
+  "HasParentCompany": true,
+  "ParentCompanyRegisteredName": "re",
+  "ParentCompanyLocation": "USA",
+  "PrimaryContactFullName": "Primary Full name",
+  "PrimaryContactJobTitle": "Primary Job title",
+  "PrimaryContactEmail": "aiswarya.rajendran@dsit.gov.uk",
+  "PrimaryContactTelephoneNumber": "1234678",
+  "SecondaryContactFullName": "Secondary Full Name",
+  "SecondaryContactJobTitle": "Secondary Job title",
+  "SecondaryContactEmail": "aiswarya.rajendran@ie.ey.com",
+  "SecondaryContactTelephoneNumber": "12346678",
+  "PublicContactEmail": "sales@yourcompanyexpress.co.uk",
+  "ProviderTelephoneNumber": "123456",
+  "ProviderWebsiteAddress": "www.yourcompanyexpress.co.uk",
+  "LinkToContactPage": "www.yourcompanyexpress.co.uk/contact",
+  "ProviderStatus": 1,
+  "HasPendingCertificateUpload": false,
+  "IsInRegister": false
+  
+
+}
