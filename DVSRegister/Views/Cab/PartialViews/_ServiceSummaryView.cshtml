@@ -8,13 +8,14 @@
 @{
     bool isAbove0_3 = Model?.TFVersionViewModel?.SelectedTFVersion?.Version >= Constants.TFVersion0_4;
     bool is1_0Version = Model?.TFVersionViewModel?.SelectedTFVersion?.Version == Constants.TFVersion1_0;
+    var tableTitle = Model.ServiceStatus == ServiceStatusEnum.AmendmentsRequired ? "Submission date (GMT): " + @DateTimeExtensions.FormatDateTime(Model.CreatedDate) : "Service:" + @Model.ServiceName;
 }
 
 
 <div class="govuk-summary-card">
     <div class="govuk-summary-card__title-wrapper">
         <h2 class="govuk-summary-card__title">
-            Service: @Model.ServiceName
+            @tableTitle
         </h2>
     </div>
     <div class="govuk-summary-card__content">
@@ -47,15 +48,7 @@
             </div>
 
             @if (Model.ServiceStatus == ServiceStatusEnum.AmendmentsRequired )
-            {
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Submission date (GMT)
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        @DateTimeExtensions.FormatDateTime(Model.CreatedDate)
-                    </dd>
-                </div>
+            {               
 
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__key">
