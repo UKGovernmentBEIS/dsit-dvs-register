@@ -191,6 +191,7 @@ namespace DVSRegister.Controllers
             TOUFileViewModel.FromSummaryPage = false;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             TOUFileViewModel.IsAmendment = summaryViewModel.IsAmendment;
+            ViewBag.IsTFVersionChanged = summaryViewModel.IsTFVersionChanged;
             if (Convert.ToBoolean(TOUFileViewModel.FileUploadedSuccessfully) == false)
             {
                 if (ModelState["File"].Errors.Count == 0)
