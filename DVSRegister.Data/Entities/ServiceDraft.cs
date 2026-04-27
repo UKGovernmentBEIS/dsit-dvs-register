@@ -16,6 +16,7 @@ namespace DVSRegister.Data.Entities
         public string? WebSiteAddress { get; set; }
         public string? CompanyAddress { get; set; }
         public ICollection<ServiceRoleMappingDraft>? ServiceRoleMappingDraft { get; set; }
+        public bool? HasVouchingGuidance { get; set; }
         public bool? HasGPG44 { get; set; }       
         public ICollection<ServiceQualityLevelMappingDraft>? ServiceQualityLevelMappingDraft { get; set; }
         public bool? HasGPG45 { get; set; }

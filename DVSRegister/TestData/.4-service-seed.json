@@ -1,0 +1,355 @@
+{
+  "services": [
+    {
+
+      "ProviderProfileId": 0,
+      "ServiceName": ".4 underpinning service",
+      "WebSiteAddress": "www.yourcompanyexpress.co.uk",
+      "CompanyAddress": "address",
+      "ServiceRoleMapping": [
+        {
+          "RoleId": 1
+        },
+        {
+          "RoleId": 2
+        }
+      ],
+      "HasGPG44": true,
+      "ServiceQualityLevelMapping": [
+        {
+          "QualityLevelId": 1
+        },
+        {
+          "QualityLevelId": 2
+        },
+        {
+          "QualityLevelId": 4
+        },
+        {
+          "QualityLevelId": 5
+        }
+      ],
+      "HasGPG45": true,
+      "ServiceIdentityProfileMapping": [
+        {
+          "IdentityProfileId": 1
+        },
+        {
+          "IdentityProfileId": 2
+        },
+        {
+          "IdentityProfileId": 7
+        },
+        {
+          "IdentityProfileId": 8
+        }
+      ],
+      "HasSupplementarySchemes": true,
+      "ServiceSupSchemeMapping": [
+        {
+          "SupplementarySchemeId": 1,
+          "HasGpg44Mapping": true,
+          "SchemeGPG44Mapping": [
+            {
+              "QualityLevelId": 1
+            },
+            {
+              "QualityLevelId": 2
+            },
+            {
+              "QualityLevelId": 4
+            },
+            {
+              "QualityLevelId": 5
+            }
+          ],
+          "SchemeGPG45Mapping": [
+            {
+              "IdentityProfileId": 1
+            },
+            {
+              "IdentityProfileId": 2
+            },
+            {
+              "IdentityProfileId": 7
+            },
+            {
+              "IdentityProfileId": 8
+            }
+          ]
+        },
+        {
+          "SupplementarySchemeId": 2,
+          "HasGpg44Mapping": true,
+          "SchemeGPG44Mapping": [
+            {
+              "QualityLevelId": 1
+            },
+            {
+              "QualityLevelId": 2
+            },
+            {
+              "QualityLevelId": 4
+            },
+            {
+              "QualityLevelId": 5
+            }
+          ],
+          "SchemeGPG45Mapping": [
+            {
+              "IdentityProfileId": 1
+            },
+            {
+              "IdentityProfileId": 2
+            },
+            {
+              "IdentityProfileId": 7
+            },
+            {
+              "IdentityProfileId": 8
+            }
+          ]
+        }
+      ],
+      "FileName": "New cert.pdf",
+      "FileLink": "New cert_639123780990743253.pdf",
+      "FileSizeInKb": 306.0,
+      "ConformityIssueDate": "2025-04-12T00:00:00",
+      "ConformityExpiryDate": "2028-04-12T00:00:00",
+      "CabUserId": 0,
+      "ServiceStatus": 1,
+      "TrustFrameworkVersionId": 1,
+      "ServiceType": 1
+
+    },
+    {
+
+      "ProviderProfileId": 0,
+      "ServiceName": ".4 white label underpinning not in register  ",
+      "WebSiteAddress": "www.yourcompanyexpress.co.uk",
+      "CompanyAddress": "address",
+      "ServiceRoleMapping": [
+        {
+          "RoleId": 1
+        },
+        {
+          "RoleId": 2
+        }
+      ],
+
+      "HasGPG44": true,
+      "ServiceQualityLevelMapping": [
+        {
+          "QualityLevelId": 1
+        },
+        {
+          "QualityLevelId": 2
+        },
+        {
+          "QualityLevelId": 4
+        },
+        {
+          "QualityLevelId": 5
+        },
+        {
+          "QualityLevelId": 6
+        }
+      ],
+      "HasGPG45": true,
+      "ServiceIdentityProfileMapping": [
+        {
+          "IdentityProfileId": 1
+        },
+        {
+          "IdentityProfileId": 2
+        },
+        {
+          "IdentityProfileId": 7
+        },
+        {
+          "IdentityProfileId": 8
+        }
+      ],
+      "HasSupplementarySchemes": true,
+      "ServiceSupSchemeMapping": [
+        {
+          "SupplementarySchemeId": 1,
+          "HasGpg44Mapping": true,
+          "SchemeGPG44Mapping": [
+            {
+              "QualityLevelId": 1
+            },
+            {
+              "QualityLevelId": 2
+            },
+            {
+              "QualityLevelId": 4
+            },
+            {
+              "QualityLevelId": 5
+            }
+          ],
+          "SchemeGPG45Mapping": [
+            {
+              "IdentityProfileId": 1
+            },
+            {
+              "IdentityProfileId": 2
+            },
+            {
+              "IdentityProfileId": 7
+            },
+            {
+              "IdentityProfileId": 8
+            }
+          ]
+        },
+        {
+          "SupplementarySchemeId": 2,
+          "HasGpg44Mapping": true,
+          "SchemeGPG44Mapping": [
+            {
+              "QualityLevelId": 1
+            },
+            {
+              "QualityLevelId": 2
+            },
+            {
+              "QualityLevelId": 6
+            }
+          ],
+          "SchemeGPG45Mapping": [
+            {
+              "IdentityProfileId": 1
+            },
+            {
+              "IdentityProfileId": 2
+            },
+            {
+              "IdentityProfileId": 7
+            },
+            {
+              "IdentityProfileId": 8
+            }
+          ]
+        }
+      ],
+      "FileName": "New cert.pdf",
+      "FileLink": "New cert_639123791217641519.pdf",
+      "FileSizeInKb": 306.0,
+      "ConformityIssueDate": "2026-04-12T00:00:00",
+      "ConformityExpiryDate": "2029-05-12T00:00:00",
+      "CabUserId": 0,
+      "ServiceStatus": 1,
+      "EnableResubmission": false,
+      "TrustFrameworkVersionId": 1,
+      "ServiceType": 2,
+      "UnderPinningServiceId": null,
+      "ManualUnderPinningServiceId": null,
+      "ManualUnderPinningService": {
+        "ServiceName": "Manual entry service",
+        "ProviderName": "Manual entry provider",
+        "CabId": 2,
+        "CertificateExpiryDate": "2028-05-12T00:00:00"
+      },
+      "IsManualServiceLinkedToMultipleServices": false,
+      "IsUnderPinningServicePublished": false,
+      "IsInRegister": false
+
+
+    },
+    { 
+      "ProviderProfileId": 0,      
+      "ServiceName": ".4 Neither service",        
+      "WebSiteAddress": "www.yourcompanyexpress.co.uk",
+      "CompanyAddress": "address",
+      "ServiceRoleMapping": [
+        {
+          "RoleId": 1
+        },
+        {
+          "RoleId": 2
+        },
+        {
+          "RoleId": 3
+        }
+      ],
+    
+      "HasGPG44": true,
+      "ServiceQualityLevelMapping": [
+        {
+          "QualityLevelId": 1
+        },
+        {
+          "QualityLevelId": 2
+        },
+        {
+          "QualityLevelId": 4
+        },
+        {
+          "QualityLevelId": 5
+        }
+      ],
+      "HasGPG45": true,
+      "ServiceIdentityProfileMapping": [
+        {
+          "IdentityProfileId": 1
+        },
+        {
+          "IdentityProfileId": 2
+        },
+        {
+          "IdentityProfileId": 7
+        },
+        {
+          "IdentityProfileId": 8
+        }
+      ],
+      "HasSupplementarySchemes": true,
+      "ServiceSupSchemeMapping": [
+        {
+          "SupplementarySchemeId": 1,
+          "HasGpg44Mapping": true,
+          "SchemeGPG44Mapping": [
+            {
+              "QualityLevelId": 1
+            },
+            {
+              "QualityLevelId": 2
+            },
+            {
+              "QualityLevelId": 4
+            },
+            {
+              "QualityLevelId": 5
+            }
+          ],
+          "SchemeGPG45Mapping": [
+            {
+              "IdentityProfileId": 1
+            },
+            {
+              "IdentityProfileId": 2
+            },
+            {
+              "IdentityProfileId": 7
+            },
+            {
+              "IdentityProfileId": 8
+            }
+          ]
+        }
+      ],
+      "FileName": "New cert.pdf",
+      "FileLink": "New cert_639123804851703755.pdf",
+      "FileSizeInKb": 306.0,
+      "ConformityIssueDate": "2026-04-12T00:00:00",
+      "ConformityExpiryDate": "2028-04-12T00:00:00",
+      "CabUserId": 0,
+      "ServiceStatus": 1,
+      "TrustFrameworkVersionId": 1,     
+      "ServiceType": 3     
+    
+    }
+  ]
+}

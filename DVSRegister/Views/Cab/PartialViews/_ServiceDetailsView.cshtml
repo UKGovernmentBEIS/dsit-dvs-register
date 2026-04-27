@@ -7,7 +7,6 @@
 
 @{
     bool hasRemovalRequest = Model.ServiceStatus == ServiceStatusEnum.CabAwaitingRemovalConfirmation ? true : false;
-    bool hasValue = true;
     bool is1_0Version = Model?.TrustFrameworkVersion?.Version == Constants.TFVersion1_0;
     bool isAbove0_3 = Model?.TrustFrameworkVersion?.Version >= Constants.TFVersion0_4;
     bool isEdit = Model.ServiceStatus == ServiceStatusEnum.UpdatesRequested ? true : false;
@@ -31,7 +30,7 @@
                         <a class="govuk-link" href="@Url.Action("BeforeYouSubmitNewCertificate", "CabServiceReApplication", new { serviceKey = Model.ServiceKey, providerProfileId = Model.ProviderProfileId, currentServiceId = Model.Id, isReupload = true })">Upload a replacement certificate</a>
                     </li>
                 </ul>
-            }                                
+            }                                 
             else if (Model.EnableResubmission)
             {
                 <ul class="govuk-summary-card__actions">
@@ -58,8 +57,7 @@
                         Name of service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @{ hasValue = !String.IsNullOrEmpty(Model.ServiceName); }
-                        @( hasValue ? Model.ServiceName : "Incomplete")
+                        @Model.ServiceName
                     </dd>
                 </div>         
                 <div class="govuk-summary-list__row">
@@ -77,16 +75,7 @@
                         URL link to the service
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model.WebSiteAddress != null)
-                        {
-                            @Model.WebSiteAddress
-                        }
-                        else
-                        {
-                            hasValue = false;
-                            @:Incomplete
-                        }
-
+                        @Model.WebSiteAddress
                     </dd>
                 </div>
                 <div class="govuk-summary-list__row">
@@ -94,15 +83,7 @@
                         Company address details
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model.CompanyAddress != null)
-                        {
-                            @HtmlExtensions.ToStringWithLineBreaks(Model.CompanyAddress)
-                        }
-                        else
-                        {
-                            hasValue = false;
-                            @:Incomplete
-                        }
+                        @HtmlExtensions.ToStringWithLineBreaks(Model.CompanyAddress)
                     </dd>
                 </div>    
                 @if(is1_0Version)
@@ -112,15 +93,7 @@
                         Signed Terms of Use for the UK CertifID trust mark
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (!string.IsNullOrEmpty(Model?.TOUFileName))
-                            {
-                                @Model.TOUFileName
-                            }
-                            else
-                            {
-                                hasValue = false;
-                                @:Incomplete
-                            }
+                             @Model.TOUFileName                      
                         </dd>
                     </div>                
                 }            
@@ -129,17 +102,9 @@
                         Roles certified against
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model.ServiceRoleMapping.Count > 0)
+                        @foreach (var item in Model.ServiceRoleMapping)
                         {
-                            @foreach (var item in Model.ServiceRoleMapping)
-                            {
-                                @item.Role.RoleName <br />
-                            }
-                        }
-                        else
-                        {
-                            hasValue = false;
-                            @:Incomplete
+                            @item.Role.RoleName <br />
                         }
                     </dd>
                 </div>
@@ -173,8 +138,7 @@
                                 GPG 45 identity profiles
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
-                                {
+                                @{
                                     var groupedProfiles = Model.ServiceIdentityProfileMapping
                                     .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
                                     .ToDictionary(group => group.Key, group => group.ToList())
@@ -191,11 +155,6 @@
                                         }
                                         <br>                                           
                                     }
-                                }
-                                else
-                                {
-                                    hasValue = false;
-                                    @:Incomplete
                                 }
                             </dd>
                         </div>
@@ -219,17 +178,9 @@
                             GPG 44 quality of authenticator
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                            @foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                             {
-                                foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Authentication))
-                                {
-                                    @item.QualityLevel.Level <br />
-                                }
-                            }
-                            else
-                            {
-                                hasValue = false;
-                                @:Incomplete
+                                @item.QualityLevel.Level <br />
                             }
                         </dd>
                     </div>
@@ -239,17 +190,9 @@
                             GPG 44 level of protection
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                            @foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
                             {
-                                foreach (var item in Model.ServiceQualityLevelMapping.Where(s => s.QualityLevel.QualityType == QualityTypeEnum.Protection))
-                                {
-                                    @item.QualityLevel.Level <br />
-                                }
-                            }
-                            else
-                            {
-                                hasValue = false;
-                                @:Incomplete
+                                @item.QualityLevel.Level <br />
                             }
                         </dd>
                     </div>
@@ -275,17 +218,9 @@
                                 GPG 45 identity profiles
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
+                                @foreach (var item in Model.ServiceIdentityProfileMapping)
                                 {
-                                    @foreach (var item in Model.ServiceIdentityProfileMapping)
-                                    {
-                                        @item.IdentityProfile.IdentityProfileName <br />
-                                    }
-                                }
-                                else
-                                {
-                                    hasValue = false;
-                                    @:Incomplete
+                                    @item.IdentityProfile.IdentityProfileName <br />
                                 }
                             </dd>
                         </div>                        
@@ -310,18 +245,10 @@
                             Supplementary codes
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model?.ServiceSupSchemeMapping?.Count > 0)
+                            @foreach (var item in Model.ServiceSupSchemeMapping)
                             {
-                                @foreach (var item in Model.ServiceSupSchemeMapping)
-                                {
-                                    @item.SupplementaryScheme.SchemeName <br />
-                                }
-                            }
-                            else
-                            {
-                                hasValue = false;
-                                @:Incomplete
-                            }
+                                @item.SupplementaryScheme.SchemeName <br />
+                            } 
                         </dd>
                     </div>
 
@@ -331,15 +258,7 @@
                         Date of issue
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model.ConformityIssueDate != DateTime.MinValue)
-                        {
-                            @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
-                        }
-                        else
-                        {
-                            hasValue = false;
-                            @:Incomplete
-                        }
+                        @DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMM yyyy")
                     </dd>
                 </div>
 
@@ -348,17 +267,21 @@
                         Date of expiry
                     </dt>
                     <dd class="govuk-summary-list__value">
-                        @if (Model.ConformityExpiryDate != DateTime.MinValue)
-                        {
-                            @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMM yyyy")
-                        }
-                        else
-                        {
-                            hasValue = false;
-                            @:Incomplete
-                        }
+                        @DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMM yyyy")
                     </dd>
                 </div>
+
+                @if(is1_0Version)
+                {
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            Following vouching guidance
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @(Model.HasVouchingGuidance.GetValueOrDefault() ? "Yes" : "No")
+                        </dd>
+                    </div>
+                 }
 
             </dl>
         </div>
@@ -404,7 +327,6 @@
    {
         @foreach (var schemeMapping in Model.ServiceSupSchemeMapping)
         {
-            hasValue = true;
            <hr class="govuk-section-break govuk-section-break--m">
             <div class="govuk-summary-card">
                 <div class="govuk-summary-card__title-wrapper">
@@ -420,30 +342,23 @@
                                 GPG 45 identity profiles
                             </dt>
                             <dd class="govuk-summary-list__value">
-
-                                @if (schemeMapping.SchemeGPG45Mapping != null && schemeMapping.SchemeGPG45Mapping .Count > 0)
-                                {
+                                @{
                                     var groupedProfiles = schemeMapping.SchemeGPG45Mapping
                                         .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
                                         .ToDictionary(group => group.Key, group => group.ToList())
                                         .OrderBy(g => g.Key);
-
-                                        foreach (var group in groupedProfiles)
+                                        
+                                    foreach (var group in groupedProfiles)
+                                    {
+                                        <strong>@group.Key</strong>
+                                        <br>
+                                        foreach (var identity in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
                                         {
-                                            <strong>@group.Key</strong>
-                                            <br>
-                                            foreach (var identity in group.Value.OrderBy(c => c.IdentityProfile.IdentityProfileName))
-                                            {
-                                                @identity.IdentityProfile.IdentityProfileName
-                                                <br>
-                                            }
+                                            @identity.IdentityProfile.IdentityProfileName
                                             <br>
                                         }
-                                }
-                                else
-                                {
-                                    hasValue = false;
-                                    @:Incomplete                                  
+                                        <br>
+                                    }
                                 }
                             </dd>   
                         </div>
@@ -464,16 +379,7 @@
                                 }
                                 else
                                 {
-                                    if(schemeMapping.HasGpg44Mapping == false)
-                                    {
-                                        <div>@Constants.NullFieldsDisplay</div>
-                                    }
-                                    else
-                                    {
-                                        hasValue = false;
-                                        @:Incomplete
-                                    }
-                                   
+                                    @Constants.NullFieldsDisplay                                   
                                 }
                             </dd>                           
                         </div>
@@ -493,15 +399,7 @@
                                 }
                                 else
                                 {
-                                    if (schemeMapping.HasGpg44Mapping == false)
-                                    {
-                                        <div>@Constants.NullFieldsDisplay</div>
-                                    }
-                                    else
-                                    {
-                                        hasValue = false;
-                                        @:Incomplete
-                                    }
+                                    @Constants.NullFieldsDisplay
                                 }
                             </dd>                            
                         </div>
@@ -513,7 +411,6 @@
 
     @if(Model.UnderPinningService == null  && Model.ManualUnderPinningService!= null )
     {
-        hasValue = true;
         <div class="govuk-summary-card">
             <div class="govuk-summary-card__title-wrapper">
                 <h2 class="govuk-summary-card__title">
@@ -522,78 +419,38 @@
             </div>
             <div class="govuk-summary-card__content">
                 <dl class="govuk-summary-list">
-
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             Service name
                         </dt>
                         <dd class="govuk-summary-list__value">
-
-                            @if (Model?.ManualUnderPinningService?.ServiceName!= null)
-                            {
-                                @Model?.ManualUnderPinningService?.ServiceName
-                            }
-                            else
-                            {
-                                hasValue = false;
-                                @:Incomplete
-                            }
-
+                            @Model?.ManualUnderPinningService?.ServiceName
                         </dd>
                     </div>
-
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             Service provider
                         </dt>
                         <dd class="govuk-summary-list__value">
-
-                            @if (Model?.ManualUnderPinningService?.ProviderName != null)
-                            {
-                                @Model.ManualUnderPinningService.ProviderName
-                            }
-                            else
-                            {
-                                hasValue = false;
-                                @:Incomplete
-                            }
+                            @Model.ManualUnderPinningService.ProviderName
                         </dd>
                     </div>
-
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             CAB of underpinning service
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model.ManualUnderPinningService?.Cab?.CabName != null)
-                            {
-                                @Model.ManualUnderPinningService.Cab.CabName
-                            }
-                            else
-                            {
-                                hasValue = false;
-                                @:Incomplete
-                            }
+                            @Model.ManualUnderPinningService.Cab.CabName
                         </dd>
                     </div>
-
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             Underpinning service <br /> certificate expiry date
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @if (Model?.ManualUnderPinningService?.CertificateExpiryDate != null)
-                            {
-                                @DateTimeExtensions.FormatDateTime(Model.ManualUnderPinningService.CertificateExpiryDate, "dd MMM yyyy")
-                            }
-                            else
-                            {
-                                hasValue = false;
-                                @:Incomplete
-                            }
+                            @DateTimeExtensions.FormatDateTime(Model.ManualUnderPinningService.CertificateExpiryDate, "dd MMM yyyy")
                         </dd>
                     </div>
-
                 </dl>
             </div>
         </div>
@@ -601,7 +458,6 @@
 
     else if( Model.ManualUnderPinningService == null && Model.UnderPinningService !=null )
     {
-        hasValue = true;
         <div class="govuk-summary-card">
            <div class="govuk-summary-card__title-wrapper">
             <h2 class="govuk-summary-card__title">
@@ -610,7 +466,6 @@
         </div>
             <div class="govuk-summary-card__content">
                 <dl class="govuk-summary-list">
-
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             Service name

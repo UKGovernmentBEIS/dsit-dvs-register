@@ -5,6 +5,7 @@ using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.CabTransfer;
 using DVSRegister.BusinessLogic.Services.Edit;
+using DVSRegister.BusinessLogic.Services.TestData;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.GoogleAnalytics;
@@ -20,6 +21,7 @@ using DVSRegister.Data.TrustFramework;
 using DVSRegister.Middleware;
 using DVSRegister.Services.Cookies;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
@@ -50,6 +52,11 @@ namespace DVSRegister
                 options.Preload = true;
                 options.IncludeSubDomains = true;
                 options.MaxAge = TimeSpan.FromDays(1);
+            });
+            
+            services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
             });
             string connectionString = string.Format(configuration.GetValue<string>("DB_CONNECTIONSTRING"));
             services.AddDbContext<DVSRegisterDbContext>(opt =>
@@ -152,6 +159,7 @@ namespace DVSRegister
             services.AddScoped<IHomeRepository, HomeRepository>();
             services.AddScoped<IEditService, EditService>();
             services.AddScoped<IEditRepository, EditRepository>();
+            services.AddScoped<ITestDataService, TestDataService>();
             services.AddTransient<LoginEmailSender>();
             services.AddTransient<CabEmailSender>();
             services.AddTransient<Removal2iCheckEmailSender>();

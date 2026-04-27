@@ -212,6 +212,7 @@ namespace DVSRegister.Controllers
                 ServiceURL = serviceDto.WebSiteAddress,
                 CompanyAddress = serviceDto.CompanyAddress,
                 RoleViewModel = roleViewModel,
+                HasVouchingGuidance = serviceDto.HasVouchingGuidance,
                 TOUFileLink = serviceDto.TOUFileLink,
                 TOUFileName = serviceDto.TOUFileName,
                 TOUFileSizeInKb = serviceDto.TOUFileSizeInKb,
