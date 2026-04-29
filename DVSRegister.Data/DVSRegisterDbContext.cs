@@ -73,6 +73,9 @@ namespace DVSRegister.Data
         public DbSet<ServiceBulkRemovalRequest> ServiceBulkRemovalRequest { get; set; }
         public DbSet<ServiceBulkRemovalRequestDraft> ServiceBulkRemovalRequestDraft { get; set; }
 
+        public DbSet<ServiceSupSchemeCustomDisplay> ServiceSupSchemeCustomDisplay { get; set; }
+        public DbSet<ServiceCustomDisplayChangeRequest> ServiceCustomDisplayChangeRequest { get; set; }
+
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
             if (actorId !=null)
@@ -186,7 +189,14 @@ namespace DVSRegister.Data
             modelBuilder.Entity<TrustmarkNumber>()
             .ToTable(b => b.HasCheckConstraint("CK_CompanyId", "\"CompanyId\" BETWEEN 200 AND 9999"));
             modelBuilder.Entity<TrustmarkNumber>()
-            .ToTable(b => b.HasCheckConstraint("CK_ServiceNumber", "\"ServiceNumber\" BETWEEN 1 AND 99"));  
+            .ToTable(b => b.HasCheckConstraint("CK_ServiceNumber", "\"ServiceNumber\" BETWEEN 1 AND 99"));
+
+
+            modelBuilder.Entity<ServiceCustomDisplayChangeRequest>(entity =>
+            {
+                entity.Property(e => e.OldValue).HasColumnType("jsonb");
+                entity.Property(e => e.NewValue).HasColumnType("jsonb");
+            });
 
 
             modelBuilder.Entity<QualityLevel>().HasData(
@@ -284,7 +294,7 @@ namespace DVSRegister.Data
                 new ActionCategory { Id = 2, ActionKey = nameof(ActionCategoryEnum.PI), ActionName = "Public interest checks" },
                 new ActionCategory { Id = 3, ActionKey = nameof(ActionCategoryEnum.ServiceUpdates), ActionName = "Service updates" },
                 new ActionCategory { Id = 4, ActionKey = nameof(ActionCategoryEnum.ProviderUpdates), ActionName = "Provider updates" },
-                new ActionCategory { Id = 5, ActionKey = nameof(ActionCategoryEnum.ActionRequests), ActionName = "Service removal, reassign" });
+                new ActionCategory { Id = 5, ActionKey = nameof(ActionCategoryEnum.ActionRequests), ActionName = "Service removal, reassign, custom display" });
 
             modelBuilder.Entity<ActionDetails>().HasData(
                 new ActionDetails { Id = 1, ActionDetailsKey = nameof(ActionDetailsEnum.CR_APR), ActionDescription = "Certificate review passed\nInvitation email sent", ActionCategoryId = 1},
@@ -323,7 +333,13 @@ namespace DVSRegister.Data
                 new ActionDetails { Id = 29, ActionDetailsKey = nameof(ActionDetailsEnum.ServiceReassigned), ActionDescription = "Service reassigned", ActionCategoryId = 5 },
                 new ActionDetails { Id = 30, ActionDetailsKey = nameof(ActionDetailsEnum.ReassignRequestCancelled), ActionDescription = "Reassignment request cancelled", ActionCategoryId = 5 },
                 new ActionDetails { Id = 31, ActionDetailsKey = nameof(ActionDetailsEnum.ReassignRequestRejected), ActionDescription = "Reassignment request rejected", ActionCategoryId = 5 },
-                new ActionDetails { Id = 32, ActionDetailsKey = nameof(ActionDetailsEnum.ProviderAndServiceRemoved), ActionDescription = "Service removed from register\nProvider removed from register", ActionCategoryId = 5 }
+                new ActionDetails { Id = 32, ActionDetailsKey = nameof(ActionDetailsEnum.ProviderAndServiceRemoved), ActionDescription = "Service removed from register\nProvider removed from register", ActionCategoryId = 5 },
+
+                new ActionDetails { Id = 35, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeRequestSent), ActionDescription = "Display change request sent", ActionCategoryId = 5 },
+                new ActionDetails { Id = 36, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeCompleted), ActionDescription = "Display change completed", ActionCategoryId = 5 },
+                new ActionDetails { Id = 37, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeRequestCancelled), ActionDescription = "Display change request cancelled", ActionCategoryId = 5 },
+                new ActionDetails { Id = 38, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeRequestDeclined), ActionDescription = "Display change request declined", ActionCategoryId = 5 }
+                
 
 
 

@@ -152,6 +152,9 @@ namespace DVSRegister.BusinessLogic
             CreateMap<DownloadLogoToken, DownloadLogoTokenDto>();
             CreateMap<DownloadLogoTokenDto, DownloadLogoToken>();
 
+            CreateMap<ServiceSupSchemeCustomDisplayDto, ServiceSupSchemeCustomDisplay>();
+            CreateMap<ServiceSupSchemeCustomDisplay, ServiceSupSchemeCustomDisplayDto>();
+
 
         }
     }
