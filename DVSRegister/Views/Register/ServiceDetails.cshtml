@@ -142,16 +142,18 @@
                                 <dt class="govuk-summary-list__key">Underpinning or white-labelled service</dt>
                                 <dd class="govuk-summary-list__value">@ViewModelHelper.GetServiceType(Model.ServiceType)</dd>
                             </div>
+                            @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
+                            {
+                                var groupedProfiles = Model.ServiceIdentityProfileMapping
+                                .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
+                                .ToDictionary(group => group.Key, group => group.ToList())
+                                .OrderBy(g => g.Key);
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Identity profiles</dt>
                                 <dd class="govuk-summary-list__value">
-                                    @if (Model?.ServiceIdentityProfileMapping?.Count > 0)
-                                    {
-                                        var groupedProfiles = Model.ServiceIdentityProfileMapping
-                                        .GroupBy(profile => profile.IdentityProfile.IdentityProfileType)
-                                        .ToDictionary(group => group.Key, group => group.ToList())
-                                        .OrderBy(g => g.Key);
-                                        foreach (var group in groupedProfiles)
+                                    
+                                      
+                                        @foreach (var group in groupedProfiles)
                                         {
                                             <strong>@group.Key</strong>
 
@@ -164,62 +166,55 @@
                                             }
 
                                             <br>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <div>@Constants.NullFieldsDisplay</div>
-                                    }
+                                        }                                 
+                                    
                                 </dd>
                             </div>
+                            }
+                            @if (Model?.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                            {
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Quality of authenticator</dt>
                                 <dd class="govuk-summary-list__value">
-                                    @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
-                                    {
-                                        foreach (var item in Model.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
+                                  
+                                        @foreach (var item in Model.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                                         {
                                             <div>@item.QualityLevel.Level</div>
                                         }
-                                    }
-                                    else
-                                    {
-                                        <div>@Constants.NullFieldsDisplay</div>
-                                    }
+                                    
+                                    
                                 </dd>
                             </div>
+                            }
+                            @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
+                            {
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Quality of protection</dt>
                                 <dd class="govuk-summary-list__value">
-                                    @if (Model.ServiceQualityLevelMapping != null && Model.ServiceQualityLevelMapping.Any(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
-                                    {
+                                   
                                         @foreach (var item in Model.ServiceQualityLevelMapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
                                         {
                                             <div>@item.QualityLevel.Level</div>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <div>@Constants.NullFieldsDisplay</div>
-                                    }
+                                        }                                  
+                                    
                                 </dd>
                             </div>
+                            }
+                            @if (Model.ServiceSupSchemeMapping!= null && Model.ServiceSupSchemeMapping.Any())
+                            {
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Supplementary codes</dt>
                                 <dd class="govuk-summary-list__value">
-                                    @if (Model.ServiceSupSchemeMapping.Any())
-                                    {
+                                  
                                         @foreach (var item in Model.ServiceSupSchemeMapping)
                                         {
                                             <div>@item.SupplementaryScheme.SchemeName</div>
                                         }
-                                    }
-                                    else
-                                    {
-                                        <div>@Constants.NullFieldsDisplay</div>
-                                    }
+                                  
+                                    
                                 </dd>
                             </div>
+                            }
                             <div class="govuk-summary-list__row">
                                 <dt class="govuk-summary-list__key">Certificate of conformity's date of issue</dt>
                                 <dd class="govuk-summary-list__value">@DateTimeExtensions.FormatDateTime(Model.ConformityIssueDate, "dd MMMM yyyy")</dd>
@@ -232,7 +227,7 @@
                     </div>
                 </div>
 
-                @if (isAbove0_3 && Model.ServiceType != ServiceTypeEnum.UnderPinning)
+                @if (isAbove0_3 )
                 {
                     @if (Model?.ServiceSupSchemeMapping != null && Model.ServiceSupSchemeMapping.Count > 0)
                     {
@@ -251,7 +246,11 @@
                                                 <strong style="font-size: larger;">@schemeMapping.SupplementaryScheme.SchemeName</strong>
                                             </dt>
                                         </div>
-                                        <div class="govuk-summary-list__row">
+
+                                        @if (@schemeMapping.SchemeGPG45Mapping != null && schemeMapping.SchemeGPG45Mapping.Count>0)
+                                        {
+                                        
+                                            <div class="govuk-summary-list__row">
                                             <dt class="govuk-summary-list__key">
                                                 Identity profiles
                                             </dt>
@@ -276,52 +275,49 @@
                                                 }
                                             </dd>
                                         </div>
+                                        }
+
+                                        @if (schemeMapping.SchemeGPG44Mapping != null && schemeMapping.SchemeGPG44Mapping.Count > 0)
+                                        {
                                         <div class="govuk-summary-list__row">
                                             <dt class="govuk-summary-list__key">
                                                 GPG 44 quality of authentication
                                             </dt>
                                             <dd class="govuk-summary-list__value">
-                                                @if (schemeMapping.SchemeGPG44Mapping != null && schemeMapping.SchemeGPG44Mapping.Count > 0)
-                                                {
+                                               
                                                     @foreach (var item in schemeMapping.SchemeGPG44Mapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Authentication))
                                                     {
                                                         @item.QualityLevel.Level
                                                         <br>
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    <div>@Constants.NullFieldsDisplay</div>
-
-                                                }
+                                                    }                                               
+                                               
                                             </dd>
                                         </div>
+                                        }
+
+                                        @if (schemeMapping.SchemeGPG44Mapping != null && schemeMapping.SchemeGPG44Mapping.Count > 0)
+                                        {
                                         <div class="govuk-summary-list__row">
                                             <dt class="govuk-summary-list__key">
                                                 GPG 44 quality of protection
                                             </dt>
                                             <dd class="govuk-summary-list__value">
-                                                @if (schemeMapping.SchemeGPG44Mapping != null && schemeMapping.SchemeGPG44Mapping.Count > 0)
-                                                {
+                                               
                                                     @foreach (var item in schemeMapping.SchemeGPG44Mapping.Where(x => x.QualityLevel.QualityType == QualityTypeEnum.Protection))
                                                     {
                                                         @item.QualityLevel.Level
                                                         <br>
                                                     }
-                                                }
-                                                else
-                                                {
-                                                    <div>@Constants.NullFieldsDisplay</div>
-                                                }
                                             </dd>
                                         </div>
+                                        }
                                      }
                                 </dl>
                             </div>
                         </div>
                     }
 
-                    @if (Model.UnderPinningService == null && Model.ManualUnderPinningService != null)
+                    @if (Model?.UnderPinningService == null && Model?.ManualUnderPinningService != null)
                     {
                         <div class="govuk-summary-card">
                             <div class="govuk-summary-card__title-wrapper">
@@ -373,7 +369,7 @@
                             </div>
                                 }
 
-                    else if (Model.ManualUnderPinningService == null && Model.UnderPinningService != null)
+                    else if (Model?.ManualUnderPinningService == null && Model?.UnderPinningService != null)
                     {
                         <div class="govuk-summary-card">
                             <div class="govuk-summary-card__title-wrapper">
