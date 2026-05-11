@@ -1,0 +1,46 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 100
+    groups:
+      entity-framework:
+        patterns:
+          - "Microsoft.EntityFrameworkCore*"
+      microsoft-extensions:
+        patterns:
+          - "Microsoft.Extensions*"
+      microsoft-aspnetcore:
+        patterns:
+          - "Microsoft.AspNetCore*"
+      system-packages:
+        patterns:
+          - "System*"
+      non-major:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "Microsoft.EntityFrameworkCore*"
+        versions: [">= 9.0.15"]
+      - dependency-name: "Microsoft.Extensions.Configuration"
+        versions: [ ">= 10.0.7" ]
+      - dependency-name: "Microsoft.Extensions.Logging"
+        versions: [ ">= 10.0.7" ]
+      - dependency-name: "System.Text.Json"
+        versions: [ ">= 10.0.7" ]
+      - dependency-name: "System.Text.Asn1"
+        versions: [ ">= 10.0.7" ]
+  - package-ecosystem: "npm"
+    directory: "DVSAdmin"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 100
+    groups:
+      npm:
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"

@@ -37,6 +37,12 @@
         ProviderAndServiceRemoved,
         PI_ServicePublish_With_TM,
         PI_ServiceRePublish_With_TM,
+        DisplayChangeRequestSent,
+        DisplayChangeCompleted,
+        DisplayChangeRequestCancelled,
+        DisplayChangeRequestDeclined,
+     
+
 
     }
 }

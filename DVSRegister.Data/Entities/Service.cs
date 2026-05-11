@@ -89,5 +89,7 @@ namespace DVSRegister.Data.Entities
         public TrustmarkNumber? TrustmarkNumber { get; set; }
         public DownloadLogoToken? DownloadLogoToken { get; set; }
 
+        public ICollection<ServiceCustomDisplayChangeRequest?> ServiceCustomDisplayChangeRequest { get; set; }
+
     }
 }

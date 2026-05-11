@@ -76,5 +76,9 @@ namespace DVSRegister.Data.Entities
         public int? ProviderRemovalRequestId { get; set; }
         public ProviderRemovalRequest? ProviderRemovalRequest { get; set; }
 
+        [ForeignKey("ServiceCustomDisplayChangeRequest")]
+        public int? ServiceCustomDisplayChangeRequestId { get; set; }
+        public ServiceCustomDisplayChangeRequest? ServiceCustomDisplayChangeRequest { get; set; }
+
     }
 }
