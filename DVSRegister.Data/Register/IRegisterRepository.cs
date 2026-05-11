@@ -13,5 +13,8 @@ namespace DVSRegister.Data
         public  Task<ProviderProfile> GetProviderDetails(int providerId);
         public Task<Service> GetServiceDetails(int serviceId);
         public Task<List<Service>> GetPublishedServices();
+        public Task<DateTime?> GetServiceLastUpdatedTime(int serviceId);
+        public Task<DateTime?> GetProviderLastUpdatedTime(int providerId);
+        
     }
 }
