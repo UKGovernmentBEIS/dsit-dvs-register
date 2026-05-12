@@ -53,16 +53,8 @@ namespace DVSRegister.BusinessLogic.Services
         {
             var provider = await registerRepository.GetProviderDetails(providerId);
             if (provider == null) return null!;
-            ProviderProfileDto providerProfileDto = automapper.Map<ProviderProfileDto>(provider);           
-             if (provider.ProviderStatus != ProviderStatusEnum.UpdatesRequested &&
-                provider.ModifiedTime != null && provider.ModifiedTime != DateTime.MinValue)
-            {
-                providerProfileDto.LastUpdated = provider.ModifiedTime;
-            }
-            else
-            {
-                providerProfileDto.LastUpdated = provider.PublishedTime;
-            }
+            ProviderProfileDto providerProfileDto = automapper.Map<ProviderProfileDto>(provider);
+            providerProfileDto.LastUpdated = await registerRepository.GetProviderLastUpdatedTime(providerId);
 
             return providerProfileDto;
         }
@@ -75,16 +67,9 @@ namespace DVSRegister.BusinessLogic.Services
             {
                 serviceDto.TrustmarkNumber.SvgLogoLink = GetSVGLogoEndPoint(serviceDto.TrustmarkNumber.SvgLogoLink);
             }
-             if(service.IsCurrent &&  service.ServiceStatus!= ServiceStatusEnum.PublishedUnderReassign 
-                && service.ServiceStatus != ServiceStatusEnum.RemovedUnderReassign && service.ServiceStatus != ServiceStatusEnum.UpdatesRequested)
-            {
-                serviceDto.LastUpdated = service.ModifiedTime;
-            }
-            else
-            {
-                serviceDto.LastUpdated = service.PublishedTime;
-            }
-      
+            serviceDto.LastUpdated = await registerRepository.GetServiceLastUpdatedTime(serviceId);
+
+
             return serviceDto;
         }
         public async Task<PaginatedResult<GroupedResult<ActionLogsDto>>> GetUpdateLogs(int pageNumber)
