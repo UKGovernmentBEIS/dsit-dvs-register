@@ -165,6 +165,29 @@ namespace DVSRegister.Data
             return latestUpdateDate;
         }
 
+        public async Task<DateTime?> GetProviderLastUpdatedTime(int providerId)
+        {
+
+            var latestUpdateDate = await context.ActionLogs.Where(x => x.ShowInRegisterUpdates && x.ProviderProfileId == providerId).MaxAsync(x => (DateTime?)x.LoggedTime);
+            if (latestUpdateDate != null)
+            {
+                return latestUpdateDate;
+            }
+            return await context.ProviderProfile.Where(p => p.Id == providerId).Select(p => p.PublishedTime).FirstOrDefaultAsync();
+
+        }
+        public async Task<DateTime?> GetServiceLastUpdatedTime(int serviceId)
+        {
+
+            var latestUpdateDate = await context.ActionLogs .Where(x => x.ShowInRegisterUpdates && x.ServiceId == serviceId).MaxAsync(x => (DateTime?)x.LoggedTime); 
+            if (latestUpdateDate != null)
+            {
+                return latestUpdateDate;
+            }
+            return await context.Service.Where(p => p.Id == serviceId).Select(p => p.PublishedTime).FirstOrDefaultAsync();          
+
+        }
+
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
         {
         ProviderProfile providerProfile = new();
