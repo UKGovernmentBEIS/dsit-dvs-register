@@ -169,6 +169,12 @@ namespace DVSRegister.Data
 
                                 }
                             }
+                            if (mapping.PreviousServiceStatus == ServiceStatusEnum.DisplayChangeRequested)
+                            {
+                                var pendingCustomDisplayRequest = await context.ServiceCustomDisplayChangeRequest.FirstOrDefaultAsync(s => s.ServiceId == service.Id && s.IsRequestPending);
+                                if (pendingCustomDisplayRequest != null)
+                                    pendingCustomDisplayRequest.IsRequestPending = false;
+                            }
                         }
                     }
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveProvider2i, loggedInUserEmail);
