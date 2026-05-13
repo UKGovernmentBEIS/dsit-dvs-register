@@ -258,9 +258,9 @@ namespace DVSRegister.Data
         public async Task<List<Service>> GetPublishedServices()
         {
             return await context.Service.AsNoTracking()//Read only, so no need for tracking query
-             .Include(service => service.Provider).AsNoTracking()
-             .Include(service => service.CabUser).ThenInclude(cabUser => cabUser.Cab).AsNoTracking()
-             .Include(service => service.ServiceSupSchemeMapping!).ThenInclude(ssm => ssm.SupplementaryScheme).AsNoTracking()
+             .Include(service => service.Provider)
+             .Include(service => service.CabUser).ThenInclude(cabUser => cabUser.Cab)
+             .Include(service => service.ServiceSupSchemeMapping!.Where(x=>x.ServiceSupSchemeCustomDisplayId == null)).ThenInclude(ssm => ssm.SupplementaryScheme)
              .Where(ci => ci.IsInRegister == true).OrderBy(ci => ci.Provider.RegisteredName)
              .ToListAsync();
         }
