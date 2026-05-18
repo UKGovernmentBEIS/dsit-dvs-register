@@ -75,6 +75,8 @@ namespace DVSRegister.Data
 
         public DbSet<ServiceSupSchemeCustomDisplay> ServiceSupSchemeCustomDisplay { get; set; }
         public DbSet<ServiceCustomDisplayChangeRequest> ServiceCustomDisplayChangeRequest { get; set; }
+        public DbSet<CabUserRemoval> CabUserRemoval { get; set; }
+        public DbSet<OfDIAUserRemoval> OfDIAUserRemoval { get; set; }
 
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
@@ -208,28 +210,15 @@ namespace DVSRegister.Data
             new QualityLevel { Id =6, Level = "High", QualityType = QualityTypeEnum.Protection },
             new QualityLevel { Id =7, Level = "Very High", QualityType = QualityTypeEnum.Protection });
 
-            if(environment != "Production")
-            {
-               modelBuilder.Entity<Cab>().HasData(
-               new Cab { Id =1, CabName = "EY", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-               new Cab { Id =2, CabName = "DSIT", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-               new Cab { Id =3, CabName = "ACCS", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-               new Cab { Id =4, CabName = "Kantara", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },           
-               new Cab { Id =6, CabName = "NQA", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-               new Cab { Id = 7, CabName = "BSI", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) });
+            
+            modelBuilder.Entity<Cab>().HasData(
+            new Cab { Id = 1, CabName = "EY", TradingName = "EY", RegisteredName = "EY registered name",  CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+            new Cab { Id = 2, CabName = "DSIT", TradingName = "DSIT", RegisteredName = "DSIT registered name", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+            new Cab { Id = 3, CabName = "ACCS",TradingName = string.Empty,RegisteredName =string.Empty,  CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+            new Cab { Id = 4, CabName = "Kantara",TradingName = "Kantara", RegisteredName = "Kantara Initiative", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+            new Cab { Id = 6, CabName = "NQA", TradingName = string.Empty, RegisteredName = string.Empty, CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
+            new Cab { Id = 7, CabName = "BSI", TradingName = "BSI", RegisteredName = "BSI Assurance UK Limited", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) });
 
-            }
-            else
-            {
-              modelBuilder.Entity<Cab>().HasData(
-               new Cab { Id =1, CabName = "ACCS", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-               new Cab { Id =2, CabName = "Kantara", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-               new Cab { Id =3, CabName = "NQA", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-               new Cab { Id =4, CabName = "BSI", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-               new Cab { Id =5, CabName = "DSIT", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) });
-            }
-
-           
 
             modelBuilder.Entity<CertificateReviewRejectionReason>().HasData(
             new CertificateReviewRejectionReason { Id =1, Reason = "Information is missing from the certificate" },
