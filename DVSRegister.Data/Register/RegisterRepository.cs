@@ -32,7 +32,7 @@ namespace DVSRegister.Data
                  || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)
                  || ci.TrustmarkNumber.TrustMarkNumber.Contains(lowerSearchText)) &&
              (!hasRoles || ci.ServiceRoleMapping!.Any(r => roles.Contains(r.RoleId))) &&
-             (!hasSchemes || ci.ServiceSupSchemeMapping!.Any(s => schemes.Contains(s.SupplementarySchemeId))) &&
+            (!hasSchemes || ci.ServiceSupSchemeMapping!.Any(s => schemes.Contains(s.SupplementarySchemeId) && s.ServiceSupSchemeCustomDisplayId == null)) &&
              (!hasTfVersions || tfVersions.Contains(ci.TrustFrameworkVersionId)) ))
 
             .Include(p => p.Services!
@@ -43,10 +43,12 @@ namespace DVSRegister.Data
                  || ci.Provider.TradingName.ToLower().Contains(lowerSearchText)
                  || ci.TrustmarkNumber.TrustMarkNumber.Contains(lowerSearchText)) &&
              (!hasRoles || ci.ServiceRoleMapping!.Any(r => roles.Contains(r.RoleId))) &&
-             (!hasSchemes || ci.ServiceSupSchemeMapping!.Any(s => schemes.Contains(s.SupplementarySchemeId))) &&
+            (!hasSchemes || ci.ServiceSupSchemeMapping!.Any(s =>  schemes.Contains(s.SupplementarySchemeId) && s.ServiceSupSchemeCustomDisplayId == null)) &&
              (!hasTfVersions || tfVersions.Contains(ci.TrustFrameworkVersionId)) ) )
             .Include(p => p.Services!).ThenInclude(ci => ci.ServiceRoleMapping!)
             .Include(p => p.Services!).ThenInclude(ci => ci.TrustmarkNumber!)
+            .Include(p => p.Services!) .ThenInclude(ci => ci.ServiceSupSchemeMapping!.Where(s => s.ServiceSupSchemeCustomDisplayId == null))
+
             .AsSplitQuery();
              
 
@@ -87,7 +89,7 @@ namespace DVSRegister.Data
                     || s.Provider.TradingName.ToUpper().Contains(trimmedSearchText)
                     || s.TrustmarkNumber.TrustMarkNumber.Contains(trimmedSearchText))
                 .Where(s => !roles.Any() || s.ServiceRoleMapping.Any(r => roles.Contains(r.RoleId)))
-                .Where(s => !schemes.Any() || s.ServiceSupSchemeMapping.Any(sc => schemes.Contains(sc.SupplementarySchemeId)))
+                .Where(s => !schemes.Any() || s.ServiceSupSchemeMapping.Any(sc => schemes.Contains(sc.SupplementarySchemeId) && sc.ServiceSupSchemeCustomDisplayId == null))
                 .Where(s => !tfVersions.Any() || tfVersions.Contains(s.TrustFrameworkVersionId));
 
             query = sortBy switch
@@ -103,7 +105,7 @@ namespace DVSRegister.Data
             query = query
                 .Include(s => s.Provider)
                 .Include(s => s.ServiceRoleMapping)
-                .Include(s => s.ServiceSupSchemeMapping);
+                .Include(s => s.ServiceSupSchemeMapping!.Where(x=>x.ServiceSupSchemeCustomDisplayId == null));
 
             var totalCount = await query.CountAsync();
             var items = await query
@@ -163,6 +165,29 @@ namespace DVSRegister.Data
             return latestUpdateDate;
         }
 
+        public async Task<DateTime?> GetProviderLastUpdatedTime(int providerId)
+        {
+
+            var latestUpdateDate = await context.ActionLogs.Where(x => x.ShowInRegisterUpdates && x.ProviderProfileId == providerId).MaxAsync(x => (DateTime?)x.LoggedTime);
+            if (latestUpdateDate != null)
+            {
+                return latestUpdateDate;
+            }
+            return await context.ProviderProfile.Where(p => p.Id == providerId).Select(p => p.PublishedTime).FirstOrDefaultAsync();
+
+        }
+        public async Task<DateTime?> GetServiceLastUpdatedTime(int serviceId)
+        {
+
+            var latestUpdateDate = await context.ActionLogs .Where(x => x.ShowInRegisterUpdates && x.ServiceId == serviceId).MaxAsync(x => (DateTime?)x.LoggedTime); 
+            if (latestUpdateDate != null)
+            {
+                return latestUpdateDate;
+            }
+            return await context.Service.Where(p => p.Id == serviceId).Select(p => p.PublishedTime).FirstOrDefaultAsync();          
+
+        }
+
         public async Task<ProviderProfile> GetProviderDetails(int providerId)
         {
         ProviderProfile providerProfile = new();
@@ -206,9 +231,9 @@ namespace DVSRegister.Data
             }
             if (flags.HasSupScheme)
             {
-                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping).ThenInclude(ssm => ssm.SupplementaryScheme)
-                    .Include(p => p.ServiceSupSchemeMapping).ThenInclude(ssm => ssm.SchemeGPG44Mapping).ThenInclude(ssm => ssm.QualityLevel)
-                    .Include(p => p.ServiceSupSchemeMapping).ThenInclude(ssm => ssm.SchemeGPG45Mapping).ThenInclude(ssm => ssm.IdentityProfile);
+                queryWithOptionalIncludes = queryWithOptionalIncludes.Include(p => p.ServiceSupSchemeMapping!.Where(x => x.ServiceSupSchemeCustomDisplayId == null)).ThenInclude(ssm => ssm.SupplementaryScheme)
+                    .Include(p => p.ServiceSupSchemeMapping!.Where(x => x.ServiceSupSchemeCustomDisplayId == null)).ThenInclude(ssm => ssm.SchemeGPG44Mapping)!.ThenInclude(ssm => ssm.QualityLevel)
+                    .Include(p => p.ServiceSupSchemeMapping!.Where(x => x.ServiceSupSchemeCustomDisplayId == null)).ThenInclude(ssm => ssm.SchemeGPG45Mapping)!.ThenInclude(ssm => ssm.IdentityProfile);
             }
             if (flags.HasIdentity)
             {
@@ -233,9 +258,9 @@ namespace DVSRegister.Data
         public async Task<List<Service>> GetPublishedServices()
         {
             return await context.Service.AsNoTracking()//Read only, so no need for tracking query
-             .Include(service => service.Provider).AsNoTracking()
-             .Include(service => service.CabUser).ThenInclude(cabUser => cabUser.Cab).AsNoTracking()
-             .Include(service => service.ServiceSupSchemeMapping!).ThenInclude(ssm => ssm.SupplementaryScheme).AsNoTracking()
+             .Include(service => service.Provider)
+             .Include(service => service.CabUser).ThenInclude(cabUser => cabUser.Cab)
+             .Include(service => service.ServiceSupSchemeMapping!.Where(x=>x.ServiceSupSchemeCustomDisplayId == null)).ThenInclude(ssm => ssm.SupplementaryScheme)
              .Where(ci => ci.IsInRegister == true).OrderBy(ci => ci.Provider.RegisteredName)
              .ToListAsync();
         }

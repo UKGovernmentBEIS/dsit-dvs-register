@@ -30,7 +30,9 @@ namespace DVSRegister.CommonUtility.Models
         [Description("Published, under reassignment")]
         PublishedUnderReassign = 12,
         [Description("Removed, under reassignment")]
-        RemovedUnderReassign = 13
+        RemovedUnderReassign = 13,
+        [Description("Display change requested")]
+        DisplayChangeRequested = 14
 
     }
 }

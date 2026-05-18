@@ -10,5 +10,6 @@
         public bool? HasGpg44Mapping { get; set; }
         public ICollection<SchemeGPG44MappingDto>? SchemeGPG44Mapping { get; set; }
         public ICollection<SchemeGPG45MappingDto>? SchemeGPG45Mapping { get; set; }
+        public int? ServiceSupSchemeCustomDisplayId { get; set; }
     }
 }
