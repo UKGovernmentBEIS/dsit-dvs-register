@@ -18,7 +18,7 @@ namespace DVSRegister.CommonUtility.Models.Enums
     }
     public static class OfDIAUserRemovalReasonEnumExtensions
     {
-        public static string GetDescription(this ServiceRemovalReasonEnum value)
+        public static string GetDescription(this OfDIAUserRemovalReasonEnum value)
         {
             FieldInfo? field = value.GetType().GetField(value.ToString());
             DescriptionAttribute? attribute = field?.GetCustomAttribute<DescriptionAttribute>();
