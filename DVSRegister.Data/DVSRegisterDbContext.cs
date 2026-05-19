@@ -75,6 +75,8 @@ namespace DVSRegister.Data
 
         public DbSet<ServiceSupSchemeCustomDisplay> ServiceSupSchemeCustomDisplay { get; set; }
         public DbSet<ServiceCustomDisplayChangeRequest> ServiceCustomDisplayChangeRequest { get; set; }
+        public DbSet<CabUserRemoval> CabUserRemoval { get; set; }
+        public DbSet<OfDIAUserRemoval> OfDIAUserRemoval { get; set; }
 
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
