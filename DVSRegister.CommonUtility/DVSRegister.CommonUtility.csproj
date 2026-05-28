@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Amazon.Extensions.CognitoAuthentication" Version="3.1.4" />
-    <PackageReference Include="AWSSDK.Core" Version="4.0.6.2" />
-    <PackageReference Include="AWSSDK.S3" Version="4.0.23.1" />
+    <PackageReference Include="AWSSDK.Core" Version="4.0.7.3" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.23.4" />
     <PackageReference Include="GovukNotify" Version="7.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.7" />
