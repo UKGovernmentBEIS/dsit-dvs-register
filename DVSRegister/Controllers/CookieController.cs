@@ -41,6 +41,7 @@ public class CookieController(CookieService cookieService, IOptions<CookieServic
         return CookieSettings_Get(changesHaveBeenSaved: true);
     }
 
+    [IgnoreAntiforgeryToken]
     [HttpPost("cookie-consent")]
     public IActionResult CookieConsent(CookieConsentViewModel cookieConsent)
     {
