@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Internal;
 using DVSRegister.BusinessLogic;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services.CAB;
@@ -23,11 +24,22 @@ namespace DVSRegister.UnitTests.Services
         {
             this.cabRepository = Substitute.For<ICabRepository>();
             var loggerFactory = new NullLoggerFactory();
+
             var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new AutoMapperProfile());
-            }, loggerFactory);
-            this.automapper = config.CreateMapper();            
+            {              
+                cfg.AddProfile(new AutoMapperProfile());                
+                cfg.Internal().ForAllMaps((typeMap, _) =>
+                {
+                    if (typeMap.MaxDepth == 0)
+                    {
+                        typeMap.MaxDepth = 64;
+                    }
+                });
+
+            });
+
+            this.automapper = config.CreateMapper();
+
             this.cabService = new CabService(this.cabRepository, this.automapper);
 
         }

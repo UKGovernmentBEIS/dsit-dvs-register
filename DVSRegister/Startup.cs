@@ -1,5 +1,6 @@
 ﻿using Amazon;
 using Amazon.S3;
+using AutoMapper.Internal;
 using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
@@ -178,7 +179,21 @@ namespace DVSRegister
         }
         public void ConfigureAutomapperServices(IServiceCollection services)
         {
-            services.AddAutoMapper(cfg => { }, typeof(DVSRegister.Services.AutoMapperProfile), typeof(DVSRegister.BusinessLogic.AutoMapperProfile));      
+
+
+
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.Internal().ForAllMaps((typeMap, _) =>
+                {
+                    typeMap.MaxDepth = 64;
+                });
+
+            }, typeof(DVSRegister.Services.AutoMapperProfile),
+               typeof(DVSRegister.BusinessLogic.AutoMapperProfile));
+
+
+
         }
         public void ConfigureDatabaseHealthCheck(DVSRegisterDbContext? dbContext)
         {
