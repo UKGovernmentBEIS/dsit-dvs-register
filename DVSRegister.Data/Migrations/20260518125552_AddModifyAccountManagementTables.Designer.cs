@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,13 +13,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260518125552_AddModifyAccountManagementTables")]
+    partial class AddModifyAccountManagementTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.27")
+                .HasAnnotation("ProductVersion", "8.0.26")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -508,12 +511,6 @@ namespace DVSRegister.Data.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("RegisteredName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TradingName")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.ToTable("Cab");
@@ -524,54 +521,42 @@ namespace DVSRegister.Data.Migrations
                             Id = 1,
                             CabName = "EY",
                             CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            RegisteredName = "EY registered name",
-                            TradingName = "EY"
+                            IsActive = true
                         },
                         new
                         {
                             Id = 2,
                             CabName = "DSIT",
                             CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            RegisteredName = "DSIT registered name",
-                            TradingName = "DSIT"
+                            IsActive = true
                         },
                         new
                         {
                             Id = 3,
                             CabName = "ACCS",
                             CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            RegisteredName = "",
-                            TradingName = ""
+                            IsActive = true
                         },
                         new
                         {
                             Id = 4,
                             CabName = "Kantara",
                             CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            RegisteredName = "Kantara Initiative",
-                            TradingName = "Kantara"
+                            IsActive = true
                         },
                         new
                         {
                             Id = 6,
                             CabName = "NQA",
                             CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            RegisteredName = "",
-                            TradingName = ""
+                            IsActive = true
                         },
                         new
                         {
                             Id = 7,
                             CabName = "BSI",
                             CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IsActive = true,
-                            RegisteredName = "BSI Assurance UK Limited",
-                            TradingName = "BSI"
+                            IsActive = true
                         });
                 });
 
