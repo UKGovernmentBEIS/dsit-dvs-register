@@ -12,11 +12,11 @@ namespace DVSRegister.Data.Entities
         public int Id { get; set; }
 
         [ForeignKey("CabUser")]
-        public int CabUserUserId { get; set; }
+        public int CabUserId { get; set; }
         public CabUser? CabUser { get; set; }
         public CabUserRemovalReasonEnum? RemovalReason { get; set; }
         public string? Comment { get; set; }
-        public bool IsRemoved { get; set; } 
-        public DateTime? RemovalTime { get; set; }
+        public RemovalStatus RemovalStatus { get; set; }
+        public DateTime? RequestTime { get; set; }
     }
 }
