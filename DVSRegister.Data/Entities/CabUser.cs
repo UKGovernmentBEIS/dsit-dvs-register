@@ -17,8 +17,7 @@ namespace DVSRegister.Data.Entities
         public Cab? Cab { get; set; }
         public  string CabEmail { get; set; } // User’s email address (used for communication and Cognito identity attributes)
         public  string? UserName { get; set; }// Unique username mapped to Cognito user (primary identifier in user pool) not mandatory in application
-        public string? FullName { get; set; } // Display name entered by the user
-        public bool IsActive { get; set; }// Application-level activation flag modified on delete or disable
+        public string? FullName { get; set; } // Display name entered by the user    
         public AccountStatusEnum AccountStatus { get; set; } // Represents user lifecycle state aligned with Cognito status
         public DateTime CreatedTime { get; set; }  // Timestamp when the user was invited by OFDIA admin
         public DateTime? ModifiedDate { get; set; } // Timestamp of last update (edit/delete) performed by admin 
