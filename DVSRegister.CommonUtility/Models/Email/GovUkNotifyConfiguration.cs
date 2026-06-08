@@ -18,8 +18,7 @@ namespace DVSRegister.CommonUtility.Models
         public CabSignUpActivationTemplate CabSignUpActivationTemplate { get; set; }  
         public CabSubmittedDSITEmailTemplate CabSubmittedDSITEmailTemplate { get; set; }
 
-        public AgreementToPublishTemplate AgreementToPublishTemplate { get; set; }
-        public AgreementToPublishToDSITTemplate AgreementToPublishToDSITTemplate { get; set; }
+      
         public AgreementToProceedApplicationToDSIT AgreementToProceedApplicationToDSIT { get; set; }
         public ConfirmationToProceedApplicationToDIP ConfirmationToProceedApplicationToDIP { get; set; }
         public DeclinedToProceedApplicationToDSIT DeclinedToProceedApplicationToDSIT { get; set; }
@@ -61,5 +60,7 @@ namespace DVSRegister.CommonUtility.Models
         public ProviderEditRequestReceived ProviderEditRequestReceived { get; set; }
         public ContactUpdatesToDSIT ContactUpdatesToDSIT { get; set; }
         public ContactUpdatesToCab ContactUpdatesToCab { get; set; }
+
+        public CabAccountCreatedToDSIT? CabAccountCreatedToDSIT { get; set; }
     }
 }

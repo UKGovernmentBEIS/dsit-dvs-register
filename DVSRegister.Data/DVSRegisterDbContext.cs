@@ -210,13 +210,13 @@ namespace DVSRegister.Data
             new QualityLevel { Id =6, Level = "High", QualityType = QualityTypeEnum.Protection },
             new QualityLevel { Id =7, Level = "Very High", QualityType = QualityTypeEnum.Protection });
 
-            modelBuilder.Entity<Cab>().HasData(
-             new Cab { Id = 1, CabName = "EY", TradingName = "EY", RegisteredName = "EY registered name", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-             new Cab { Id = 2, CabName = "DSIT", TradingName = "DSIT", RegisteredName = "DSIT registered name", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-             new Cab { Id = 3, CabName = "ACCS", TradingName = string.Empty, RegisteredName = string.Empty, CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-             new Cab { Id = 4, CabName = "Kantara", TradingName = "Kantara", RegisteredName = "Kantara Initiative", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-             new Cab { Id = 6, CabName = "NQA", TradingName = string.Empty, RegisteredName = string.Empty, CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) },
-             new Cab { Id = 7, CabName = "BSI", TradingName = "BSI", RegisteredName = "BSI Assurance UK Limited", CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, DateTimeKind.Utc) });
+            //modelBuilder.Entity<Cab>().HasData(
+            // new Cab { Id = 1, TradingName = "EY",RegisteredName = "EY registered name" },
+            // new Cab { Id = 2, TradingName = "DSIT",  RegisteredName = "DSIT registered name", ModifiedDate = new DateTime(2024, 9, 16, 0, 0, 0) },
+            // new Cab { Id = 3, TradingName = "ACCS", RegisteredName = string.Empty, ModifiedDate = new DateTime(2026, 6, 9, 0, 0, 0),IsActive =false },
+            // new Cab { Id = 4, TradingName = "Kantara",  RegisteredName = "Kantara Initiative", ModifiedDate = new DateTime(2026, 6, 9, 0, 0, 0) },
+            // new Cab { Id = 6, TradingName = "NQA",  RegisteredName = string.Empty, ModifiedDate = new DateTime(2024, 9, 16, 0, 0, 0) ,  IsActive = false },
+            // new Cab { Id = 7, TradingName = "BSI",  RegisteredName = "BSI Assurance UK Limited", ModifiedDate = new DateTime(2024, 9, 16, 0, 0, 0) });
 
 
 

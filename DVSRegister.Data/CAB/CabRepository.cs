@@ -221,7 +221,7 @@ namespace DVSRegister.Data.CAB
         public async Task<List<string>> GetCabEmailListForServices(List<int> serviceIds)
         {
             List<int> cabIds = await context.Service.Include(p => p.CabUser).Where(x => serviceIds.Contains(x.Id)).Select(x => x.CabUser.CabId).Distinct().ToListAsync();
-            List<string> activeCabUserEmails = await context.CabUser.Where(c => cabIds.Contains(c.CabId) && c.IsActive).Select(c => c.CabEmail).ToListAsync();
+            List<string> activeCabUserEmails = await context.CabUser.Where(c => cabIds.Contains(c.CabId) && c.AccountStatus==AccountStatusEnum.Active).Select(c => c.CabEmail).ToListAsync();
             return activeCabUserEmails;
         }
 

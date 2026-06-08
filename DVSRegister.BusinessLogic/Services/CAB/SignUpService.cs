@@ -3,63 +3,72 @@ using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.Data.Repositories;
 
 namespace DVSRegister.BusinessLogic.Services
 {
     public class SignUpService : ISignUpService
 	{
-        private CognitoClient _cognitoClient;
-        private readonly LoginEmailSender _emailSender;
+        private CognitoClient cognitoClient;
+        private readonly LoginEmailSender emailSender;
+        private readonly IUserRepository userRepository;
 
-        public SignUpService(CognitoClient cognitoClient, LoginEmailSender emailSender)
+        public SignUpService(CognitoClient cognitoClient, LoginEmailSender emailSender, IUserRepository userRepository)
 		{
-            _cognitoClient = cognitoClient;
-            _emailSender = emailSender;
+            this.cognitoClient = cognitoClient;
+            this.emailSender = emailSender;
+            this.userRepository = userRepository;
 		}
 
         public async Task<AuthenticationResultType> ConfirmMFAToken(string session, string email, string token)
         {
-            return await _cognitoClient.ConfirmMFAToken(session, email, token);
+            return await cognitoClient.ConfirmMFAToken(session, email.ToLower(), token);
         }
 
         public async Task<GenericResponse> ResetPassword(string email, string password, string oneTimePassword)
         {
-            return await _cognitoClient.ConfirmPasswordReset(email, password, oneTimePassword);
+            return await cognitoClient.ConfirmPasswordReset(email.ToLower(), password, oneTimePassword);
         }
 
         public async Task<GenericResponse> ConfirmPassword(string email, string password, string oneTimePassword)
         {
-            return await _cognitoClient.ConfirmPasswordAndGenerateMFAToken(email, password, oneTimePassword);
+            return await cognitoClient.ConfirmPasswordAndGenerateMFAToken(email.ToLower(), password, oneTimePassword);
         }
 
         public async Task<string> ForgotPassword(string email)
         {
-            return await _cognitoClient.ForgotPassword(email);
+            return await cognitoClient.ForgotPassword(email.ToLower());
         }
 
         public async Task<string> MFAConfirmation(string email, string password, string mfaCode)
         {
-            string response = await _cognitoClient.MFARegistrationConfirmation(email, password, mfaCode);
+            string response = await cognitoClient.MFARegistrationConfirmation(email.ToLower(), password, mfaCode);
             if(response == "OK")
             {
-                await _emailSender.SendEmailCabAccountCreated(email, email);
+                await emailSender.SendEmailCabAccountCreated(email, email);
+                var ofDiaManagers = await userRepository.GetAllOfDIAManagerUsers();
+               var cabUser = await userRepository.GetUser(email);
+                foreach (var manager in ofDiaManagers)
+                {
+                    await emailSender.SendEmailCabAccountCreatedToDSIT(manager.FullName!, manager.Email, email, cabUser.Cab?.RegisteredName);
+                }
             }
             return response;  
         }
 
         public async Task<string> SignInAndWaitForMfa(string email, string password)
         {
-            string response = await _cognitoClient.SignInAndWaitForMfa(email, password);
+            string response = await cognitoClient.SignInAndWaitForMfa(email.ToLower(), password);
             if(response == Constants.IncorrectPassword) 
             {
-                await _emailSender.SendEmailCabFailedLoginAttempt(email, Helper.GetLocalDateTime(DateTime.UtcNow, "dd MMM yyyy h:mm tt"));
+                await emailSender.SendEmailCabFailedLoginAttempt(email, Helper.GetLocalDateTime(DateTime.UtcNow, "dd MMM yyyy h:mm tt"));
             }
             return response;
         }
 
         public async void SignOut(string accesssToken)
         {
-            await _cognitoClient.SignOutUserAsync(accesssToken);
+            await cognitoClient.SignOutUserAsync(accesssToken);
         }
     }
 }
