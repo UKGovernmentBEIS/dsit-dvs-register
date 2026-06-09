@@ -13,8 +13,7 @@ namespace DVSRegister.Data.Entities
         public int Id { get; set; }   
         public  string Email { get; set; }// User’s email address (used for communication and Cognito identity attributes)
         public string? UserName { get; set; }  // Unique username mapped to Cognito user (primary identifier in user pool) not mandatory in application
-        public string? FullName { get; set; } // Display name entered by the user
-        public bool IsActive { get; set; }// Application-level activation flag modified on delete or disable
+        public string? FullName { get; set; } // Display name entered by the user     
         public AccountStatusEnum AccountStatus { get; set; } // Represents user lifecycle state aligned with Cognito status
         public string? Profile { get; set; } //DEV or DSIT user   
         public UserRoleEnum UserRole { get; set; }// Application role used for authorization (separate from Cognito groups/roles)      

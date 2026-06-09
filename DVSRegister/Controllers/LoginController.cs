@@ -3,7 +3,6 @@ using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.Data.Entities;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +28,13 @@ namespace DVSRegister.Controllers
         {
             return View("StartPage");
         }
+
+        [HttpGet("account-not-found")]
+        public IActionResult StartPageWithBanner()
+        {
+            return View();
+        }
+
 
         #region Create Account /Forgot password
 
@@ -259,7 +265,7 @@ namespace DVSRegister.Controllers
 
                     if (!string.IsNullOrEmpty(cab) && !string.IsNullOrEmpty(email))
                     {                      
-                        CabUserDto cabUser = await _userService.SaveUser(email, cab);                        
+                        CabUserDto cabUser = await _userService.UpdateCabUser(email);                        
                         if(cabUser.CabId>0)                            
                         HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
                         return RedirectToAction("DraftApplications", "Home");
