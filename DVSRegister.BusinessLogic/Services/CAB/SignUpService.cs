@@ -3,6 +3,7 @@ using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Repositories;
 
 namespace DVSRegister.BusinessLogic.Services
@@ -45,13 +46,18 @@ namespace DVSRegister.BusinessLogic.Services
             string response = await cognitoClient.MFARegistrationConfirmation(email.ToLower(), password, mfaCode);
             if(response == "OK")
             {
-                await emailSender.SendEmailCabAccountCreated(email, email);
-                var ofDiaManagers = await userRepository.GetAllOfDIAManagerUsers();
-               var cabUser = await userRepository.GetUser(email);
-                foreach (var manager in ofDiaManagers)
+               GenericResponse genericResponse =  await userRepository.UpdateAccountStatus(email, AccountStatusEnum.Active, email);
+                if(genericResponse.Success)
                 {
-                    await emailSender.SendEmailCabAccountCreatedToDSIT(manager.FullName!, manager.Email, email, cabUser.Cab?.RegisteredName);
+                    await emailSender.SendEmailCabAccountCreated(email, email);
+                    var ofDiaManagers = await userRepository.GetAllOfDIAManagerUsers();
+                    var cabUser = await userRepository.GetUser(email);
+                    foreach (var manager in ofDiaManagers)
+                    {
+                        await emailSender.SendEmailCabAccountCreatedToDSIT(manager.FullName!, manager.Email, email, cabUser.Cab?.RegisteredName);
+                    }
                 }
+              
             }
             return response;  
         }
@@ -59,7 +65,7 @@ namespace DVSRegister.BusinessLogic.Services
         public async Task<string> SignInAndWaitForMfa(string email, string password)
         {
             string response = await cognitoClient.SignInAndWaitForMfa(email.ToLower(), password);
-            if(response == Constants.IncorrectPassword) 
+            if(response == Constants.IncorrectLoginDetails) 
             {
                 await emailSender.SendEmailCabFailedLoginAttempt(email, Helper.GetLocalDateTime(DateTime.UtcNow, "dd MMM yyyy h:mm tt"));
             }
