@@ -16,7 +16,7 @@ namespace DVSRegister.Data.Entities
         public User? User { get; set; }
         public OfDIAUserRemovalReasonEnum? RemovalReason { get; set; }
         public string? Comment { get; set; }
-        public bool IsRemoved { get; set; }
+        public RemovalStatus RemovalStatus { get; set; }
         public DateTime? RemovedTime { get; set; }
        
     }
