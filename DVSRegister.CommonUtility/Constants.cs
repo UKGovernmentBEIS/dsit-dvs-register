@@ -30,6 +30,7 @@
         public const string IncorrectPassword = "Incorrect Password";
         public const string IncorrectLoginDetails = "Enter a valid email address and password. After five incorrect attempts, your account will be temporarily locked";
         public const string NullFieldsDisplay = "Not applicable";
+        public const string UserDisabled = "Invalid credentials";
 
         public const string RegisteredNameExistsError = "The registered name you have entered already exists";
         public const string NewApplication = "New application";

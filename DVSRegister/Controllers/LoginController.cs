@@ -222,16 +222,20 @@ namespace DVSRegister.Controllers
             if (ModelState["Email"].Errors.Count ==0 && ModelState["Password"].Errors.Count ==0)
             {
                 var loginResponse = await _signUpService.SignInAndWaitForMfa(loginViewModel.Email, loginViewModel.Password);
-                if (loginResponse!= null && loginResponse.Length > 0 && loginResponse != Constants.IncorrectPassword)
+                if (loginResponse!= null && loginResponse.Length > 0 && loginResponse != Constants.IncorrectLoginDetails && loginResponse != Constants.UserDisabled)
                 {
                     HttpContext?.Session.Set("Email", loginViewModel.Email);
                     HttpContext?.Session.Set("Session", loginResponse);
                     return RedirectToAction("MFAConfirmation");
                 }
+                else if (loginResponse == Constants.UserDisabled)
+                {
+                    ModelState.AddModelError("Email", loginResponse);
+                    return View("LoginPage", loginViewModel);
+                }
                 else
                 {
                     ModelState.AddModelError("Email", Constants.IncorrectLoginDetails);
-
                     return View("LoginPage", loginViewModel);
                 }
             }

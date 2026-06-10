@@ -1,4 +1,5 @@
-﻿using DVSRegister.CommonUtility.Models.Enums;
+﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,38 @@ namespace DVSRegister.Data.Repositories
             this.context = context;
         }
 
+        public async Task<GenericResponse> UpdateAccountStatus(string email, AccountStatusEnum accountStatus, string loggedInUser)
+        {
+            using var transaction = await context.Database.BeginTransactionAsync();
+            GenericResponse genericResponse = new();
+            try
+            {
+                var existingUser = await context.CabUser.Where(x => x.CabEmail.ToLower() == email.ToLower()).FirstOrDefaultAsync();
+
+                if (existingUser != null)
+                {
+                    existingUser.ModifiedDate = DateTime.UtcNow;
+                    existingUser.AccountStatus = accountStatus;
+                    await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.UpdateUser, loggedInUser);
+                    await transaction.CommitAsync();
+                    genericResponse.Success = true;
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    genericResponse.Success = false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                await transaction.RollbackAsync();
+                Console.Write($"Exception in UpdateAccountStatus - {ex}");
+            }
+            return genericResponse;
+        }
+
         public async Task<CabUser> UpdateCabUser(string email)
         {
            
@@ -23,8 +56,7 @@ namespace DVSRegister.Data.Repositories
                 var existingEntity = await context.CabUser.FirstOrDefaultAsync<CabUser>(e => e.CabEmail.ToLower() == email.ToLower());
                 if(existingEntity != null)
                 {
-                    existingEntity.LastLoggedIn = DateTime.UtcNow;
-                    existingEntity.AccountStatus = AccountStatusEnum.Active;                    
+                    existingEntity.LastLoggedIn = DateTime.UtcNow;                                    
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.UpdateUser, email);
                     transaction.Commit();                    
                     return existingEntity;                    
@@ -47,6 +79,8 @@ namespace DVSRegister.Data.Repositories
 
            
         }
+
+        
 
 
         public async Task<CabUser> GetUser(string email)
