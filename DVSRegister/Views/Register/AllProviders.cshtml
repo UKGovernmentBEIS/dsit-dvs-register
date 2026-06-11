@@ -194,62 +194,68 @@
                         </div>
                     </details>
 
-                    @if (Model.Providers != null && Model.Providers.Any())
+                    @if ((Model.SelectedRoleIds != null && Model.SelectedRoleIds.Any()) || (Model.SelectedSupplementarySchemeIds != null && Model.SelectedSupplementarySchemeIds.Any()) ||
+                    (Model.SelectedTrustFrameworkVersionId != null && Model.SelectedTrustFrameworkVersionId.Any()) || !string.IsNullOrEmpty(Model.SortBy))
                     {
-                        if ((Model.SelectedRoleIds != null && Model.SelectedRoleIds.Any()) || (Model.SelectedSupplementarySchemeIds != null && Model.SelectedSupplementarySchemeIds.Any()) ||
-                            (Model.SelectedTrustFrameworkVersionId != null && Model.SelectedTrustFrameworkVersionId.Any()) || !string.IsNullOrEmpty(Model.SortBy))
-                        {
-                            <div>
-                                <h3 class="govuk-heading-s govuk-!-margin-bottom-3 govuk-!-font-weight-regular">Active filters</h3>
-                                
-                                <ul class="dsit-search-filter-box__tags">
-                                    @if (!string.IsNullOrEmpty(Model.SortBy))
-                                    {
-                                        <li>
-                                            <button type="submit" class="dsit-search-filter-box__tag" name="RemoveSort" value="true" aria-label="Remove sort filter: @Model.SortBy">
-                                                <span aria-hidden="true">Sort by: @sortOptions.GetValueOrDefault(Model.SortBy)</span>
-                                                <span class="govuk-visually-hidden">Remove this filter</span>
-                                            </button>
-                                        </li>
-                                    }
-                                    @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
-                                    {
-                                        @foreach (var role in Model.SelectedRoles)
-                                        {
-                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveRole" value="@role.Id" aria-label="Remove role filter: @Enum.GetName((RoleEnum)@role.Id)">
-                                                <span aria-hidden="true">Role types: @Enum.GetName((RoleEnum)@role.Id)</span>
-                                                <span class="govuk-visually-hidden">Remove this filter</span>
-                                            </button></li>
-                                        }
-                                    }
-                                    @if (Model.SelectedSupplementarySchemes != null && Model.SelectedSupplementarySchemes.Any())
-                                    {
-                                        @foreach (var scheme in Model.SelectedSupplementarySchemes)
-                                        {
-                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveScheme" value="@scheme.Id" aria-label="Remove supplementary code filter: @scheme.SchemeName">
-                                                <span aria-hidden="true">Supplementary codes: @scheme.SchemeName</span>
-                                                <span class="govuk-visually-hidden">Remove this filter</span>
-                                            </button></li>
-                                        }
-                                    }
-                                    @if (Model.SelectedTrustFrameworkVersion != null && Model.SelectedTrustFrameworkVersion.Any())
-                                    {
-                                        @foreach (var tfVersion in Model.SelectedTrustFrameworkVersion)
-                                        {
-                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveTfVersion" value="@tfVersion.Id" aria-label="Remove trust framework version filter: @tfVersion.TrustFrameworkName">
-                                                <span aria-hidden="true">Trust framework version: @tfVersion.TrustFrameworkName</span>
-                                                <span class="govuk-visually-hidden">Remove this filter</span>
-                                            </button></li>
-                                        }
-                                    }
-                                </ul>
-                                
-                                <a href="@Url.Action("AllProviders", "Register")" class="govuk-link govuk-link--no-visited-state">Clear all filters</a>
-                                
-                                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-                            </div>
-                        }
+                    <div>
+                        <h3 class="govuk-heading-s govuk-!-margin-bottom-3 govuk-!-font-weight-regular">Active filters</h3>
 
+                        <ul class="dsit-search-filter-box__tags">
+                            @if (!string.IsNullOrEmpty(Model.SortBy))
+                            {
+                                <li>
+                                    <button type="submit" class="dsit-search-filter-box__tag" name="RemoveSort" value="true" aria-label="Remove sort filter: @Model.SortBy">
+                                        <span aria-hidden="true">Sort by: @sortOptions.GetValueOrDefault(Model.SortBy)</span>
+                                        <span class="govuk-visually-hidden">Remove this filter</span>
+                                    </button>
+                                </li>
+                            }
+                            @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
+                            {
+                                @foreach (var role in Model.SelectedRoles)
+                                {
+                                    <li>
+                                        <button type="submit" class="dsit-search-filter-box__tag" name="RemoveRole" value="@role.Id" aria-label="Remove role filter: @Enum.GetName((RoleEnum)@role.Id)">
+                                            <span aria-hidden="true">Role types: @Enum.GetName((RoleEnum)@role.Id)</span>
+                                            <span class="govuk-visually-hidden">Remove this filter</span>
+                                        </button>
+                                    </li>
+                                }
+                            }
+                            @if (Model.SelectedSupplementarySchemes != null && Model.SelectedSupplementarySchemes.Any())
+                            {
+                                @foreach (var scheme in Model.SelectedSupplementarySchemes)
+                                {
+                                    <li>
+                                        <button type="submit" class="dsit-search-filter-box__tag" name="RemoveScheme" value="@scheme.Id" aria-label="Remove supplementary code filter: @scheme.SchemeName">
+                                            <span aria-hidden="true">Supplementary codes: @scheme.SchemeName</span>
+                                            <span class="govuk-visually-hidden">Remove this filter</span>
+                                        </button>
+                                    </li>
+                                }
+                            }
+                            @if (Model.SelectedTrustFrameworkVersion != null && Model.SelectedTrustFrameworkVersion.Any())
+                            {
+                                @foreach (var tfVersion in Model.SelectedTrustFrameworkVersion)
+                                {
+                                    <li>
+                                        <button type="submit" class="dsit-search-filter-box__tag" name="RemoveTfVersion" value="@tfVersion.Id" aria-label="Remove trust framework version filter: @tfVersion.TrustFrameworkName">
+                                            <span aria-hidden="true">Trust framework version: @tfVersion.TrustFrameworkName</span>
+                                            <span class="govuk-visually-hidden">Remove this filter</span>
+                                        </button>
+                                    </li>
+                                }
+                            }
+                        </ul>
+
+                        <a href="@Url.Action("AllProviders", "Register")" class="govuk-link govuk-link--no-visited-state">Clear all filters</a>
+
+                        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                    </div>
+                    }
+
+                    @if (Model.Providers != null && Model.Providers.Any())
+                    {                       
                         <ul role="list" class="govuk-list govuk-!-margin-bottom-7">
                             @foreach (var provider in Model.Providers)
                             {

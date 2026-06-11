@@ -197,62 +197,63 @@
                                 </button>
                             </div>
                         </div>
-                    </details>
+                    </details>                   
+
+                    @if ((Model.SelectedRoleIds != null && Model.SelectedRoleIds.Any()) || (Model.SelectedSupplementarySchemeIds != null && Model.SelectedSupplementarySchemeIds.Any()) ||
+                        (Model.SelectedTrustFrameworkVersionId != null && Model.SelectedTrustFrameworkVersionId.Any()) || !string.IsNullOrEmpty(Model.SortBy))
+                    {
+                        <div>
+                            <h3 class="govuk-heading-s govuk-!-margin-bottom-3 govuk-!-font-weight-regular">Active filters</h3>
+                            
+                            <ul class="dsit-search-filter-box__tags">
+                                @if (!string.IsNullOrEmpty(Model.SortBy))
+                                {
+                                    <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveSort" value="true" aria-label="Remove sort filter: @Model.SortBy">
+                                        <span aria-hidden="true">Sort by: @sortOptions.GetValueOrDefault(Model.SortBy)</span>
+                                        <span class="govuk-visually-hidden">Remove this filter</span>
+                                        </button>
+                                    </li>
+                                }
+                                @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
+                                {
+                                    @foreach (var role in Model.SelectedRoles)
+                                    {
+                                        <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveRole" value="@role.Id" aria-label="Remove role filter: @Enum.GetName((RoleEnum)@role.Id)">
+                                            <span aria-hidden="true">Role types: @Enum.GetName((RoleEnum)@role.Id)</span>
+                                            <span class="govuk-visually-hidden">Remove this filter</span>
+                                        </button></li>
+                                    }
+                                }
+                                @if (Model.SelectedSupplementarySchemes != null && Model.SelectedSupplementarySchemes.Any())
+                                {
+                                    @foreach (var scheme in Model.SelectedSupplementarySchemes)
+                                    {
+                                        <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveScheme" value="@scheme.Id" aria-label="Remove supplementary code filter: @scheme.SchemeName">
+                                            <span aria-hidden="true">Supplementary codes: @scheme.SchemeName</span>
+                                            <span class="govuk-visually-hidden">Remove this filter</span>
+                                        </button></li>
+                                    }
+                                }
+                                @if (Model.SelectedTrustFrameworkVersion != null && Model.SelectedTrustFrameworkVersion.Any())
+                                {
+                                    @foreach (var tfVersion in Model.SelectedTrustFrameworkVersion)
+                                    {
+                                        <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveTfVersion" value="@tfVersion.Id" aria-label="Remove trust framework version filter: @tfVersion.TrustFrameworkName">
+                                            <span aria-hidden="true">Trust framework version: @tfVersion.TrustFrameworkName</span>
+                                            <span class="govuk-visually-hidden">Remove this filter</span>
+                                        </button></li>
+                                    }
+                                }
+                            </ul>
+                            
+                            <a href="@Url.Action("AllServices", "Register")" class="govuk-link govuk-link--no-visited-state">Clear all filters</a>
+                            
+                            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                        </div>
+                    }
 
                     @if (Model.Services != null && Model.Services.Any())
                     {
-                        if ((Model.SelectedRoleIds != null && Model.SelectedRoleIds.Any()) || (Model.SelectedSupplementarySchemeIds != null && Model.SelectedSupplementarySchemeIds.Any()) ||
-                        (Model.SelectedTrustFrameworkVersionId != null && Model.SelectedTrustFrameworkVersionId.Any()) || !string.IsNullOrEmpty(Model.SortBy))
-                        {
-                            <div>
-                                <h3 class="govuk-heading-s govuk-!-margin-bottom-3 govuk-!-font-weight-regular">Active filters</h3>
-                                
-                                <ul class="dsit-search-filter-box__tags">
-                                    @if (!string.IsNullOrEmpty(Model.SortBy))
-                                    {
-                                        <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveSort" value="true" aria-label="Remove sort filter: @Model.SortBy">
-                                            <span aria-hidden="true">Sort by: @sortOptions.GetValueOrDefault(Model.SortBy)</span>
-                                            <span class="govuk-visually-hidden">Remove this filter</span>
-                                            </button>
-                                        </li>
-                                    }
-                                    @if (Model.SelectedRoles != null && Model.SelectedRoles.Any())
-                                    {
-                                        @foreach (var role in Model.SelectedRoles)
-                                        {
-                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveRole" value="@role.Id" aria-label="Remove role filter: @Enum.GetName((RoleEnum)@role.Id)">
-                                                <span aria-hidden="true">Role types: @Enum.GetName((RoleEnum)@role.Id)</span>
-                                                <span class="govuk-visually-hidden">Remove this filter</span>
-                                            </button></li>
-                                        }
-                                    }
-                                    @if (Model.SelectedSupplementarySchemes != null && Model.SelectedSupplementarySchemes.Any())
-                                    {
-                                        @foreach (var scheme in Model.SelectedSupplementarySchemes)
-                                        {
-                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveScheme" value="@scheme.Id" aria-label="Remove supplementary code filter: @scheme.SchemeName">
-                                                <span aria-hidden="true">Supplementary codes: @scheme.SchemeName</span>
-                                                <span class="govuk-visually-hidden">Remove this filter</span>
-                                            </button></li>
-                                        }
-                                    }
-                                    @if (Model.SelectedTrustFrameworkVersion != null && Model.SelectedTrustFrameworkVersion.Any())
-                                    {
-                                        @foreach (var tfVersion in Model.SelectedTrustFrameworkVersion)
-                                        {
-                                            <li><button type="submit" class="dsit-search-filter-box__tag" name="RemoveTfVersion" value="@tfVersion.Id" aria-label="Remove trust framework version filter: @tfVersion.TrustFrameworkName">
-                                                <span aria-hidden="true">Trust framework version: @tfVersion.TrustFrameworkName</span>
-                                                <span class="govuk-visually-hidden">Remove this filter</span>
-                                            </button></li>
-                                        }
-                                    }
-                                </ul>
-                                
-                                <a href="@Url.Action("AllServices", "Register")" class="govuk-link govuk-link--no-visited-state">Clear all filters</a>
-                                
-                                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-                            </div>
-                        }
                         <ul role="list" class="govuk-list govuk-!-margin-bottom-7">
                             @foreach (var service in Model.Services)
                             {
@@ -280,7 +281,7 @@
                                         {
                                             <span> Trust mark number: @service.TrustmarkNumber.TrustMarkNumber
                                             </span> <br/>
-                                        }                                        
+                                        }                                       
                                         <span>Role types: @string.Join(", ", service.ServiceRoleMapping.Select(x => Enum.GetName(typeof(RoleEnum), x.RoleId)))</span><br />
                                         @if (service.ServiceSupSchemeMapping != null && service.ServiceSupSchemeMapping.Any())
                                         {
@@ -297,6 +298,29 @@
                             }
                         </ul>
 
+                        @if (Model?.TotalPages >= 1)
+                        {
+                            const int pageSize = 10;
+                            int resultMin = ((Model.PageNumber - 1) * pageSize) + 1;
+                            int resultMax = Math.Min(Model.PageNumber * pageSize, Model.TotalResults);
+
+                            <p class="govuk-body govuk-!-font-weight-bold">
+                                Showing @resultMin - @resultMax of @Model.TotalResults results
+                            </p>
+
+                            PaginationViewModel paginationViewModel = new PaginationViewModel
+                            {
+                                Action = "AllServices",
+                                CurrentPage = Model.PageNumber,
+                                TotalPages = Model.TotalPages,
+                                SortBy = Model.SortBy,
+                                SearchText = Model.SearchText,
+                                SelectedRoleIds = Model.SelectedRoleIds,
+                                SelectedSupplementarySchemeIds = Model.SelectedSupplementarySchemeIds,
+                                SelectedTfVersionIds = Model.SelectedTrustFrameworkVersionId
+                            };
+                            @await Html.PartialAsync("~/Views/PartialViews/_PaginationView.cshtml", paginationViewModel)
+                        }
                     }
                     else
                     {
@@ -312,29 +336,6 @@
                         </ul>
                     }
 
-                    @if (Model?.TotalPages >= 1)
-                    {
-                        const int pageSize = 10;
-                        int resultMin = ((Model.PageNumber - 1) * pageSize) + 1;
-                        int resultMax = Math.Min(Model.PageNumber * pageSize, Model.TotalResults);
-
-                        <p class="govuk-body govuk-!-font-weight-bold">
-                            Showing @resultMin - @resultMax of @Model.TotalResults results
-                        </p>
-
-                        PaginationViewModel paginationViewModel = new PaginationViewModel
-                        {
-                            Action = "AllServices",
-                            CurrentPage = Model.PageNumber,
-                            TotalPages = Model.TotalPages,
-                            SortBy = Model.SortBy,
-                            SearchText = Model.SearchText,
-                            SelectedRoleIds = Model.SelectedRoleIds,
-                            SelectedSupplementarySchemeIds = Model.SelectedSupplementarySchemeIds,
-                            SelectedTfVersionIds = Model.SelectedTrustFrameworkVersionId
-                        };
-                        @await Html.PartialAsync("~/Views/PartialViews/_PaginationView.cshtml", paginationViewModel)
-                    }
                 </div>               
             </div>
 
