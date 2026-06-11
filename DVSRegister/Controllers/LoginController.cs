@@ -2,7 +2,10 @@
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.Data.Entities;
+using DVSRegister.Data.Repositories;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +19,14 @@ namespace DVSRegister.Controllers
         private readonly ISignUpService _signUpService ;
         private readonly IUserService _userService ;
         private readonly CognitoClient _cognitoClient;
+        private readonly LoginEmailSender emailSender;
 
-        public LoginController(ISignUpService signUpService, IUserService userService, CognitoClient cognitoClient)
+        public LoginController(ISignUpService signUpService, IUserService userService, CognitoClient cognitoClient, LoginEmailSender emailSender)
         {
             _signUpService = signUpService;
             _userService = userService;
             _cognitoClient = cognitoClient;
+            this.emailSender = emailSender;
         }
         [HttpGet("")]
         public IActionResult StartPage()
@@ -125,6 +130,10 @@ namespace DVSRegister.Controllers
                     confirmPasswordResponse = await _signUpService.ResetPassword(email, confirmPasswordViewModel.Password, oneTimePassword);
                     if (confirmPasswordResponse.Success)
                     {
+                        if (confirmPasswordViewModel.PasswordReset == true)
+
+                            await emailSender.SendEmailCabPasswordReset(email, email, Helper.GetLocalDateTime(DateTime.UtcNow, "dd MMM yyyy h:mm tt"));
+                            
                         return View("PasswordChanged");
                     }
                     else

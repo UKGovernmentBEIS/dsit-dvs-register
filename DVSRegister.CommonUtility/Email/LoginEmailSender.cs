@@ -58,5 +58,17 @@ namespace DVSRegister.CommonUtility.Email
             };
             return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
         }
+
+        public async Task<bool> SendEmailCabPasswordReset(string emailAddress, string recipientName, string timestamp)
+        {
+            var template = govUkNotifyConfig.CabResetPasswordConfirmation;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientName, recipientName },
+                { template.TimeStamp, timestamp }
+            };
+            return await SendNotification(emailAddress, template, personalisation);
+        }
     }
 }

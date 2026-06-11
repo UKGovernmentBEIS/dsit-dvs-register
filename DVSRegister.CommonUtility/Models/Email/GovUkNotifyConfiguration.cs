@@ -60,7 +60,7 @@ namespace DVSRegister.CommonUtility.Models
         public ProviderEditRequestReceived ProviderEditRequestReceived { get; set; }
         public ContactUpdatesToDSIT ContactUpdatesToDSIT { get; set; }
         public ContactUpdatesToCab ContactUpdatesToCab { get; set; }
-
         public CabAccountCreatedToDSIT? CabAccountCreatedToDSIT { get; set; }
+        public CabResetPasswordConfirmation CabResetPasswordConfirmation { get; set; }
     }
 }
