@@ -64,7 +64,7 @@ namespace DVSRegister.Controllers
 
                 if (forgotPasswordResponse == "OK")
                 {
-                    HttpContext.Session?.Set("Email", enterEmailViewModel.Email);
+                    HttpContext.Session?.Set("Email", enterEmailViewModel.Email.ToLower());
                     return RedirectToAction("EnterCode", "Login", new { passwordReset = enterEmailViewModel.PasswordReset});
                 }
                 else
