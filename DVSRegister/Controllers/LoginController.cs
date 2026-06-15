@@ -2,8 +2,10 @@
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Entities;
+using DVSRegister.Data.Repositories;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
@@ -17,18 +19,27 @@ namespace DVSRegister.Controllers
         private readonly ISignUpService _signUpService ;
         private readonly IUserService _userService ;
         private readonly CognitoClient _cognitoClient;
+        private readonly LoginEmailSender emailSender;
 
-        public LoginController(ISignUpService signUpService, IUserService userService, CognitoClient cognitoClient)
+        public LoginController(ISignUpService signUpService, IUserService userService, CognitoClient cognitoClient, LoginEmailSender emailSender)
         {
             _signUpService = signUpService;
             _userService = userService;
             _cognitoClient = cognitoClient;
+            this.emailSender = emailSender;
         }
         [HttpGet("")]
         public IActionResult StartPage()
         {
             return View("StartPage");
         }
+
+        [HttpGet("account-not-found")]
+        public IActionResult StartPageWithBanner()
+        {
+            return View();
+        }
+
 
         #region Create Account /Forgot password
 
@@ -53,7 +64,7 @@ namespace DVSRegister.Controllers
 
                 if (forgotPasswordResponse == "OK")
                 {
-                    HttpContext.Session?.Set("Email", enterEmailViewModel.Email);
+                    HttpContext.Session?.Set("Email", enterEmailViewModel.Email.ToLower());
                     return RedirectToAction("EnterCode", "Login", new { passwordReset = enterEmailViewModel.PasswordReset});
                 }
                 else
@@ -119,6 +130,10 @@ namespace DVSRegister.Controllers
                     confirmPasswordResponse = await _signUpService.ResetPassword(email, confirmPasswordViewModel.Password, oneTimePassword);
                     if (confirmPasswordResponse.Success)
                     {
+                        if (confirmPasswordViewModel.PasswordReset == true)
+
+                            await emailSender.SendEmailCabPasswordReset(email, email, Helper.GetLocalDateTime(DateTime.UtcNow, "dd MMM yyyy h:mm tt"));
+                            
                         return View("PasswordChanged");
                     }
                     else
@@ -216,16 +231,20 @@ namespace DVSRegister.Controllers
             if (ModelState["Email"].Errors.Count ==0 && ModelState["Password"].Errors.Count ==0)
             {
                 var loginResponse = await _signUpService.SignInAndWaitForMfa(loginViewModel.Email, loginViewModel.Password);
-                if (loginResponse!= null && loginResponse.Length > 0 && loginResponse != Constants.IncorrectPassword)
+                if (loginResponse!= null && loginResponse.Length > 0 && loginResponse != Constants.IncorrectLoginDetails && loginResponse != Constants.UserDisabled)
                 {
                     HttpContext?.Session.Set("Email", loginViewModel.Email);
                     HttpContext?.Session.Set("Session", loginResponse);
                     return RedirectToAction("MFAConfirmation");
                 }
+                else if (loginResponse == Constants.UserDisabled)
+                {
+                    ModelState.AddModelError("Email", loginResponse);
+                    return View("LoginPage", loginViewModel);
+                }
                 else
                 {
                     ModelState.AddModelError("Email", Constants.IncorrectLoginDetails);
-
                     return View("LoginPage", loginViewModel);
                 }
             }
@@ -259,7 +278,7 @@ namespace DVSRegister.Controllers
 
                     if (!string.IsNullOrEmpty(cab) && !string.IsNullOrEmpty(email))
                     {                      
-                        CabUserDto cabUser = await _userService.SaveUser(email, cab);                        
+                        CabUserDto cabUser = await _userService.UpdateCabUser(email);                        
                         if(cabUser.CabId>0)                            
                         HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
                         return RedirectToAction("DraftApplications", "Home");

@@ -1,4 +1,5 @@
-﻿using DVSRegister.CommonUtility.Models.Enums;
+﻿using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,57 +14,94 @@ namespace DVSRegister.Data.Repositories
             this.context = context;
         }
 
-        public async Task<CabUser> AddUser(CabUser user)
+        public async Task<GenericResponse> UpdateAccountStatus(string email, AccountStatusEnum accountStatus, string loggedInUser)
+        {
+            using var transaction = await context.Database.BeginTransactionAsync();
+            GenericResponse genericResponse = new();
+            try
+            {
+                var existingUser = await context.CabUser.Where(x => x.CabEmail.ToLower() == email.ToLower()).FirstOrDefaultAsync();
+
+                if (existingUser != null)
+                {
+                    existingUser.ModifiedDate = DateTime.UtcNow;
+                    existingUser.AccountStatus = accountStatus;
+                    await context.SaveChangesAsync(TeamEnum.DSIT, EventTypeEnum.UpdateUser, loggedInUser);
+                    await transaction.CommitAsync();
+                    genericResponse.Success = true;
+                }
+                else
+                {
+                    await transaction.RollbackAsync();
+                    genericResponse.Success = false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                genericResponse.Success = false;
+                await transaction.RollbackAsync();
+                Console.Write($"Exception in UpdateAccountStatus - {ex}");
+            }
+            return genericResponse;
+        }
+
+        public async Task<CabUser> UpdateCabUser(string email)
         {
            
             using var transaction = context.Database.BeginTransaction();
             CabUser cabUser = new();
             try
             {
-                var existingEntity = await context.CabUser.Include(c=>c.Cab).FirstOrDefaultAsync<CabUser>(e => e.CabEmail == user.CabEmail);
-                if(existingEntity == null)
+                var existingEntity = await context.CabUser.FirstOrDefaultAsync<CabUser>(e => e.CabEmail.ToLower() == email.ToLower());
+                if(existingEntity != null)
                 {
-                    user.CreatedTime = DateTime.UtcNow;
-                    user.IsActive = true;
-                    var entity = await context.CabUser.AddAsync(user);
-                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddService, user.CabEmail);
+                    existingEntity.LastLoggedIn = DateTime.UtcNow;                                    
+                    await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.UpdateUser, email);
                     transaction.Commit();                    
-                    return user;
+                    return existingEntity;                    
                 }
-                return existingEntity;
+                else
+                {
+                    transaction.Rollback();
+                    Console.Write($"User not found");
+                    return null!;
+                }
+               
                
             }
             catch(Exception ex)
-            {                
-                
+            { 
                 transaction.Rollback();
                 Console.Write($"Exception while adding user to table - {ex}");
-                return null;
+                return null!;
             }
 
            
         }
 
+        
+
 
         public async Task<CabUser> GetUser(string email)
         {
             CabUser user = new CabUser();
-            user = await context.CabUser.Include(x=>x.Cab).FirstOrDefaultAsync<CabUser>(e => e.CabEmail == email)??new CabUser();
+            user = await context.CabUser.Include(x=>x.Cab).FirstOrDefaultAsync<CabUser>(e => e.CabEmail.ToLower() == email.ToLower())??new CabUser();
             return user;
         }
 
-        public async Task<Cab> GetCab(string cabName)
-        {
-            Cab cab = new Cab();
-            cab = await context.Cab.FirstOrDefaultAsync<Cab>(e => e.CabName == cabName);
-            return cab;
-        }
+      
 
         public async Task<List<string>> GetDSITUserEmails()
         {
             List<string> userEmails = await context.User.Where(u => u.Profile == "DSIT")
             .Select(u => u.Email).ToListAsync() ?? new List<string>();
             return userEmails;
+        }
+
+        public async Task<List<User>> GetAllOfDIAManagerUsers()
+        {
+            return await context.User.AsNoTracking().Where(x => x.UserRole == UserRoleEnum.Manager && x.AccountStatus == AccountStatusEnum.Active).ToListAsync();
         }
     }
 }

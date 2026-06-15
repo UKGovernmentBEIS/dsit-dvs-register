@@ -223,7 +223,12 @@ public class CognitoClient
         }
         catch (Amazon.CognitoIdentityProvider.Model.NotAuthorizedException ex)
         {
-            return Constants.IncorrectPassword;
+
+            if (ex.Message.Contains("disabled", StringComparison.OrdinalIgnoreCase))
+            {
+                return Constants.UserDisabled; // handle disabled case
+            }
+            return Constants.IncorrectLoginDetails;
         }
         catch (Exception ex)
         {

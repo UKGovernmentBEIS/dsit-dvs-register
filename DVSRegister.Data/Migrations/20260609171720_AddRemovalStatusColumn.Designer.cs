@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260609171720_AddRemovalStatusColumn")]
+    partial class AddRemovalStatusColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -533,7 +536,7 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime>("DecisionTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("FromCabUserId")
+                    b.Property<int>("FromCabUserId")
                         .HasColumnType("integer");
 
                     b.Property<int>("PreviousServiceStatus")
@@ -2882,7 +2885,9 @@ namespace DVSRegister.Data.Migrations
                 {
                     b.HasOne("DVSRegister.Data.Entities.CabUser", "FromCabUser")
                         .WithMany()
-                        .HasForeignKey("FromCabUserId");
+                        .HasForeignKey("FromCabUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DVSRegister.Data.Entities.RequestManagement", "RequestManagement")
                         .WithMany()

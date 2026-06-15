@@ -1,8 +1,5 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
-using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.CommonUtility.Models;
-using DVSRegister.Data.Entities;
 using DVSRegister.Data.Repositories;
 
 namespace DVSRegister.BusinessLogic.Services
@@ -19,13 +16,10 @@ namespace DVSRegister.BusinessLogic.Services
             this.automapper = automapper;
         }
       
-        public async Task<CabUserDto> SaveUser(string email , string cabName)
+        public async Task<CabUserDto> UpdateCabUser(string email)
         {
-            Cab cab = await userRepository.GetCab(cabName);
-            CabUser cabUser = new CabUser();
-            cabUser.CabEmail = email;
-            cabUser.CabId = cab.Id;
-            var user = await userRepository.AddUser(cabUser);
+           
+            var user = await userRepository.UpdateCabUser(email);
             CabUserDto userDto = automapper.Map<CabUserDto>(user);
             return userDto;// return current user details
 
@@ -39,12 +33,7 @@ namespace DVSRegister.BusinessLogic.Services
             return userDto;
         }
 
-        public async Task<CabDto> GetCab(string cabName)
-        {
-            var cab = await userRepository.GetCab(cabName);
-            CabDto cabDto = automapper.Map<CabDto>(cab);
-            return cabDto;
-        }
+   
         public async Task<List<string>> GetDSITUserEmails()
         {
             var userEmails = await userRepository.GetDSITUserEmails();
