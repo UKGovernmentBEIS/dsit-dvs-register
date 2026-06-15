@@ -47,11 +47,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=postgres;Username=postgres;Password=postgres
-      AWS__Region: eu-west-2
-      AWS__ServiceURL: http://localstack:4566
-      AWS__S3__BucketName: s3-dvs-dev20240529103145426300000001
-      AWS__S3__ForcePathStyle: "true"
+      DB_CONNECTIONSTRING: "Host=db;Port=5432;Database=postgres;Username=postgres;Password=postgres"
+      S3Config__BucketName: s3-dvs-dev20240529103145426300000001
+      S3Config__Region: eu-west-2
+      S3__LocalDevOnly_AccessKey: test
+      S3__LocalDevOnly_SecretKey: test
+      S3__LocalDevOnly_ServiceUrl: http://localstack:4566
     ports:
       - "8080:8080"
 
