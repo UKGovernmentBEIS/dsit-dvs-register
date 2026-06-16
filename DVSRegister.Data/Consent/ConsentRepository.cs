@@ -48,7 +48,7 @@ namespace DVSRegister.Data.Repositories
         public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string agree)
         {
             GenericResponse genericResponse = new();
-            using var transaction = context.Database.BeginTransaction();
+            using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
                 var service = await context.Service.Include(x => x.CertificateReview).ThenInclude(x => x.CertificateReviewRejectionReasonMapping)
@@ -82,7 +82,7 @@ namespace DVSRegister.Data.Repositories
                         genericResponse.InstanceId = entity.Entity.Id;
                     }                  
                  
-                    transaction.Commit();
+                   await transaction.CommitAsync();
                     genericResponse.Success = true;
                 }
             }
@@ -90,7 +90,7 @@ namespace DVSRegister.Data.Repositories
             {
                 genericResponse.EmailSent = false;
                 genericResponse.Success = false;
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 logger.LogError(ex.Message);
             }
             return genericResponse;
