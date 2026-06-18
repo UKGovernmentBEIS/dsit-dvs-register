@@ -26,7 +26,7 @@
     <PackageReference Include="NuGet.Packaging" Version="7.6.0" />
     <PackageReference Include="NuGet.Protocol" Version="7.6.0" />
     <PackageReference Include="Sentry.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="System.Formats.Asn1" Version="10.0.8" />
+    <PackageReference Include="System.Formats.Asn1" Version="10.0.9" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DVSRegister.BusinessLogic\DVSRegister.BusinessLogic.csproj" />
