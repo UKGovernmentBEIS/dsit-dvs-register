@@ -53,7 +53,7 @@ public class CognitoClient
         }
         catch (UserNotFoundException)
         {
-            return ("Enter a valid email address");
+            return ("Enter an email address in the correct format, like name@example.com");
         }
         catch (LimitExceededException)
         {
@@ -121,7 +121,7 @@ public class CognitoClient
         {
             Console.WriteLine($"Error confirming password : {ex.Message}");
             genericResponse.Success = false;
-            genericResponse.ErrorMessage = "Invalid verification code provided";
+            genericResponse.ErrorMessage = "The code you entered is not correct, or may have expired, try entering it again or request a new code";
             return genericResponse;
         }
         catch (Exception ex)

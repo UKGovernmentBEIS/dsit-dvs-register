@@ -194,7 +194,7 @@ namespace DVSRegister.Controllers
                 {
                     viewModel.SecretToken = MFARegistrationViewModel.SecretToken;
                     viewModel.Email = MFARegistrationViewModel.Email;
-                    ModelState.AddModelError("MFACode", "Enter a valid MFA code");
+                    ModelState.AddModelError("MFACode", "The code you entered is not correct, or may have expired, try entering it again or request a new code");
                     return View("MFARegistration", viewModel);
                 }
             }
@@ -290,7 +290,7 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("MFACode", "Enter a valid MFA code");
+                    ModelState.AddModelError("MFACode", "The code you entered is not correct, or may have expired, try entering it again or start again");
                     return View("MFAConfirmation", MFACodeViewModel);
                 }
             }
