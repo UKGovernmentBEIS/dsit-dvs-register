@@ -4,8 +4,7 @@ using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.Data.Entities;
-using DVSRegister.Data.Repositories;
+using DVSRegister.CommonUtility.Models.AWS;
 using DVSRegister.Extensions;
 using DVSRegister.Models.CAB;
 using Microsoft.AspNetCore.Mvc;
@@ -16,18 +15,20 @@ namespace DVSRegister.Controllers
     [Route("cab-application-registration")]
     public class LoginController : Controller
     {
-        private readonly ISignUpService _signUpService ;
-        private readonly IUserService _userService ;
+        private readonly ISignUpService _signUpService;
+        private readonly IUserService _userService;
         private readonly CognitoClient _cognitoClient;
         private readonly LoginEmailSender emailSender;
 
-        public LoginController(ISignUpService signUpService, IUserService userService, CognitoClient cognitoClient, LoginEmailSender emailSender)
+        public LoginController(ISignUpService signUpService, IUserService userService, CognitoClient cognitoClient,
+            LoginEmailSender emailSender)
         {
             _signUpService = signUpService;
             _userService = userService;
             _cognitoClient = cognitoClient;
             this.emailSender = emailSender;
         }
+
         [HttpGet("")]
         public IActionResult StartPage()
         {
@@ -46,12 +47,13 @@ namespace DVSRegister.Controllers
         [HttpGet("enter-email")]
         public IActionResult EnterEmail(bool passwordReset)
         {
-            if(passwordReset) 
+            if (passwordReset)
             {
                 EnterEmailViewModel enterEmailViewModel = new EnterEmailViewModel();
                 enterEmailViewModel.PasswordReset = passwordReset;
                 return View("EnterEmail", enterEmailViewModel);
             }
+
             return View("EnterEmail");
         }
 
@@ -65,7 +67,8 @@ namespace DVSRegister.Controllers
                 if (forgotPasswordResponse == "OK")
                 {
                     HttpContext.Session?.Set("Email", enterEmailViewModel.Email.ToLower());
-                    return RedirectToAction("EnterCode", "Login", new { passwordReset = enterEmailViewModel.PasswordReset});
+                    return RedirectToAction("EnterCode", "Login",
+                        new { passwordReset = enterEmailViewModel.PasswordReset });
                 }
                 else
                 {
@@ -76,7 +79,9 @@ namespace DVSRegister.Controllers
             else
             {
                 return View("EnterEmail");
-            };
+            }
+
+            ;
         }
 
 
@@ -93,27 +98,28 @@ namespace DVSRegister.Controllers
         [HttpPost("email-code-validation")]
         public IActionResult EnterCodeValidation(EnterCodeViewModel enterCodeViewModel)
         {
-            if (ModelState["Code"].Errors.Count  == 0)
+            if (ModelState["Code"].Errors.Count == 0)
             {
                 HttpContext.Session?.Set("Code", enterCodeViewModel.Code);
-                return RedirectToAction("CreatePassword", new { passwordReset = enterCodeViewModel .PasswordReset});
+                return RedirectToAction("CreatePassword", new { passwordReset = enterCodeViewModel.PasswordReset });
             }
             else
             {
                 return View("EnterCode", enterCodeViewModel);
             }
         }
-       
+
 
         [HttpGet("create-password")]
         public IActionResult CreatePassword(bool passwordReset)
         {
-            if(passwordReset)
+            if (passwordReset)
             {
                 ConfirmPasswordViewModel confirmPasswordViewModel = new ConfirmPasswordViewModel();
                 confirmPasswordViewModel.PasswordReset = passwordReset;
                 return View("CreatePassword", confirmPasswordViewModel);
             }
+
             return View("CreatePassword");
         }
 
@@ -125,15 +131,17 @@ namespace DVSRegister.Controllers
                 string email = HttpContext?.Session.Get<string>("Email");
                 string oneTimePassword = HttpContext?.Session.Get<string>("Code");
                 GenericResponse confirmPasswordResponse = new GenericResponse();
-                if (confirmPasswordViewModel.PasswordReset != null && confirmPasswordViewModel.PasswordReset==true)
+                if (confirmPasswordViewModel.PasswordReset != null && confirmPasswordViewModel.PasswordReset == true)
                 {
-                    confirmPasswordResponse = await _signUpService.ResetPassword(email, confirmPasswordViewModel.Password, oneTimePassword);
+                    confirmPasswordResponse =
+                        await _signUpService.ResetPassword(email, confirmPasswordViewModel.Password, oneTimePassword);
                     if (confirmPasswordResponse.Success)
                     {
                         if (confirmPasswordViewModel.PasswordReset == true)
 
-                            await emailSender.SendEmailCabPasswordReset(email, email, Helper.GetLocalDateTime(DateTime.UtcNow, "dd MMM yyyy h:mm tt"));
-                            
+                            await emailSender.SendEmailCabPasswordReset(email, email,
+                                Helper.GetLocalDateTime(DateTime.UtcNow, "dd MMM yyyy h:mm tt"));
+
                         return View("PasswordChanged");
                     }
                     else
@@ -144,10 +152,16 @@ namespace DVSRegister.Controllers
                 }
                 else
                 {
-                    confirmPasswordResponse = await _signUpService.ConfirmPassword(email, confirmPasswordViewModel.Password, oneTimePassword);
+                    confirmPasswordResponse =
+                        await _signUpService.ConfirmPassword(email, confirmPasswordViewModel.Password, oneTimePassword);
                     if (confirmPasswordResponse.Success)
                     {
-                        HttpContext?.Session.Set("MFARegistrationViewModel", new MFARegistrationViewModel { Email = email, Password = confirmPasswordViewModel.Password, SecretToken = confirmPasswordResponse.Data });
+                        HttpContext?.Session.Set("MFARegistrationViewModel",
+                            new MFARegistrationViewModel
+                            {
+                                Email = email, Password = confirmPasswordViewModel.Password,
+                                SecretToken = confirmPasswordResponse.Data
+                            });
                         return RedirectToAction("MFADescription", "Login");
                     }
                     else
@@ -156,8 +170,6 @@ namespace DVSRegister.Controllers
                         return View("CreatePassword", confirmPasswordViewModel);
                     }
                 }
-
-                
             }
             else
             {
@@ -174,17 +186,20 @@ namespace DVSRegister.Controllers
         [HttpGet("mfa-registration")]
         public IActionResult MFARegistration()
         {
-            MFARegistrationViewModel MFARegistrationViewModel = HttpContext?.Session.Get<MFARegistrationViewModel>("MFARegistrationViewModel");
+            MFARegistrationViewModel MFARegistrationViewModel =
+                HttpContext?.Session.Get<MFARegistrationViewModel>("MFARegistrationViewModel");
             return View("MFARegistration", MFARegistrationViewModel);
         }
 
         [HttpPost("mfa-confirmation")]
         public async Task<IActionResult> MFAConfirmationCheck(MFARegistrationViewModel viewModel)
         {
-            MFARegistrationViewModel MFARegistrationViewModel = HttpContext?.Session.Get<MFARegistrationViewModel>("MFARegistrationViewModel");
+            MFARegistrationViewModel MFARegistrationViewModel =
+                HttpContext?.Session.Get<MFARegistrationViewModel>("MFARegistrationViewModel");
             if (ModelState["MFACode"].Errors.Count == 0)
             {
-                var mfaConfirmationCheckResponse = await _signUpService.MFAConfirmation(MFARegistrationViewModel.Email, MFARegistrationViewModel.Password, viewModel.MFACode);
+                var mfaConfirmationCheckResponse = await _signUpService.MFAConfirmation(MFARegistrationViewModel.Email,
+                    MFARegistrationViewModel.Password, viewModel.MFACode);
 
                 if (mfaConfirmationCheckResponse == "OK")
                 {
@@ -204,10 +219,7 @@ namespace DVSRegister.Controllers
                 viewModel.Email = MFARegistrationViewModel.Email;
                 return View("MFARegistration", viewModel);
             }
-
         }
-
-
 
 
         [HttpGet("sign-up-complete")]
@@ -219,19 +231,22 @@ namespace DVSRegister.Controllers
         #endregion
 
         #region Login
+
         [HttpGet("login")]
         public IActionResult LoginPage()
         {
             return View("LoginPage");
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> LoginToAccountAsync(LoginViewModel loginViewModel)
         {
-
-            if (ModelState["Email"].Errors.Count ==0 && ModelState["Password"].Errors.Count ==0)
+            if (ModelState["Email"].Errors.Count == 0 && ModelState["Password"].Errors.Count == 0)
             {
-                var loginResponse = await _signUpService.SignInAndWaitForMfa(loginViewModel.Email, loginViewModel.Password);
-                if (loginResponse!= null && loginResponse.Length > 0 && loginResponse != Constants.IncorrectLoginDetails && loginResponse != Constants.UserDisabled)
+                var loginResponse =
+                    await _signUpService.SignInAndWaitForMfa(loginViewModel.Email, loginViewModel.Password);
+                if (loginResponse != null && loginResponse.Length > 0 &&
+                    loginResponse != Constants.IncorrectLoginDetails && loginResponse != Constants.UserDisabled)
                 {
                     HttpContext?.Session.Set("Email", loginViewModel.Email);
                     HttpContext?.Session.Set("Session", loginResponse);
@@ -265,22 +280,24 @@ namespace DVSRegister.Controllers
         {
             if (ModelState["MFACode"].Errors.Count == 0)
             {
-                var mfaResponse = await _signUpService.ConfirmMFAToken(HttpContext?.Session.Get<string>("Session"), HttpContext?.Session.Get<string>("Email"), MFACodeViewModel.MFACode);
+                var mfaResponse = await _signUpService.ConfirmMFAToken(HttpContext?.Session.Get<string>("Session"),
+                    HttpContext?.Session.Get<string>("Email"), MFACodeViewModel.MFACode);
 
                 if (mfaResponse != null && mfaResponse.IdToken.Length > 0)
                 {
                     HttpContext?.Session.Set("IdToken", mfaResponse.IdToken);
                     HttpContext?.Session.Set("AccessToken", mfaResponse.AccessToken);
 
-                    Task<TokenValidationResult> result = TokenExtensions.ValidateToken(mfaResponse.IdToken, _cognitoClient._userPoolId, _cognitoClient._region, _cognitoClient._clientId);
+                    Task<TokenValidationResult> result = TokenExtensions.ValidateToken(mfaResponse.IdToken,
+                        _cognitoClient._userPoolId, _cognitoClient._region, _cognitoClient._clientId);
                     string? cab = result.Result?.Claims?.FirstOrDefault(c => c.Key == "profile").Value?.ToString();
                     string email = HttpContext?.Session.Get<string>("Email");
 
                     if (!string.IsNullOrEmpty(cab) && !string.IsNullOrEmpty(email))
-                    {                      
-                        CabUserDto cabUser = await _userService.UpdateCabUser(email);                        
-                        if(cabUser.CabId>0)                            
-                        HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
+                    {
+                        CabUserDto cabUser = await _userService.UpdateCabUser(email);
+                        if (cabUser.CabId > 0)
+                            HttpContext?.Session.Set("CabId", cabUser.CabId); // setting logged in cab id in session
                         return RedirectToAction("DraftApplications", "Home");
                     }
                     else
@@ -300,8 +317,6 @@ namespace DVSRegister.Controllers
             }
         }
 
-
-
         #endregion
 
         [HttpGet("sign-out")]
@@ -309,7 +324,7 @@ namespace DVSRegister.Controllers
         {
             string accesstoken = HttpContext?.Session.Get<string>("AccessToken");
             HttpContext?.Session.Clear();
-            _signUpService.SignOut(accesstoken);        
+            _signUpService.SignOut(accesstoken);
             return RedirectToAction("LoginPage", "Login");
         }
     }

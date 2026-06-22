@@ -1,74 +1,82 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using Microsoft.Extensions.Options;
 
-namespace DVSRegister.CommonUtility.Email
+namespace DVSRegister.CommonUtility.Email;
+
+public interface ILoginEmailSender
 {
-    public class LoginEmailSender : EmailSender
+    Task<bool> SendEmailCabSignUpActivation(string emailAddress, string recipientName);
+    Task<bool> SendEmailCabAccountCreated(string emailAddress, string recipientName);
+
+    Task<bool> SendEmailCabAccountCreatedToDSIT(string recipientName, string recipientEmail, string cabEmail,
+        string cabName);
+
+    Task<bool> SendEmailCabFailedLoginAttempt(string emailAddress, string timestamp);
+    Task<bool> SendEmailCabPasswordReset(string emailAddress, string recipientName, string timestamp);
+}
+
+public class LoginEmailSender(GovUkNotifyApi govUkNotifyApi, IOptions<GovUkNotifyConfiguration> config)
+    : EmailSender(govUkNotifyApi, config), ILoginEmailSender
+{
+    public async Task<bool> SendEmailCabSignUpActivation(string emailAddress, string recipientName)
     {
-        public LoginEmailSender(GovUkNotifyApi govUkNotifyApi, IOptions<GovUkNotifyConfiguration> config) : base(govUkNotifyApi, config)
+        var template = govUkNotifyConfig.CabSignUpActivationTemplate;
+
+        var personalisation = new Dictionary<string, dynamic>
         {
-        }
+            { template.RecipientName, recipientName },
+            { template.CabSignUpLink, govUkNotifyConfig.CabSignUpLink }
+        };
+        return await SendNotification(emailAddress, template, personalisation);
+    }
 
-        public async Task<bool> SendEmailCabSignUpActivation(string emailAddress, string recipientName)
+    public async Task<bool> SendEmailCabAccountCreated(string emailAddress, string recipientName)
+    {
+        var template = govUkNotifyConfig.CabAccountCreatedTemplate;
+
+        var personalisation = new Dictionary<string, dynamic>
         {
-            var template = govUkNotifyConfig.CabSignUpActivationTemplate;
+            { template.RecipientName, recipientName },
+            { template.CabLoginLink, govUkNotifyConfig.CabLoginLink }
+        };
+        return await SendNotification(emailAddress, template, personalisation);
+    }
 
-            var personalisation = new Dictionary<string, dynamic>
-            {
-                { template.RecipientName, recipientName  },
-                { template.CabSignUpLink, govUkNotifyConfig.CabSignUpLink }
-            };
-            return await SendNotification(emailAddress, template, personalisation);
-        }
+    public async Task<bool> SendEmailCabAccountCreatedToDSIT(string recipientName, string recipientEmail,
+        string cabEmail, string cabName)
+    {
+        var template = govUkNotifyConfig.CabAccountCreatedToDSIT;
 
-        public async Task<bool> SendEmailCabAccountCreated(string emailAddress, string recipientName)
+        var personalisation = new Dictionary<string, dynamic>
         {
-            var template = govUkNotifyConfig.CabAccountCreatedTemplate;
+            { template!.RecipientName, recipientName },
+            { template.CabEmail, cabEmail },
+            { template.Cab, cabName },
+        };
+        return await SendNotification(recipientEmail, template, personalisation);
+    }
 
-            var personalisation = new Dictionary<string, dynamic>
-            {
-                { template.RecipientName, recipientName  },
-                { template.CabLoginLink, govUkNotifyConfig.CabLoginLink }
-            };
-            return await SendNotification(emailAddress, template, personalisation);
-        }
+    public async Task<bool> SendEmailCabFailedLoginAttempt(string emailAddress, string timestamp)
+    {
+        var template = govUkNotifyConfig.CabFailedLoginAttemptTemplate;
 
-        public async Task<bool> SendEmailCabAccountCreatedToDSIT(string recipientName, string recipientEmail, string cabEmail, string cabName)
+        var personalisation = new Dictionary<string, dynamic>
         {
-            var template = govUkNotifyConfig.CabAccountCreatedToDSIT;
+            { template.Timestamp, timestamp },
+            { template.Email, emailAddress }
+        };
+        return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
+    }
 
-            var personalisation = new Dictionary<string, dynamic>
-            {
-                { template!.RecipientName, recipientName  },
-                { template.CabEmail, cabEmail },
-                { template.Cab, cabName },
+    public async Task<bool> SendEmailCabPasswordReset(string emailAddress, string recipientName, string timestamp)
+    {
+        var template = govUkNotifyConfig.CabResetPasswordConfirmation;
 
-            };
-            return await SendNotification(recipientEmail, template, personalisation);
-        }
-
-        public async Task<bool> SendEmailCabFailedLoginAttempt(string emailAddress, string timestamp)
+        var personalisation = new Dictionary<string, dynamic>
         {
-            var template = govUkNotifyConfig.CabFailedLoginAttemptTemplate;
-
-            var personalisation = new Dictionary<string, dynamic>
-            {
-                { template.Timestamp, timestamp },
-                { template.Email , emailAddress}
-            };
-            return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
-        }
-
-        public async Task<bool> SendEmailCabPasswordReset(string emailAddress, string recipientName, string timestamp)
-        {
-            var template = govUkNotifyConfig.CabResetPasswordConfirmation;
-
-            var personalisation = new Dictionary<string, dynamic>
-            {
-                { template.RecipientName, recipientName },
-                { template.TimeStamp, timestamp }
-            };
-            return await SendNotification(emailAddress, template, personalisation);
-        }
+            { template.RecipientName, recipientName },
+            { template.TimeStamp, timestamp }
+        };
+        return await SendNotification(emailAddress, template, personalisation);
     }
 }

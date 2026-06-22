@@ -1,10 +1,11 @@
-﻿using DVSRegister.BusinessLogic.Services;
+﻿using System.Security.Claims;
+using DVSRegister.BusinessLogic.Services;
+using DVSRegister.CommonUtility.Models.AWS;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 
 public class ValidCognitoTokenAttribute : Attribute, IAsyncAuthorizationFilter
 {
@@ -17,6 +18,7 @@ public class ValidCognitoTokenAttribute : Attribute, IAsyncAuthorizationFilter
             {
                 throw new UnauthorizedAccessException("Invalid token");
             }
+
             sessionToken = sessionToken.Substring(1, sessionToken.Length - 2);
 
             var cognitoClient = context.HttpContext.RequestServices.GetService<CognitoClient>();
@@ -24,7 +26,8 @@ public class ValidCognitoTokenAttribute : Attribute, IAsyncAuthorizationFilter
             var region = cognitoClient._region;
             var clientId = cognitoClient._clientId;
 
-            Task<TokenValidationResult> result = TokenExtensions.ValidateToken(sessionToken, userPoolId, region, clientId);
+            Task<TokenValidationResult> result =
+                TokenExtensions.ValidateToken(sessionToken, userPoolId, region, clientId);
 
             if (result.Result.IsValid)
             {
@@ -45,11 +48,10 @@ public class ValidCognitoTokenAttribute : Attribute, IAsyncAuthorizationFilter
             {
                 throw new UnauthorizedAccessException("Invalid token");
             }
-        
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Exception ex"+ex.Message);
+            Console.WriteLine($"Exception ex" + ex.Message);
             // If an exception occurs (indicating the token is invalid), redirect to the Login page
             context.Result = new RedirectToActionResult("LoginPage", "Login", null);
         }
