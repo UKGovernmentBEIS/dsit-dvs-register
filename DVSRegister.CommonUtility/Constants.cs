@@ -30,7 +30,11 @@
         public const string IncorrectPassword = "Incorrect Password";
         public const string IncorrectLoginDetails = "Enter a valid email address and password.";
         public const string NullFieldsDisplay = "Not applicable";
-        public const string UserDisabled = "Invalid credentials";
+        public const string UserDisabled = "Enter a valid email address";
+        public const string EmailErrorMessage = "Enter an email address in the correct format, like name@example.com";
+        public const string EnterCode = "Enter the code you received in your email. It is 6 digits long";
+        public const string EnterMFACode = "Enter the code shown in your authenticator app. It is 6 digits long";
+        public const string IncorrectCode = "The code you entered is not correct, or may have expired, try entering it again or request a new code";
 
         public const string RegisteredNameExistsError = "The registered name you have entered already exists";
         public const string NewApplication = "New application";
