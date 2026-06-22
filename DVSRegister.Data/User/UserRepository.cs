@@ -49,7 +49,7 @@ namespace DVSRegister.Data.Repositories
         public async Task<CabUser> UpdateCabUser(string email)
         {
            
-            using var transaction = context.Database.BeginTransaction();
+            using var transaction = await context.Database.BeginTransactionAsync();
             CabUser cabUser = new();
             try
             {
@@ -58,12 +58,12 @@ namespace DVSRegister.Data.Repositories
                 {
                     existingEntity.LastLoggedIn = DateTime.UtcNow;                                    
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.UpdateUser, email);
-                    transaction.Commit();                    
+                    await transaction.CommitAsync();                    
                     return existingEntity;                    
                 }
                 else
                 {
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
                     Console.Write($"User not found");
                     return null!;
                 }
@@ -72,7 +72,7 @@ namespace DVSRegister.Data.Repositories
             }
             catch(Exception ex)
             { 
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 Console.Write($"Exception while adding user to table - {ex}");
                 return null!;
             }
@@ -94,7 +94,7 @@ namespace DVSRegister.Data.Repositories
 
         public async Task<List<string>> GetDSITUserEmails()
         {
-            List<string> userEmails = await context.User.Where(u => u.Profile == "DSIT")
+            List<string> userEmails = await context.User.Where(u => u.Profile == "DSIT" && u.AccountStatus == AccountStatusEnum.Active)
             .Select(u => u.Email).ToListAsync() ?? new List<string>();
             return userEmails;
         }
