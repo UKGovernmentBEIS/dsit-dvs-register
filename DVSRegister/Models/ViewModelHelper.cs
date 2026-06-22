@@ -4,6 +4,7 @@ using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models.CAB;
+using System.Text.RegularExpressions;
 
 namespace DVSRegister.Models
 {
@@ -363,6 +364,21 @@ namespace DVSRegister.Models
                 return null!;
             }
 
+        }
+
+
+        public static bool IsValidEmail(string? email, IWebHostEnvironment environment)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return false;
+            }
+
+            var pattern = true
+                ? @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|co\.uk|gov\.uk)$"
+                : @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+
+            return Regex.IsMatch(email, pattern);
         }
 
 
