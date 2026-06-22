@@ -35,6 +35,7 @@
         public const string EnterCode = "Enter the code you received in your email. It is 6 digits long";
         public const string EnterMFACode = "Enter the code shown in your authenticator app. It is 6 digits long";
         public const string IncorrectCode = "The code you entered is not correct, or may have expired, try entering it again or request a new code";
+        public const string EnterPassword = "Enter a password that is at least 8 characters long";
 
         public const string RegisteredNameExistsError = "The registered name you have entered already exists";
         public const string NewApplication = "New application";
