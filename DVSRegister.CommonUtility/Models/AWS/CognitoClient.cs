@@ -53,7 +53,7 @@ public class CognitoClient
         }
         catch (UserNotFoundException)
         {
-            return (Constants.EmailErrorMessage);
+            return Constants.EmailErrorMessage ;
         }
         catch (LimitExceededException)
         {
@@ -63,7 +63,7 @@ public class CognitoClient
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            return ("An error occurred");
+            return Constants.EmailErrorMessage;
         }
     }
 
