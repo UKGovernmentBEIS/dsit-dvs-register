@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DVSRegister.CommonUtility;
+using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.Models.CAB
 {
     public class EnterCodeViewModel
     {
-        [Required(ErrorMessage = "Enter a valid code")]
-        [RegularExpression("^[0-9]{6}$", ErrorMessage = "The code must be a six-digit number")]
+        [Required(ErrorMessage = Constants.EnterCode)]
+        [RegularExpression("^[0-9]{6}$", ErrorMessage = Constants.EnterCode)]
         public string Code { get; set; }
 
         public string? Email { get; set; }

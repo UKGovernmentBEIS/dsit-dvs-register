@@ -16,8 +16,8 @@ namespace DVSRegister.Data.Entities
         public Service Service { get; set; }
 
         [ForeignKey("CabUser")]
-        public int FromCabUserId { get; set; }       
-        public CabUser FromCabUser { get; set; }
+        public int? FromCabUserId { get; set; }       
+        public CabUser? FromCabUser { get; set; }
 
         [ForeignKey("Cab")]
         public int ToCabId { get; set; }     

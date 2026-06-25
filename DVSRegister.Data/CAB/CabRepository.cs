@@ -221,7 +221,7 @@ namespace DVSRegister.Data.CAB
         public async Task<List<string>> GetCabEmailListForServices(List<int> serviceIds)
         {
             List<int> cabIds = await context.Service.Include(p => p.CabUser).Where(x => serviceIds.Contains(x.Id)).Select(x => x.CabUser.CabId).Distinct().ToListAsync();
-            List<string> activeCabUserEmails = await context.CabUser.Where(c => cabIds.Contains(c.CabId) && c.IsActive).Select(c => c.CabEmail).ToListAsync();
+            List<string> activeCabUserEmails = await context.CabUser.Where(c => cabIds.Contains(c.CabId) && c.AccountStatus==AccountStatusEnum.Active).Select(c => c.CabEmail).ToListAsync();
             return activeCabUserEmails;
         }
 
@@ -254,7 +254,7 @@ namespace DVSRegister.Data.CAB
         public async Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();
-            using var transaction = context.Database.BeginTransaction();
+            using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
 
@@ -273,14 +273,14 @@ namespace DVSRegister.Data.CAB
                     genericResponse.InstanceId = entity.Entity.Id;
                 }
 
-                transaction.Commit();
+                await transaction.CommitAsync();
                 genericResponse.Success = true;
 
             }
             catch (Exception ex)
             {
                 genericResponse.Success = false;
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 logger.LogError(ex, "Error in SaveProviderProfile");
             }
             return genericResponse;
@@ -346,7 +346,7 @@ namespace DVSRegister.Data.CAB
                     await context.SaveChangesAsync();
                   
                 }
-                transaction.Commit();
+                await transaction.CommitAsync();
                 genericResponse.Success = true;
 
 
@@ -354,7 +354,7 @@ namespace DVSRegister.Data.CAB
             catch (Exception ex)
             {
                 genericResponse.Success = false;
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 logger.LogError(ex, "Error in SaveService");
             }
             return genericResponse;
@@ -365,7 +365,7 @@ namespace DVSRegister.Data.CAB
         public async Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail, bool isReupload, InProgressApplicationParameters? inProgressApplicationParameters)
         {
             GenericResponse genericResponse = new();
-            using var transaction = context.Database.BeginTransaction();
+            using var transaction = await context.Database.BeginTransactionAsync();
 
 
             try
@@ -453,12 +453,12 @@ namespace DVSRegister.Data.CAB
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ReapplyService, loggedInUserEmail);
                         genericResponse.InstanceId = entity.Entity.Id;
                     }
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                     genericResponse.Success = true;
                 }
                 else
                 {
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
                     genericResponse.Success = false;
                     logger.LogError("Service id {ServiceKey} doesnt exist ", service.ServiceKey);
                 }
@@ -477,7 +477,7 @@ namespace DVSRegister.Data.CAB
         public async Task<GenericResponse> SaveServiceAmendments(Service service, string loggedInUserEmail)
         {
             GenericResponse genericResponse = new();
-            using var transaction = context.Database.BeginTransaction();
+            using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
                 var existingService = await context.Service.Include(x => x.CertificateReview).Include(x => x.ServiceRoleMapping).Include(x => x.ServiceIdentityProfileMapping)
@@ -494,12 +494,12 @@ namespace DVSRegister.Data.CAB
                         genericResponse.InstanceId = existingService.ServiceKey;
                         await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ServiceAmendments, loggedInUserEmail);
                         genericResponse.InstanceId = existingService.Id;
-                        transaction.Commit();
+                        await transaction.CommitAsync();
                         genericResponse.Success = true;
                     }
                     else
                     {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                         genericResponse.Success = false;
                         logger.LogError( "Service id {ServiceID} doesnt exist ", service.Id);
                     }
@@ -509,7 +509,7 @@ namespace DVSRegister.Data.CAB
             catch (Exception ex)
             {
                 genericResponse.Success = false;
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 logger.LogError(ex, "Error in SaveServiceReApplication");
             }
             return genericResponse;

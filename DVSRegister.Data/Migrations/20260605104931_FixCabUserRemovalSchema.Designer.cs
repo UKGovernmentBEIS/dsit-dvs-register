@@ -4,6 +4,7 @@ using System.Text.Json;
 using DVSRegister.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DVSRegister.Data.Migrations
 {
     [DbContext(typeof(DVSRegisterDbContext))]
-    partial class DVSRegisterDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260605104931_FixCabUserRemovalSchema")]
+    partial class FixCabUserRemovalSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -517,6 +520,62 @@ namespace DVSRegister.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cab");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CabName = "EY",
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            RegisteredName = "EY registered name",
+                            TradingName = "EY"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CabName = "DSIT",
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            RegisteredName = "DSIT registered name",
+                            TradingName = "DSIT"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CabName = "ACCS",
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            RegisteredName = "",
+                            TradingName = ""
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CabName = "Kantara",
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            RegisteredName = "Kantara Initiative",
+                            TradingName = "Kantara"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CabName = "NQA",
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            RegisteredName = "",
+                            TradingName = ""
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CabName = "BSI",
+                            CreatedTime = new DateTime(2024, 9, 16, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            RegisteredName = "BSI Assurance UK Limited",
+                            TradingName = "BSI"
+                        });
                 });
 
             modelBuilder.Entity("DVSRegister.Data.Entities.CabTransferRequest", b =>
@@ -533,7 +592,7 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime>("DecisionTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("FromCabUserId")
+                    b.Property<int>("FromCabUserId")
                         .HasColumnType("integer");
 
                     b.Property<int>("PreviousServiceStatus")
@@ -585,6 +644,9 @@ namespace DVSRegister.Data.Migrations
 
                     b.Property<string>("FullName")
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastLoggedIn")
                         .HasColumnType("timestamp without time zone");
@@ -1161,10 +1223,10 @@ namespace DVSRegister.Data.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("text");
 
-                    b.Property<int?>("RemovalReason")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsRemoved")
+                        .HasColumnType("boolean");
 
-                    b.Property<int>("RemovalStatus")
+                    b.Property<int?>("RemovalReason")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("RemovedTime")
@@ -2735,6 +2797,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("LastLoggedIn")
                         .HasColumnType("timestamp without time zone");
 
@@ -2882,7 +2947,9 @@ namespace DVSRegister.Data.Migrations
                 {
                     b.HasOne("DVSRegister.Data.Entities.CabUser", "FromCabUser")
                         .WithMany()
-                        .HasForeignKey("FromCabUserId");
+                        .HasForeignKey("FromCabUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DVSRegister.Data.Entities.RequestManagement", "RequestManagement")
                         .WithMany()

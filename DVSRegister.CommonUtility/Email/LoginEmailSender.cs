@@ -33,6 +33,20 @@ namespace DVSRegister.CommonUtility.Email
             return await SendNotification(emailAddress, template, personalisation);
         }
 
+        public async Task<bool> SendEmailCabAccountCreatedToDSIT(string recipientName, string recipientEmail, string cabEmail, string cabName)
+        {
+            var template = govUkNotifyConfig.CabAccountCreatedToDSIT;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template!.RecipientName, recipientName  },
+                { template.CabEmail, cabEmail },
+                { template.Cab, cabName },
+
+            };
+            return await SendNotification(recipientEmail, template, personalisation);
+        }
+
         public async Task<bool> SendEmailCabFailedLoginAttempt(string emailAddress, string timestamp)
         {
             var template = govUkNotifyConfig.CabFailedLoginAttemptTemplate;
@@ -43,6 +57,18 @@ namespace DVSRegister.CommonUtility.Email
                 { template.Email , emailAddress}
             };
             return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
+        }
+
+        public async Task<bool> SendEmailCabPasswordReset(string emailAddress, string recipientName, string timestamp)
+        {
+            var template = govUkNotifyConfig.CabResetPasswordConfirmation;
+
+            var personalisation = new Dictionary<string, dynamic>
+            {
+                { template.RecipientName, recipientName },
+                { template.TimeStamp, timestamp }
+            };
+            return await SendNotification(emailAddress, template, personalisation);
         }
     }
 }

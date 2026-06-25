@@ -121,7 +121,7 @@ namespace DVSRegister.Data.Edit
                     existingProvider.LinkToContactPage = providerProfile.LinkToContactPage;
                     existingProvider.CabEditedTime = DateTime.UtcNow;
                     await _context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.CompanyInfoUpdate, loggedInUserEmail);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                     genericResponse.Success = true;
 
                 }
@@ -130,7 +130,7 @@ namespace DVSRegister.Data.Edit
             catch (Exception ex)
             {
                 genericResponse.Success = false;
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "Error in UpdateCompanyInfo");
             }
             return genericResponse;
@@ -152,7 +152,7 @@ namespace DVSRegister.Data.Edit
                     existingProvider.PrimaryContactTelephoneNumber = providerProfile.PrimaryContactTelephoneNumber;
                     existingProvider.CabEditedTime = DateTime.UtcNow;
                     await _context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.PrimaryContactUpdate, loggedInUserEmail);
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                     genericResponse.Success = true;
 
                 }
@@ -160,7 +160,7 @@ namespace DVSRegister.Data.Edit
             catch (Exception ex)
             {
                 genericResponse.Success = false;
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 _logger.LogError(ex, "Error in UpdatePrimaryContact");
             }
             return genericResponse;

@@ -78,7 +78,7 @@ namespace DVSRegister.Data.CabTransfer
             {
                 
                 var entity = await context.CabTransferRequest.Include(c=>c.RequestManagement).Include(c=>c.Service).Where(x=>x.Id == requestId).FirstOrDefaultAsync();
-                var cabUser = await context.CabUser.Where(x => x.CabEmail == loggedInUserEmail && x.IsActive).FirstOrDefaultAsync();
+                var cabUser = await context.CabUser.Where(x => x.CabEmail == loggedInUserEmail && x.AccountStatus==AccountStatusEnum.Active).FirstOrDefaultAsync();
                 var previousVersions = await context.Service.Where(x => x.ServiceKey == entity.Service.ServiceKey && x.ServiceVersion < entity.Service.ServiceVersion).ToListAsync();
                 var inProgressServices = await context.Service.Include(c=>c.CertificateReview).Include(p=>p.PublicInterestCheck).Include(x=>x.ActionLogs)
                     .Where(x => x.ServiceKey == entity!.Service.ServiceKey && x.ServiceVersion > entity.Service.ServiceVersion).ToListAsync();
@@ -142,7 +142,7 @@ namespace DVSRegister.Data.CabTransfer
         
         public async Task<List<CabUser>> GetActiveCabUsers(int cabId)
         {
-            return await context.CabUser.Include(s=>s.Cab).Where(s => s.CabId ==cabId && s.IsActive).ToListAsync();
+            return await context.CabUser.Include(s=>s.Cab).Where(s => s.CabId ==cabId && s.AccountStatus==AccountStatusEnum.Active).ToListAsync();
         }
     }
 }

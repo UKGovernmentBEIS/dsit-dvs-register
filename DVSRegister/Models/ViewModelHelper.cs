@@ -4,6 +4,7 @@ using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models.CAB;
+using System.Text.RegularExpressions;
 
 namespace DVSRegister.Models
 {
@@ -363,6 +364,14 @@ namespace DVSRegister.Models
                 return null!;
             }
 
+        }
+
+
+        public static bool IsValidEmail(string? email, IWebHostEnvironment environment)
+        {
+            if (string.IsNullOrWhiteSpace(email))   return false;
+            var pattern = environment.IsProduction() ? Constants.CabUsersEmailRegex : Constants.EmailRegex;
+            return Regex.IsMatch(email, pattern);
         }
 
 

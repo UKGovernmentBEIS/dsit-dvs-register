@@ -28,8 +28,13 @@
         public const string ConformityIssueDateExpiryDateError = "The certificate of conformity expiry date cannot be before issue date";
         public const string ConformityExpiryPastDateError = "The certificate of conformity expiry date must be in the future";
         public const string IncorrectPassword = "Incorrect Password";
-        public const string IncorrectLoginDetails = "Enter a valid email address and password. After five incorrect attempts, your account will be temporarily locked";
+        public const string IncorrectLoginDetails = "Enter a valid email address and password.";
         public const string NullFieldsDisplay = "Not applicable";
+        public const string UserDisabled = "Enter a valid email address";
+        public const string EmailErrorMessage = "Enter an email address in the correct format, like name@example.com";
+        public const string EnterCode = "Enter the code you received in your email. It is 6 digits long";
+        public const string EnterMFACode = "Enter the code shown in your authenticator app. It is 6 digits long";
+        public const string IncorrectCode = "The code you entered is not correct, or may have expired, try entering it again or request a new code";
 
         public const string RegisteredNameExistsError = "The registered name you have entered already exists";
         public const string NewApplication = "New application";
@@ -79,5 +84,8 @@
         public const string ActionNotCompletedErrorPath = "/action-not-completed";
         public const string Incomplete = "Incomplete";
         public const string CabProviderBaseURL = "/cab-service/provider";
+
+        public const string EmailRegex = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";      
+        public const string CabUsersEmailRegex = @"^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.(com|co\.uk)|dsit\.gov\.uk)$";
     }
 }

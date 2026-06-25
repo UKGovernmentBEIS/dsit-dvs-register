@@ -16,16 +16,12 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
 
-                    @if (Html.ViewData?.ModelState.ContainsKey("Email") == true)
+                  
+                    @if (!ViewData.ModelState.IsValid)
                     {
-                        var errors = Html.ViewData?.ModelState["Email"]?.Errors;
-                        if (errors != null && errors.Count > 0)
-                        {
-                            hasError = true;
-                            ViewData["Title"] = "Error: " + ViewData["Title"];
-                            @await Html.PartialAsync("~/Views/PartialViews/_SpecificErrorsView.cshtml",
-                                     new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("Email", errors))
-                        }
+                        hasError = true;
+                        ViewData["Title"] = "Error: " + ViewData["Title"];
+                        @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                     }
                     <h1 class="govuk-heading-xl govuk-!-margin-top-8">Enter your email address</h1>
 
@@ -38,8 +34,7 @@
                         {
                             PropertyName = "Email",
                             Label = "Email address",
-                            Value = Model?.Email ?? string.Empty,
-                            TextBoxType = "email",
+                            Value = Model?.Email ?? string.Empty,                         
                             Class = "govuk-input",
                             HasError = hasError,
                             ErrorMessage = hasError ? Html.ViewData?.ModelState["Email"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,

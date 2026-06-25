@@ -53,7 +53,7 @@ public class CognitoClient
         }
         catch (UserNotFoundException)
         {
-            return ("Enter a valid email address");
+            return Constants.EmailErrorMessage ;
         }
         catch (LimitExceededException)
         {
@@ -63,7 +63,7 @@ public class CognitoClient
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            return ("An error occurred");
+            return Constants.EmailErrorMessage;
         }
     }
 
@@ -121,7 +121,7 @@ public class CognitoClient
         {
             Console.WriteLine($"Error confirming password : {ex.Message}");
             genericResponse.Success = false;
-            genericResponse.ErrorMessage = "Invalid verification code provided";
+            genericResponse.ErrorMessage = "The code you entered is not correct, or may have expired, try entering it again or request a new code";
             return genericResponse;
         }
         catch (Exception ex)
@@ -223,7 +223,12 @@ public class CognitoClient
         }
         catch (Amazon.CognitoIdentityProvider.Model.NotAuthorizedException ex)
         {
-            return Constants.IncorrectPassword;
+
+            if (ex.Message.Contains("disabled", StringComparison.OrdinalIgnoreCase))
+            {
+                return Constants.UserDisabled; // handle disabled case
+            }
+            return Constants.IncorrectLoginDetails;
         }
         catch (Exception ex)
         {

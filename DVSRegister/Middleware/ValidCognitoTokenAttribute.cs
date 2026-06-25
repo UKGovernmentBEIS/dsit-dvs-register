@@ -1,13 +1,15 @@
-﻿using DVSRegister.Extensions;
+﻿using DVSRegister.BusinessLogic.Services;
+using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 
-public class ValidCognitoTokenAttribute : Attribute, IAuthorizationFilter
-{   
-    public void OnAuthorization(AuthorizationFilterContext context)
+public class ValidCognitoTokenAttribute : Attribute, IAsyncAuthorizationFilter
 {
+    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
+    {
         try
         {
             var sessionToken = context.HttpContext.Session.GetString("IdToken");
@@ -28,6 +30,16 @@ public class ValidCognitoTokenAttribute : Attribute, IAuthorizationFilter
             {
                 var claimsPrincipal = new ClaimsPrincipal(result.Result.ClaimsIdentity);
                 context.HttpContext.User = claimsPrincipal;
+
+                string? email = result.Result?.Claims?.FirstOrDefault(c => c.Key == "email").Value?.ToString();
+
+                if (string.IsNullOrEmpty(email)) throw new UnauthorizedAccessException("Email not found in claims");
+
+                var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
+                var user = await userService.GetUser(email);
+
+                if (user == null || user.AccountStatus != AccountStatusEnum.Active)
+                    context.Result = new RedirectToActionResult("StartPageWithBanner", "Login", null);
             }
             else
             {
