@@ -369,15 +369,8 @@ namespace DVSRegister.Models
 
         public static bool IsValidEmail(string? email, IWebHostEnvironment environment)
         {
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                return false;
-            }
-
-            var pattern = true
-                ? @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|co\.uk|gov\.uk)$"
-                : @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-
+            if (string.IsNullOrWhiteSpace(email))   return false;
+            var pattern = environment.IsProduction() ? Constants.CabUsersEmailRegex : Constants.EmailRegex;
             return Regex.IsMatch(email, pattern);
         }
 
