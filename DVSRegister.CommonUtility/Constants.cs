@@ -84,5 +84,8 @@
         public const string ActionNotCompletedErrorPath = "/action-not-completed";
         public const string Incomplete = "Incomplete";
         public const string CabProviderBaseURL = "/cab-service/provider";
+
+        public const string EmailRegex = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";      
+        public const string CabUsersEmailRegex = @"^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.(com|co\.uk)|dsit\.gov\.uk)$";
     }
 }

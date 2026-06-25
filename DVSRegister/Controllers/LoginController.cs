@@ -242,7 +242,7 @@ namespace DVSRegister.Controllers
                 var loginResponse = await signUpService.SignInAndWaitForMfa(loginViewModel.Email ?? string.Empty, loginViewModel.Password);
                 if (loginResponse!= null && loginResponse.Length > 0 && loginResponse != Constants.IncorrectLoginDetails && loginResponse != Constants.UserDisabled)
                 {
-                    HttpContext?.Session.Set("Email", loginViewModel.Email);
+                    HttpContext?.Session.Set("Email", loginViewModel.Email?.ToLower());
                     HttpContext?.Session.Set("Session", loginResponse);
                     return RedirectToAction("MFAConfirmation");
                 }
