@@ -3,22 +3,23 @@ using Microsoft.Extensions.Options;
 
 namespace DVSRegister.CommonUtility.Email
 {
-    public class CabEmailSender : EmailSender
+    public class CabEmailSender : EmailSender, ICabEmailSender
     {
-        public CabEmailSender(GovUkNotifyApi govUkNotifyApi, IOptions<GovUkNotifyConfiguration> config) : base(govUkNotifyApi, config)
+        public CabEmailSender(GovUkNotifyApi govUkNotifyApi, IOptions<GovUkNotifyConfiguration> config) : base(
+            govUkNotifyApi, config)
         {
         }
 
-        public async Task<bool> SendEmailCabInformationSubmitted(string emailAddress, string recipientName, string providerName, string serviceName)
+        public async Task<bool> SendEmailCabInformationSubmitted(string emailAddress, string recipientName,
+            string providerName, string serviceName)
         {
             var template = govUkNotifyConfig.CabInformationSubmittedTemplate;
 
             var personalisation = new Dictionary<string, dynamic>
             {
                 { template.RecipientName, recipientName },
-                { template.ProviderName,  providerName},
-                { template.ServiceName,  serviceName},
-
+                { template.ProviderName, providerName },
+                { template.ServiceName, serviceName },
             };
             return await SendNotification(emailAddress, template, personalisation);
         }
@@ -29,9 +30,9 @@ namespace DVSRegister.CommonUtility.Email
 
             var personalisation = new Dictionary<string, dynamic>
             {
-                { template.LoginLink,  govUkNotifyConfig.LoginLink}
+                { template.LoginLink, govUkNotifyConfig.LoginLink }
             };
             return await SendNotificationToOfDiaCommonMailBox(template, personalisation);
-        }      
+        }
     }
 }

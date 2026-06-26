@@ -4,32 +4,35 @@ using DVSRegister.Data.Entities;
 namespace DVSRegister.Data.CAB
 {
     public interface ICabRepository
-    { 
+    {
         public Task<List<Role>> GetRoles(decimal tfVersion);
         public Task<List<IdentityProfile>> GetIdentityProfiles(decimal? tfVersion = null);
         public Task<List<SupplementaryScheme>> GetSupplementarySchemes();
         public Task<List<TrustFrameworkVersion>> GetTfVersion();
         public Task<bool> CheckProviderRegisteredNameExists(string registeredName);
-        public Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId);       
-        public Task<List<ProviderProfile>> GetProviders(int cabId,string searchText = "");
+        public Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId);
+        public Task<List<ProviderProfile>> GetProviders(int cabId, string searchText = "");
         public Task<ProviderProfile> GetProvider(int providerId, int cabId);
         public Task<Service> GetServiceDetails(int serviceId, int cabId);
         public Task<List<Service>> GetServiceList(int serviceKey, int cabId);
         public Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId);
         public Task<List<QualityLevel>> QualityLevels();
         public Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId);
-        public Task<Service> GetServiceDetailsWithProvider(int serviceId, int cabId);
+        public Task<Service?> GetServiceDetailsWithProvider(int serviceId, int cabId);
         public Task<(int, List<CabTransferRequest>)> GetPendingReassignRequestsCount(int cabId);
-        public  Task<List<string>> GetCabEmailListForServices(List<int> serviceIds);
+        public Task<List<string>> GetCabEmailListForServices(List<int> serviceIds);
         public Task<ProviderProfile> GetProviderWithLatestVersionServices(int providerId, int cabId);
 
         #region Save/update
+
         public Task<GenericResponse> SaveProviderProfile(ProviderProfile providerProfile, string loggedInUserEmail);
-        public Task<GenericResponse> SaveService(Service service, string loggedInUserEmail);   
+        public Task<GenericResponse> SaveService(Service service, string loggedInUserEmail);
 
-        public Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail, bool isReupload, InProgressApplicationParameters? inProgressApplicationParameters);
+        public Task<GenericResponse> SaveServiceReApplication(Service service, string loggedInUserEmail,
+            bool isReupload, InProgressApplicationParameters? inProgressApplicationParameters);
+
         public Task<GenericResponse> SaveServiceAmendments(Service service, string loggedInUserEmail);
-        #endregion
 
+        #endregion
     }
 }
