@@ -38,20 +38,10 @@ namespace DVSRegister.Data.CAB
             return await context.SupplementaryScheme.OrderBy(c => c.Order).ToListAsync();
         }
 
-        public async Task<List<TrustFrameworkVersion>> GetTfVersion()
-        {
-            var tfVersionIds = await context.Service.AsNoTracking()
-                .Select(s => s.TrustFrameworkVersionId).Distinct().ToListAsync();
-
-            return await context.TrustFrameworkVersion.AsNoTracking()
-                .Where(x => tfVersionIds.Contains(x.Id)).OrderBy(c => c.Order).ToListAsync();
-        }
-
         public async Task<List<QualityLevel>> QualityLevels()
         {
             return await context.QualityLevel.ToListAsync();
-        }
-
+        }        
 
         public async Task<bool> CheckProviderRegisteredNameExists(string registeredName)
         {

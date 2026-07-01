@@ -276,9 +276,9 @@ namespace DVSRegister.Data
                 new SupplementaryScheme { Id =3, SchemeName = "Disclosure and Barring Service", Order =3 });
 
                 modelBuilder.Entity<TrustFrameworkVersion>().HasData(
-                new TrustFrameworkVersion { Id = 1, TrustFrameworkName = "0.4 gamma", Order = 2, Version = 0.4m },
-                new TrustFrameworkVersion { Id = 2, TrustFrameworkName = "0.3 beta", Order = 1, Version = 0.3m }, 
-                new TrustFrameworkVersion { Id = 3, TrustFrameworkName = "1.0", Order = 3, Version = 1.0m });
+                new TrustFrameworkVersion { Id = 1, TrustFrameworkName = "0.4 gamma", Order = 2, Version = 0.4m, IsActive = true },
+                new TrustFrameworkVersion { Id = 2, TrustFrameworkName = "0.3 beta", Order = 1, Version = 0.3m, IsActive = false }, 
+                new TrustFrameworkVersion { Id = 3, TrustFrameworkName = "1.0", Order = 3, Version = 1.0m, IsActive = true });
 
             modelBuilder.Entity<ActionCategory>().HasData(
                 new ActionCategory { Id = 1, ActionKey = nameof(ActionCategoryEnum.CR), ActionName = "Certificate review" },
@@ -329,13 +329,7 @@ namespace DVSRegister.Data
                 new ActionDetails { Id = 35, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeRequestSent), ActionDescription = "Display change request sent", ActionCategoryId = 5 },
                 new ActionDetails { Id = 36, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeCompleted), ActionDescription = "Display change completed", ActionCategoryId = 5 },
                 new ActionDetails { Id = 37, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeRequestCancelled), ActionDescription = "Display change request cancelled", ActionCategoryId = 5 },
-                new ActionDetails { Id = 38, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeRequestDeclined), ActionDescription = "Display change request declined", ActionCategoryId = 5 }
-                
-
-
-
-            );
-
+                new ActionDetails { Id = 38, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeRequestDeclined), ActionDescription = "Display change request declined", ActionCategoryId = 5 });
         }
     }
 }

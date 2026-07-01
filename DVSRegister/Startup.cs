@@ -18,7 +18,6 @@ using DVSRegister.Data.CabRemovalRequest;
 using DVSRegister.Data.CabTransfer;
 using DVSRegister.Data.Edit;
 using DVSRegister.Data.Repositories;
-using DVSRegister.Data.TrustFramework;
 using DVSRegister.Middleware;
 using DVSRegister.Services.Cookies;
 using Microsoft.AspNetCore.DataProtection;
@@ -161,11 +160,12 @@ namespace DVSRegister
             services.AddScoped<IEditService, EditService>();
             services.AddScoped<IEditRepository, EditRepository>();
             services.AddScoped<ITestDataService, TestDataService>();
+            services.AddScoped<ICommonRepository, CommonRepository>();
+            services.AddScoped<ICabRemovalRequestEmailSender, CabRemovalRequestEmailSender>();
             services.AddTransient<LoginEmailSender>();
             services.AddTransient<CabEmailSender>();
             services.AddTransient<Removal2iCheckEmailSender>();
-            services.AddTransient<ConsentEmailSender>();
-            services.AddTransient<CabRemovalRequestEmailSender>();       
+            services.AddTransient<ConsentEmailSender>();     
             services.AddTransient<CabTransferEmailSender>();
             services.AddTransient<ProviderEditEmailSender>();
             services.AddScoped(opt =>
