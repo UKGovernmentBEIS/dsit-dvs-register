@@ -14,7 +14,6 @@ using DVSRegister.Models.CabTrustFramework;
 using DVSRegister.Validations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System;
 
 namespace DVSRegister.Controllers
 {
@@ -48,7 +47,7 @@ namespace DVSRegister.Controllers
             TFVersionViewModel TFVersionViewModel = new()
             {
                 SelectedTFVersionId = summaryViewModel?.TFVersionViewModel?.SelectedTFVersion?.Id,
-                AvailableVersions = await trustFrameworkService.GetTrustFrameworkVersions(),
+                AvailableVersions = await trustFrameworkService.GetActiveTrustFrameworkVersions(),
                 IsAmendment = summaryViewModel.IsAmendment,
                 RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() :
                 summaryViewModel.IsTFVersionChanged.GetValueOrDefault() && summaryViewModel.IsAmendment ? "/cab-service/amend/service-amendments?serviceId=" + summaryViewModel.ServiceId :
@@ -65,7 +64,7 @@ namespace DVSRegister.Controllers
         {
             var summary = GetServiceSummary() ?? new ServiceSummaryViewModel();
 
-            var availableVersions = await trustFrameworkService.GetTrustFrameworkVersions();
+            var availableVersions = await trustFrameworkService.GetActiveTrustFrameworkVersions();
             model.AvailableVersions = availableVersions;
             model.IsAmendment = summary.IsAmendment;
 

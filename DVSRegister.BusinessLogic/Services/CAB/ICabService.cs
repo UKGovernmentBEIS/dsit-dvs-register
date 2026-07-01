@@ -9,8 +9,8 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public Task<List<RoleDto>> GetRoles(decimal tfVersion);
         public Task<List<IdentityProfileDto>> GetIdentityProfiles(decimal? tfVersion = null);
         public Task<List<SupplementarySchemeDto>> GetSupplementarySchemes();
-        public Task<List<TrustFrameworkVersionDto>> GetTfVersion();
-        public Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId = 0);
+        public Task<List<TrustFrameworkVersionDto>> GetActiveTfVersion();
+        public Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId = 0);       
         public Task<List<ProviderProfileDto>> GetProviders(int cabId, string searchText = "");
         public Task<ProviderProfileDto> GetProvider(int providerId, int cabId);
         public Task<ServiceDto> GetServiceDetails(int serviceId, int cabId);

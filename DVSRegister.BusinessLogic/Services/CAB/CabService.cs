@@ -3,6 +3,7 @@ using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Entities;
 
@@ -11,11 +12,13 @@ namespace DVSRegister.BusinessLogic.Services.CAB
     public class CabService : ICabService
     {
         private readonly ICabRepository cabRepository;
+        private readonly ICommonRepository commonRepository;
         private readonly IMapper automapper;
 
-        public CabService(ICabRepository cabRepository, IMapper automapper)
+        public CabService(ICabRepository cabRepository, ICommonRepository commonRepository,IMapper automapper)
         {
             this.cabRepository = cabRepository;
+            this.commonRepository = commonRepository;
             this.automapper = automapper;
         }
 
@@ -38,9 +41,9 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return automapper.Map<List<IdentityProfileDto>>(list);
         }
 
-        public async Task<List<TrustFrameworkVersionDto>> GetTfVersion()
+        public async Task<List<TrustFrameworkVersionDto>> GetActiveTfVersion()
         {
-            var list = await cabRepository.GetTfVersion();
+            var list = await commonRepository.GetActiveTfVersion();
             return automapper.Map<List<TrustFrameworkVersionDto>>(list);
         }
 
