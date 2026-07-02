@@ -862,7 +862,7 @@ namespace DVSRegister.Controllers
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             dateViewModel.PropertyName = "UnderPinningServiceExpiryDate";            
 
-            DateTime? underPinningServiceExpiryDate = ValidationHelper.ValidateCustomExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState);
+            DateTime? underPinningServiceExpiryDate = ValidationHelper.ValidateCustomExpiryDate(dateViewModel, ModelState);
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
@@ -895,9 +895,6 @@ namespace DVSRegister.Controllers
             }
             return await HandleActions(action, summaryViewModel, summaryViewModel.FromSummaryPage, summaryViewModel.FromDetailsPage, false, "ServiceGPG45Input", "TrustFramework0_4");
         }
-
-
-
 
         [HttpGet("download-certificate")]
         public async Task<IActionResult> DownloadCertificate(string key, string filename)
@@ -1448,19 +1445,7 @@ namespace DVSRegister.Controllers
                 throw new InvalidOperationException("Invalid provider profile ID for Cab ID");
         }
 
-        /// <summary>
-        /// Restrict selected roles to those supported by the given TF version.
-        /// </summary>
-        private async Task KeepOnlyRolesSupportedByAsync(ServiceSummaryViewModel summary, decimal? version)
-        {
-            if (version is null) return;
-
-            var availableRoles = await cabService.GetRoles(version.Value);
-            var selectedRoles = summary.RoleViewModel?.SelectedRoles ?? new List<RoleDto>();
-
-            summary.RoleViewModel ??= new RoleViewModel();
-            summary.RoleViewModel.SelectedRoles = selectedRoles.Where(sr => availableRoles.Any(ar => ar.Id == sr.Id)).ToList();
-        }
+        
 
         /// <summary>
         /// Clear schemes and GPG-related fields when a TF version transition requires resetting state.
@@ -1481,20 +1466,7 @@ namespace DVSRegister.Controllers
         {
             ClearSchemesAndGpg(summary);
 
-            // Downgrade (or select) 0.3
-            if (newVersion == Constants.TFVersion0_3)
-            {
-                ViewModelHelper.ClearTFVersion0_4Fields(summary);
-                await KeepOnlyRolesSupportedByAsync(summary, newVersion);
-                return;
-            }
-
-            // Upgrade from 0.3 to any newer version
-            if (previousVersion == Constants.TFVersion0_3 && newVersion != Constants.TFVersion0_3)
-            {
-                await KeepOnlyRolesSupportedByAsync(summary, newVersion);
-                return;
-            }
+           
 
             // Downgrade from 1.0 -> 0.4
             if (previousVersion == Constants.TFVersion1_0 && newVersion == Constants.TFVersion0_4)
