@@ -5,6 +5,7 @@ using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Entities;
 using NSubstitute;
@@ -15,6 +16,7 @@ namespace DVSRegister.UnitTests.Services
     {
 
         private readonly ICabRepository _cabRepository;
+        private readonly ICommonRepository _commonRepository;
         private readonly CabService _cabService;
 
 
@@ -22,6 +24,7 @@ namespace DVSRegister.UnitTests.Services
         public CabServiceTests()
         {
             _cabRepository = Substitute.For<ICabRepository>();
+            _commonRepository = Substitute.For<ICommonRepository>();
 
             var config = new MapperConfiguration(cfg =>
             {              
@@ -38,7 +41,7 @@ namespace DVSRegister.UnitTests.Services
 
             var automapper1 = config.CreateMapper();
 
-            _cabService = new CabService(_cabRepository, automapper1);
+            _cabService = new CabService(_cabRepository, _commonRepository, automapper1);
 
         }
 
@@ -347,9 +350,9 @@ namespace DVSRegister.UnitTests.Services
         public async Task GetTfVersion_ReturnsMappedList()
         {
             var versions = new List<TrustFrameworkVersion> { new() { Id = 1 } };
-            _cabRepository.GetTfVersion().Returns(Task.FromResult(versions));
+            _commonRepository.GetActiveTfVersion().Returns(Task.FromResult(versions));
 
-            var result = await _cabService.GetTfVersion();
+            var result = await _commonRepository.GetActiveTfVersion();
             Assert.NotEmpty(result);
         }
 

@@ -21,8 +21,7 @@
         public const string ConformityExpiryDayError = "The certificate of conformity expiry date must include a day";
         public const string ConformityExpiryMonthError = "The certificate of conformity expiry date must include a month";
         public const string ConformityExpiryYearError = "The certificate of conformity expiry date must include a year";
-        public const string ConformityExpiryDateError = "The certificate of conformity expiry date must be today or in the past";
-        public const string ConformityMaxExpiryDateError = "The certificate of conformity expiry date must not be more than 2 years 60 days after the date of issue";
+        public const string ConformityExpiryDateError = "The certificate of conformity expiry date must be today or in the past";       
         public const string ConformityMaxExpiryDateErrorTF0_4 = "The certificate of conformity expiry date must not be more than 3 years 60 days after the date of issue";
         public const string ConformityExpiryDateInvalidError = "The certificate of conformity expiry date must be a real date";
         public const string ConformityIssueDateExpiryDateError = "The certificate of conformity expiry date cannot be before issue date";
@@ -41,7 +40,7 @@
         public const string ReApplication = "Reapplication";
         public const decimal TFVersion1_0 = 1.0m;
         public const decimal TFVersion0_4 = 0.4m;
-        public const decimal TFVersion0_3 = 0.3m;
+    
         public const string GPG44Authentication = "GPG 44 quality of authentication";
         public const string GPG44Protection = "GPG 44 level of protection";
         public const string GPG45IdentityProfiles = "GPG 45 identity profiles";

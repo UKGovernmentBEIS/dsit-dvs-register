@@ -451,8 +451,7 @@ namespace DVSRegister.Controllers
             dateViewModel.FromDetailsPage = false;
             dateViewModel.PropertyName = "ConfirmityIssueDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            DateTime? conformityIssueDate = ValidationHelper.ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage,ModelState,
-            summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version >= Constants.TFVersion0_4);
+            DateTime? conformityIssueDate = ValidationHelper.ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage,ModelState);
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
@@ -483,10 +482,7 @@ namespace DVSRegister.Controllers
             {
                 dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
             }
-            if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version >= Constants.TFVersion0_4)
-            {
-                dateViewModel.IsTfVersion0_4 = true;
-            }
+            
             dateViewModel.RefererURL =  fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/enter-issue-date";
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
@@ -506,16 +502,8 @@ namespace DVSRegister.Controllers
             dateViewModel.PropertyName = "ConfirmityExpiryDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             DateTime? conformityExpiryDate;
-            if (dateViewModel.IsTfVersion0_4)
-            {
-                conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState, dateViewModel. IsTfVersion0_4, years: 3, days: 59);                
-            }
-               
-            else
-            {
-                conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState);
-            }
-              
+            conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState);
+
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
