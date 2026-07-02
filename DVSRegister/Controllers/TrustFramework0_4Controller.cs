@@ -896,9 +896,6 @@ namespace DVSRegister.Controllers
             return await HandleActions(action, summaryViewModel, summaryViewModel.FromSummaryPage, summaryViewModel.FromDetailsPage, false, "ServiceGPG45Input", "TrustFramework0_4");
         }
 
-
-
-
         [HttpGet("download-certificate")]
         public async Task<IActionResult> DownloadCertificate(string key, string filename)
         {
