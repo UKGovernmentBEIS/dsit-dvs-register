@@ -119,8 +119,7 @@ namespace DVSRegister.Controllers
         #region Private method
         private IActionResult RedirectToNextEmptyField(ServiceSummaryViewModel serviceSummary)
         {
-            if (serviceSummary.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 || serviceSummary.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
-            {
+           
                 bool isPublished = serviceSummary.IsUnderpinningServicePublished != null && serviceSummary.IsUnderpinningServicePublished == true;
                 bool isSelected = serviceSummary.SelectedUnderPinningServiceId != null;
 
@@ -255,67 +254,8 @@ namespace DVSRegister.Controllers
                 {
                     return RedirectToAction("ServiceSummary", "CabService");
                 }
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(serviceSummary.ServiceName))
-                {
-                    return RedirectToAction("ServiceName", "CabService", new { providerProfileId = serviceSummary.ProviderProfileId });
-                }
-                else if (string.IsNullOrEmpty(serviceSummary.ServiceURL))
-                {
-                    return RedirectToAction("ServiceURL", "CabService", new { providerProfileId = serviceSummary.ProviderProfileId });
-                }
-                else if (string.IsNullOrEmpty(serviceSummary.CompanyAddress))
-                {
-                    return RedirectToAction("CompanyAddress", "CabService");
-                }
-                else if (serviceSummary.RoleViewModel.SelectedRoles == null || serviceSummary.RoleViewModel.SelectedRoles.Count == 0)
-                {
-                    return RedirectToAction("ProviderRoles", "CabService");
-                }
-                else if (serviceSummary.HasGPG44 == null)
-                {
-                    return RedirectToAction("GPG44Input", "CabService");
-                }
-                else if (serviceSummary.HasGPG44 == true && (serviceSummary.QualityLevelViewModel.SelectedQualityofAuthenticators.Count == 0 ||
-                    serviceSummary.QualityLevelViewModel.SelectedLevelOfProtections.Count == 0))
-                {
-                    return RedirectToAction("GPG44", "CabService");
-                }
-                else if (serviceSummary.HasGPG45 == null)
-                {
-                    return RedirectToAction("GPG45Input", "CabService");
-                }
-                else if (serviceSummary.HasGPG45 == true && serviceSummary.IdentityProfileViewModel.SelectedIdentityProfiles.Count == 0)
-                {
-                    return RedirectToAction("GPG45", "CabService");
-                }
-                else if (serviceSummary.HasSupplementarySchemes == null)
-                {
-                    return RedirectToAction("HasSupplementarySchemesInput", "CabService");
-                }
-                else if (serviceSummary.HasSupplementarySchemes == true && serviceSummary.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count == 0)
-                {
-                    return RedirectToAction("SupplementarySchemes", "CabService");
-                }
-                else if (serviceSummary.FileName == null)
-                {
-                    return RedirectToAction("CertificateUploadPage", "CabService");
-                }
-                else if (serviceSummary.ConformityIssueDate == null)
-                {
-                    return RedirectToAction("ConfirmityIssueDate", "CabService");
-                }
-                else if (serviceSummary.ConformityExpiryDate == null)
-                {
-                    return RedirectToAction("ConfirmityExpiryDate", "CabService");
-                }
-                else
-                {
-                    return RedirectToAction("ServiceSummary", "CabService");
-                }
-            }
+       
+          
         }
         #endregion
     }

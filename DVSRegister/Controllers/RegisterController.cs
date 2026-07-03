@@ -281,7 +281,7 @@ namespace DVSRegister.Controllers
 
         private async Task SetTfVersion(List<int>? selectedIds, int removeId, PaginationAndFilteringParameters vm)
         {
-            vm.AvailableTrustFrameworkVersion = await cabService.GetTfVersion();
+            vm.AvailableTrustFrameworkVersion = await cabService.GetActiveTfVersion();
             if (selectedIds == null || selectedIds.Count == 0)
             {
                 vm.SelectedTrustFrameworkVersionId = [];

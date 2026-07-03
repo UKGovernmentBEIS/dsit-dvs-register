@@ -1,23 +1,21 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.Data.CAB;
-using DVSRegister.Data.CabTransfer;
-using DVSRegister.Data.TrustFramework;
-using System;
+using DVSRegister.Data;
 
 namespace DVSRegister.BusinessLogic.Services
 {
-    public class TrustFrameworkService(ITrustFrameworkRepository trustFrameworkRepository, IMapper automapper) : ITrustFrameworkService
+    public class TrustFrameworkService(ITrustFrameworkRepository trustFrameworkRepository, ICommonRepository commonRepository, IMapper automapper) : ITrustFrameworkService
     {
 
         private readonly ITrustFrameworkRepository trustFrameworkRepository = trustFrameworkRepository;
+        private readonly ICommonRepository commonRepository = commonRepository;
         private readonly IMapper automapper = automapper;
 
 
-        public async Task<List<TrustFrameworkVersionDto>> GetTrustFrameworkVersions()
+        public async Task<List<TrustFrameworkVersionDto>> GetActiveTrustFrameworkVersions()
         {
-            var list = await trustFrameworkRepository.GetTrustFrameworkVersions();
+            var list = await commonRepository.GetActiveTfVersion();
             return automapper.Map<List<TrustFrameworkVersionDto>>(list);
         }
         public async Task<List<CabDto>> GetCabs()

@@ -1,6 +1,5 @@
 ﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Extensions;
 using DVSRegister.Models;
@@ -8,7 +7,6 @@ using DVSRegister.Models.CAB;
 using DVSRegister.Models.CAB.Service;
 using DVSRegister.Models.CabTrustFramework;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 namespace DVSRegister.Controllers
 {
 
@@ -17,7 +15,7 @@ namespace DVSRegister.Controllers
     public class BaseController : Controller
     {
         private readonly ILogger<BaseController> logger;
-        private readonly IActionLogService? actionLogService;
+      
 
         public BaseController(ILogger<BaseController> logger)
         {
@@ -27,18 +25,9 @@ namespace DVSRegister.Controllers
         protected int CabId => HttpContext.Session.Get<int>("CabId");
 
         protected string ControllerName => ControllerContext.ActionDescriptor.ControllerName;
-        protected string ActionName => ControllerContext.ActionDescriptor.ActionName;
-    
+        protected string ActionName => ControllerContext.ActionDescriptor.ActionName;    
 
-        protected string Cab
-        {
-            get
-            {
-                var identity = HttpContext?.User.Identity as ClaimsIdentity;
-                var profileClaim = identity?.Claims.FirstOrDefault(c => c.Type == "profile");
-                return profileClaim?.Value ?? string.Empty;
-            }
-        }
+      
 
         protected bool IsValidCabId(int cabId)
         {

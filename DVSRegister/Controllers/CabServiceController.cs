@@ -207,196 +207,11 @@ namespace DVSRegister.Controllers
                 HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
                 if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4)
                     return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "SelectServiceType", "TrustFramework0_4");
-                else if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "VouchingGuidance", "TrustFramework0_4");
                 else
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG44Input");                
+                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "VouchingGuidance", "TrustFramework0_4");                
             }
             else
                 return View("ProviderRoles", roleViewModel);
-        }
-        #endregion
-
-        #region GPG44 - input
-
-        [HttpGet("gpg44-input")]
-        public IActionResult GPG44Input(bool fromSummaryPage, bool fromDetailsPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
-            ViewBag.fromDetailsPage = fromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = fromSummaryPage ? "/cab-service/submit-service/check-your-answers" :
-                fromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel?.ServiceKey :
-                "/cab-service/submit-service/provider-roles";
-            return View(summaryViewModel);
-        }
-
-        [HttpPost("gpg44-input")]
-        public async Task<IActionResult> SaveGPG44Input(ServiceSummaryViewModel viewModel, string action)
-        {            
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            bool fromSummaryPage = viewModel.FromSummaryPage;
-            bool fromDetailsPage = viewModel.FromDetailsPage;
-            viewModel.IsAmendment = summaryViewModel.IsAmendment;
-            viewModel.FromDetailsPage = false;
-            viewModel.FromSummaryPage = false;           
-            if (ModelState["HasGPG44"].Errors.Count == 0)
-            {
-                summaryViewModel.HasGPG44 = viewModel.HasGPG44;
-                return await HandleGpg44Actions(action, summaryViewModel, fromSummaryPage, fromDetailsPage);
-            }
-            else
-            {
-                return View("GPG44Input", viewModel);
-            }
-        }
-
-      #endregion
-
-        #region select GPG44
-        [HttpGet("gpg44")]
-        public async Task<IActionResult> GPG44(bool fromSummaryPage, bool fromDetailsPage)
-        {            
-            ViewBag.fromSummaryPage = fromSummaryPage;
-            ViewBag.fromDetailsPage = fromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            QualityLevelViewModel qualityLevelViewModel = new()
-            {
-                IsAmendment = summaryViewModel.IsAmendment,                
-                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/gpg44-input"
-            };
-            var qualityLevels = await cabService.GetQualitylevels();
-            qualityLevelViewModel.AvailableQualityOfAuthenticators = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
-            qualityLevelViewModel.SelectedQualityofAuthenticatorIds = summaryViewModel?.QualityLevelViewModel?.SelectedQualityofAuthenticators?.Select(c => c.Id).ToList();
-
-            qualityLevelViewModel.AvailableLevelOfProtections = qualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
-            qualityLevelViewModel.SelectedLevelOfProtectionIds = summaryViewModel?.QualityLevelViewModel?.SelectedLevelOfProtections?.Select(c => c.Id).ToList();
-
-            return View(qualityLevelViewModel);
-        }
-
-        /// <summary>
-        /// Save selected values to session
-        /// </summary>
-        /// <param name="qualityLevelViewModel"></param>
-        /// <returns></returns>
-        [HttpPost("gpg44")]
-        public async Task<IActionResult> SaveGPG44(QualityLevelViewModel qualityLevelViewModel, string action)
-        {
-          
-            bool fromSummaryPage = qualityLevelViewModel.FromSummaryPage;
-            bool fromDetailsPage = qualityLevelViewModel.FromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();       
-              qualityLevelViewModel.IsAmendment = summaryViewModel.IsAmendment;
-            List<QualityLevelDto> availableQualityLevels = await cabService.GetQualitylevels();
-            qualityLevelViewModel.AvailableQualityOfAuthenticators = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Authentication).ToList();
-
-            qualityLevelViewModel.SelectedQualityofAuthenticatorIds = qualityLevelViewModel.SelectedQualityofAuthenticatorIds ?? [];
-            if (qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Count > 0)
-                summaryViewModel.QualityLevelViewModel.SelectedQualityofAuthenticators = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedQualityofAuthenticatorIds.Contains(c.Id)).ToList();
-
-            qualityLevelViewModel.AvailableLevelOfProtections = availableQualityLevels.Where(x => x.QualityType == QualityTypeEnum.Protection).ToList();
-
-            qualityLevelViewModel.SelectedLevelOfProtectionIds =  qualityLevelViewModel.SelectedLevelOfProtectionIds??[];
-            if (qualityLevelViewModel.SelectedLevelOfProtectionIds.Count > 0)
-                summaryViewModel.QualityLevelViewModel.SelectedLevelOfProtections = availableQualityLevels.Where(c => qualityLevelViewModel.SelectedLevelOfProtectionIds.Contains(c.Id)).ToList();
-
-
-            summaryViewModel.QualityLevelViewModel.FromSummaryPage = false;
-            if (ModelState.IsValid)
-            {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "GPG45Input"); 
-            }
-            else
-            {
-                return View("GPG44", qualityLevelViewModel);
-            }
-        }
-        #endregion
-
-        #region GPG45 input
-
-        [HttpGet("gpg45-input")]
-        public IActionResult GPG45Input(bool fromSummaryPage, bool fromDetailsPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
-            ViewBag.fromDetailsPage = fromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = fromSummaryPage ? "/cab-service/submit-service/check-your-answers" :
-                fromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel?.ServiceKey :
-                summaryViewModel.HasGPG44.GetValueOrDefault() ? "/cab-service/submit-service/gpg44" :
-                "/cab-service/submit-service/gpg44-input";
-            return View(summaryViewModel);
-        }
-
-        [HttpPost("gpg45-input")]
-        public async Task<IActionResult> SaveGPG45Input(ServiceSummaryViewModel viewModel, string action)
-        {
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            viewModel.IsAmendment = summaryViewModel.IsAmendment;
-            bool fromSummaryPage = viewModel.FromSummaryPage;
-            bool fromDetailsPage = viewModel.FromDetailsPage;
-            viewModel.FromSummaryPage = false;
-            viewModel.FromDetailsPage = false;
-            if (ModelState["HasGPG45"].Errors.Count == 0)
-            {
-                summaryViewModel.HasGPG45 = viewModel.HasGPG45;
-                summaryViewModel.RefererURL = viewModel.RefererURL;
-                return await HandleGpg45Actions(action, summaryViewModel, fromSummaryPage, fromDetailsPage); 
-            }
-            else
-            {
-                return View("GPG45Input", viewModel);
-            }
-        }
-        #endregion
-
-        #region select GPG45
-
-        [HttpGet("gpg45")]
-        public async Task<IActionResult> GPG45(bool fromSummaryPage, bool fromDetailsPage)
-        {
-            ViewBag.fromSummaryPage = fromSummaryPage;
-            ViewBag.fromDetailsPage = fromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            IdentityProfileViewModel identityProfileViewModel = new()
-            {                
-                IsAmendment = summaryViewModel.IsAmendment,
-                SelectedIdentityProfileIds = summaryViewModel?.IdentityProfileViewModel?.SelectedIdentityProfiles?.Select(c => c.Id).ToList(),
-                AvailableIdentityProfiles = await cabService.GetIdentityProfiles(),
-                RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/gpg45-input"
-            };
-            return View(identityProfileViewModel);
-        }
-
-        /// <summary>
-        /// Save selected values to session
-        /// </summary>
-        /// <param name="identityProfileViewModel"></param>
-        /// <returns></returns>
-        [HttpPost("gpg45")]
-        public async Task<IActionResult> SaveGPG45(IdentityProfileViewModel identityProfileViewModel, string action)
-        {
-            bool fromSummaryPage = identityProfileViewModel.FromSummaryPage;
-            bool fromDetailsPage = identityProfileViewModel.FromDetailsPage;     
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            identityProfileViewModel.IsAmendment = summaryViewModel.IsAmendment;
-            List<IdentityProfileDto> availableIdentityProfiles = await cabService.GetIdentityProfiles();
-            identityProfileViewModel.AvailableIdentityProfiles = availableIdentityProfiles;
-            identityProfileViewModel.SelectedIdentityProfileIds =  identityProfileViewModel.SelectedIdentityProfileIds??new List<int>();
-            if (identityProfileViewModel.SelectedIdentityProfileIds.Count > 0)
-                summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles = availableIdentityProfiles.Where(c => identityProfileViewModel.SelectedIdentityProfileIds.Contains(c.Id)).ToList();
-            summaryViewModel.IdentityProfileViewModel.FromSummaryPage = false;
-            if (ModelState.IsValid)
-            {
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, "HasSupplementarySchemesInput");               
-            }
-            else
-            {
-                return View("GPG45", identityProfileViewModel);
-            }
         }
         #endregion
 
@@ -408,29 +223,27 @@ namespace DVSRegister.Controllers
             ViewBag.fromSummaryPage = fromSummaryPage;
             ViewBag.fromDetailsPage = fromDetailsPage;
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            summaryViewModel.RefererURL = fromSummaryPage ? "/cab-service/submit-service/check-your-answers" 
+            summaryViewModel.RefererURL = fromSummaryPage ? "/cab-service/submit-service/check-your-answers"
                 : fromDetailsPage ? "/cab-service/service-details?serviceKey=" + summaryViewModel?.ServiceKey
-                : summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_3 ? summaryViewModel.HasGPG45 == true? "/cab-service/submit-service/gpg45" : "/cab-service/submit-service/gpg45-input"
-                : summaryViewModel.HasGPG44 == true ?  "/cab-service/submit-service/service/gpg44" 
+                : summaryViewModel.HasGPG44 == true ? "/cab-service/submit-service/service/gpg44"
                 : "/cab-service/submit-service/service/gpg44-input";
             return View(summaryViewModel);
         }
 
         [HttpPost("supplementary-schemes-input")]
-        public async Task<IActionResult> SaveHasSupplementarySchemesInput(ServiceSummaryViewModel viewModel,  string action)
+        public async Task<IActionResult> SaveHasSupplementarySchemesInput(ServiceSummaryViewModel viewModel, string action)
         {
             var summaryViewModel = GetServiceSummary();
             viewModel.IsAmendment = summaryViewModel.IsAmendment;
 
             bool allLowGPG45 = summaryViewModel.IdentityProfileViewModel.SelectedIdentityProfiles.All(ip => ip.IdentityProfileType == IdentityProfileTypeEnum.Low);
-            bool isTFVersion1_0 = summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version ==  Constants.TFVersion1_0;
+            bool isTFVersion1_0 = summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0;
 
             if (ModelState["HasSupplementarySchemes"].Errors.Count > 0)
                 return View("HasSupplementarySchemesInput", viewModel);
 
-            if (viewModel.HasSupplementarySchemes == true &&  isTFVersion1_0 && allLowGPG45)
+            if (viewModel.HasSupplementarySchemes == true && isTFVersion1_0 && allLowGPG45)
             {
-               
                 ModelState.AddModelError("HasSupplementarySchemes", "The service cannot be certified against any supplementary codes. Select ‘No’ to proceed or change your GPG45 identity profiles selection");
                 return View("HasSupplementarySchemesInput", viewModel);
             }
@@ -454,53 +267,33 @@ namespace DVSRegister.Controllers
                 IsAmendment = summaryViewModel.IsAmendment,
                 RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL()
                 : "/cab-service/submit-service/supplementary-schemes-input"
-            }; 
+            };
             return View(supplementarySchemeViewModel);
         }
 
         [HttpPost("supplementary-schemes")]
-        public async Task<IActionResult> SaveSupplementarySchemes(SupplementarySchemeViewModel supplementarySchemeViewModel, string action)
+        public async Task<IActionResult> SaveSupplementarySchemes(SupplementarySchemeViewModel model, string action)
         {
-            bool fromSummaryPage = supplementarySchemeViewModel.FromSummaryPage;
-            bool fromDetailsPage = supplementarySchemeViewModel.FromDetailsPage;
-            ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            List<SupplementarySchemeDto> availableSupplementarySchemes = await cabService.GetSupplementarySchemes();
-            supplementarySchemeViewModel.IsAmendment = summaryViewModel.IsAmendment;
-            supplementarySchemeViewModel.AvailableSchemes = availableSupplementarySchemes;
-            supplementarySchemeViewModel.SelectedSupplementarySchemeIds =  supplementarySchemeViewModel.SelectedSupplementarySchemeIds??new List<int>();
-            if (supplementarySchemeViewModel.SelectedSupplementarySchemeIds.Count > 0)
-                summaryViewModel.SupplementarySchemeViewModel.SelectedSupplementarySchemes = availableSupplementarySchemes.Where(c => supplementarySchemeViewModel.SelectedSupplementarySchemeIds.Contains(c.Id)).ToList();
-            summaryViewModel.SupplementarySchemeViewModel.FromSummaryPage = false;
-
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                string nextPage;
-                string controller;
-                object routeValues = null;
-                HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion0_4 || summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
-                {                   
-                    HttpContext?.Session.Set("SelectedSchemeIds", supplementarySchemeViewModel.SelectedSupplementarySchemeIds);
-                    int firstSchemeId = supplementarySchemeViewModel.SelectedSupplementarySchemeIds[0];
-                    nextPage = "SchemeGPG45";
-                    controller = "TrustFramework0_4";
-                    routeValues= new { schemeId = firstSchemeId };
-                    return await HandleSchemeSelectionActions(action, summaryViewModel, false, fromDetailsPage, nextPage, controller, routeValues!);
-                }
-                else
-                {
-                    nextPage = "CertificateUploadPage";
-                    controller = "CabService";
-                    return await HandleActions(action, summaryViewModel, fromSummaryPage, fromDetailsPage, nextPage, controller, routeValues!);
+                return View("SupplementarySchemes", model);
+            }
 
-                }
-                
-            }
-            else
-            {
-                return View("SupplementarySchemes", supplementarySchemeViewModel);
-            }
-           
+            var summary = GetServiceSummary();
+            var availableSchemes = await cabService.GetSupplementarySchemes();
+
+            model.SelectedSupplementarySchemeIds ??= [];
+
+            summary.SupplementarySchemeViewModel.SelectedSupplementarySchemes = availableSchemes.Where(s => model.SelectedSupplementarySchemeIds.Contains(s.Id)).ToList();
+
+            summary.SupplementarySchemeViewModel.FromSummaryPage = false;
+
+            HttpContext?.Session.Set("ServiceSummary", summary);
+            HttpContext?.Session.Set("SelectedSchemeIds", model.SelectedSupplementarySchemeIds);
+
+            var firstSchemeId = model.SelectedSupplementarySchemeIds[0];
+
+            return await HandleSchemeSelectionActions(action, summary, false, model.FromDetailsPage, "SchemeGPG45", "TrustFramework0_4", new { schemeId = firstSchemeId });
         }
         #endregion
 
@@ -658,8 +451,7 @@ namespace DVSRegister.Controllers
             dateViewModel.FromDetailsPage = false;
             dateViewModel.PropertyName = "ConfirmityIssueDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
-            DateTime? conformityIssueDate = ValidationHelper.ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage,ModelState,
-            summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version >= Constants.TFVersion0_4);
+            DateTime? conformityIssueDate = ValidationHelper.ValidateIssueDate(dateViewModel, summaryViewModel.ConformityExpiryDate, fromSummaryPage,ModelState);
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
@@ -690,10 +482,7 @@ namespace DVSRegister.Controllers
             {
                 dateViewModel = ViewModelHelper.GetDayMonthYear(summaryViewModel.ConformityExpiryDate);
             }
-            if (summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version >= Constants.TFVersion0_4)
-            {
-                dateViewModel.IsTfVersion0_4 = true;
-            }
+            
             dateViewModel.RefererURL =  fromDetailsPage ? GetRefererURL() : "/cab-service/submit-service/enter-issue-date";
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             return View(dateViewModel);
@@ -713,16 +502,8 @@ namespace DVSRegister.Controllers
             dateViewModel.PropertyName = "ConfirmityExpiryDate";
             ServiceSummaryViewModel summaryViewModel = GetServiceSummary();
             DateTime? conformityExpiryDate;
-            if (dateViewModel.IsTfVersion0_4)
-            {
-                conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState, dateViewModel. IsTfVersion0_4, years: 3, days: 59);                
-            }
-               
-            else
-            {
-                conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState);
-            }
-              
+            conformityExpiryDate = ValidationHelper.ValidateExpiryDate(dateViewModel, Convert.ToDateTime(summaryViewModel.ConformityIssueDate), ModelState);
+
             dateViewModel.IsAmendment = summaryViewModel.IsAmendment;
             if (ModelState.IsValid)
             {
@@ -790,8 +571,7 @@ namespace DVSRegister.Controllers
 
         }
 
-        #endregion       
-       
+        #endregion              
 
         #region Private Methods
         private async Task<IActionResult> SaveAsDraftAndRedirect(ServiceSummaryViewModel serviceSummary)
@@ -900,94 +680,6 @@ namespace DVSRegister.Controllers
             }
         }      
 
-        private async Task<IActionResult> HandleGpg44Actions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage)
-        {
-            switch (action)
-            {
-                case "continue":
-                    if (Convert.ToBoolean(summaryViewModel.HasGPG44))
-                    {
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("GPG44", new { fromSummaryPage, fromDetailsPage });
-                    }
-                    else
-                    {
-                        ViewModelHelper.ClearGpg44(summaryViewModel);
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
-                       : RedirectToAction("GPG45Input");
-                    }
-
-                case "draft":
-                    if (!Convert.ToBoolean(summaryViewModel.HasGPG44))
-                    {
-                        ViewModelHelper.ClearGpg44(summaryViewModel);
-                    }
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-
-                case "amend":
-
-                    if (Convert.ToBoolean(summaryViewModel.HasGPG44))
-                    {
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("GPG44");
-                    }
-                    else
-                    {
-                        ViewModelHelper.ClearGpg44(summaryViewModel);
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("GPG45Input", new {fromSummaryPage, fromDetailsPage }) : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
-                    }
-
-                default:
-                    throw new ArgumentException("Invalid action parameter");
-            }
-        }
-
-        private async Task<IActionResult> HandleGpg45Actions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage)
-        {
-            switch (action)
-            {
-                case "continue":
-                    if (Convert.ToBoolean(summaryViewModel.HasGPG45))
-                    {
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("GPG45", new { fromSummaryPage, fromDetailsPage });
-                    }
-                    else
-                    {
-                        ViewModelHelper.ClearGpg45(summaryViewModel);
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return fromSummaryPage ? RedirectToAction("ServiceSummary") : fromDetailsPage ? await SaveAsDraftAndRedirect(summaryViewModel)
-                       : RedirectToAction("HasSupplementarySchemesInput");
-                    }
-
-                case "draft":
-                    if (!Convert.ToBoolean(summaryViewModel.HasGPG45))
-                    {
-                        ViewModelHelper.ClearGpg45(summaryViewModel);
-                    }
-                    HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                    return await SaveAsDraftAndRedirect(summaryViewModel);
-
-                case "amend":
-                    if (Convert.ToBoolean(summaryViewModel.HasGPG45))
-                    {
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return RedirectToAction("GPG45");
-                    }
-                    else
-                    {
-                        ViewModelHelper.ClearGpg45(summaryViewModel);
-                        HttpContext?.Session.Set("ServiceSummary", summaryViewModel);
-                        return summaryViewModel.IsTFVersionChanged.GetValueOrDefault() ? RedirectToAction("HasSupplementarySchemesInput") : RedirectToAction("ServiceAmendmentsSummary", "CabServiceAmendment");
-                    }
-
-                default:
-                    throw new ArgumentException("Invalid action parameter");
-            }
-        }
         private async Task<IActionResult> HandleSchemeActions(string action, ServiceSummaryViewModel summaryViewModel, bool fromSummaryPage, bool fromDetailsPage)
         {
             switch (action)

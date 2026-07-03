@@ -3,6 +3,7 @@ using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data;
 using DVSRegister.Data.CAB;
 using DVSRegister.Data.Entities;
 
@@ -11,24 +12,28 @@ namespace DVSRegister.BusinessLogic.Services.CAB
     public class CabService : ICabService
     {
         private readonly ICabRepository cabRepository;
+        private readonly ICommonRepository commonRepository;
         private readonly IMapper automapper;
 
-        public CabService(ICabRepository cabRepository, IMapper automapper)
+        public CabService(ICabRepository cabRepository, ICommonRepository commonRepository,IMapper automapper)
         {
             this.cabRepository = cabRepository;
-            this.automapper = automapper;  
-        }     
+            this.commonRepository = commonRepository;
+            this.automapper = automapper;
+        }
+
         public async Task<List<RoleDto>> GetRoles(decimal tfVersion)
         {
             var list = await cabRepository.GetRoles(tfVersion);
             return automapper.Map<List<RoleDto>>(list);
         }
+
         public async Task<List<SupplementarySchemeDto>> GetSupplementarySchemes()
         {
             var list = await cabRepository.GetSupplementarySchemes();
             return automapper.Map<List<SupplementarySchemeDto>>(list);
         }
-     
+
 
         public async Task<List<IdentityProfileDto>> GetIdentityProfiles(decimal? tfVersion = null)
         {
@@ -36,29 +41,38 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return automapper.Map<List<IdentityProfileDto>>(list);
         }
 
-        public async Task<List<TrustFrameworkVersionDto>> GetTfVersion()
+        public async Task<List<TrustFrameworkVersionDto>> GetActiveTfVersion()
         {
-            var list = await cabRepository.GetTfVersion();
+            var list = await commonRepository.GetActiveTfVersion();
             return automapper.Map<List<TrustFrameworkVersionDto>>(list);
         }
+
         public bool CheckCompanyInfoEditable(ProviderProfileDto providerProfileDto)
         {
-            return providerProfileDto.Services == null || providerProfileDto.Services.Count==0 || // services not added ie certificate info not submitted yet
-            providerProfileDto.Services.All(service => service.CertificateReview == null && service.ServiceStatus == ServiceStatusEnum.Submitted) || //certificate info submitted but review not started
-            providerProfileDto.Services.All(service => service.CertificateReview == null
-            || service.CertificateReview.Where(x=>x.IsLatestReviewVersion).SingleOrDefault()?.CertificateReviewStatus != CertificateReviewEnum.Approved); //none of the services has an Approved status;
+            return providerProfileDto.Services == null ||
+                   providerProfileDto.Services.Count == 0 || // services not added ie certificate info not submitted yet
+                   providerProfileDto.Services.All(service =>
+                       service.CertificateReview == null &&
+                       service.ServiceStatus ==
+                       ServiceStatusEnum.Submitted) || //certificate info submitted but review not started
+                   providerProfileDto.Services.All(service => service.CertificateReview == null
+                                                              || service.CertificateReview
+                                                                  .Where(x => x.IsLatestReviewVersion).SingleOrDefault()
+                                                                  ?.CertificateReviewStatus !=
+                                                              CertificateReviewEnum
+                                                                  .Approved); //none of the services has an Approved status;
         }
-        public async Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId=0)
+
+        public async Task<bool> CheckProviderRegisteredNameExists(string registeredName, int providerId = 0)
         {
-            if(providerId >0) 
+            if (providerId > 0)
             {
-                return await cabRepository.CheckProviderRegisteredNameExists(registeredName,providerId);
+                return await cabRepository.CheckProviderRegisteredNameExists(registeredName, providerId);
             }
             else
             {
                 return await cabRepository.CheckProviderRegisteredNameExists(registeredName);
             }
-           
         }
 
         public async Task<List<ProviderProfileDto>> GetProviders(int cabId, string searchText = "")
@@ -75,7 +89,7 @@ namespace DVSRegister.BusinessLogic.Services.CAB
             return providerDto;
         }
 
-    
+
         public async Task<ServiceDto> GetServiceDetails(int serviceId, int cabId)
         {
             var service = await cabRepository.GetServiceDetails(serviceId, cabId);
@@ -86,38 +100,42 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         public async Task<List<ServiceDto>> GetServiceList(int serviceKey, int cabId)
         {
             var serviceList = await cabRepository.GetServiceList(serviceKey, cabId);
-            return automapper.Map<List<ServiceDto>>(serviceList); 
+            return automapper.Map<List<ServiceDto>>(serviceList);
         }
+
         public async Task<bool> IsManualServiceLinkedToMultipleServices(int manualServiceId)
         {
             return await cabRepository.IsManualServiceLinkedToMultipleServices(manualServiceId);
         }
 
-        public async Task<ServiceDto> GetServiceDetailsWithProvider(int serviceId, int cabId)
+        public async Task<ServiceDto?> GetServiceDetailsWithProvider(int serviceId, int cabId)
         {
             var service = await cabRepository.GetServiceDetailsWithProvider(serviceId, cabId);
-            ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
+
+            if (service == null)
+                return null;
+
+            var serviceDto = automapper.Map<ServiceDto>(service);
             return serviceDto;
         }
+
         public async Task<List<QualityLevelDto>> GetQualitylevels()
         {
             var list = await cabRepository.QualityLevels();
             return automapper.Map<List<QualityLevelDto>>(list);
         }
+
         public async Task<bool> CheckValidCabAndProviderProfile(int providerId, int cabId)
         {
             return await cabRepository.CheckValidCabAndProviderProfile(providerId, cabId);
-
         }
 
         public async Task<(bool, List<CabTransferRequestDto>)> GetPendingReassignRequests(int cabId)
         {
-            var(pendingRequestCount, requestList) = await cabRepository.GetPendingReassignRequestsCount(cabId);
-            return (pendingRequestCount>0?true:false, automapper.Map<List<CabTransferRequestDto>>(requestList));
+            var (pendingRequestCount, requestList) = await cabRepository.GetPendingReassignRequestsCount(cabId);
+            return (pendingRequestCount > 0 ? true : false, automapper.Map<List<CabTransferRequestDto>>(requestList));
         }
 
-
-        
 
         public async Task<ProviderProfileDto> GetProviderWithLatestVersionServices(int providerId, int cabId)
         {
@@ -127,60 +145,69 @@ namespace DVSRegister.BusinessLogic.Services.CAB
         }
 
         #region Save/ update
-        public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto, string loggedInUserEmail)
+
+        public async Task<GenericResponse> SaveProviderProfile(ProviderProfileDto providerProfileDto,
+            string loggedInUserEmail)
         {
             ProviderProfile providerProfile = new();
             automapper.Map(providerProfileDto, providerProfile);
-            GenericResponse genericResponse = await cabRepository.SaveProviderProfile(providerProfile, loggedInUserEmail);
+            GenericResponse genericResponse =
+                await cabRepository.SaveProviderProfile(providerProfile, loggedInUserEmail);
             return genericResponse;
         }
+
         public async Task<GenericResponse> SaveService(ServiceDto serviceDto, string loggedInUserEmail)
         {
-            Service service = new ();
+            Service service = new();
             automapper.Map(serviceDto, service);
             GenericResponse genericResponse = await cabRepository.SaveService(service, loggedInUserEmail);
             return genericResponse;
         }
 
-        public async Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail, bool isReupload, InProgressApplicationParameters? inProgressApplicationParameters)
+        public async Task<GenericResponse> SaveServiceReApplication(ServiceDto serviceDto, string loggedInUserEmail,
+            bool isReupload, InProgressApplicationParameters? inProgressApplicationParameters)
         {
-            Service service = new ();
+            Service service = new();
             automapper.Map(serviceDto, service);
-            GenericResponse genericResponse = await cabRepository.SaveServiceReApplication(service, loggedInUserEmail, isReupload, inProgressApplicationParameters);
+            GenericResponse genericResponse = await cabRepository.SaveServiceReApplication(service, loggedInUserEmail,
+                isReupload, inProgressApplicationParameters);
             return genericResponse;
         }
 
-        public async Task<GenericResponse> SaveServiceAmendments(ServiceDto serviceDto, string existingFileLink, int existingServiceCabId, int cabId, string loggedInUserEmail)
-        {          
-            
-
+        public async Task<GenericResponse> SaveServiceAmendments(ServiceDto serviceDto, string existingFileLink,
+            int existingServiceCabId, int cabId, string loggedInUserEmail)
+        {
             Service service = new();
             automapper.Map(serviceDto, service);
             GenericResponse genericResponse = await cabRepository.SaveServiceAmendments(service, loggedInUserEmail);
-            if(genericResponse.Success && CanDeleteCertificate(serviceDto.FileLink, existingFileLink, existingServiceCabId, cabId))
-            {      
+            if (genericResponse.Success &&
+                CanDeleteCertificate(serviceDto.FileLink, existingFileLink, existingServiceCabId, cabId))
+            {
                 //ToDo: un comment after s3 changes
-               // await bucketService.DeleteFromS3Bucket(existingFileLink);
+                // await bucketService.DeleteFromS3Bucket(existingFileLink);
             }
+
             return genericResponse;
         }
 
-        public bool CanDeleteCertificate(string currentFileLink,string existingFileLink, int existingServiceCabId, int cabId)
+        public bool CanDeleteCertificate(string currentFileLink, string existingFileLink, int existingServiceCabId,
+            int cabId)
         {
             bool canDelete = false;
-          
+
             if (existingServiceCabId != cabId)
-                throw new InvalidOperationException(string.Format("Invalid CabId, Cab Id in Service  {0}, Cab Id in Session {1}",
-                  existingServiceCabId, cabId));
-            if (!string.IsNullOrEmpty(existingFileLink) && !string.IsNullOrEmpty(currentFileLink) && existingFileLink != currentFileLink)
+                throw new InvalidOperationException(string.Format(
+                    "Invalid CabId, Cab Id in Service  {0}, Cab Id in Session {1}",
+                    existingServiceCabId, cabId));
+            if (!string.IsNullOrEmpty(existingFileLink) && !string.IsNullOrEmpty(currentFileLink) &&
+                existingFileLink != currentFileLink)
             {
-               canDelete = true;
+                canDelete = true;
             }
+
             return canDelete;
         }
 
         #endregion
-
-
     }
 }
