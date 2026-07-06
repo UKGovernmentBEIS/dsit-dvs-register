@@ -1,6 +1,7 @@
-﻿
+﻿@using DVSRegister.CommonUtility
+
 @{
-    ViewData["Title"] = "You have agreed to proceed with your application to the register of digital identity and attribute services";
+    ViewData["Title"] = "You have agreed to proceed with your application to the " + @Constants.RegisterNameLower;
     Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
 }
 
@@ -10,10 +11,10 @@
         <div class="govuk-grid-row">
 
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-xl">You have agreed to proceed with your application to join the register of digital identity and attribute services</h1>
+                <h1 class="govuk-heading-xl">You have agreed to proceed with your application to join the @Constants.RegisterNameLower</h1>
                 <p class="govuk-body">We have sent you a confirmation email.</p>
                 <p class="govuk-body">We aim to email you again with the outcome of your application within 20 working days.</p>
-                <p class="govuk-body">If it's successful we'll publish these service details to the register of digital identity and attribute services.</p>
+                <p class="govuk-body">If it's successful we'll publish these service details to the @Constants.RegisterNameLower.</p>
             </div>
 
         </div>

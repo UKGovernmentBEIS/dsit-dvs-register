@@ -1,7 +1,8 @@
 ﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+@using DVSRegister.CommonUtility
 @using DVSRegister.Controllers
 @{
-    ViewData["Title"] = "The digital identity and attribute service provider’s trading name";
+    ViewData["Title"] = $"The {Constants.RegisterNameSingular} provider’s trading name";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
@@ -32,8 +33,8 @@
                         }
                     }
 
-                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s trading name</h1>
-                    <p class="govuk-body">This trading name will be publicly displayed on the register of digital identity and attribute services. This should match the trading name on the certificate of conformity.
+                    <h1 class="govuk-heading-xl">The @Constants.RegisterNameSingular provider’s trading name</h1>
+                    <p class="govuk-body">This trading name will be publicly displayed on the @Constants.RegisterNameLower. This should match the trading name on the certificate of conformity.
                         If the provider doesn't have a public trading name, you should leave this field blank and select Continue.
                     </p>
 

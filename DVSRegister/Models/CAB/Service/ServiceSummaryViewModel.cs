@@ -1,4 +1,5 @@
-﻿using DVSRegister.CommonUtility.Models.Enums;
+﻿using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models.CAB.Service;
 using DVSRegister.Models.CabTrustFramework;
 using DVSRegister.Validations;
@@ -65,7 +66,7 @@ namespace DVSRegister.Models.CAB
         [AcceptedCharacters(@"^[A-Za-z0-9 &@#().:_'-]+$", ErrorMessage = "The service name must contain only letters, numbers and accepted characters")]
         public string? UnderPinningServiceName { get; set; }
 
-        [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
+        [Required(ErrorMessage = $"Enter the {Constants.RegisterNameSingular} provider's registered name")]
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
         [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
         public string? UnderPinningProviderName { get; set; }

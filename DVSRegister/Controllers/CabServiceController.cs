@@ -174,6 +174,7 @@ namespace DVSRegister.Controllers
             {
                 SelectedRoleIds = summaryViewModel?.RoleViewModel?.SelectedRoles?.Select(c => c.Id).ToList(),
                 AvailableRoles = await cabService.GetRoles(summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version),
+                TrustFrameworkVersion = summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version,
                 IsAmendment = summaryViewModel.IsAmendment,
                 RefererURL = fromSummaryPage || fromDetailsPage ? GetRefererURL() :
                 summaryViewModel.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0 ? "/cab-service/submit-service/terms-of-use-upload" :

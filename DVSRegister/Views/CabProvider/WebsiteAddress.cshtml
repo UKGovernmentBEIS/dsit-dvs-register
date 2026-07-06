@@ -1,6 +1,7 @@
-﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+﻿@using DVSRegister.CommonUtility
+@model DVSRegister.Models.CAB.ProfileSummaryViewModel
 @{
-    ViewData["Title"] = "The digital identity and attribute service provider’s public website address";
+    ViewData["Title"] = $"The {Constants.RegisterNameSingular} provider’s public website address";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -29,8 +30,8 @@
                                      new Tuple<string, IEnumerable<Microsoft.AspNetCore.Mvc.ModelBinding.ModelError>>("ProviderWebsiteAddress", errors))
                         }
                     }
-                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s public website address</h1>
-                    <p class="govuk-body">You should ask the service provider to provide this information. The website address you enter will be publicly displayed on the register of digital identity and attribute services.</p>
+                    <h1 class="govuk-heading-xl">The @Constants.RegisterNameSingular provider’s public website address</h1>
+                    <p class="govuk-body">You should ask the service provider to provide this information. The website address you enter will be publicly displayed on the @Constants.RegisterNameLower.</p>
 
 
                     @{

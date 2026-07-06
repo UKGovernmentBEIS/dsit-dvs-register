@@ -1,4 +1,5 @@
 ﻿@using DVSRegister.BusinessLogic.Models.CAB;
+@using DVSRegister.CommonUtility
 @using DVSRegister.Extensions;
 @using DVSRegister.CommonUtility.Models;
 @using DVSRegister.CommonUtility.Models.Enums;
@@ -60,7 +61,7 @@
                     The provider will also receive an email notification when the details have been removed from the register.
                 </p>
                 <p class="govuk-body">
-                    If OfDIA does not confirm the removal, the details will remain published in the register of digital identity and attribute services.
+                    If OfDIA does not confirm the removal, the details will remain published in the @Constants.RegisterNameLower.
                 </p>
 
                 <div class="govuk-warning-text govuk-!-margin-top-8">

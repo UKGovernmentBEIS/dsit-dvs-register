@@ -1,7 +1,8 @@
-﻿@using Microsoft.AspNetCore.Mvc.ModelBinding
+﻿@using DVSRegister.CommonUtility
+@using Microsoft.AspNetCore.Mvc.ModelBinding
 @model DVSRegister.Models.CAB.ProfileSummaryViewModel
 @{
-    ViewData["Title"] = "The digital identity and attribute service provider’s public email address";
+    ViewData["Title"] = $"The {Constants.RegisterNameSingular} provider’s public email address";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
@@ -32,11 +33,11 @@
                        }
                     }
 
-                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s public email address</h1>
+                    <h1 class="govuk-heading-xl">The @Constants.RegisterNameSingular provider’s public email address</h1>
                     <p class="govuk-body">
                         You should ask the service provider to provide this information. The email
-                        address you enter will be publicly displayed on the register of digital identity
-                        and attribute services. If the provider doesn't have a public email address, you should leave this field blank and select Continue.
+                        address you enter will be publicly displayed on the @Constants.RegisterNameLower. 
+                        If the provider doesn't have a public email address, you should leave this field blank and select Continue.
                     </p>
 
 

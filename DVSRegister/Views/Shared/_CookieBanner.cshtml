@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Http.Extensions
+﻿@using DVSRegister.CommonUtility
+@using Microsoft.AspNetCore.Http.Extensions
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using DVSRegister.Controllers
 @using DVSRegister.BusinessLogic;
@@ -47,7 +48,7 @@
 
     @if (bannerState == BannerState.ShowAccepted || bannerState == BannerState.ShowRejected)
     {
-        <div class="govuk-cookie-banner" data-nosnippet role="region" aria-label="Cookies on the register of digital identity and attribute services">
+        <div class="govuk-cookie-banner" data-nosnippet role="region" aria-label="Cookies on the @Constants.RegisterNameLower">
             <div class="govuk-cookie-banner__message govuk-width-container">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-two-thirds">

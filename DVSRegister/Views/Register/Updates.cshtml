@@ -1,9 +1,10 @@
-﻿@using DVSRegister.CommonUtility.Models.Enums;
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models.Enums;
 @using DVSRegister.Extensions
 @using DVSRegister.Models.UI;
 @model RegisterUpdatesLogsViewModel
 @{
-    ViewData["Title"] = "Updates : Register of digital identity and attribute services";
+    ViewData["Title"] = "Updates : " + @Constants.RegisterName;
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
     ViewData["ActiveNav"] = "Updates";   
     bool hasUpdates = Model.RegisterUpdatesLog != null && Model.RegisterUpdatesLog.Count > 0;
@@ -12,7 +13,7 @@
     <main id="main-content" class="govuk-main-wrapper" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-three-quarters">
-                <h1 class="govuk-heading-xl">Updates: Register of digital identity and attribute services</h1>
+                <h1 class="govuk-heading-xl">Updates: @Constants.RegisterName</h1>
             
                 @if (hasUpdates)
                 {
