@@ -1,6 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.SecondaryContactViewModel
+@using DVSRegister.CommonUtility
 @{
-    ViewData["Title"] = "The digital identity and attribute service provider’s secondary contact";
+    ViewData["Title"] = $"The {Constants.RegisterNameSingular} provider’s secondary contact";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
@@ -27,7 +28,7 @@
 
 
 
-                <h1 class="govuk-heading-xl form-title">The digital identity and attribute service provider’s secondary contact</h1>
+                <h1 class="govuk-heading-xl form-title">The @Constants.RegisterNameSingular provider’s secondary contact</h1>
 
                 <p class="govuk-body">
                     You should ask the service provider to provide this information. OfDIA will use the contact details you provide to confirm the provider’s agreement to proceed with the application.

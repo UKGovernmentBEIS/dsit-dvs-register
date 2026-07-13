@@ -1,3 +1,4 @@
+@using DVSRegister.CommonUtility
 @using DVSRegister.Models.UI.Enums
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model DVSRegister.Models.CAB.ServiceSummaryViewModel
@@ -44,7 +45,7 @@
                                 HasError = hasError,
                                 FieldSet = "Status of the underpinning service",
                                 Hint1 = "You have told us that this service is a white-labelled service that relies on another underpinning service.",
-                                Hint2 = "Tell us whether the underpinning service appears on the register of digital identity and attributes services.",                               
+                                Hint2 = "Tell us whether the underpinning service appears on the " + Constants.RegisterNameLower + ".",                               
                                 LegendStyleClass = "govuk-fieldset__legend--m",
                                 ErrorMessage = hasError ? Html.ViewData?.ModelState["IsUnderpinningServicePublished"]?.Errors[0].ErrorMessage ?? string.Empty : string.Empty,
                                 Label1 = "The underpinning service is published on the register",

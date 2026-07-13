@@ -1,7 +1,12 @@
 ﻿namespace DVSRegister.CommonUtility
 {
     public static class Constants
-    {       
+    {
+        public const string RegisterName = "Digital verification services register";
+        public const string RegisterNameLower = "digital verification services register";
+        public const string RegisterNameSingular = "digital verification service";
+        public const string RegisterNamePlural = "digital verification services";
+
         public const string DbContextNull = "Db context is null";
         public const string DbConnectionFailed = "DB connection failed:";
         public const string DbConnectionSuccess = "DB connection success:";

@@ -1,6 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+@using DVSRegister.CommonUtility
 @{
-    ViewData["Title"] = " The location of the digital identity and attribute service provider’s parent company";
+    ViewData["Title"] = $"The location of the {Constants.RegisterNameSingular} provider’s parent company";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -33,12 +34,11 @@
                     }
 
                     <h1 class="govuk-heading-xl form-title">
-                        The location of the digital identity and attribute service provider’s parent company
+                        The location of the @Constants.RegisterNameSingular provider’s parent company
                     </h1>
 
                     <p class="govuk-body">
-                        Please provide the country or territory of the digital identity and attribute
-                        service provider's parent company.
+                        Please provide the country or territory of the @Constants.RegisterNameSingular provider's parent company.
                     </p>
 
                     <div class="govuk-form-group">

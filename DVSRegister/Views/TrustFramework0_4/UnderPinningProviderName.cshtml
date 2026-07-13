@@ -1,4 +1,5 @@
 ﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+@using DVSRegister.CommonUtility
 @using DVSRegister.Controllers
 @{
     ViewData["Title"] = "Name of the underpinning service provider";
@@ -36,7 +37,7 @@
                     }
 
                     <h1 class="govuk-heading-xl">Name of the underpinning service provider</h1>
-                    <p class="govuk-body">This must match the name of the sevice provider on the certificate. The information you provide will be publicly displayed on the register of digital identity and attribute services.</p>
+                    <p class="govuk-body">This must match the name of the sevice provider on the certificate. The information you provide will be publicly displayed on the @Constants.RegisterNameLower.</p>
 
                     @{
                         var registeredNameViewmodel = new TextBoxViewModel

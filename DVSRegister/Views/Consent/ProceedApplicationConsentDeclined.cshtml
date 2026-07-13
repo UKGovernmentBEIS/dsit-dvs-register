@@ -1,5 +1,6 @@
-﻿@{
-    ViewData["Title"] = "Your service will not be published on the register of digital identity and attribute services";
+﻿@using DVSRegister.CommonUtility
+@{
+    ViewData["Title"] = "Your service will not be published on the " + @Constants.RegisterNameLower;
     Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
 }
 
@@ -7,9 +8,9 @@
     <main class="govuk-main-wrapper govuk-main-wrapper--l" id="main-content" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-l">Your service will not be published on the register of digital identity and attribute services</h1>
+                <h1 class="govuk-heading-l">Your service will not be published on the @Constants.RegisterNameLower</h1>
                 <p class="govuk-body">
-                    You have chosen not to publish this service on the register of digital identity and attribute services.
+                    You have chosen not to publish this service on the @Constants.RegisterNameLower.
                 </p>
                 <p class="govuk-body">
                     If you wish to publish details of this service on the register at a later date, please contact your Conformity Assessment Body.
