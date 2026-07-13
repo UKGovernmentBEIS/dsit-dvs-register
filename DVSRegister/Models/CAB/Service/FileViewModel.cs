@@ -1,4 +1,5 @@
-﻿using DVSRegister.Validations;
+﻿using DVSRegister.CommonUtility;
+using DVSRegister.Validations;
 using System.ComponentModel.DataAnnotations;
 
 namespace DVSRegister.Models.CAB
@@ -12,7 +13,7 @@ namespace DVSRegister.Models.CAB
     }
     public class CertificateFileViewModel : FileViewModel
     {
-        [Required(ErrorMessage = "Upload the digital identity and attribute service provider's certificate of conformity")]
+        [Required(ErrorMessage = $"Upload the {Constants.RegisterNameSingular} provider's certificate of conformity")]
         [MaxFileSize(5)]
         [AllowedExtensions(new[] { ".pdf" }, new[] { "application/pdf" }, ErrorMessage = "The selected file must be a PDF")]
     

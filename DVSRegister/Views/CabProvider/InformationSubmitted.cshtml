@@ -1,4 +1,5 @@
-﻿@{
+﻿@using DVSRegister.CommonUtility
+@{
     ViewData["Title"] = "Service provider profile created successfully";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
@@ -13,7 +14,7 @@
                     </h1>
                 </div>
                 <p class="govuk-body">
-                    The digital identity and attribute service provider’s profile has been created. You can view the profile by returning to 'All Providers'.
+                    The @Constants.RegisterNameSingular provider’s profile has been created. You can view the profile by returning to 'All Providers'.
                 </p>
                 
                 <h2 class="govuk-heading-m">What happens next</h2>

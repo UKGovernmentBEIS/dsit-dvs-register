@@ -1,6 +1,7 @@
-﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+﻿@using DVSRegister.CommonUtility
+@model DVSRegister.Models.CAB.ProfileSummaryViewModel
 @{
-    ViewData["Title"] = "The digital identity and attribute service provider’s Companies House or charity registration number";
+    ViewData["Title"] = $"The {Constants.RegisterNameSingular} provider’s Companies House or charity registration number";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -33,7 +34,7 @@
                     }
 
                 <h1 class="govuk-heading-xl form-title">
-                    The digital identity and attribute service provider’s Companies House or charity registration number
+                    The @Constants.RegisterNameSingular provider’s Companies House or charity registration number
                 </h1>
 
                 <p class="govuk-body">This number should allow for checks against Companies House or the charity register.</p>

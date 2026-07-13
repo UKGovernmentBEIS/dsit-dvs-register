@@ -1,7 +1,8 @@
-﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+﻿@using DVSRegister.CommonUtility
+@model DVSRegister.Models.CAB.ProfileSummaryViewModel
 
 @{
-    ViewData["Title"] = "The digital identity and attribute service provider’s link to contact page";
+    ViewData["Title"] = $"The {Constants.RegisterNameSingular} provider’s link to contact page";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 
@@ -21,8 +22,8 @@
         <main id="main-content" class="govuk-main-wrapper" role="main">
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
-                    <h1 class="govuk-heading-xl">The digital identity and attribute service provider’s link to contact page</h1>
-                    <p class="govuk-body">You should ask the service provider to provide this information. The contact page you enter will be publicly displayed on the register of digital identity and attribute services.</p>
+                    <h1 class="govuk-heading-xl">The @Constants.RegisterNameSingular provider’s link to contact page</h1>
+                    <p class="govuk-body">You should ask the service provider to provide this information. The contact page you enter will be publicly displayed on the @Constants.RegisterNameLower.</p>
                     
                     @{
                         var providerLinkToContactPageViewModel = new TextBoxViewModel

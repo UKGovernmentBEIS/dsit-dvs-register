@@ -1,9 +1,10 @@
 ﻿@model DVSRegister.Models.CAB.RoleViewModel
 @{
-    ViewData["Title"] = "Select the applicable roles from the UK digital identity and attributes trust framework for this service";
+    ViewData["Title"] = Model.TrustFrameworkVersion == 0.4m  ? 
+    "Select the applicable roles from the UK digital identity and attributes trust framework that apply to the provider's service" : 
+    "Select the applicable roles from the UK digital verification services trust framework that apply to the provider's service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
-}
-@{
+    
     bool hasError = false;
     int index = 0;
 }
@@ -13,6 +14,7 @@
     @Html.HiddenFor(m => m.FromSummaryPage, new { @Value = ViewBag.fromSummaryPage })
     @Html.HiddenFor(m => m.FromDetailsPage, new { @Value = ViewBag.fromDetailsPage })
     @Html.HiddenFor(m => m.RefererURL)
+    @Html.HiddenFor(m => m.TrustFrameworkVersion)
 
 
 <div class="govuk-width-container">
@@ -20,12 +22,10 @@
         Back
     </a>
     <main id="main-content" class="govuk-main-wrapper" role="main">
-        <div class="govuk-grid-row">
-
-           
+        <div class="govuk-grid-row">           
                  <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl">
-                    Select the applicable roles from the UK digital identity and attributes trust framework for this service
+                        @ViewData["Title"]
                 </h1>
 
                 @if (ViewData.ModelState.ErrorCount > 0)
@@ -44,7 +44,7 @@
                         <fieldset class="govuk-fieldset" aria-describedby="@(hasError ? "selectedroleids-error" : "selectedroleids-hint")">
 
                             <legend class="govuk-fieldset__legend govuk-visually-hidden">
-                                Select the applicable roles from the UK digital identity and attributes trust framework for this service
+                                @ViewData["Title"]
                             </legend>
                             <div id="selectedroleids-hint" class="govuk-hint">
                                 Select all that apply

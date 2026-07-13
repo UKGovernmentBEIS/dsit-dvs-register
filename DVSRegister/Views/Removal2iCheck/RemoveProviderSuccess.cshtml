@@ -1,5 +1,6 @@
-﻿@{
-    ViewData["Title"] = "Your details have been removed from the register of digital identity and attribute services";
+﻿@using DVSRegister.CommonUtility
+@{
+    ViewData["Title"] = "Your details have been removed from the " + @Constants.RegisterNameLower;
     Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
 }
 
@@ -10,7 +11,7 @@
 
             <div class="govuk-grid-column-two-thirds">
                 <h1 class="govuk-heading-xl">
-                    Your details have been removed from the register of digital identity and attribute services
+                    Your details have been removed from the @Constants.RegisterNameLower
                 </h1>
                 <p class="govuk-body">
                     All company information and services listed under your profile have been removed from the register.

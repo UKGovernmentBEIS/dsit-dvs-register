@@ -1,4 +1,5 @@
-﻿@{
+﻿@using DVSRegister.CommonUtility
+@{
     ViewData["Title"] = "You have cancelled the removal request";
     Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
 }
@@ -14,8 +15,7 @@
                 </h1>
                 <p class="govuk-body">
                     No changes have been made to the company and service information. The 
-                    provider details remain published on the register of digital identity and 
-                    attribute services.
+                    provider details remain published on the @Constants.RegisterNameLower.
                 </p>
 
             </div>

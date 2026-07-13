@@ -7,7 +7,7 @@ namespace DVSRegister.Models.CAB
 {
     public class ProfileSummaryViewModel : ProviderSummaryBaseViewModel
     {
-        [Required(ErrorMessage = "Enter the digital identity and attribute provider's registered name")]
+        [Required(ErrorMessage = "Enter the " + Constants.RegisterNameSingular + " provider's registered name")]
         [MaximumLength(160, ErrorMessage = "The company's registered name must be less than 161 characters")]
         [AcceptedCharacters(@"^[A-Za-zÀ-ž &@£$€¥(){}\[\]<>!«»“”'‘’?""/*=#%+0-9.,:;\\/-]+$", ErrorMessage = "The company's registered name must contain only letters, numbers and accepted characters")]
         public string? RegisteredName { get; set; }
@@ -53,7 +53,7 @@ namespace DVSRegister.Models.CAB
         [DisplayFormat(NullDisplayText = Constants.NullFieldsDisplay, ConvertEmptyStringToNull = true)]
         public string? ProviderTelephoneNumber { get; set; }
 
-        [Required(ErrorMessage = "Enter the digital identity and attribute provider's website address")]
+        [Required(ErrorMessage = "Enter the " + Constants.RegisterNameSingular + " provider's website address")]
         [RegularExpression(@"^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[^\s]*)?$", ErrorMessage = "Enter a valid website address")]
         public string? ProviderWebsiteAddress { get; set; }
         
