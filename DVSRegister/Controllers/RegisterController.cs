@@ -1,40 +1,53 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
-using DVSRegister.BusinessLogic.Models;
+﻿using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
-using DVSRegister.BusinessLogic.Services;
+using DVSRegister.BusinessLogic.Models.Reports;
+using DVSRegister.BusinessLogic.Reports;
 using DVSRegister.BusinessLogic.Services.CAB;
+using DVSRegister.BusinessLogic.Services.Register;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data.Register;
 using DVSRegister.Models;
 using DVSRegister.Models.Register;
 using DVSRegister.Models.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
-using System.Globalization;
 
 namespace DVSRegister.Controllers
 {
     [Route("")]
     [Route("register")]
-    public class RegisterController(IRegisterService registerService, ICabService cabService, IBucketService bucketService, IOptions<S3Configuration> config, ILogger<RegisterController> logger) : Controller
+    public class RegisterController(
+        IRegisterService registerService,
+        ICabService cabService,
+        IBucketService bucketService,
+        IOptions<S3Configuration> config,
+        ILogger<RegisterController> logger,
+        ReportFactory reportFactory,
+        IPublishedServicesQuery publishedServicesQuery) : ResultControllerBase
     {
-        
         private readonly IRegisterService registerService = registerService;
         private readonly ICabService cabService = cabService;
         private readonly IBucketService bucketService = bucketService;
         private readonly ILogger<RegisterController> logger = logger;
         private readonly S3Configuration config = config.Value;
-        private readonly decimal TFVersionNumber = 0.4m;      
+        private readonly ReportFactory reportFactory = reportFactory;
+        private readonly IPublishedServicesQuery publishedServicesQuery = publishedServicesQuery;
+        private readonly decimal TFVersionNumber = 0.4m;
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10);
 
 
         [Route("")]
+
         #region All services
+
         [HttpGet("all-services")]
-        public async Task<IActionResult> AllServices(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, List<int> SelectedTfVersionIds,
-            int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, bool RemoveSort = false, string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
+        public async Task<IActionResult> AllServices(List<int> SelectedRoleIds,
+            List<int> SelectedSupplementarySchemeIds, List<int> SelectedTfVersionIds,
+            int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, bool RemoveSort = false,
+            string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
         {
             AllServicesViewModel allServicesViewModel = new();
 
@@ -55,8 +68,10 @@ namespace DVSRegister.Controllers
                 allServicesViewModel.SelectedTrustFrameworkVersion = [new TrustFrameworkVersionDto()];
             }
 
-            var results = await registerService.GetServices(allServicesViewModel.SelectedRoleIds, allServicesViewModel.SelectedSupplementarySchemeIds, allServicesViewModel.SelectedTrustFrameworkVersionId,
-                PageNum, SearchText, allServicesViewModel.SortBy);            
+            var results = await registerService.GetServices(allServicesViewModel.SelectedRoleIds,
+                allServicesViewModel.SelectedSupplementarySchemeIds,
+                allServicesViewModel.SelectedTrustFrameworkVersionId,
+                PageNum, SearchText, allServicesViewModel.SortBy);
             allServicesViewModel.PageNumber = PageNum;
             allServicesViewModel.Services = results.Items;
             allServicesViewModel.TotalResults = results.TotalCount;
@@ -65,13 +80,16 @@ namespace DVSRegister.Controllers
             allServicesViewModel.LastUpdated = lastUpdatedDate?.ToString("dd MMMM yyyy");
             return View(allServicesViewModel);
         }
+
         #endregion
 
         #region All providers
 
         [HttpGet("all-providers")]
-        public async Task<IActionResult> AllProviders(List<int> SelectedRoleIds, List<int> SelectedSupplementarySchemeIds, List<int> SelectedTfVersionIds,
-            int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, bool RemoveSort = false, string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
+        public async Task<IActionResult> AllProviders(List<int> SelectedRoleIds,
+            List<int> SelectedSupplementarySchemeIds, List<int> SelectedTfVersionIds,
+            int RemoveRole = 0, int RemoveScheme = 0, int RemoveTfVersion = 0, bool RemoveSort = false,
+            string SearchAction = "", string SearchText = "", string SortBy = "", int PageNum = 1)
         {
             AllProvidersViewModel allProvidersViewModel = new();
             await SetRoles(SelectedRoleIds, RemoveRole, allProvidersViewModel);
@@ -95,13 +113,16 @@ namespace DVSRegister.Controllers
                 allProvidersViewModel.SelectedSupplementarySchemes = [new SupplementarySchemeDto()];
                 allProvidersViewModel.SelectedTrustFrameworkVersion = [new TrustFrameworkVersionDto()];
             }
-            var results = await registerService.GetProviders(allProvidersViewModel.SelectedRoleIds, allProvidersViewModel.SelectedSupplementarySchemeIds, allProvidersViewModel.SelectedTrustFrameworkVersionId,
-                PageNum, SearchText, allProvidersViewModel.SortBy);            
+
+            var results = await registerService.GetProviders(allProvidersViewModel.SelectedRoleIds,
+                allProvidersViewModel.SelectedSupplementarySchemeIds,
+                allProvidersViewModel.SelectedTrustFrameworkVersionId,
+                PageNum, SearchText, allProvidersViewModel.SortBy);
             allProvidersViewModel.PageNumber = PageNum;
             allProvidersViewModel.Providers = results.Items;
             allProvidersViewModel.TotalResults = results.TotalCount;
             allProvidersViewModel.TotalPages = (int)Math.Ceiling((double)results.TotalCount / 10);
-            
+
             var lastUpdatedDate = await registerService.GetLastUpdatedDate();
             allProvidersViewModel.LastUpdated = lastUpdatedDate?.ToString("dd MMMM yyyy");
             return View(allProvidersViewModel);
@@ -110,11 +131,12 @@ namespace DVSRegister.Controllers
         #endregion
 
         #region Updates
+
         [HttpGet("update-logs")]
         public async Task<IActionResult> Updates(int PageNum = 1)
         {
-            var updateLogs= await registerService.GetUpdateLogs(PageNum);
-            RegisterUpdatesLogsViewModel registerPublishLogsViewModel = new();         
+            var updateLogs = await registerService.GetUpdateLogs(PageNum);
+            RegisterUpdatesLogsViewModel registerPublishLogsViewModel = new();
 
             registerPublishLogsViewModel.PageNumber = PageNum;
             registerPublishLogsViewModel.RegisterUpdatesLog = updateLogs.Items;
@@ -124,14 +146,17 @@ namespace DVSRegister.Controllers
             registerPublishLogsViewModel.LastUpdated = updateLogs.LastUpdated;
             return View("Updates", registerPublishLogsViewModel);
         }
+
         #endregion
 
         #region Guidance
+
         [HttpGet("guidance")]
         public IActionResult Guidance()
         {
             return View("Guidance");
         }
+
         #endregion
 
         [HttpGet("provider-details")]
@@ -142,8 +167,9 @@ namespace DVSRegister.Controllers
                 ViewBag.FromServicePage = fromServicePage;
                 ViewBag.PreviousServiceId = previousServiceId;
             }
+
             ProviderProfileDto providerProfileDto = await registerService.GetProviderWithServiceDeatils(providerId);
-            if(providerProfileDto == null)
+            if (providerProfileDto == null)
                 return RedirectToAction("RegisterPageNotFound", "Error");
             return View(providerProfileDto);
         }
@@ -155,10 +181,12 @@ namespace DVSRegister.Controllers
             {
                 ViewBag.FromProviderPage = true;
             }
+
             if (previousServiceId != null)
             {
                 ViewBag.PreviousServiceId = previousServiceId;
             }
+
             ServiceDto service = await registerService.GetServiceDetails(serviceId);
             if (service == null)
                 return RedirectToAction("RegisterPageNotFound", "Error");
@@ -167,43 +195,68 @@ namespace DVSRegister.Controllers
 
         [EnableRateLimiting("DownloadRequestLimit")]
         [HttpGet("download-register")]
-        public async Task<IActionResult> DownloadRegister(CancellationToken cancellationToken)
-        {         
-            if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), cancellationToken))
+        public async Task<IActionResult> DownloadRegister(CancellationToken ct)
+        {
+            if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), ct))
             {
-                return StatusCode(StatusCodes.Status429TooManyRequests, "Too many concurrent downloads. Please try again later.");
+                return StatusCode(StatusCodes.Status429TooManyRequests,
+                    "Too many concurrent downloads. Please try again later.");
             }
 
             try
             {
                 var services = await registerService.GetPublishedServices();
                 if (services == null || services.Count == 0)
-                    throw new InvalidOperationException("No data to export");
-                Response.ContentType = "text/csv";
-                Response.Headers["Content-Disposition"] = $"attachment; filename=dvs-register_{DateTime.Now:ddMMyyyy}.csv";
-
-                await using var writer = new StreamWriter(Response.Body);
-                await using var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)
                 {
-                    Delimiter = ",",
-                    HasHeaderRecord = true,
-                    Quote = '"',
-                    ShouldQuote = args => args.Row.Index == 0 || args.Field.Contains(",")
-                });
-                csv.Context.RegisterClassMap<PfrCsvMap>();
-                await csv.WriteRecordsAsync(services, cancellationToken);
-                await writer.FlushAsync().ConfigureAwait(false);
-                return new EmptyResult();
-            }
-            catch (InvalidOperationException ex)
-            {
-                throw new InvalidOperationException("No data available for download", ex);
+                    var noDataResult = Result<CsvResult>.Fail(Error.NotFound("No data available for download"));
+                    return FromResult(noDataResult, ok => File(ok.Data, ok.ContentType, ok.FileName));
+                }
+
+                var ctx = new ReportContext(CsvReportType.CurrentRegister, null, null);
+                var result = await reportFactory.GetCurrentRegisterGenerator().GenerateAsync(services, ctx, ct);
+                return FromResult(result, ok => File(ok.Data, ok.ContentType, ok.FileName));
             }
             catch (Exception ex)
             {
                 throw new InvalidOperationException("An error occurred while attempting to download the register.", ex);
             }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
 
+        [EnableRateLimiting("DownloadRequestLimit")]
+        [HttpGet("download-register-with-contacts")]
+        public async Task<IActionResult> DownloadRegisterWithContacts(CancellationToken ct)
+        {
+            if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), ct))
+            {
+                return StatusCode(StatusCodes.Status429TooManyRequests,
+                    "Too many concurrent downloads. Please try again later.");
+            }
+
+            try
+            {
+                var services = await publishedServicesQuery.GetAsync(ct);
+                if (services.Count == 0)
+                {
+                    var noDataResult = Result<CsvResult>.Fail(Error.NotFound("No data available for download"));
+                    return FromResult(noDataResult, ok => File(ok.Data, ok.ContentType, ok.FileName));
+                }
+
+                var ctx = new ReportContext(CsvReportType.CurrentRegisterWithContacts, null, null);
+                var generator = (IReportGenerator<IEnumerable<PublishedServiceForContactsReport>>)
+                    reportFactory.GetReport(CsvReportType.CurrentRegisterWithContacts);
+
+                var result = await generator.GenerateAsync(services, ctx, ct);
+                return FromResult(result, ok => File(ok.Data, ok.ContentType, ok.FileName));
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(
+                    "An error occurred while attempting to download the register with contacts.", ex);
+            }
             finally
             {
                 _semaphore.Release();
@@ -228,8 +281,8 @@ namespace DVSRegister.Controllers
                     string svgXml = await reader.ReadToEndAsync();
                     return Content(svgXml, "image/svg+xml");
                 }
-                return null!;
 
+                return null!;
             }
             catch (Exception ex)
             {
@@ -239,6 +292,7 @@ namespace DVSRegister.Controllers
 
 
         #region Private methods
+
         private async Task SetSchemes(List<int>? selectedIds, int removeId, PaginationAndFilteringParameters vm)
         {
             vm.AvailableSchemes = await cabService.GetSupplementarySchemes();
@@ -256,9 +310,11 @@ namespace DVSRegister.Controllers
 
             if (vm.SelectedSupplementarySchemeIds.Count > 0)
             {
-                vm.SelectedSupplementarySchemes = vm.AvailableSchemes.Where(c => vm.SelectedSupplementarySchemeIds.Contains(c.Id)).ToList();
+                vm.SelectedSupplementarySchemes = vm.AvailableSchemes
+                    .Where(c => vm.SelectedSupplementarySchemeIds.Contains(c.Id)).ToList();
             }
         }
+
         private async Task SetRoles(List<int>? selectedIds, int removeId, PaginationAndFilteringParameters vm)
         {
             vm.AvailableRoles = await cabService.GetRoles(TFVersionNumber);
@@ -295,9 +351,11 @@ namespace DVSRegister.Controllers
 
             if (vm.SelectedTrustFrameworkVersionId?.Count > 0)
             {
-                vm.SelectedTrustFrameworkVersion = vm.AvailableTrustFrameworkVersion.Where(c => vm.SelectedTrustFrameworkVersionId.Contains(c.Id)).ToList();
+                vm.SelectedTrustFrameworkVersion = vm.AvailableTrustFrameworkVersion
+                    .Where(c => vm.SelectedTrustFrameworkVersionId.Contains(c.Id)).ToList();
             }
         }
+
         #endregion
     }
 }

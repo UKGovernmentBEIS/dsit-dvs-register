@@ -1,11 +1,17 @@
-﻿using Amazon;
+﻿using System.Data.Common;
+using System.Threading.RateLimiting;
+using Amazon;
 using Amazon.S3;
 using AutoMapper.Internal;
 using DVSAdmin.BusinessLogic.Services;
+using DVSRegister.BusinessLogic.Abstractions;
+using DVSRegister.BusinessLogic.Reports;
+using DVSRegister.BusinessLogic.Reports.CurrentRegister;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.CabTransfer;
 using DVSRegister.BusinessLogic.Services.Edit;
+using DVSRegister.BusinessLogic.Services.Register;
 using DVSRegister.BusinessLogic.Services.TestData;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Email;
@@ -17,15 +23,15 @@ using DVSRegister.Data.CAB;
 using DVSRegister.Data.CabRemovalRequest;
 using DVSRegister.Data.CabTransfer;
 using DVSRegister.Data.Edit;
+using DVSRegister.Data.Register;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
+using DVSRegister.Services;
 using DVSRegister.Services.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using System.Data.Common;
-using System.Threading.RateLimiting;
 
 namespace DVSRegister
 {
@@ -33,19 +39,19 @@ namespace DVSRegister
     {
         private readonly IConfiguration configuration;
         private readonly IWebHostEnvironment webHostEnvironment;
+
         public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             this.configuration = configuration;
             this.webHostEnvironment = webHostEnvironment;
         }
 
-       
+
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.Configure<BasicAuthMiddlewareConfiguration>(
-            configuration.GetSection(BasicAuthMiddlewareConfiguration.ConfigSection));
-            services.AddControllersWithViews();        
+                configuration.GetSection(BasicAuthMiddlewareConfiguration.ConfigSection));
+            services.AddControllersWithViews();
             //Adding strict transport security header
             services.AddHsts(options =>
             {
@@ -53,7 +59,7 @@ namespace DVSRegister
                 options.IncludeSubDomains = true;
                 options.MaxAge = TimeSpan.FromDays(1);
             });
-            
+
             services.AddControllersWithViews(options =>
             {
                 options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
@@ -75,13 +81,13 @@ namespace DVSRegister
             ConfigureGoogleAnalyticsService(services);
         }
 
-        
+
         private void ConfigureGoogleAnalyticsService(IServiceCollection services)
         {
             services.Configure<GoogleAnalyticsConfiguration>(
                 configuration.GetSection(GoogleAnalyticsConfiguration.ConfigSection));
             services.AddScoped<GoogleAnalyticsService, GoogleAnalyticsService>();
-        } 
+        }
 
         private void ConfigureGovUkNotify(IServiceCollection services)
         {
@@ -89,21 +95,21 @@ namespace DVSRegister
             services.Configure<GovUkNotifyConfiguration>(
                 configuration.GetSection(GovUkNotifyConfiguration.ConfigSection));
         }
+
         private void ConfigureSession(IServiceCollection services)
         {
             services.AddHttpContextAccessor();
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(360); 
+                options.IdleTimeout = TimeSpan.FromMinutes(360);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;               
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
         }
 
         private void ConfigureRateLimiting(IServiceCollection services)
         {
-
             services.AddRateLimiter(options =>
             {
                 options.AddFixedWindowLimiter("DownloadRequestLimit", limiterOptions =>
@@ -112,7 +118,6 @@ namespace DVSRegister
                     limiterOptions.Window = TimeSpan.FromMinutes(1);
                     limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
                     limiterOptions.QueueLimit = 2;
-
                 });
 
 
@@ -125,14 +130,11 @@ namespace DVSRegister
                     await context.HttpContext.Response.WriteAsync(
                         "{\"error\":\"Custom 429: Too many requests. Please try again later.\"}", token);
                 };
-
             });
-
         }
 
         public void ConfigureDvsRegisterServices(IServiceCollection services)
         {
-          
             services.AddScoped<ICabService, CabService>();
             services.AddScoped<ISignUpService, SignUpService>();
             services.AddScoped<ICabRepository, CabRepository>();
@@ -147,12 +149,12 @@ namespace DVSRegister
             services.AddScoped<IRemoveProvider2iRepository, RemoveProvider2iRepository>();
             services.AddScoped<ICabRemovalRequestService, CabRemovalRequestService>();
             services.AddScoped<ICabRemovalRequestRepository, CabRemovalRequestRepository>();
-            services.AddSingleton<DVSRegister.Services.AutoMapperProfile>();
-            services.AddSingleton<DVSRegister.BusinessLogic.AutoMapperProfile>();
+            services.AddSingleton<AutoMapperProfile>();
+            services.AddSingleton<BusinessLogic.AutoMapperProfile>();
             services.AddScoped<ICabTransferRepository, CabTransferRepository>();
             services.AddScoped<ICabTransferService, CabTransferService>();
             services.AddScoped<ITrustFrameworkRepository, TrustFrameworkRepository>();
-            services.AddScoped<ITrustFrameworkService, TrustFrameworkService>();          
+            services.AddScoped<ITrustFrameworkService, TrustFrameworkService>();
             services.AddScoped<IActionLogService, ActionLogService>();
             services.AddScoped<IActionLogRepository, ActionLogRepository>();
             services.AddScoped<IHomeService, HomeService>();
@@ -165,45 +167,41 @@ namespace DVSRegister
             services.AddTransient<LoginEmailSender>();
             services.AddTransient<CabEmailSender>();
             services.AddTransient<Removal2iCheckEmailSender>();
-            services.AddTransient<ConsentEmailSender>();     
+            services.AddTransient<ConsentEmailSender>();
             services.AddTransient<CabTransferEmailSender>();
             services.AddTransient<ProviderEditEmailSender>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));
-                string clientId = string.Format(configuration.GetValue<string>("ClientId")); ;
+                string clientId = string.Format(configuration.GetValue<string>("ClientId"));
+                ;
                 string region = string.Format(configuration.GetValue<string>("Region"));
                 return new CognitoClient(userPoolId, clientId, region);
             });
 
+            services.AddScoped<ReportFactory>();
+            services.AddScoped<CurrentRegisterReportGenerator>();
+            services.AddScoped<CurrentRegisterWithContactsReport>();
+            services.AddSingleton<IUtcClock, SystemUtcClock>();
+            services.AddScoped<IPublishedServicesQuery, PublishedServicesQuery>();
         }
+
         public void ConfigureAutomapperServices(IServiceCollection services)
         {
-
-
-
-            services.AddAutoMapper(cfg =>
-            {
-                cfg.Internal().ForAllMaps((typeMap, _) =>
-                {
-                    typeMap.MaxDepth = 64;
-                });
-
-            }, typeof(DVSRegister.Services.AutoMapperProfile),
-               typeof(DVSRegister.BusinessLogic.AutoMapperProfile));
-
-
-
+            services.AddAutoMapper(cfg => { cfg.Internal().ForAllMaps((typeMap, _) => { typeMap.MaxDepth = 64; }); },
+                typeof(AutoMapperProfile),
+                typeof(BusinessLogic.AutoMapperProfile));
         }
+
         public void ConfigureDatabaseHealthCheck(DVSRegisterDbContext? dbContext)
         {
             try
             {
                 if (dbContext == null) throw new InvalidOperationException(Constants.DbContextNull);
                 DbConnection conn = dbContext.Database.GetDbConnection();
-                conn.Open();   // Check the database connection
+                conn.Open(); // Check the database connection
                 Console.WriteLine(Constants.DbConnectionSuccess);
-                conn.Close();   // close the database connection               
+                conn.Close(); // close the database connection               
             }
             catch (Exception ex)
             {
@@ -216,13 +214,13 @@ namespace DVSRegister
         {
             var s3Config = new S3Configuration();
             configuration.GetSection(S3Configuration.ConfigSection).Bind(s3Config);
-            string localAccessKey = configuration.GetValue<string>("S3:LocalDevOnly_AccessKey")??string.Empty;
-            string localSecreKey = configuration.GetValue<string>("S3:LocalDevOnly_SecretKey")??string.Empty;
-            string localServiceURL = configuration.GetValue<string>("S3:LocalDevOnly_ServiceUrl")??string.Empty;
+            string localAccessKey = configuration.GetValue<string>("S3:LocalDevOnly_AccessKey") ?? string.Empty;
+            string localSecreKey = configuration.GetValue<string>("S3:LocalDevOnly_SecretKey") ?? string.Empty;
+            string localServiceURL = configuration.GetValue<string>("S3:LocalDevOnly_ServiceUrl") ?? string.Empty;
 
-            if (!string.IsNullOrEmpty(localAccessKey) && !string.IsNullOrEmpty(localSecreKey) && !string.IsNullOrEmpty(localSecreKey))
+            if (!string.IsNullOrEmpty(localAccessKey) && !string.IsNullOrEmpty(localSecreKey) &&
+                !string.IsNullOrEmpty(localSecreKey))
             {
-
                 // For local development connect to a local instance of Minio add the access key , secret key and service url in local user secrets only
                 var clientConfig = new AmazonS3Config
                 {
@@ -236,8 +234,7 @@ namespace DVSRegister
             else
             {
                 services.AddScoped(_ => new AmazonS3Client(RegionEndpoint.GetBySystemName(s3Config.Region)));
-            } 
-
+            }
         }
 
         private void ConfigureS3FileWriter(IServiceCollection services)
@@ -271,6 +268,5 @@ namespace DVSRegister
             services.Configure<JwtSettings>(
                 configuration.GetSection(JwtSettings.ConfigSection));
         }
-
     }
 }
