@@ -1,4 +1,5 @@
-﻿@using DVSRegister.Middleware
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.Middleware
 @using DVSRegister.CommonUtility.GoogleAnalytics
 @using DVSRegister.Services.Cookies
 
@@ -34,7 +35,7 @@
 </head>
 <body class="govuk-frontend-supported govuk-template__body">
 @{
-ViewData["ServiceName"] = "register of digital identity and attribute services";
+ViewData["ServiceName"] = @Constants.RegisterNameLower;
 await Html.RenderPartialAsync("_CookieBanner");
 }
 <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>

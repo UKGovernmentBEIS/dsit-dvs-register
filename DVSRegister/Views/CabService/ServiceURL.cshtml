@@ -1,4 +1,5 @@
-﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+﻿@using DVSRegister.CommonUtility
+@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @{
     ViewData["Title"] = "A URL link to the service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
@@ -35,7 +36,7 @@
                 </h1>
 
                 <p class="govuk-body">
-                    Enter a URL link to a website address for the service. The information you provide will be publicly displayed on the register of digital identity and attribute services.
+                        Enter a URL link to a website address for the service. The information you provide will be publicly displayed on the @Constants.RegisterNameLower.
                 </p>
 
              

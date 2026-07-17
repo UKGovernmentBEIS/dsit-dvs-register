@@ -1,4 +1,5 @@
 @using System.ComponentModel
+@using DVSRegister.CommonUtility
 @using DVSRegister.CommonUtility.Models.Enums
 @model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @using Microsoft.AspNetCore.Mvc.TagHelpers
@@ -36,7 +37,7 @@
                     </p>
                     <p class="govuk-hint">
                         A white-labelled service relies on an underpinning service produced by
-                        another digital identity and attributes service provider.
+                        another @Constants.RegisterNameSingular provider.
                     </p>
                 </div>
                 @using (Html.BeginForm("SaveServiceType", "TrustFramework0_4", FormMethod.Post))

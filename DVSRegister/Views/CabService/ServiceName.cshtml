@@ -1,6 +1,7 @@
-﻿@model DVSRegister.Models.CAB.ServiceSummaryViewModel
+﻿@using DVSRegister.CommonUtility
+@model DVSRegister.Models.CAB.ServiceSummaryViewModel
 @{
-    ViewData["Title"] = "The digital identity and attribute service provider’s name of service";
+    ViewData["Title"] = $"The {Constants.RegisterNameSingular} provider’s name of service";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -36,11 +37,11 @@
                 }
 
                 <h1 class="govuk-heading-xl form-title">
-                    The digital identity and attribute service provider’s name of service
+                    The @Constants.RegisterNameSingular provider’s name of service
                 </h1>
 
                 <p class="govuk-body">
-                    This must match the service name on the certificate of conformity. The information you provide will be publicly displayed on the register of digital identity and attribute services.
+                        This must match the service name on the certificate of conformity. The information you provide will be publicly displayed on the @Constants.RegisterNameLower.
                 </p>
 
               

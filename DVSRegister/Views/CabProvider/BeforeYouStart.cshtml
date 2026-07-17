@@ -1,4 +1,5 @@
-﻿
+﻿@using DVSRegister.CommonUtility
+
 @{
     ViewData["Title"] = "Before you create a profile";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
@@ -13,7 +14,7 @@
 
                 <p class="govuk-body">Before starting your submission, check that you have all the required information listed below. You must complete your submission in a single session as the application does not support saving and resuming at a later time.</p>
 
-                <p class="govuk-body">You will need the following information from the digital identity and attribute service provider. </p>
+                <p class="govuk-body">You will need the following information from the @Constants.RegisterNameSingular provider. </p>
 
                 <ul class="govuk-list govuk-list--bullet">
                     <li>registered company name</li>
@@ -32,7 +33,7 @@
                     Check your information carefully before proceeding and make sure all
                     contact details are up to date. Once your submission is approved, some of the
                     public company information you have provided will be publicly available on
-                    the register of digital identity and attribute services.</p>
+                    the @Constants.RegisterNameLower.</p>
 
                 <p class="govuk-body">@Html.ActionLink("Continue", "RegisteredName", "CabProvider", null, new { @class = "govuk-button" })</p>
             </div>

@@ -1,7 +1,8 @@
-﻿@using DVSRegister.CommonUtility.Models.Enums;
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models.Enums;
 @model ConsentViewModel
 @{
-    ViewData["Title"] = "You are about to agree to proceed with your application to the register of digital identity and attribute services";
+    ViewData["Title"] = "You are about to agree to proceed with your application to the " + @Constants.RegisterNameLower;
     Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
 }
 
@@ -17,7 +18,7 @@
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-full">
                     <h1 class="govuk-heading-xl">
-                        Accept or decline your invitation to join the register of digital identity and attribute services
+                        Accept or decline your invitation to join the @Constants.RegisterNameLower
                     </h1>
                     <p class="govuk-body">
                         To give your agreement, please select ‘Accept invitation’ to continue.

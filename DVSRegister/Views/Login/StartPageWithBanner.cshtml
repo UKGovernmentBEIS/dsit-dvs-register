@@ -1,4 +1,5 @@
-﻿@using DVSRegister.Models
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.Models
 @{
     ViewData["Title"] = "Sign up to the Conformity Assessment Body Service";
     Layout = "~/Views/Shared/_Layout_CAB.cshtml";
@@ -27,12 +28,12 @@
               
                 <h1 class="govuk-heading-xl govuk-!-margin-top-8">Sign up to the Conformity Assessment Body Service</h1>
 
-                <p class="govuk-body">This service allows Conformity Assessment Bodies to create an account and submit certificate and company information for a digital identity and attribute service provider.</p>
+                <p class="govuk-body">This service allows Conformity Assessment Bodies to create an account and submit certificate and company information for a @Constants.RegisterNameSingular provider.</p>
 
                 <p class="govuk-body">Use this service to:</p>
                 <ul class="govuk-list govuk-list--bullet">
                     <li>Create an account</li>
-                    <li>Submit information on behalf of a digital identity and attribute service provider</li>
+                    <li>Submit information on behalf of a @Constants.RegisterNameSingular provider</li>
                 </ul>
 
 

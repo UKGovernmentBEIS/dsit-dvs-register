@@ -1,4 +1,5 @@
-﻿@using DVSRegister.Extensions
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.Extensions
 @using DVSRegister.Models.CabTrustFramework
 @model UnderpinningServiceViewModel
 @{
@@ -20,8 +21,7 @@
                 @if (published)
                 {
                     <p class="govuk-hint">
-                        You have told us that the underpinning service is published to the register of digital identity
-                        and attributes services.
+                        You have told us that the underpinning service is published to the @Constants.RegisterNameLower.
                     </p>
                     <p class="govuk-hint">
                         Search for the underpinning service the white-labelled service relies on.
@@ -30,8 +30,7 @@
                 else
                 {
                     <p class="govuk-hint">
-                        You have told us that the underpinning service is not published on the register of digital
-                        identity and attribute services.
+                        You have told us that the underpinning service is not published on the @Constants.RegisterNameLower.
                     </p>
                 }
             </div>

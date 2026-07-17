@@ -1,7 +1,8 @@
-﻿@using DVSRegister.CommonUtility.Models.Enums
+﻿@using DVSRegister.CommonUtility
+@using DVSRegister.CommonUtility.Models.Enums
 @model RemoveProviderViewModel
 @{
-    ViewData["Title"] = "You are about to remove your details from the register of digital identity and attribute services";
+    ViewData["Title"] = "You are about to remove your details from the " + @Constants.RegisterNameLower;
     Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
 }
 
@@ -24,7 +25,7 @@
                         ViewData["Title"] = "Error: " + ViewData["Title"];
                         @await Html.PartialAsync("~/Views/PartialViews/_ErrorSummaryView.cshtml", Model)
                     }
-                    <h1 class="govuk-heading-xl">You are about to remove your details from the register of digital identity and attribute services</h1>
+                    <h1 class="govuk-heading-xl">You are about to remove your details from the @Constants.RegisterNameLower</h1>
                     <p class="govuk-body">
                         This action will remove all your company information and any services listed
                         under your profile from the register.
@@ -105,7 +106,7 @@
                HasError = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0,
                ErrorMessage = Html.ViewData.ModelState.ContainsKey("HasConsent") && Html.ViewData.ModelState["HasConsent"].Errors.Count > 0 ?
                 Html.ViewData.ModelState["HasConsent"].Errors[0].ErrorMessage : string.Empty,
-               Label = "I agree to remove my provider and service details from the register of digital identity and attribute services"
+               Label = "I agree to remove my provider and service details from the " + @Constants.RegisterNameLower
 
            })
                     <div class="govuk-button-group">

@@ -1,6 +1,7 @@
 ﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+@using DVSRegister.CommonUtility
 @{
-    ViewData["Title"] = "The registered name of the digital identity and attribute service provider’s parent company";
+    ViewData["Title"] = $"The registered name of the {Constants.RegisterNameSingular} provider’s parent company";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -33,11 +34,11 @@
                     }
 
                     <h1 class="govuk-heading-xl form-title">
-                        The registered name of the digital identity and attribute service provider’s parent company
+                        The registered name of the @Constants.RegisterNameSingular provider’s parent company
                     </h1>
 
                     <p class="govuk-body">
-                        You have declared that the digital identity and attribute service provider has a
+                        You have declared that the @Constants.RegisterNameSingular provider has a
                         parent company outside the UK. Please provide the registered name of the
                         parent company below.
                     </p>

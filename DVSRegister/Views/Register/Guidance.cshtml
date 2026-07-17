@@ -1,4 +1,5 @@
-﻿@{
+﻿@using DVSRegister.CommonUtility
+@{
     ViewData["Title"] = "Guidance";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
     ViewData["ActiveNav"] = "Guidance";
@@ -12,13 +13,13 @@
                     <span class="govuk-caption-xl">
                         Guidance
                     </span>
-                    Find registered digital identity and attribute services
+                    Find registered @Constants.RegisterNamePlural
                 </h1>
             </div>
 
             <div class="govuk-grid-column-two-thirds">
                 <p class="govuk-body-lead">
-                    How to use the register of digital identity and attribute services.
+                    How to use the @Constants.RegisterNameLower.
                 </p>
              </div>
            <div class="govuk-grid-column-full">
@@ -64,10 +65,10 @@
 
 
                 <p class="govuk-body govuk-!-margin-bottom-7">
-                    The statutory register of digital identity and attribute services is a public list of
+                    The statutory @Constants.RegisterNameLower is a public list of
                     government-registered organisations that provide digital identity services
                     certified against the
-                    <a class="govuk-link" target="_blank" rel="noreferrer noopener" href="https://www.gov.uk/government/collections/uk-digital-identity-and-attributes-trust-framework">UK digital identity and attributes trust framework</a>.
+                    <a class="govuk-link" target="_blank" rel="noreferrer noopener" href="https://www.gov.uk/government/collections/uk-digital-identity-and-attributes-trust-framework">UK @Constants.RegisterNamePlural trust framework</a>.
                 </p>
 
              

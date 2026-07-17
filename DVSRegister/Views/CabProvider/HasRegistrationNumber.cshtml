@@ -1,7 +1,8 @@
 ﻿@model DVSRegister.Models.CAB.ProfileSummaryViewModel
+@using DVSRegister.CommonUtility
 @using DVSRegister.Models.UI.Enums
 @{
-    ViewData["Title"] = "Does the digital identity and attribute service provider have a Companies House or charity registration number?";
+    ViewData["Title"] = $"Does the {Constants.RegisterNameSingular} provider have a Companies House or charity registration number?";
     Layout = "~/Views/Shared/_LayoutLoggedIn.cshtml";
 }
 @{
@@ -35,7 +36,7 @@
                 PropertyName = "HasRegistrationNumber",
                 Value = Model.HasRegistrationNumber,
                 HasError = hasError,
-                FieldSet = "Does the digital identity and attribute service provider have a Companies House or charity registration number?",          
+                FieldSet = $"Does the {Constants.RegisterNameSingular} provider have a Companies House or charity registration number?",          
                 LegendStyleClass = "govuk-fieldset__legend--xl",
                 ErrorMessage = hasError ?
                 Html.ViewData.ModelState["HasRegistrationNumber"].Errors[0].ErrorMessage : string.Empty,
