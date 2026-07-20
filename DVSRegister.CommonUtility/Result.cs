@@ -22,6 +22,12 @@ public class Error
 
     public static Error Unexpected(string message) =>
         new Error("UNEXPECTED", message);
+
+    public static Error FromException(Exception ex, string context = "") =>
+        Unexpected(
+            string.IsNullOrWhiteSpace(context)
+                ? ex.Message
+                : $"{context}: {ex.Message}");
 }
 
 public class Result<T>

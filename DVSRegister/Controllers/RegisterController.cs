@@ -25,7 +25,7 @@ namespace DVSRegister.Controllers
         IBucketService bucketService,
         IOptions<S3Configuration> config,
         ILogger<RegisterController> logger,
-        ReportFactory reportFactory,
+        IReportFactory reportFactory,
         IPublishedServicesQuery publishedServicesQuery) : ResultControllerBase
     {
         private readonly IRegisterService registerService = registerService;
@@ -33,7 +33,7 @@ namespace DVSRegister.Controllers
         private readonly IBucketService bucketService = bucketService;
         private readonly ILogger<RegisterController> logger = logger;
         private readonly S3Configuration config = config.Value;
-        private readonly ReportFactory reportFactory = reportFactory;
+        private readonly IReportFactory reportFactory = reportFactory;
         private readonly IPublishedServicesQuery publishedServicesQuery = publishedServicesQuery;
         private readonly decimal TFVersionNumber = 0.4m;
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10);
@@ -238,10 +238,21 @@ namespace DVSRegister.Controllers
 
             try
             {
-                var services = await publishedServicesQuery.GetAsync(ct);
+                var queryResult = await publishedServicesQuery.GetAsync(ct);
+
+                if (queryResult.IsFailure)
+                {
+                    var errorResult = Result<CsvResult>.Fail(queryResult.Error);
+                    return FromResult(errorResult, ok => File(ok.Data, ok.ContentType, ok.FileName));
+                }
+
+                var services = queryResult.Value;
+
                 if (services.Count == 0)
                 {
-                    var noDataResult = Result<CsvResult>.Fail(Error.NotFound("No data available for download"));
+                    var noDataResult = Result<CsvResult>.Fail(
+                        Error.NotFound("No data available for download"));
+
                     return FromResult(noDataResult, ok => File(ok.Data, ok.ContentType, ok.FileName));
                 }
 
@@ -254,8 +265,7 @@ namespace DVSRegister.Controllers
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException(
-                    "An error occurred while attempting to download the register with contacts.", ex);
+                return FromError(Error.FromException(ex, "DownloadRegisterWithContacts failed"));
             }
             finally
             {

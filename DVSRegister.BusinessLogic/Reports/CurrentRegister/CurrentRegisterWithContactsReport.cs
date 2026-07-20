@@ -16,13 +16,23 @@ public sealed class CurrentRegisterWithContactsReport(
         CancellationToken ct)
     {
         if (ctx.ReportType != CsvReportType.CurrentRegisterWithContacts)
-            throw new InvalidOperationException($"Unexpected report type: {ctx.ReportType}");
+            return Result<CsvResult>.Fail(
+                Error.Validation("Unexpected report type for CurrentRegisterWithContactsReport"));
 
         var rows = CurrentRegisterWithContactsProjector.Project(input);
-        var stream = await CsvStreamHelper.WriteAsync(rows, new CurrentRegisterWithContactsMap(), ct);
         var name = $"dvs-register-with-contacts_{clock.UtcNow:ddMMyyyy}.csv";
 
-        stream.Position = 0;
-        return Result<CsvResult>.Ok(new CsvResult(stream, name));
+        var csvResult = await CsvStreamHelper.ToCsvAsync(
+            rows,
+            configureCsv: null,
+            configureMap: mapCtx => mapCtx.RegisterClassMap(new CurrentRegisterWithContactsMap()),
+            name,
+            ct);
+
+        if (!csvResult.IsSuccess)
+            return csvResult;
+
+        csvResult.Value.Data.Position = 0;
+        return Result<CsvResult>.Ok(csvResult.Value);
     }
 }

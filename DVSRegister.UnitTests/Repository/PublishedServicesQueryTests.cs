@@ -53,8 +53,10 @@ public sealed class PublishedServicesQueryTests(PostgresTestFixture fixture)
         await context.SaveChangesAsync();
 
         var query = new PublishedServicesQuery(context);
-        var results = await query.GetAsync(CancellationToken.None);
+        var result = await query.GetAsync(CancellationToken.None);
 
+        Assert.True(result.IsSuccess);
+        var results = result.Value;
         Assert.Single(results);
         Assert.Equal("In Register", results[0].ServiceName);
     }
@@ -107,8 +109,10 @@ public sealed class PublishedServicesQueryTests(PostgresTestFixture fixture)
         await context.SaveChangesAsync();
 
         var query = new PublishedServicesQuery(context);
-        var results = await query.GetAsync(CancellationToken.None);
+        var result = await query.GetAsync(CancellationToken.None);
 
+        Assert.True(result.IsSuccess);
+        var results = result.Value;
         Assert.Equal(2, results.Count);
         Assert.Equal("Alpha Provider", results[0].ProviderRegisteredName);
         Assert.Equal("Zebra Provider", results[1].ProviderRegisteredName);
@@ -160,9 +164,10 @@ public sealed class PublishedServicesQueryTests(PostgresTestFixture fixture)
         await context.SaveChangesAsync();
 
         var query = new PublishedServicesQuery(context);
-        var results = await query.GetAsync(CancellationToken.None);
+        var result = await query.GetAsync(CancellationToken.None);
 
-        var row = results.First(r => r.ServiceName == "With Schemes");
+        Assert.True(result.IsSuccess);
+        var row = result.Value.First(r => r.ServiceName == "With Schemes");
         Assert.Contains("Test Scheme", row.SchemeNames);
     }
 
@@ -200,9 +205,10 @@ public sealed class PublishedServicesQueryTests(PostgresTestFixture fixture)
         await context.SaveChangesAsync();
 
         var query = new PublishedServicesQuery(context);
-        var results = await query.GetAsync(CancellationToken.None);
+        var result = await query.GetAsync(CancellationToken.None);
 
-        var row = results.First();
+        Assert.True(result.IsSuccess);
+        var row = result.Value.First();
         Assert.Equal("Primary One", row.PrimaryContactFullName);
         Assert.Equal("primary@one.com", row.PrimaryContactEmail);
         Assert.Equal("Secondary Two", row.SecondaryContactFullName);

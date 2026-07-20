@@ -46,7 +46,9 @@ public sealed class CurrentRegisterWithContactsIntegrationTests(PostgresTestFixt
         await context.SaveChangesAsync();
 
         var query = new PublishedServicesQuery(context);
-        var services = await query.GetAsync(CancellationToken.None);
+        var queryResult = await query.GetAsync(CancellationToken.None);
+        Assert.True(queryResult.IsSuccess);
+        var services = queryResult.Value;
         var report = new CurrentRegisterWithContactsReport(new SystemUtcClock());
         var ctx = new ReportContext(CsvReportType.CurrentRegisterWithContacts, null, null);
         var result = await report.GenerateAsync(services, ctx, CancellationToken.None);
@@ -107,7 +109,9 @@ public sealed class CurrentRegisterWithContactsIntegrationTests(PostgresTestFixt
         await context.SaveChangesAsync();
 
         var query = new PublishedServicesQuery(context);
-        var services = await query.GetAsync(CancellationToken.None);
+        var queryResult = await query.GetAsync(CancellationToken.None);
+        Assert.True(queryResult.IsSuccess);
+        var services = queryResult.Value;
         var report = new CurrentRegisterWithContactsReport(new SystemUtcClock());
         var ctx = new ReportContext(CsvReportType.CurrentRegisterWithContacts, null, null);
         var result = await report.GenerateAsync(services, ctx, CancellationToken.None);

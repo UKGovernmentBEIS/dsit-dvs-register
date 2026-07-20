@@ -1,5 +1,6 @@
 using DVSRegister.CommonUtility;
 using DVSRegister.Controllers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DVSRegister.UnitTests.Controllers;
@@ -17,31 +18,39 @@ public class ResultControllerBaseTests
         public IActionResult TestNotFound()
         {
             var result = Result<int>.Fail(Error.NotFound());
-            return FromResult(result, _ => (IActionResult)new OkResult());
+            return FromResult(result, _ => new OkResult());
         }
 
         public IActionResult TestValidation()
         {
             var result = Result<int>.Fail(Error.Validation("invalid"));
-            return FromResult(result, _ => (IActionResult)new OkResult());
+            return FromResult(result, _ => new OkResult());
         }
 
         public IActionResult TestConflict()
         {
             var result = Result<int>.Fail(Error.Conflict());
-            return FromResult(result, _ => (IActionResult)new OkResult());
+            return FromResult(result, _ => new OkResult());
         }
 
         public IActionResult TestUnexpected()
         {
             var result = Result<int>.Fail(Error.Unexpected("boom"));
-            return FromResult(result, _ => (IActionResult)new OkResult());
+            return FromResult(result, _ => new OkResult());
         }
     }
 
     private TestController CreateController()
     {
-        return new TestController();
+        var controller = new TestController
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            }
+        };
+
+        return controller;
     }
 
     [Fact]
@@ -55,13 +64,14 @@ public class ResultControllerBaseTests
     }
 
     [Fact]
-    public void FromResult_Returns_Redirect_For_NOT_FOUND()
+    public void FromResult_Returns_404_View_For_NOT_FOUND()
     {
         var ctrl = CreateController();
         var result = ctrl.TestNotFound();
 
-        var redirect = Assert.IsType<RedirectToRouteResult>(result);
-        Assert.Equal("RegisterPageNotFound", redirect.RouteName);
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal("RegisterPageNotFound", viewResult.ViewName);
+        Assert.Equal(404, ctrl.HttpContext.Response.StatusCode);
     }
 
     [Fact]
@@ -75,20 +85,23 @@ public class ResultControllerBaseTests
     }
 
     [Fact]
-    public void FromResult_Returns_429_For_CONFLICT()
+    public void FromResult_Returns_409_For_CONFLICT()
     {
         var ctrl = CreateController();
         var result = ctrl.TestConflict();
 
         var status = Assert.IsType<ObjectResult>(result);
-        Assert.Equal(429, status.StatusCode);
+        Assert.Equal(409, status.StatusCode);
     }
 
     [Fact]
-    public void FromResult_Throws_For_UNKNOWN_Error()
+    public void FromResult_Returns_500_View_For_UNEXPECTED_Error()
     {
         var ctrl = CreateController();
+        var result = ctrl.TestUnexpected();
 
-        Assert.Throws<InvalidOperationException>(() => ctrl.TestUnexpected());
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal("Error", viewResult.ViewName);
+        Assert.Equal(500, ctrl.HttpContext.Response.StatusCode);
     }
 }

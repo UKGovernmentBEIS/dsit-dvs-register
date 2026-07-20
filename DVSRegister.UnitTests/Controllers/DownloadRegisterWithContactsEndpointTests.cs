@@ -30,19 +30,21 @@ public sealed class DownloadRegisterWithContactsEndpointTests
                 Arg.Any<CancellationToken>())
             .Returns(Result<CsvResult>.Ok(new CsvResult(stream, "test.csv")));
 
-        var reportFactory = Substitute.For<ReportFactory>();
+        var reportFactory = Substitute.For<IReportFactory>();
         reportFactory
             .GetReport(CsvReportType.CurrentRegisterWithContacts)
             .Returns(generator);
 
         var query = Substitute.For<IPublishedServicesQuery>();
         query.GetAsync(Arg.Any<CancellationToken>())
-            .Returns(new[]
-            {
-                new PublishedServiceForContactsReport(
-                    "Test Provider", "Svc", "Cab", "1.0",
-                    Array.Empty<string>(), "P", "p@t.com", "S", "s@t.com")
-            });
+            .Returns(
+                Result<IReadOnlyList<PublishedServiceForContactsReport>>.Ok(
+                    new List<PublishedServiceForContactsReport>
+                    {
+                        new PublishedServiceForContactsReport(
+                            "Test Provider", "Svc", "Cab", "1.0",
+                            Array.Empty<string>(), "P", "p@t.com", "S", "s@t.com")
+                    }));
 
         var controller = CreateController(reportFactory, query);
         var result = await controller.DownloadRegisterWithContacts(CancellationToken.None);
@@ -66,28 +68,49 @@ public sealed class DownloadRegisterWithContactsEndpointTests
                 Arg.Any<CancellationToken>())
             .Returns(Result<CsvResult>.Ok(new CsvResult(stream, "dvs-register-with-contacts_01012025.csv")));
 
-        var reportFactory = Substitute.For<ReportFactory>();
+        var reportFactory = Substitute.For<IReportFactory>();
         reportFactory
             .GetReport(CsvReportType.CurrentRegisterWithContacts)
             .Returns(generator);
 
         var query = Substitute.For<IPublishedServicesQuery>();
         query.GetAsync(Arg.Any<CancellationToken>())
-            .Returns(new[]
-            {
-                new PublishedServiceForContactsReport(
-                    "P", "S", "C", "1.0",
-                    Array.Empty<string>(), "P", "p@t.com", "S", "s@t.com")
-            });
+            .Returns(
+                Result<IReadOnlyList<PublishedServiceForContactsReport>>.Ok(
+                    new List<PublishedServiceForContactsReport>
+                    {
+                        new(
+                            "P", "S", "C", "1.0",
+                            Array.Empty<string>(), "P", "p@t.com", "S", "s@t.com")
+                    }));
 
         var controller = CreateController(reportFactory, query);
         var result = await controller.DownloadRegisterWithContacts(CancellationToken.None);
 
-        var fileResult = Assert.IsType<FileResult>(result);
+        var fileResult = Assert.IsType<FileContentResult>(result);
         Assert.Equal("dvs-register-with-contacts_01012025.csv", fileResult.FileDownloadName);
     }
 
-    private RegisterController CreateController(ReportFactory reportFactory,
+    [Fact]
+    public async Task DownloadRegisterWithContacts_Returns500_WhenQueryFails()
+    {
+        var reportFactory = Substitute.For<IReportFactory>();
+
+        var query = Substitute.For<IPublishedServicesQuery>();
+        query.GetAsync(Arg.Any<CancellationToken>())
+            .Returns(
+                Result<IReadOnlyList<PublishedServiceForContactsReport>>.Fail(
+                    Error.Unexpected("test database failure")));
+
+        var controller = CreateController(reportFactory, query);
+        var result = await controller.DownloadRegisterWithContacts(CancellationToken.None);
+
+        var viewResult = Assert.IsType<ViewResult>(result);
+        Assert.Equal("Error", viewResult.ViewName);
+        Assert.Equal(500, controller.HttpContext.Response.StatusCode);
+    }
+
+    private RegisterController CreateController(IReportFactory reportFactory,
         IPublishedServicesQuery publishedServicesQuery)
     {
         var registerService = Substitute.For<IRegisterService>();

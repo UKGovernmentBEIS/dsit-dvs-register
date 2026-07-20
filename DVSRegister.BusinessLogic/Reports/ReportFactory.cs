@@ -5,9 +5,15 @@ using DVSRegister.CommonUtility.Models.Enums;
 
 namespace DVSRegister.BusinessLogic.Reports;
 
+public interface IReportFactory
+{
+    IReportGenerator<IEnumerable<ServiceDto>> GetCurrentRegisterGenerator();
+    IReport GetReport(CsvReportType reportType);
+}
+
 public sealed class ReportFactory(
     CurrentRegisterReportGenerator currentRegister,
-    CurrentRegisterWithContactsReport currentRegisterWithContacts)
+    CurrentRegisterWithContactsReport currentRegisterWithContacts) : IReportFactory
 {
     public IReportGenerator<IEnumerable<ServiceDto>> GetCurrentRegisterGenerator() => currentRegister;
 
