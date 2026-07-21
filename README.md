@@ -1,37 +1,59 @@
 # Cab portal & Register
 
-
-
 **Requirements:**
-  - Visual Studio or JetBrain Rider
-  - download and install .NET 8 - https://learn.microsoft.com/en-us/dotnet/core/install/macos
-  - dotnet tool install --global dotnet-ef --version 8.*
-  - Node
-  - NPM
+  - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes `docker compose`)
+  - [.NET 8 SDK](https://learn.microsoft.com/en-us/dotnet/core/install/macos)
+  - `dotnet tool install --global dotnet-ef --version 8.*`
+  - Node / NPM (for frontend asset compilation)
+  - `make`
 
 ## Getting Started
-1. Clone repo
-2. Install dev certs for https - why
-   - `dotnet dev-certs https --trust`
-3. Install docker desktop - is this to install the docker destop application
-   - `docker run -d  --name postgres-container -e POSTGRES_PASSWORD=postgres  -p 5432:5432  postgres:15-alpine`
-4. Install postico or pgadmin4 (or equivalent)
-   - create local DB/server
-      - host: localhost
-      - database: postgres
-      - user: postgres
-      - password: postgres
-5. Add user secrets - ask member of team for them and update the postgres details with the correct credentials - the username and password you created when setting up the database.
-6. - Run DB migrations - `dotnet ef database update --project DVSRegister.Data  --startup-project DVSRegister`
-7. Install localstack
-    - `brew install localstack/tap/localstack-cli`
-    - `localstack start -d`
-    - run `docker ps` to get the localstack container id (or copy the container ID from Docker Desktop)
-    - `docker exec -it 'CONTAINER_ID' bash`
-    - `awslocal s3api create-bucket --bucket s3-dvs-dev20240529103145426300000001`
-    - http://s3-dvs-dev20240529103145426300000001.s3.localhost.localstack.cloud:4566
 
-> Note: Make sure to update the s3 bucket in user secrets to use path style instead of host style.
+### One-command bootstrap (recommended)
+
+```sh
+make dev
+```
+
+This single command:
+1. Starts LocalStack and creates the required S3 bucket.
+2. Starts Postgres and runs all EF Core migrations.
+3. Builds and starts the application container.
+
+The app is available at **http://localhost:8080** once all services are healthy.
+
+### Available `make` targets
+
+| Command | Description |
+|---|---|
+| `make up` | Start app, Postgres and LocalStack containers |
+| `make down` | Stop and remove all containers |
+| `make db` | Start Postgres and run EF Core migrations |
+| `make localstack` | Start LocalStack and create the S3 bucket |
+| `make dev` | Full local bootstrap (LocalStack → DB migrations → app) |
+| `make logs` | Tail logs for all services |
+| `make ps` | Show container status |
+| `make help` | List all available targets |
+
+Run `make help` to see the full list of targets with descriptions.
+
+### Manual setup (alternative / Windows)
+
+1. Clone the repo.
+2. Install dev certs:
+   - `dotnet dev-certs https --trust`
+3. Add user secrets — ask a team member for the values.
+4. Start Postgres:
+   - `docker run -d --name postgres-container -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:15-alpine`
+5. Run DB migrations:
+   - `dotnet ef database update --project DVSRegister.Data --startup-project DVSRegister`
+6. Start LocalStack and create the S3 bucket:
+   - `brew install localstack/tap/localstack-cli`
+   - `localstack start -d`
+   - `awslocal s3api create-bucket --bucket s3-dvs-dev20240529103145426300000001`
+   - http://s3-dvs-dev20240529103145426300000001.s3.localhost.localstack.cloud:4566
+
+> Note: Make sure to update the S3 bucket in user secrets to use path style instead of host style.
 
 ## GOV.UK Frontend and Styling
 This project relies on the [GOV.UK Frontend NPM package](https://www.npmjs.com/package/govuk-frontend) which contains images, fonts, styling, and JavaScript.
