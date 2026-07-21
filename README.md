@@ -37,7 +37,7 @@ The app is available at **http://localhost:8080** once all services are healthy.
 
 Run `make help` to see the full list of targets with descriptions.
 
-### Manual setup (alternative)
+### Manual setup (alternative / Windows)
 
 1. Clone the repo.
 2. Install dev certs:
