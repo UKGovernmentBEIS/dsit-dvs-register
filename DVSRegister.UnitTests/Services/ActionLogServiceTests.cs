@@ -2,13 +2,13 @@
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.CommonUtility;
+using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using DVSRegister.Data.Repositories;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using System.Text;
 
 namespace DVSRegister.UnitTests.Services
 {
@@ -69,38 +69,43 @@ namespace DVSRegister.UnitTests.Services
             _userRepository.GetUser(dto.LoggedInUserEmail).Returns(user);
             _actionLogRepository.GetActionCategory(dto.ActionCategoryEnum).Returns(category);
             _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
-          
-            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new CommonUtility.Models.ChangeSet(updatedData,previousData), new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" }) ;          
+
+            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
+                new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
             await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
                 log.ActionCategoryId == category.Id &&
                 log.ActionDetailsId == details.Id &&
                 log.CabUserId == user.Id &&
-                log.ProviderProfileId == dto.ProviderId &&            
+                log.ProviderProfileId == dto.ProviderId &&
                 log.DisplayMessage.Contains($"{Constants.RegisteredName} Old Registered Name to New Registered Name") &&
                 log.DisplayMessage.Contains($"{Constants.TradingName} Old Trading Name to New Trading Name") &&
-                log.DisplayMessage.Contains($"{Constants.CompanyRegistrationNumber} Old Reg Number to New Reg Number") &&
-                log.DisplayMessage.Contains($"{Constants.ParentCompanyRegisteredName} Old Parent Name to New Parent Name") &&
-                log.DisplayMessage.Contains($"{Constants.ParenyCompanyLocation} Old Parent Location to New Parent Location") &&            
-                log.OldValues.RootElement.GetProperty(Constants.RegisteredName).EnumerateArray().First().GetString() == "Old Registered Name" &&
-                log.NewValues.RootElement.GetProperty(Constants.RegisteredName).EnumerateArray().First().GetString() == "New Registered Name"
+                log.DisplayMessage.Contains(
+                    $"{Constants.CompanyRegistrationNumber} Old Reg Number to New Reg Number") &&
+                log.DisplayMessage.Contains(
+                    $"{Constants.ParentCompanyRegisteredName} Old Parent Name to New Parent Name") &&
+                log.DisplayMessage.Contains(
+                    $"{Constants.ParenyCompanyLocation} Old Parent Location to New Parent Location") &&
+                log.OldValues.RootElement.GetProperty(Constants.RegisteredName).EnumerateArray().First().GetString() ==
+                "Old Registered Name" &&
+                log.NewValues.RootElement.GetProperty(Constants.RegisteredName).EnumerateArray().First().GetString() ==
+                "New Registered Name"
             ));
         }
-
 
 
         [Fact]
         public async Task SaveActionLogs_ShouldHideRegisterUpdates_ForProviderContactUpdateWithoutPublicContact()
         {
-           
             var previousData = new Dictionary<string, List<string>>
-                {
+            {
                 { Constants.PrimaryContactName, new List<string> { "Old Contact Name" } }
-                };
+            };
 
-                var updatedData = new Dictionary<string, List<string>>
-                {
-                    { Constants.PrimaryContactName, new List<string> { "New Contact Name" } }
-                };
+            var updatedData = new Dictionary<string, List<string>>
+            {
+                { Constants.PrimaryContactName, new List<string> { "New Contact Name" } }
+            };
 
             var dto = new ActionLogsDto
             {
@@ -120,8 +125,10 @@ namespace DVSRegister.UnitTests.Services
             _userRepository.GetUser(dto.LoggedInUserEmail).Returns(user);
             _actionLogRepository.GetActionCategory(dto.ActionCategoryEnum).Returns(category);
             _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
-          
-            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new CommonUtility.Models.ChangeSet(updatedData, previousData), new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
+
+            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
+                new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
 
 
             await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
@@ -133,7 +140,6 @@ namespace DVSRegister.UnitTests.Services
         [Fact]
         public async Task SaveActionLogs_ShouldShowRegisterUpdates_ForProviderContactUpdateWithPublicContactKeys()
         {
-           
             var previousData = new Dictionary<string, List<string>>
             {
                 { Constants.ProviderWebsiteAddress, new List<string> { "http://oldsite.com" } },
@@ -168,20 +174,24 @@ namespace DVSRegister.UnitTests.Services
             _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
 
             // Act
-            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new CommonUtility.Models.ChangeSet(updatedData, previousData), new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
+            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
+                new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
 
             // Assert
             await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
-                log.ShowInRegisterUpdates == true && 
+                log.ShowInRegisterUpdates == true &&
                 log.DisplayMessage == dto.ProviderName &&
-                log.OldValues.RootElement.GetProperty(Constants.ProviderWebsiteAddress).EnumerateArray().First().GetString() == "http://oldsite.com" &&
-                log.NewValues.RootElement.GetProperty(Constants.ProviderWebsiteAddress).EnumerateArray().First().GetString() == "http://newsite.com"
+                log.OldValues.RootElement.GetProperty(Constants.ProviderWebsiteAddress).EnumerateArray().First()
+                    .GetString() == "http://oldsite.com" &&
+                log.NewValues.RootElement.GetProperty(Constants.ProviderWebsiteAddress).EnumerateArray().First()
+                    .GetString() == "http://newsite.com"
             ));
         }
+
         [Fact]
         public async Task SaveActionLogs_ShouldLogError_WhenExceptionOccurs()
         {
-           
             var previousData = new Dictionary<string, List<string>>
             {
                 { Constants.ProviderWebsiteAddress, new List<string> { "http://oldsite.com" } },
@@ -215,11 +225,14 @@ namespace DVSRegister.UnitTests.Services
             _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
 
             _actionLogRepository.SaveActionLogs(Arg.Any<ActionLogs>()).Throws(new Exception("DB error"));
-        
-            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates, ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new CommonUtility.Models.ChangeSet(updatedData, previousData), new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
 
-            _logger.Received(1).Log(LogLevel.Error, Arg.Any<EventId>(),Arg.Is<object>(o => o.ToString().Contains("DB error")),Arg.Any<Exception>(),Arg.Any<Func<object, Exception, string>>() );
+            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
+                new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
+
+            _logger.Received(1).Log(LogLevel.Error, Arg.Any<EventId>(),
+                Arg.Is<object>(o => o.ToString().Contains("DB error")), Arg.Any<Exception>(),
+                Arg.Any<Func<object, Exception, string>>());
         }
-
     }
 }

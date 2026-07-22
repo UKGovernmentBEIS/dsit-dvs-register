@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.BusinessLogic.Services.Register;
 using DVSRegister.CommonUtility.Email;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.Data.Entities;
@@ -10,16 +11,16 @@ namespace DVSRegister.BusinessLogic.Services
 {
     public class ConsentService : IConsentService
     {
-
-        private readonly IConsentRepository consentRepository;     
+        private readonly IConsentRepository consentRepository;
         private readonly IRegisterService registerService;
         private readonly IMapper mapper;
         private readonly ConsentEmailSender emailSender;
 
 
-        public ConsentService(IConsentRepository consentRepository, IRegisterService registerService, IMapper mapper, ConsentEmailSender emailSender)
-        {           
-            this.consentRepository = consentRepository;    
+        public ConsentService(IConsentRepository consentRepository, IRegisterService registerService, IMapper mapper,
+            ConsentEmailSender emailSender)
+        {
+            this.consentRepository = consentRepository;
             this.mapper = mapper;
             this.registerService = registerService;
             this.emailSender = emailSender;
@@ -29,19 +30,18 @@ namespace DVSRegister.BusinessLogic.Services
         public async Task<TokenStatusEnum> GetTokenStatus(TokenDetails tokenDetails)
         {
             TokenStatusEnum openingLoopStatus = TokenStatusEnum.NA;
-           
 
-            if (tokenDetails.ServiceIds!= null && tokenDetails.ServiceIds.Count == 1)
+
+            if (tokenDetails.ServiceIds != null && tokenDetails.ServiceIds.Count == 1)
             {
                 var service = await consentRepository.GetService(tokenDetails.ServiceIds[0]);
 
-                if (service.Id>0)
+                if (service.Id > 0)
                 {
                     openingLoopStatus = service.OpeningLoopTokenStatus;
-                   
                 }
             }
-           
+
             return (openingLoopStatus);
         }
 
@@ -51,20 +51,24 @@ namespace DVSRegister.BusinessLogic.Services
             ServiceDto serviceDto = mapper.Map<ServiceDto>(service);
             if (serviceDto.TrustmarkNumber != null)
             {
-                serviceDto.TrustmarkNumber.SvgLogoLink = registerService.GetSVGLogoEndPoint(serviceDto.TrustmarkNumber.SvgLogoLink);
+                serviceDto.TrustmarkNumber.SvgLogoLink =
+                    registerService.GetSVGLogoEndPoint(serviceDto.TrustmarkNumber.SvgLogoLink);
             }
+
             return serviceDto;
         }
 
         //opening loop
-        public async Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId, string loggedInUserEmail)
+        public async Task<bool> RemoveProceedApplicationConsentToken(string token, string tokenId,
+            string loggedInUserEmail)
         {
             return await consentRepository.RemoveProceedApplicationConsentToken(token, tokenId, loggedInUserEmail);
         }
 
         public async Task<ServiceDto?> GetProviderAndCertificateDetailsByOpeningLoopToken(string token, string tokenId)
         {
-            ProceedApplicationConsentToken consentToken = await consentRepository.GetProceedApplicationConsentToken(token, tokenId);
+            ProceedApplicationConsentToken consentToken =
+                await consentRepository.GetProceedApplicationConsentToken(token, tokenId);
             if (consentToken.Service != null)
             {
                 var service = await consentRepository.GetServiceDetails(consentToken.ServiceId);
@@ -73,13 +77,16 @@ namespace DVSRegister.BusinessLogic.Services
             }
             else
             {
-                return null ;
+                return null;
             }
         }
-        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string companyName,string serviceName, string agree)
+
+        public async Task<GenericResponse> UpdateServiceStatus(int serviceId, string providerEmail, string companyName,
+            string serviceName, string agree)
         {
-            GenericResponse genericResponse = await consentRepository.UpdateServiceStatus(serviceId, providerEmail, agree);
-            if(genericResponse.Success) 
+            GenericResponse genericResponse =
+                await consentRepository.UpdateServiceStatus(serviceId, providerEmail, agree);
+            if (genericResponse.Success)
             {
                 if (agree == "accept")
                 {
@@ -97,8 +104,8 @@ namespace DVSRegister.BusinessLogic.Services
                         await emailSender.SendConfirmationOfDeclineToProceedApplicationToDIP(serviceName, email);
                     }
                 }
-                
             }
+
             return genericResponse;
         }
 
@@ -106,12 +113,9 @@ namespace DVSRegister.BusinessLogic.Services
         //Download logo methods
         public async Task<DownloadLogoTokenDto?> GetDownloadTokenFromTokenId(string tokenId)
         {
-            DownloadLogoToken? downloadLogoToken = await consentRepository.GetDownloadLogoToken( tokenId);
+            DownloadLogoToken? downloadLogoToken = await consentRepository.GetDownloadLogoToken(tokenId);
             DownloadLogoTokenDto downloadLogoTokenDto = mapper.Map<DownloadLogoTokenDto>(downloadLogoToken);
             return downloadLogoTokenDto;
         }
-
-
-
     }
 }
