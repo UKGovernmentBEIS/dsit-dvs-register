@@ -77,6 +77,7 @@ namespace DVSRegister.Data
         public DbSet<ServiceCustomDisplayChangeRequest> ServiceCustomDisplayChangeRequest { get; set; }
         public DbSet<CabUserRemoval> CabUserRemoval { get; set; }
         public DbSet<OfDIAUserRemoval> OfDIAUserRemoval { get; set; }
+        public DbSet<PublishedRegisterEntryRevision> PublishedRegisterEntryRevisions { get; set; }
 
         public virtual async Task<int> SaveChangesAsync(TeamEnum team = TeamEnum.NA, EventTypeEnum eventType = EventTypeEnum.NA, string actorId = null)
         {
@@ -330,6 +331,40 @@ namespace DVSRegister.Data
                 new ActionDetails { Id = 36, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeCompleted), ActionDescription = "Display change completed", ActionCategoryId = 5 },
                 new ActionDetails { Id = 37, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeRequestCancelled), ActionDescription = "Display change request cancelled", ActionCategoryId = 5 },
                 new ActionDetails { Id = 38, ActionDetailsKey = nameof(ActionDetailsEnum.DisplayChangeRequestDeclined), ActionDescription = "Display change request declined", ActionCategoryId = 5 });
+
+            modelBuilder.Entity<PublishedRegisterEntryRevision>(entity =>
+            {
+                entity.HasKey(revision => revision.Id);
+                entity.Property(revision => revision.Id).ValueGeneratedOnAdd();
+                entity.Property(revision => revision.SourceType).HasMaxLength(64).IsRequired();
+                entity.Property(revision => revision.SourceId).HasMaxLength(128).IsRequired();
+                entity.Property(revision => revision.AdditionalInformation).IsRequired();
+                entity.Property(revision => revision.Provider).HasMaxLength(512).IsRequired();
+                entity.Property(revision => revision.Cab).HasMaxLength(512).IsRequired();
+                entity.Property(revision => revision.ServiceName).HasMaxLength(512).IsRequired();
+                entity.HasIndex(revision => new
+                {
+                    revision.SourceType,
+                    revision.SourceId,
+                    revision.ServiceKey,
+                    revision.ActivityKind
+                }).IsUnique();
+                entity.HasIndex(revision => new
+                {
+                    revision.ServiceKey,
+                    revision.EffectiveAtUtc,
+                    revision.Id
+                });
+                entity.HasIndex(revision => new
+                {
+                    revision.EffectiveAtUtc,
+                    revision.ActivityKind,
+                    revision.ServiceKey
+                });
+                entity.ToTable(table => table.HasCheckConstraint(
+                    "CK_PublishedRegisterEntryRevisions_PositiveKeys",
+                    "\"ServiceKey\" > 0 AND \"ServiceVersion\" > 0 AND \"FormatVersion\" > 0"));
+            });
         }
     }
 }
