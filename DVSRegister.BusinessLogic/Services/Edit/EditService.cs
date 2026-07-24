@@ -16,8 +16,8 @@ namespace DVSRegister.BusinessLogic.Services.Edit
         private readonly IEditRepository editRepository;    
         private readonly IMapper mapper;
         private readonly ILogger<EditService> logger;
-        private readonly ProviderEditEmailSender emailSender;
-        public EditService(IEditRepository editRepository, IMapper mapper, ProviderEditEmailSender emailSender, ILogger<EditService> logger)
+        private readonly IProviderEditEmailSender emailSender;
+        public EditService(IEditRepository editRepository, IMapper mapper, IProviderEditEmailSender emailSender, ILogger<EditService> logger)
         {
           this.editRepository = editRepository;
           this.mapper = mapper;

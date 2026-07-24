@@ -169,7 +169,7 @@ namespace DVSRegister
             services.AddTransient<Removal2iCheckEmailSender>();
             services.AddTransient<ConsentEmailSender>();
             services.AddTransient<CabTransferEmailSender>();
-            services.AddTransient<ProviderEditEmailSender>();
+            services.AddTransient<IProviderEditEmailSender, ProviderEditEmailSender>();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));
