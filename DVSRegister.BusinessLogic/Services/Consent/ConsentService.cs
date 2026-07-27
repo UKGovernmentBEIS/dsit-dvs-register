@@ -14,11 +14,11 @@ namespace DVSRegister.BusinessLogic.Services
         private readonly IConsentRepository consentRepository;
         private readonly IRegisterService registerService;
         private readonly IMapper mapper;
-        private readonly ConsentEmailSender emailSender;
+        private readonly IConsentEmailSender emailSender;
 
 
         public ConsentService(IConsentRepository consentRepository, IRegisterService registerService, IMapper mapper,
-            ConsentEmailSender emailSender)
+            IConsentEmailSender emailSender)
         {
             this.consentRepository = consentRepository;
             this.mapper = mapper;
