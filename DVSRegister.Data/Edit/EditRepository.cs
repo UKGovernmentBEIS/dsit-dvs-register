@@ -1,6 +1,7 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
+using DVSRegister.Data.Reports.RegisterHistory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -121,6 +122,14 @@ namespace DVSRegister.Data.Edit
                     existingProvider.LinkToContactPage = providerProfile.LinkToContactPage;
                     existingProvider.CabEditedTime = DateTime.UtcNow;
                     await _context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.CompanyInfoUpdate, loggedInUserEmail);
+                    await PublishedRegisterEntryRevisionRecorder.RecordAsync(_context,
+                        await PublishedRegisterEntryRevisionRecorder.GetPublishedServiceIdsForProviderAsync(_context, existingProvider.Id),
+                        RegisterHistoryActivityKind.ProviderUpdated, "cab-company-info",
+                        PublishedRegisterEntryRevisionRecorder.CreateSourceId("provider", existingProvider.Id,
+                            existingProvider.RegisteredName, existingProvider.TradingName, existingProvider.PublicContactEmail,
+                            existingProvider.ProviderTelephoneNumber, existingProvider.ProviderWebsiteAddress,
+                            existingProvider.LinkToContactPage),
+                        "Updated public provider company and contact information.");
                     await transaction.CommitAsync();
                     genericResponse.Success = true;
 

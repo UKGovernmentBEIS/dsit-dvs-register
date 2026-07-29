@@ -1,6 +1,7 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
+using DVSRegister.Data.Reports.RegisterHistory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -118,6 +119,12 @@ namespace DVSRegister.Data.CabTransfer
                     entity.Service.ModifiedTime = DateTime.UtcNow;
                     //Previous status will be updated on certificate upload (reapplictaion) 
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ApproveOrRejectReAssign, loggedInUserEmail);
+                    if (approve)
+                    {
+                        await PublishedRegisterEntryRevisionRecorder.RecordAsync(context, [entity.Service.Id],
+                            RegisterHistoryActivityKind.CabTransferred, "cab-transfer",
+                            $"request:{requestId}", "Approved CAB transfer.");
+                    }
                    
                     await transaction.CommitAsync();
                     genericResponse.Success = true;
