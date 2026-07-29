@@ -10,11 +10,11 @@ namespace DVSRegister.BusinessLogic.Services
 {
     public class SignUpService : ISignUpService
 	{
-        private CognitoClient cognitoClient;
-        private readonly LoginEmailSender emailSender;
+        private readonly ICognitoClient cognitoClient;
+        private readonly ILoginEmailSender emailSender;
         private readonly IUserRepository userRepository;
 
-        public SignUpService(CognitoClient cognitoClient, LoginEmailSender emailSender, IUserRepository userRepository)
+        public SignUpService(ICognitoClient cognitoClient, ILoginEmailSender emailSender, IUserRepository userRepository)
 		{
             this.cognitoClient = cognitoClient;
             this.emailSender = emailSender;
