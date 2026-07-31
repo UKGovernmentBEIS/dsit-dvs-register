@@ -37,9 +37,9 @@ public sealed class PublishedRegisterEntryRevision
     public string? PublicTelephoneNumber { get; set; }
     [MaxLength(2048)]
     public string? WebsiteAddress { get; set; }
-    public DateOnly? SubmittedOn { get; set; }
-    public DateOnly? PublishedOn { get; set; }
-    public DateOnly? RemovedOn { get; set; }
+    public DateTime? SubmittedOn { get; set; }
+    public DateTime? PublishedOn { get; set; }
+    public DateTime? RemovedOn { get; set; }
     [MaxLength(64)]
     public string? TrustFrameworkVersion { get; set; }
     [MaxLength(4000)]
@@ -56,8 +56,8 @@ public sealed class PublishedRegisterEntryRevision
     public bool? IsCertifiedAgainstSupplementaryCodes { get; set; }
     [MaxLength(4000)]
     public string SupplementaryCodes { get; set; } = string.Empty;
-    public DateOnly? CertificateIssueDate { get; set; }
-    public DateOnly? CertificateExpiryDate { get; set; }
+    public DateTime? CertificateIssueDate { get; set; }
+    public DateTime? CertificateExpiryDate { get; set; }
     [MaxLength(4000)]
     public string RightToWorkIdentityProfiles { get; set; } = string.Empty;
     public bool? IsRightToWorkCertifiedAgainstGpg44 { get; set; }
@@ -85,5 +85,5 @@ public sealed class PublishedRegisterEntryRevision
     public string? UnderpinningProviderName { get; set; }
     [MaxLength(512)]
     public string? UnderpinningCab { get; set; }
-    public DateOnly? UnderpinningCertificateExpiryDate { get; set; }
+    public DateTime? UnderpinningCertificateExpiryDate { get; set; }
 }

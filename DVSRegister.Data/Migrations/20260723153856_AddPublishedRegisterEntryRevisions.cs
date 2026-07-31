@@ -38,9 +38,9 @@ namespace DVSRegister.Data.Migrations
                     PublicEmailAddress = table.Column<string>(type: "character varying(320)", maxLength: 320, nullable: true),
                     PublicTelephoneNumber = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     WebsiteAddress = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
-                    SubmittedOn = table.Column<DateOnly>(type: "date", nullable: true),
-                    PublishedOn = table.Column<DateOnly>(type: "date", nullable: true),
-                    RemovedOn = table.Column<DateOnly>(type: "date", nullable: true),
+                    SubmittedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    PublishedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RemovedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     TrustFrameworkVersion = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     RolesCertifiedAgainst = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
                     IsUnderpinningOrWhiteLabelledService = table.Column<bool>(type: "boolean", nullable: true),
@@ -51,8 +51,8 @@ namespace DVSRegister.Data.Migrations
                     Gpg44ProtectionQualities = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
                     IsCertifiedAgainstSupplementaryCodes = table.Column<bool>(type: "boolean", nullable: true),
                     SupplementaryCodes = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
-                    CertificateIssueDate = table.Column<DateOnly>(type: "date", nullable: true),
-                    CertificateExpiryDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    CertificateIssueDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CertificateExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     RightToWorkIdentityProfiles = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
                     IsRightToWorkCertifiedAgainstGpg44 = table.Column<bool>(type: "boolean", nullable: true),
                     RightToWorkAuthenticationQualities = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
@@ -68,7 +68,7 @@ namespace DVSRegister.Data.Migrations
                     UnderpinningServiceName = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     UnderpinningProviderName = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
                     UnderpinningCab = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    UnderpinningCertificateExpiryDate = table.Column<DateOnly>(type: "date", nullable: true)
+                    UnderpinningCertificateExpiryDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {

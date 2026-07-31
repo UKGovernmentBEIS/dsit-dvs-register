@@ -1686,11 +1686,11 @@ namespace DVSRegister.Data.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
-                    b.Property<DateOnly?>("CertificateExpiryDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("CertificateExpiryDate")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateOnly?>("CertificateIssueDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("CertificateIssueDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CompanyAddress")
                         .HasMaxLength(2000)
@@ -1779,11 +1779,11 @@ namespace DVSRegister.Data.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
-                    b.Property<DateOnly?>("PublishedOn")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("PublishedOn")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateOnly?>("RemovedOn")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("RemovedOn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("RightToRentAuthenticationQualities")
                         .IsRequired()
@@ -1844,8 +1844,8 @@ namespace DVSRegister.Data.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<DateOnly?>("SubmittedOn")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("SubmittedOn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SupplementaryCodes")
                         .IsRequired()
@@ -1860,8 +1860,8 @@ namespace DVSRegister.Data.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
 
-                    b.Property<DateOnly?>("UnderpinningCertificateExpiryDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("UnderpinningCertificateExpiryDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UnderpinningProviderName")
                         .HasMaxLength(512)

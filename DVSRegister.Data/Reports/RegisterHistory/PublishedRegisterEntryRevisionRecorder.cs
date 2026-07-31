@@ -37,10 +37,16 @@ public static class PublishedRegisterEntryRevisionRecorder
         RegisterHistoryActivityKind activityKind, string sourceType, string sourceId, string additionalInformation)
     {
         var ids = await CollectAffectedServiceIdsAsync(context, serviceIds);
-        if (ids.Count == 0)
-            return;
+        if (ids.Count > 0)
+        {
+            await RecordAffectedServicesAsync(context, ids, activityKind, sourceType, sourceId, additionalInformation);
+        }
+    }
 
-        var services = await Query(context).Where(service => ids.Contains(service.Id)).ToListAsync();
+    private static async Task RecordAffectedServicesAsync(DVSRegisterDbContext context, IReadOnlyCollection<int> serviceIds,
+        RegisterHistoryActivityKind activityKind, string sourceType, string sourceId, string additionalInformation)
+    {
+        var services = await Query(context).Where(service => serviceIds.Contains(service.Id)).ToListAsync();
         var serviceKeys = services.Select(service => service.ServiceKey).Distinct().ToArray();
         var alreadyRecorded = await context.PublishedRegisterEntryRevisions
             .Where(revision => revision.SourceType == sourceType && revision.SourceId == sourceId &&
@@ -49,39 +55,54 @@ public static class PublishedRegisterEntryRevisionRecorder
             .ToListAsync();
 
         var now = DateTimeOffset.UtcNow;
-        var revisions = services
+        var servicesToRecord = services
             .Where(service => !alreadyRecorded.Contains(service.ServiceKey))
-            .Select(service => Map(service, activityKind, sourceType, sourceId, additionalInformation, now))
             .ToList();
 
-        if (revisions.Count == 0)
-            return;
-
-        var revisionKeys = revisions.Select(revision => revision.ServiceKey).ToArray();
-        var previousRevisions = await context.PublishedRegisterEntryRevisions
-            .AsNoTracking()
-            .Where(revision => revisionKeys.Contains(revision.ServiceKey))
-            .OrderByDescending(revision => revision.EffectiveAtUtc)
-            .ThenByDescending(revision => revision.Id)
-            .ToListAsync();
-
-        var latestByServiceKey = previousRevisions
-            .GroupBy(revision => revision.ServiceKey)
-            .ToDictionary(group => group.Key, group => group.First());
-
-        if (activityKind is RegisterHistoryActivityKind.ServiceUpdated or RegisterHistoryActivityKind.ProviderUpdated
-            or RegisterHistoryActivityKind.CabTransferred)
+        if (servicesToRecord.Count > 0)
         {
-            foreach (var revision in revisions)
-            {
-                latestByServiceKey.TryGetValue(revision.ServiceKey, out var previousRevision);
-                revision.AdditionalInformation = CreateChangeSummary(previousRevision, revision);
-            }
-        }
+            var serviceKeysToRecord = servicesToRecord.Select(service => service.ServiceKey).ToArray();
+            var previousRevisions = await context.PublishedRegisterEntryRevisions
+                .AsNoTracking()
+                .Where(revision => serviceKeysToRecord.Contains(revision.ServiceKey))
+                .OrderByDescending(revision => revision.EffectiveAtUtc)
+                .ThenByDescending(revision => revision.Id)
+                .ToListAsync();
 
-        context.PublishedRegisterEntryRevisions.AddRange(revisions);
-        await context.SaveChangesAsync();
+            var latestByServiceKey = previousRevisions
+                .GroupBy(revision => revision.ServiceKey)
+                .ToDictionary(group => group.Key, group => group.First());
+
+            var revisions = servicesToRecord
+                .Select(service => Map(service, activityKind, sourceType, sourceId,
+                    AdditionalInformationFor(service, activityKind, sourceType, sourceId, additionalInformation, now,
+                        latestByServiceKey), now))
+                .ToList();
+
+            context.PublishedRegisterEntryRevisions.AddRange(revisions);
+            await context.SaveChangesAsync();
+        }
     }
+
+    private static string AdditionalInformationFor(
+        Service service,
+        RegisterHistoryActivityKind activityKind,
+        string sourceType,
+        string sourceId,
+        string additionalInformation,
+        DateTimeOffset now,
+        IReadOnlyDictionary<int, PublishedRegisterEntryRevision> latestByServiceKey)
+    {
+        return IsFieldChangeActivity(activityKind)
+            ? CreateChangeSummary(
+                latestByServiceKey.GetValueOrDefault(service.ServiceKey),
+                Map(service, activityKind, sourceType, sourceId, additionalInformation, now))
+            : additionalInformation;
+    }
+
+    private static bool IsFieldChangeActivity(RegisterHistoryActivityKind activityKind) =>
+        activityKind is RegisterHistoryActivityKind.ServiceUpdated or RegisterHistoryActivityKind.ProviderUpdated
+            or RegisterHistoryActivityKind.CabTransferred;
 
     public static Task<List<int>> GetPublishedServiceIdsForProviderAsync(DVSRegisterDbContext context, int providerId) =>
         context.Service.Where(service => service.IsInRegister &&
@@ -93,14 +114,14 @@ public static class PublishedRegisterEntryRevisionRecorder
         IEnumerable<int> serviceIds)
     {
         var roots = serviceIds.Distinct().ToArray();
-        if (roots.Length == 0)
-            return [];
+        var dependents = roots.Length > 0
+            ? await context.Service
+                .Where(service => service.UnderPinningServiceId.HasValue &&
+                                  roots.Contains(service.UnderPinningServiceId.Value) && service.IsInRegister)
+                .Select(service => service.Id)
+                .ToListAsync()
+            : [];
 
-        var dependents = await context.Service
-            .Where(service => service.UnderPinningServiceId.HasValue &&
-                              roots.Contains(service.UnderPinningServiceId.Value) && service.IsInRegister)
-            .Select(service => service.Id)
-            .ToListAsync();
         return roots.Concat(dependents).Distinct().ToList();
     }
 
@@ -144,8 +165,8 @@ public static class PublishedRegisterEntryRevisionRecorder
             PublicationType = service.ServiceVersion == 1 ? Constants.NewApplication : Constants.ReApplication,
             CompanyAddress = service.CompanyAddress, PublicEmailAddress = service.Provider.PublicContactEmail,
             PublicTelephoneNumber = service.Provider.ProviderTelephoneNumber, WebsiteAddress = service.WebSiteAddress,
-            SubmittedOn = Date(service.ResubmissionTime ?? service.CreatedTime), PublishedOn = Date(service.PublishedTime),
-            RemovedOn = Date(service.RemovedTime), TrustFrameworkVersion = service.TrustFrameworkVersion.Version.ToString("0.0", CultureInfo.InvariantCulture),
+            SubmittedOn = service.ResubmissionTime ?? service.CreatedTime, PublishedOn = service.PublishedTime,
+            RemovedOn = service.RemovedTime, TrustFrameworkVersion = service.TrustFrameworkVersion.Version.ToString("0.0", CultureInfo.InvariantCulture),
             RolesCertifiedAgainst = Join(service.ServiceRoleMapping?.OrderBy(x => x.Role.Order).Select(x => x.Role.RoleName)),
             IsUnderpinningOrWhiteLabelledService = service.ServiceType.HasValue,
             IsCertifiedAgainstGpg45Profiles = service.HasGPG45,
@@ -155,7 +176,7 @@ public static class PublishedRegisterEntryRevisionRecorder
             Gpg44ProtectionQualities = JoinQualityLevels(service.ServiceQualityLevelMapping, QualityTypeEnum.Protection),
             IsCertifiedAgainstSupplementaryCodes = service.HasSupplementarySchemes,
             SupplementaryCodes = Join(service.ServiceSupSchemeMapping?.OrderBy(x => x.SupplementaryScheme?.Order).Select(x => x.SupplementaryScheme?.SchemeName)),
-            CertificateIssueDate = Date(service.ConformityIssueDate), CertificateExpiryDate = Date(service.ConformityExpiryDate),
+            CertificateIssueDate = service.ConformityIssueDate, CertificateExpiryDate = service.ConformityExpiryDate,
             RightToWorkIdentityProfiles = JoinSchemeIdentityProfiles(rightToWork),
             IsRightToWorkCertifiedAgainstGpg44 = rightToWork?.HasGpg44Mapping,
             RightToWorkAuthenticationQualities = JoinSchemeQualityLevels(rightToWork, QualityTypeEnum.Authentication),
@@ -170,7 +191,7 @@ public static class PublishedRegisterEntryRevisionRecorder
             UnderpinningServiceName = linked.ServiceName ?? manual.ServiceName,
             UnderpinningProviderName = linked.Provider.RegisteredName,
             UnderpinningCab = linked.CabUser.Cab?.CabName ?? manual.Cab.CabName,
-            UnderpinningCertificateExpiryDate = Date(linked.ConformityExpiryDate ?? manual.CertificateExpiryDate)
+            UnderpinningCertificateExpiryDate = linked.ConformityExpiryDate ?? manual.CertificateExpiryDate
         };
     }
 
@@ -180,70 +201,80 @@ public static class PublishedRegisterEntryRevisionRecorder
     private static string CreateChangeSummary(PublishedRegisterEntryRevision? previous,
         PublishedRegisterEntryRevision current)
     {
-        var changes = new List<string>();
-        AddChange(changes, "Provider", previous?.Provider, current.Provider);
-        AddChange(changes, "CAB", previous?.Cab, current.Cab);
-        AddChange(changes, "Service name", previous?.ServiceName, current.ServiceName);
-        AddChange(changes, "Publication type", previous?.PublicationType, current.PublicationType);
-        AddChange(changes, "Company address", previous?.CompanyAddress, current.CompanyAddress);
-        AddChange(changes, "Public email", previous?.PublicEmailAddress, current.PublicEmailAddress);
-        AddChange(changes, "Public telephone", previous?.PublicTelephoneNumber, current.PublicTelephoneNumber);
-        AddChange(changes, "Website", previous?.WebsiteAddress, current.WebsiteAddress);
-        AddChange(changes, "Submitted on", previous?.SubmittedOn, current.SubmittedOn);
-        AddChange(changes, "Published on", previous?.PublishedOn, current.PublishedOn);
-        AddChange(changes, "Removed on", previous?.RemovedOn, current.RemovedOn);
-        AddChange(changes, "Trust framework version", previous?.TrustFrameworkVersion, current.TrustFrameworkVersion);
-        AddChange(changes, "Roles certified against", previous?.RolesCertifiedAgainst, current.RolesCertifiedAgainst);
-        AddChange(changes, "Underpinning or white-labelled service", previous?.IsUnderpinningOrWhiteLabelledService, current.IsUnderpinningOrWhiteLabelledService);
-        AddChange(changes, "Certified against GPG 45 profiles", previous?.IsCertifiedAgainstGpg45Profiles, current.IsCertifiedAgainstGpg45Profiles);
-        AddChange(changes, "Identity profiles", previous?.IdentityProfiles, current.IdentityProfiles);
-        AddChange(changes, "Certified against GPG 44", previous?.IsCertifiedAgainstGpg44, current.IsCertifiedAgainstGpg44);
-        AddChange(changes, "GPG 44 authentication qualities", previous?.Gpg44AuthenticationQualities, current.Gpg44AuthenticationQualities);
-        AddChange(changes, "GPG 44 protection qualities", previous?.Gpg44ProtectionQualities, current.Gpg44ProtectionQualities);
-        AddChange(changes, "Certified against supplementary codes", previous?.IsCertifiedAgainstSupplementaryCodes, current.IsCertifiedAgainstSupplementaryCodes);
-        AddChange(changes, "Supplementary codes", previous?.SupplementaryCodes, current.SupplementaryCodes);
-        AddChange(changes, "Certificate issue date", previous?.CertificateIssueDate, current.CertificateIssueDate);
-        AddChange(changes, "Certificate expiry date", previous?.CertificateExpiryDate, current.CertificateExpiryDate);
-        AddChange(changes, "Right to Work identity profiles", previous?.RightToWorkIdentityProfiles, current.RightToWorkIdentityProfiles);
-        AddChange(changes, "Right to Work GPG 44", previous?.IsRightToWorkCertifiedAgainstGpg44, current.IsRightToWorkCertifiedAgainstGpg44);
-        AddChange(changes, "Right to Work authentication qualities", previous?.RightToWorkAuthenticationQualities, current.RightToWorkAuthenticationQualities);
-        AddChange(changes, "Right to Work protection qualities", previous?.RightToWorkProtectionQualities, current.RightToWorkProtectionQualities);
-        AddChange(changes, "Right to Rent identity profiles", previous?.RightToRentIdentityProfiles, current.RightToRentIdentityProfiles);
-        AddChange(changes, "Right to Rent GPG 44", previous?.IsRightToRentCertifiedAgainstGpg44, current.IsRightToRentCertifiedAgainstGpg44);
-        AddChange(changes, "Right to Rent authentication qualities", previous?.RightToRentAuthenticationQualities, current.RightToRentAuthenticationQualities);
-        AddChange(changes, "Right to Rent protection qualities", previous?.RightToRentProtectionQualities, current.RightToRentProtectionQualities);
-        AddChange(changes, "DBS identity profiles", previous?.DbsIdentityProfiles, current.DbsIdentityProfiles);
-        AddChange(changes, "DBS GPG 44", previous?.IsDbsCertifiedAgainstGpg44, current.IsDbsCertifiedAgainstGpg44);
-        AddChange(changes, "DBS authentication qualities", previous?.DbsAuthenticationQualities, current.DbsAuthenticationQualities);
-        AddChange(changes, "DBS protection qualities", previous?.DbsProtectionQualities, current.DbsProtectionQualities);
-        AddChange(changes, "Underpinning service", previous?.UnderpinningServiceName, current.UnderpinningServiceName);
-        AddChange(changes, "Underpinning provider", previous?.UnderpinningProviderName, current.UnderpinningProviderName);
-        AddChange(changes, "Underpinning CAB", previous?.UnderpinningCab, current.UnderpinningCab);
-        AddChange(changes, "Underpinning certificate expiry date", previous?.UnderpinningCertificateExpiryDate, current.UnderpinningCertificateExpiryDate);
-        AddChange(changes, "In register", previous?.IsInRegister, current.IsInRegister);
+        var changes = new[]
+            {
+                Change("Provider", previous?.Provider, current.Provider),
+                Change("CAB", previous?.Cab, current.Cab),
+                Change("Service name", previous?.ServiceName, current.ServiceName),
+                Change("Publication type", previous?.PublicationType, current.PublicationType),
+                Change("Company address", previous?.CompanyAddress, current.CompanyAddress),
+                Change("Public email", previous?.PublicEmailAddress, current.PublicEmailAddress),
+                Change("Public telephone", previous?.PublicTelephoneNumber, current.PublicTelephoneNumber),
+                Change("Website", previous?.WebsiteAddress, current.WebsiteAddress),
+                Change("Submitted on", previous?.SubmittedOn, current.SubmittedOn),
+                Change("Published on", previous?.PublishedOn, current.PublishedOn),
+                Change("Removed on", previous?.RemovedOn, current.RemovedOn),
+                Change("Trust framework version", previous?.TrustFrameworkVersion, current.TrustFrameworkVersion),
+                Change("Roles certified against", previous?.RolesCertifiedAgainst, current.RolesCertifiedAgainst),
+                Change("Underpinning or white-labelled service", previous?.IsUnderpinningOrWhiteLabelledService, current.IsUnderpinningOrWhiteLabelledService),
+                Change("Certified against GPG 45 profiles", previous?.IsCertifiedAgainstGpg45Profiles, current.IsCertifiedAgainstGpg45Profiles),
+                Change("Identity profiles", previous?.IdentityProfiles, current.IdentityProfiles),
+                Change("Certified against GPG 44", previous?.IsCertifiedAgainstGpg44, current.IsCertifiedAgainstGpg44),
+                Change("GPG 44 authentication qualities", previous?.Gpg44AuthenticationQualities, current.Gpg44AuthenticationQualities),
+                Change("GPG 44 protection qualities", previous?.Gpg44ProtectionQualities, current.Gpg44ProtectionQualities),
+                Change("Certified against supplementary codes", previous?.IsCertifiedAgainstSupplementaryCodes, current.IsCertifiedAgainstSupplementaryCodes),
+                Change("Supplementary codes", previous?.SupplementaryCodes, current.SupplementaryCodes),
+                Change("Certificate issue date", previous?.CertificateIssueDate, current.CertificateIssueDate),
+                Change("Certificate expiry date", previous?.CertificateExpiryDate, current.CertificateExpiryDate),
+                Change("Right to Work identity profiles", previous?.RightToWorkIdentityProfiles, current.RightToWorkIdentityProfiles),
+                Change("Right to Work GPG 44", previous?.IsRightToWorkCertifiedAgainstGpg44, current.IsRightToWorkCertifiedAgainstGpg44),
+                Change("Right to Work authentication qualities", previous?.RightToWorkAuthenticationQualities, current.RightToWorkAuthenticationQualities),
+                Change("Right to Work protection qualities", previous?.RightToWorkProtectionQualities, current.RightToWorkProtectionQualities),
+                Change("Right to Rent identity profiles", previous?.RightToRentIdentityProfiles, current.RightToRentIdentityProfiles),
+                Change("Right to Rent GPG 44", previous?.IsRightToRentCertifiedAgainstGpg44, current.IsRightToRentCertifiedAgainstGpg44),
+                Change("Right to Rent authentication qualities", previous?.RightToRentAuthenticationQualities, current.RightToRentAuthenticationQualities),
+                Change("Right to Rent protection qualities", previous?.RightToRentProtectionQualities, current.RightToRentProtectionQualities),
+                Change("DBS identity profiles", previous?.DbsIdentityProfiles, current.DbsIdentityProfiles),
+                Change("DBS GPG 44", previous?.IsDbsCertifiedAgainstGpg44, current.IsDbsCertifiedAgainstGpg44),
+                Change("DBS authentication qualities", previous?.DbsAuthenticationQualities, current.DbsAuthenticationQualities),
+                Change("DBS protection qualities", previous?.DbsProtectionQualities, current.DbsProtectionQualities),
+                Change("Underpinning service", previous?.UnderpinningServiceName, current.UnderpinningServiceName),
+                Change("Underpinning provider", previous?.UnderpinningProviderName, current.UnderpinningProviderName),
+                Change("Underpinning CAB", previous?.UnderpinningCab, current.UnderpinningCab),
+                Change("Underpinning certificate expiry date", previous?.UnderpinningCertificateExpiryDate, current.UnderpinningCertificateExpiryDate),
+                Change("In register", previous?.IsInRegister, current.IsInRegister)
+            }
+            .OfType<string>();
 
-        var prefix = previous is null ? "Previously unrecorded state: " : "Changes: ";
-        var summary = changes.Count == 0 ? "Changes: no visible report fields changed." : prefix + string.Join("; ", changes);
-        return summary.Length <= 4000 ? summary : summary[..4000];
+        return Truncate(ChangeSummary(previous, changes));
     }
 
-    private static void AddChange(List<string> changes, string label, object? previous, object? current)
+    private static string? Change(string label, object? previous, object? current) =>
+        string.Equals(Display(previous), Display(current), StringComparison.Ordinal)
+            ? null
+            : $"{label}: {Display(previous)} → {Display(current)}";
+
+    private static string ChangeSummary(PublishedRegisterEntryRevision? previous, IEnumerable<string> changes)
     {
-        var oldValue = Display(previous);
-        var newValue = Display(current);
-        if (!string.Equals(oldValue, newValue, StringComparison.Ordinal))
-            changes.Add($"{label}: {oldValue} → {newValue}");
+        var changeList = changes.ToList();
+        var summaryPrefix = previous is null ? "Previously unrecorded state" : "Changes";
+
+        return changeList.Any()
+            ? $"{summaryPrefix}: {string.Join("; ", changeList)}"
+            : "Changes: no visible report fields changed.";
     }
+
+    private static string Truncate(string summary) => summary.Length <= 4000 ? summary : summary[..4000];
 
     private static string Display(object? value) => value switch
     {
         null => "(not recorded)",
         DateOnly date => date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+        DateTime date => date.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
         bool boolean => boolean ? "Yes" : "No",
         _ => value.ToString() ?? "(not recorded)"
     };
 
-    private static DateOnly? Date(DateTime? value) => value.HasValue ? DateOnly.FromDateTime(value.Value) : null;
     private static string Join(IEnumerable<string?>? values) => string.Join("; ", values?.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x!) ?? []);
     private static string JoinQualityLevels(IEnumerable<ServiceQualityLevelMapping>? mappings, QualityTypeEnum type) =>
         Join(mappings?.Where(x => x.QualityLevel.QualityType == type).OrderBy(x => x.QualityLevel.Level).Select(x => x.QualityLevel.Level));
