@@ -342,6 +342,13 @@ namespace DVSRegister.Data
                 entity.Property(revision => revision.Provider).HasMaxLength(512).IsRequired();
                 entity.Property(revision => revision.Cab).HasMaxLength(512).IsRequired();
                 entity.Property(revision => revision.ServiceName).HasMaxLength(512).IsRequired();
+                entity.Property(revision => revision.SubmittedOn).HasColumnType("timestamp with time zone");
+                entity.Property(revision => revision.PublishedOn).HasColumnType("timestamp with time zone");
+                entity.Property(revision => revision.RemovedOn).HasColumnType("timestamp with time zone");
+                entity.Property(revision => revision.CertificateIssueDate).HasColumnType("timestamp with time zone");
+                entity.Property(revision => revision.CertificateExpiryDate).HasColumnType("timestamp with time zone");
+                entity.Property(revision => revision.UnderpinningCertificateExpiryDate)
+                    .HasColumnType("timestamp with time zone");
                 entity.HasIndex(revision => new
                 {
                     revision.SourceType,
