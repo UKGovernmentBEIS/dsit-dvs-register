@@ -4,7 +4,7 @@ using Amazon.CognitoIdentityProvider.Model;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 
-public class CognitoClient
+public class CognitoClient : ICognitoClient
 {
     public readonly string _userPoolId;
     public readonly string _clientId;
