@@ -25,216 +25,687 @@ namespace DVSRegister.UnitTests.Services
             _userRepository = Substitute.For<IUserRepository>();
             _logger = Substitute.For<ILogger<ActionLogService>>();
 
-            _service = new ActionLogService(_actionLogRepository, _userRepository, _logger);
-        }
+            _actionLogRepository.GetActionCategory(Arg.Any<ActionCategoryEnum>())
+                .Returns(new ActionCategory { Id = 4 });
+            _actionLogRepository.GetActionDetails(Arg.Any<ActionDetailsEnum>())
+                .Returns(new ActionDetails { Id = 15 });
+            _userRepository.GetUser(Arg.Any<string>())
+                .Returns(new CabUser { Id = 99 });
 
-
-        [Fact]
-        public async Task SaveActionLogs_ShouldSave_ForBusinessDetailsUpdate_WithAllFields()
-        {
-            // Arrange
-            var previousData = new Dictionary<string, List<string>>
-            {
-                { Constants.RegisteredName, new List<string> { "Old Registered Name" } },
-                { Constants.TradingName, new List<string> { "Old Trading Name" } },
-                { Constants.CompanyRegistrationNumber, new List<string> { "Old Reg Number" } },
-                { Constants.ParentCompanyRegisteredName, new List<string> { "Old Parent Name" } },
-                { Constants.ParenyCompanyLocation, new List<string> { "Old Parent Location" } }
-            };
-
-            var updatedData = new Dictionary<string, List<string>>
-            {
-                { Constants.RegisteredName, new List<string> { "New Registered Name" } },
-                { Constants.TradingName, new List<string> { "New Trading Name" } },
-                { Constants.CompanyRegistrationNumber, new List<string> { "New Reg Number" } },
-                { Constants.ParentCompanyRegisteredName, new List<string> { "New Parent Name" } },
-                { Constants.ParenyCompanyLocation, new List<string> { "New Parent Location" } }
-            };
-
-            var dto = new ActionLogsDto
-            {
-                ActionCategoryEnum = ActionCategoryEnum.ProviderUpdates,
-                ActionDetailsEnum = ActionDetailsEnum.BusinessDetailsUpdate,
-                LoggedInUserEmail = "test@domain.com",
-                ProviderId = 1,
-                ProviderName = "Test Provider",
-                PreviousData = previousData,
-                UpdatedData = updatedData
-            };
-
-            var user = new CabUser { Id = 99 };
-            var category = new ActionCategory { Id = 4 };
-            var details = new ActionDetails { Id = 16 };
-
-            _userRepository.GetUser(dto.LoggedInUserEmail).Returns(user);
-            _actionLogRepository.GetActionCategory(dto.ActionCategoryEnum).Returns(category);
-            _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
-
-            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates,
-                ActionDetailsEnum.BusinessDetailsUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
-                new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
-            await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
-                log.ActionCategoryId == category.Id &&
-                log.ActionDetailsId == details.Id &&
-                log.CabUserId == user.Id &&
-                log.ProviderProfileId == dto.ProviderId &&
-                log.DisplayMessage.Contains($"Old Registered Name to New Registered Name ({Constants.RegisteredName})") &&
-                log.DisplayMessage.Contains($"Old Trading Name to New Trading Name ({Constants.TradingName})") &&
-                log.DisplayMessage.Contains($"Old Reg Number to New Reg Number ({Constants.CompanyRegistrationNumber})") &&
-                log.DisplayMessage.Contains($"Old Parent Name to New Parent Name ({Constants.ParentCompanyRegisteredName})") &&
-                log.DisplayMessage.Contains($"Old Parent Location to New Parent Location ({Constants.ParenyCompanyLocation})") &&
-                log.OldValues.RootElement.GetProperty(Constants.RegisteredName).EnumerateArray().First().GetString() ==
-                "Old Registered Name" &&
-                log.NewValues.RootElement.GetProperty(Constants.RegisteredName).EnumerateArray().First().GetString() ==
-                "New Registered Name"
-            ));
-        }
-
-
-        [Fact]
-        public async Task SaveActionLogs_ShouldHideRegisterUpdates_ForProviderContactUpdateWithoutPublicContact()
-        {
-            var previousData = new Dictionary<string, List<string>>
-            {
-                { Constants.PrimaryContactName, new List<string> { "Old Contact Name" } }
-            };
-
-            var updatedData = new Dictionary<string, List<string>>
-            {
-                { Constants.PrimaryContactName, new List<string> { "New Contact Name" } }
-            };
-
-            var dto = new ActionLogsDto
-            {
-                ActionCategoryEnum = ActionCategoryEnum.ProviderUpdates,
-                ActionDetailsEnum = ActionDetailsEnum.ProviderContactUpdate,
-                LoggedInUserEmail = "test@domain.com",
-                ProviderId = 1,
-                ProviderName = "Test Provider",
-                PreviousData = previousData,
-                UpdatedData = updatedData
-            };
-
-            var user = new CabUser { Id = 99 };
-            var category = new ActionCategory { Id = 4 };
-            var details = new ActionDetails { Id = 15 };
-
-            _userRepository.GetUser(dto.LoggedInUserEmail).Returns(user);
-            _actionLogRepository.GetActionCategory(dto.ActionCategoryEnum).Returns(category);
-            _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
-
-            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates,
-                ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
-                new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
-
-
-            await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
-                log.ShowInRegisterUpdates == false &&
-                log.DisplayMessage == "Registered Name"
-            ));
+            _service = new ActionLogService(
+                _actionLogRepository,
+                _userRepository,
+                _logger);
         }
 
         [Fact]
-        public async Task SaveActionLogs_ShouldShowRegisterUpdates_ForProviderContactUpdateWithPublicContactKeys()
+        public async Task AddEditActionLogs_BusinessNamesChangedForPublishedProvider_SavesVisibleSerializedLog()
         {
-            var previousData = new Dictionary<string, List<string>>
+            var previous = new Dictionary<string, List<string>>
             {
-                { Constants.ProviderWebsiteAddress, new List<string> { "http://oldsite.com" } },
-                { Constants.PublicContactEmail, new List<string> { "oldemail@test.com" } },
-                { Constants.ProviderTelephoneNumber, new List<string> { "123456789" } }
+                [Constants.RegisteredName] = ["Old registered"],
+                [Constants.TradingName] = ["Old trading"]
+            };
+            var current = new Dictionary<string, List<string>>
+            {
+                [Constants.RegisteredName] = ["New registered"],
+                [Constants.TradingName] = ["New trading"]
+            };
+            var provider = CreateProvider([
+                new ServiceDto { IsInRegister = true }
+            ]);
+
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.BusinessDetailsUpdate,
+                "user@example.com",
+                new ChangeSet(current, previous),
+                provider);
+
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log =>
+                    log.ActionCategoryId == 4 &&
+                    log.ActionDetailsId == 15 &&
+                    log.CabUserId == 99 &&
+                    log.ProviderProfileId == provider.Id &&
+                    log.ShowInRegisterUpdates &&
+                    log.DisplayMessage ==
+                        $"Old registered to New registered ({Constants.RegisteredName}){Environment.NewLine}" +
+                        $"Old trading to New trading ({Constants.TradingName})" &&
+                    log.OldValues!.RootElement
+                        .GetProperty(Constants.RegisteredName)[0].GetString() == "Old registered" &&
+                    log.NewValues!.RootElement
+                        .GetProperty(Constants.TradingName)[0].GetString() == "New trading"));
+        }
+
+        [Fact]
+        public async Task AddEditActionLogs_TradingNameChangedForRemovedProvider_SavesVisibleTradingNameLog()
+        {
+            var previous = new Dictionary<string, List<string>>
+            {
+                [Constants.TradingName] = ["Old trading"]
+            };
+            var current = new Dictionary<string, List<string>>
+            {
+                [Constants.TradingName] = ["New trading"]
+            };
+            var provider = CreateProvider([
+                new ServiceDto { ServiceStatus = ServiceStatusEnum.Removed }
+            ]);
+
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.BusinessDetailsUpdate,
+                "user@example.com",
+                new ChangeSet(current, previous),
+                provider);
+
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log =>
+                    log.ShowInRegisterUpdates &&
+                    log.DisplayMessage ==
+                        $"Old trading to New trading ({Constants.TradingName})"));
+        }
+
+        [Fact]
+        public async Task AddEditActionLogs_NonNameBusinessDetailsChanged_SavesHiddenLogWithEmptyMessage()
+        {
+            var previous = new Dictionary<string, List<string>>
+            {
+                [Constants.CompanyRegistrationNumber] = ["Old number"]
+            };
+            var current = new Dictionary<string, List<string>>
+            {
+                [Constants.CompanyRegistrationNumber] = ["New number"]
             };
 
-            var updatedData = new Dictionary<string, List<string>>
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.BusinessDetailsUpdate,
+                string.Empty,
+                new ChangeSet(current, previous),
+                CreateProvider());
+
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log =>
+                    !log.ShowInRegisterUpdates &&
+                    log.DisplayMessage == string.Empty &&
+                    log.CabUserId == null));
+            await _userRepository.DidNotReceive().GetUser(Arg.Any<string>());
+        }
+
+        [Fact]
+        public async Task AddEditActionLogs_BusinessNameChangedForUnpublishedProvider_SavesHiddenNamedLog()
+        {
+            var previous = CreateData(Constants.RegisteredName, "Old name");
+            var current = CreateData(Constants.RegisteredName, "New name");
+
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.BusinessDetailsUpdate,
+                "user@example.com",
+                new ChangeSet(current, previous),
+                CreateProvider());
+
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log =>
+                    !log.ShowInRegisterUpdates &&
+                    log.DisplayMessage ==
+                        $"Old name to New name ({Constants.RegisteredName})"));
+        }
+
+        [Fact]
+        public async Task AddEditActionLogs_PrivateContactChanged_SavesHiddenProviderLog()
+        {
+            var previous = new Dictionary<string, List<string>>
             {
-                { Constants.ProviderWebsiteAddress, new List<string> { "http://newsite.com" } },
-                { Constants.PublicContactEmail, new List<string> { "newemail@test.com" } },
-                { Constants.ProviderTelephoneNumber, new List<string> { "987654321" } }
+                [Constants.PrimaryContactName] = ["Old contact"]
+            };
+            var current = new Dictionary<string, List<string>>
+            {
+                [Constants.PrimaryContactName] = ["New contact"]
             };
 
-            var dto = new ActionLogsDto
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.ProviderContactUpdate,
+                "user@example.com",
+                new ChangeSet(current, previous),
+                CreateProvider());
+
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log =>
+                    !log.ShowInRegisterUpdates &&
+                    log.DisplayMessage == "Provider name"));
+        }
+
+        [Theory]
+        [InlineData(Constants.PublicContactEmail)]
+        [InlineData(Constants.ProviderWebsiteAddress)]
+        [InlineData(Constants.ProviderTelephoneNumber)]
+        public async Task AddEditActionLogs_PublicContactChangedForPublishedProvider_SavesVisibleProviderLog(
+            string publicContactKey)
+        {
+            var previous = new Dictionary<string, List<string>>
             {
-                ActionCategoryEnum = ActionCategoryEnum.ProviderUpdates,
-                ActionDetailsEnum = ActionDetailsEnum.ProviderContactUpdate,
-                LoggedInUserEmail = "test@domain.com",
-                ProviderId = 1,
-                ProviderName = "Test Provider",
-                PreviousData = previousData,
-                UpdatedData = updatedData
+                [publicContactKey] = ["old value"]
+            };
+            var current = new Dictionary<string, List<string>>
+            {
+                [publicContactKey] = ["new value"]
+            };
+            var provider = CreateProvider([
+                new ServiceDto { IsInRegister = true }
+            ]);
+
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.ProviderContactUpdate,
+                "user@example.com",
+                new ChangeSet(current, previous),
+                provider);
+
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log =>
+                    log.ShowInRegisterUpdates &&
+                    log.DisplayMessage == provider.RegisteredName &&
+                    log.OldValues!.RootElement.GetProperty(publicContactKey)[0].GetString() == "old value" &&
+                    log.NewValues!.RootElement.GetProperty(publicContactKey)[0].GetString() == "new value"));
+        }
+
+        [Fact]
+        public async Task AddEditActionLogs_PublicContactChangedForUnpublishedProvider_SavesHiddenProviderLog()
+        {
+            var previous = CreateData(Constants.PublicContactEmail, "old@example.com");
+            var current = CreateData(Constants.PublicContactEmail, "new@example.com");
+
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.ProviderContactUpdate,
+                "user@example.com",
+                new ChangeSet(current, previous),
+                CreateProvider());
+
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log =>
+                    !log.ShowInRegisterUpdates &&
+                    log.DisplayMessage == "Provider name"));
+        }
+
+        [Fact]
+        public async Task AddEditActionLogs_ProviderUpdateWithUnsupportedDetails_SavesSerializedLogWithEmptyMessage()
+        {
+            var previous = new Dictionary<string, List<string>>
+            {
+                ["Field"] = ["Old"]
+            };
+            var current = new Dictionary<string, List<string>>
+            {
+                ["Field"] = ["New"]
             };
 
-            var user = new CabUser { Id = 99 };
-            var category = new ActionCategory { Id = 4 };
-            var details = new ActionDetails { Id = 15 };
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.ServiceUpdates,
+                "user@example.com",
+                new ChangeSet(current, previous),
+                CreateProvider());
 
-            _userRepository.GetUser(dto.LoggedInUserEmail).Returns(user);
-            _actionLogRepository.GetActionCategory(dto.ActionCategoryEnum).Returns(category);
-            _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log =>
+                    log.DisplayMessage == string.Empty &&
+                    log.OldValues != null &&
+                    log.NewValues != null));
+        }
 
-            // Act
-            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates,
-                ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
-                new ProviderProfileDto
+        [Fact]
+        public async Task AddEditActionLogs_NonProviderCategory_DoesNotSaveLog()
+        {
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ServiceUpdates,
+                ActionDetailsEnum.ServiceUpdates,
+                "user@example.com",
+                CreateChangeSet(),
+                CreateProvider());
+
+            await _actionLogRepository.DidNotReceive()
+                .SaveActionLogs(Arg.Any<ActionLogs>());
+        }
+
+        [Theory]
+        [InlineData(true, false)]
+        [InlineData(false, true)]
+        public async Task AddEditActionLogs_EmptyCurrentOrPreviousData_LogsFailureWithoutSaving(
+            bool emptyCurrent,
+            bool emptyPrevious)
+        {
+            var current = emptyCurrent
+                ? new Dictionary<string, List<string>>()
+                : CreateData(Constants.RegisteredName, "New");
+            var previous = emptyPrevious
+                ? new Dictionary<string, List<string>>()
+                : CreateData(Constants.RegisteredName, "Old");
+
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.BusinessDetailsUpdate,
+                "user@example.com",
+                new ChangeSet(current, previous),
+                CreateProvider());
+
+            await _actionLogRepository.DidNotReceive()
+                .SaveActionLogs(Arg.Any<ActionLogs>());
+            AssertLoggedError("Previous data or updated data null");
+        }
+
+        [Fact]
+        public async Task AddEditActionLogs_NullCurrentData_LogsFailureWithoutSaving()
+        {
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.BusinessDetailsUpdate,
+                "user@example.com",
+                new ChangeSet(null!, CreateData(Constants.RegisteredName, "Old")),
+                CreateProvider());
+
+            await _actionLogRepository.DidNotReceive()
+                .SaveActionLogs(Arg.Any<ActionLogs>());
+            AssertLoggedError("Previous data or updated data null");
+        }
+
+        [Fact]
+        public async Task AddEditActionLogs_RepositoryThrows_LogsFailureWithoutPropagating()
+        {
+            _actionLogRepository.SaveActionLogs(Arg.Any<ActionLogs>())
+                .ThrowsAsync(new InvalidOperationException("database failure"));
+
+            await _service.AddEditActionLogs(
+                ActionCategoryEnum.ProviderUpdates,
+                ActionDetailsEnum.ProviderContactUpdate,
+                "user@example.com",
+                CreateChangeSet(),
+                CreateProvider());
+
+            AssertLoggedError("database failure");
+        }
+
+        [Fact]
+        public async Task AddActionLog_ServiceWithAllRelatedRecords_SavesFullyMappedLog()
+        {
+            var before = DateTime.UtcNow;
+            var service = CreateService(10);
+            service.ServiceStatus = ServiceStatusEnum.Published;
+            service.PublicInterestCheck =
+            [
+                new PublicInterestCheckDto { Id = 101 },
+                new PublicInterestCheckDto { Id = 102, IsLatestReviewVersion = true }
+            ];
+            service.CertificateReview =
+            [
+                new CertificateReviewDto { Id = 201 },
+                new CertificateReviewDto { Id = 202, IsLatestReviewVersion = true }
+            ];
+            service.CabTransferRequestId = 301;
+            service.ServiceRemovalRequestId = 401;
+            service.ProviderRemovalRequestServiceMapping = new ProviderRemovalRequestServiceMappingDto
+            {
+                ProviderRemovalRequestId = 501
+            };
+
+            await _service.AddActionLog(
+                service,
+                ActionCategoryEnum.ActionRequests,
+                ActionDetailsEnum.DisplayChangeRequestSent,
+                "user@example.com",
+                "Admin message");
+
+            var after = DateTime.UtcNow;
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log =>
+                    log.ActionCategoryId == 4 &&
+                    log.ActionDetailsId == 15 &&
+                    log.ServiceId == 10 &&
+                    log.ProviderProfileId == 1010 &&
+                    log.CabUserId == 99 &&
+                    log.PublicInterestCheckId == 102 &&
+                    log.CertificateReviewId == 202 &&
+                    log.CabTransferRequestId == 301 &&
+                    log.ServiceRemovalRequestId == 401 &&
+                    log.ProviderRemovalRequestId == 501 &&
+                    log.DisplayMessageAdmin == "Admin message" &&
+                    log.DisplayMessage == string.Empty &&
+                    log.ServiceStatus == ServiceStatusEnum.Published &&
+                    log.OldValues == null &&
+                    log.NewValues == null &&
+                    log.LogDate == DateTime.UtcNow.Date &&
+                    log.LoggedTime >= before &&
+                    log.LoggedTime <= after));
+            await _actionLogRepository.Received(1)
+                .GetActionCategory(ActionCategoryEnum.ActionRequests);
+            await _actionLogRepository.Received(1)
+                .GetActionDetails(ActionDetailsEnum.DisplayChangeRequestSent);
+        }
+
+        [Fact]
+        public async Task AddActionLog_MissingOptionalRecordsAndUser_SavesNullRelatedIds()
+        {
+            _userRepository.GetUser("missing@example.com")
+                .Returns((CabUser)null!);
+            var service = CreateService(11);
+            service.Provider.RegisteredName = null;
+            service.PublicInterestCheck = null!;
+            service.CertificateReview = null!;
+            service.CabTransferRequestId = 0;
+            service.ServiceRemovalRequestId = 0;
+            service.ProviderRemovalRequestServiceMapping = null;
+
+            await _service.AddActionLog(
+                service,
+                ActionCategoryEnum.CR,
+                ActionDetailsEnum.CR_APR,
+                "missing@example.com");
+
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log =>
+                    log.CabUserId == null &&
+                    log.PublicInterestCheckId == null &&
+                    log.CertificateReviewId == null &&
+                    log.CabTransferRequestId == null &&
+                    log.ServiceRemovalRequestId == null &&
+                    log.ProviderRemovalRequestId == null &&
+                    log.UpdateRequestedUserId == null &&
+                    log.UpdateRequestedTime == null &&
+                    log.DisplayMessageAdmin == null));
+        }
+
+        [Fact]
+        public async Task AddActionLog_UserWithZeroId_SavesNullUserId()
+        {
+            _userRepository.GetUser("user@example.com")
+                .Returns(new CabUser { Id = 0 });
+
+            await _service.AddActionLog(
+                CreateService(),
+                ActionCategoryEnum.PI,
+                ActionDetailsEnum.PI_Primary_Pass,
+                "user@example.com");
+
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log => log.CabUserId == null));
+        }
+
+        [Fact]
+        public async Task AddActionLog_EmptyUserEmail_SkipsUserLookupAndSavesNullUserId()
+        {
+            await _service.AddActionLog(
+                CreateService(),
+                ActionCategoryEnum.ServiceUpdates,
+                ActionDetailsEnum.ServiceNameUpdate,
+                string.Empty);
+
+            await _userRepository.DidNotReceive().GetUser(Arg.Any<string>());
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log => log.CabUserId == null));
+        }
+
+        [Fact]
+        public async Task AddActionLog_NullUserEmail_SkipsUserLookupAndSavesNullUserId()
+        {
+            await _service.AddActionLog(
+                CreateService(),
+                ActionCategoryEnum.ServiceUpdates,
+                ActionDetailsEnum.ServiceNameUpdate,
+                null!);
+
+            await _userRepository.DidNotReceive().GetUser(Arg.Any<string>());
+            await _actionLogRepository.Received(1).SaveActionLogs(
+                Arg.Is<ActionLogs>(log => log.CabUserId == null));
+        }
+
+        [Fact]
+        public async Task AddActionLog_NullService_ThrowsArgumentNullException()
+        {
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                _service.AddActionLog(
+                    null!,
+                    ActionCategoryEnum.CR,
+                    ActionDetailsEnum.CR_APR,
+                    "user@example.com"));
+
+            Assert.Equal("serviceDto", exception.ParamName);
+            await _actionLogRepository.DidNotReceive()
+                .SaveActionLogs(Arg.Any<ActionLogs>());
+        }
+
+        [Fact]
+        public async Task AddActionLog_NullProvider_ThrowsArgumentNullException()
+        {
+            var service = CreateService();
+            service.Provider = null!;
+
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                _service.AddActionLog(
+                    service,
+                    ActionCategoryEnum.CR,
+                    ActionDetailsEnum.CR_APR,
+                    "user@example.com"));
+
+            Assert.Equal("serviceDto.Provider", exception.ParamName);
+            await _actionLogRepository.DidNotReceive()
+                .SaveActionLogs(Arg.Any<ActionLogs>());
+        }
+
+        [Fact]
+        public async Task AddActionLog_CategoryLookupThrows_PropagatesFailureWithoutSaving()
+        {
+            _actionLogRepository.GetActionCategory(ActionCategoryEnum.CR)
+                .ThrowsAsync(new InvalidOperationException("category failure"));
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _service.AddActionLog(
+                    CreateService(),
+                    ActionCategoryEnum.CR,
+                    ActionDetailsEnum.CR_APR,
+                    "user@example.com"));
+
+            Assert.Equal("category failure", exception.Message);
+            await _actionLogRepository.DidNotReceive()
+                .SaveActionLogs(Arg.Any<ActionLogs>());
+        }
+
+        [Fact]
+        public async Task AddActionLog_SaveThrows_PropagatesFailure()
+        {
+            _actionLogRepository.SaveActionLogs(Arg.Any<ActionLogs>())
+                .ThrowsAsync(new InvalidOperationException("save failure"));
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _service.AddActionLog(
+                    CreateService(),
+                    ActionCategoryEnum.CR,
+                    ActionDetailsEnum.CR_APR,
+                    "user@example.com"));
+
+            Assert.Equal("save failure", exception.Message);
+        }
+
+        [Fact]
+        public async Task AddMultipleActionLogs_HighVolumeServices_SavesAllLogsInSingleBatch()
+        {
+            var services = Enumerable.Range(1, 100)
+                .Select(CreateService)
+                .ToList();
+
+            await _service.AddMultipleActionLogs(
+                services,
+                ActionCategoryEnum.ActionRequests,
+                ActionDetailsEnum.DisplayChangeRequestSent,
+                "user@example.com",
+                "Bulk update");
+
+            await _actionLogRepository.Received(1).SaveMultipleActionLogs(
+                Arg.Is<List<ActionLogs>>(logs =>
+                    logs.Count == 100 &&
+                    logs.Select(log => log.ServiceId).SequenceEqual(
+                        Enumerable.Range(1, 100).Select(id => (int?)id)) &&
+                    logs.All(log =>
+                        log.ActionCategoryId == 4 &&
+                        log.ActionDetailsId == 15 &&
+                        log.DisplayMessageAdmin == "Bulk update")));
+        }
+
+        [Fact]
+        public async Task AddMultipleActionLogs_MixedServiceData_MapsEachServiceIndependently()
+        {
+            var first = CreateService();
+            first.PublicInterestCheck =
+            [
+                new PublicInterestCheckDto { Id = 21, IsLatestReviewVersion = true }
+            ];
+            var second = CreateService(2);
+            second.CertificateReview =
+            [
+                new CertificateReviewDto { Id = 32, IsLatestReviewVersion = true }
+            ];
+            second.ProviderRemovalRequestServiceMapping = new ProviderRemovalRequestServiceMappingDto
+            {
+                ProviderRemovalRequestId = 42
+            };
+
+            await _service.AddMultipleActionLogs(
+                [first, second],
+                ActionCategoryEnum.PI,
+                ActionDetailsEnum.PI_ServicePublish,
+                "user@example.com");
+
+            await _actionLogRepository.Received(1).SaveMultipleActionLogs(
+                Arg.Is<List<ActionLogs>>(logs =>
+                    logs.Count == 2 &&
+                    logs[0].ServiceId == 1 &&
+                    logs[0].ProviderProfileId == 1001 &&
+                    logs[0].PublicInterestCheckId == 21 &&
+                    logs[0].CertificateReviewId == null &&
+                    logs[1].ServiceId == 2 &&
+                    logs[1].ProviderProfileId == 1002 &&
+                    logs[1].PublicInterestCheckId == null &&
+                    logs[1].CertificateReviewId == 32 &&
+                    logs[1].ProviderRemovalRequestId == 42));
+        }
+
+        [Fact]
+        public async Task AddMultipleActionLogs_EmptyServices_SavesEmptyBatch()
+        {
+            await _service.AddMultipleActionLogs(
+                [],
+                ActionCategoryEnum.CR,
+                ActionDetailsEnum.CR_APR,
+                "user@example.com");
+
+            await _actionLogRepository.Received(1)
+                .SaveMultipleActionLogs(Arg.Is<List<ActionLogs>>(logs => logs.Count == 0));
+            await _actionLogRepository.DidNotReceive()
+                .GetActionCategory(Arg.Any<ActionCategoryEnum>());
+        }
+
+        [Fact]
+        public async Task AddMultipleActionLogs_NullServices_ThrowsArgumentNullException()
+        {
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                _service.AddMultipleActionLogs(
+                    null!,
+                    ActionCategoryEnum.CR,
+                    ActionDetailsEnum.CR_APR,
+                    "user@example.com"));
+
+            Assert.Equal("serviceDtos", exception.ParamName);
+            await _actionLogRepository.DidNotReceive()
+                .SaveMultipleActionLogs(Arg.Any<List<ActionLogs>>());
+        }
+
+        [Fact]
+        public async Task AddMultipleActionLogs_ServiceWithNullProvider_ThrowsNullReferenceException()
+        {
+            var service = CreateService();
+            service.Provider = null!;
+
+            await Assert.ThrowsAsync<NullReferenceException>(() =>
+                _service.AddMultipleActionLogs(
+                    [service],
+                    ActionCategoryEnum.CR,
+                    ActionDetailsEnum.CR_APR,
+                    "user@example.com"));
+
+            await _actionLogRepository.DidNotReceive()
+                .SaveMultipleActionLogs(Arg.Any<List<ActionLogs>>());
+        }
+
+        [Fact]
+        public async Task AddMultipleActionLogs_BulkSaveThrows_PropagatesFailure()
+        {
+            _actionLogRepository.SaveMultipleActionLogs(Arg.Any<List<ActionLogs>>())
+                .ThrowsAsync(new InvalidOperationException("bulk failure"));
+
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _service.AddMultipleActionLogs(
+                    [CreateService()],
+                    ActionCategoryEnum.CR,
+                    ActionDetailsEnum.CR_APR,
+                    "user@example.com"));
+
+            Assert.Equal("bulk failure", exception.Message);
+        }
+
+        private void AssertLoggedError(string expectedMessage)
+        {
+            Assert.Contains(
+                _logger.ReceivedCalls(),
+                call => call.GetArguments().Any(argument =>
+                    argument?.ToString()?.Contains(expectedMessage) == true));
+        }
+
+        private static ProviderProfileDto CreateProvider(
+            ICollection<ServiceDto>? services = null)
+        {
+            return new ProviderProfileDto
+            {
+                Id = 7,
+                RegisteredName = "Provider name",
+                Services = services
+            };
+        }
+
+        private static ServiceDto CreateService(int id = 1)
+        {
+            return new ServiceDto
+            {
+                Id = id,
+                ServiceName = $"Service {id}",
+                ServiceStatus = ServiceStatusEnum.AwaitingRemovalConfirmation,
+                Provider = new ProviderProfileDto
                 {
-                    Id = 1,
-                    RegisteredName = "Registered Name",
-                    Services = [new ServiceDto { IsInRegister = true }]
-                });
-
-            // Assert
-            await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
-                log.ShowInRegisterUpdates == true &&
-                log.DisplayMessage == "Registered Name" &&
-                log.OldValues.RootElement.GetProperty(Constants.ProviderWebsiteAddress).EnumerateArray().First()
-                    .GetString() == "http://oldsite.com" &&
-                log.NewValues.RootElement.GetProperty(Constants.ProviderWebsiteAddress).EnumerateArray().First()
-                    .GetString() == "http://newsite.com"
-            ));
+                    Id = 1000 + id,
+                    RegisteredName = $"Provider {id}"
+                },
+                PublicInterestCheck = [],
+                CertificateReview = []
+            };
         }
 
-        [Fact]
-        public async Task SaveActionLogs_ShouldLogError_WhenExceptionOccurs()
+        private static ChangeSet CreateChangeSet()
         {
-            var previousData = new Dictionary<string, List<string>>
+            return new ChangeSet(
+                CreateData(Constants.PrimaryContactName, "New contact"),
+                CreateData(Constants.PrimaryContactName, "Old contact"));
+        }
+
+        private static Dictionary<string, List<string>> CreateData(
+            string key,
+            string value)
+        {
+            return new Dictionary<string, List<string>>
             {
-                { Constants.ProviderWebsiteAddress, new List<string> { "http://oldsite.com" } },
-                { Constants.PublicContactEmail, new List<string> { "oldemail@test.com" } },
-                { Constants.ProviderTelephoneNumber, new List<string> { "123456789" } }
+                [key] = [value]
             };
-
-            var updatedData = new Dictionary<string, List<string>>
-            {
-                { Constants.ProviderWebsiteAddress, new List<string> { "http://newsite.com" } },
-                { Constants.PublicContactEmail, new List<string> { "newemail@test.com" } },
-                { Constants.ProviderTelephoneNumber, new List<string> { "987654321" } }
-            };
-
-            var dto = new ActionLogsDto
-            {
-                ActionCategoryEnum = ActionCategoryEnum.ProviderUpdates,
-                ActionDetailsEnum = ActionDetailsEnum.ProviderContactUpdate,
-                LoggedInUserEmail = "test@domain.com",
-                ProviderId = 0,
-                PreviousData = previousData,
-                UpdatedData = updatedData
-            };
-
-            var user = new CabUser { Id = 99 };
-            var category = new ActionCategory { Id = 4 };
-            var details = new ActionDetails { Id = 15 };
-
-            _userRepository.GetUser(dto.LoggedInUserEmail).Returns(user);
-            _actionLogRepository.GetActionCategory(dto.ActionCategoryEnum).Returns(category);
-            _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
-
-            _actionLogRepository.SaveActionLogs(Arg.Any<ActionLogs>()).Throws(new Exception("DB error"));
-
-            await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates,
-                ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
-                new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
-
-            _logger.Received(1).Log(LogLevel.Error, Arg.Any<EventId>(),
-                Arg.Is<object>(o => o.ToString().Contains("DB error")), Arg.Any<Exception>(),
-                Arg.Any<Func<object, Exception, string>>());
         }
     }
 }
