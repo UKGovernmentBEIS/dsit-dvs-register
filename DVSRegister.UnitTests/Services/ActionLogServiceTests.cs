@@ -71,21 +71,18 @@ namespace DVSRegister.UnitTests.Services
             _actionLogRepository.GetActionDetails(dto.ActionDetailsEnum).Returns(details);
 
             await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates,
-                ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
+                ActionDetailsEnum.BusinessDetailsUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
                 new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
             await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
                 log.ActionCategoryId == category.Id &&
                 log.ActionDetailsId == details.Id &&
                 log.CabUserId == user.Id &&
                 log.ProviderProfileId == dto.ProviderId &&
-                log.DisplayMessage.Contains($"{Constants.RegisteredName} Old Registered Name to New Registered Name") &&
-                log.DisplayMessage.Contains($"{Constants.TradingName} Old Trading Name to New Trading Name") &&
-                log.DisplayMessage.Contains(
-                    $"{Constants.CompanyRegistrationNumber} Old Reg Number to New Reg Number") &&
-                log.DisplayMessage.Contains(
-                    $"{Constants.ParentCompanyRegisteredName} Old Parent Name to New Parent Name") &&
-                log.DisplayMessage.Contains(
-                    $"{Constants.ParenyCompanyLocation} Old Parent Location to New Parent Location") &&
+                log.DisplayMessage.Contains($"Old Registered Name to New Registered Name ({Constants.RegisteredName})") &&
+                log.DisplayMessage.Contains($"Old Trading Name to New Trading Name ({Constants.TradingName})") &&
+                log.DisplayMessage.Contains($"Old Reg Number to New Reg Number ({Constants.CompanyRegistrationNumber})") &&
+                log.DisplayMessage.Contains($"Old Parent Name to New Parent Name ({Constants.ParentCompanyRegisteredName})") &&
+                log.DisplayMessage.Contains($"Old Parent Location to New Parent Location ({Constants.ParenyCompanyLocation})") &&
                 log.OldValues.RootElement.GetProperty(Constants.RegisteredName).EnumerateArray().First().GetString() ==
                 "Old Registered Name" &&
                 log.NewValues.RootElement.GetProperty(Constants.RegisteredName).EnumerateArray().First().GetString() ==
@@ -133,7 +130,7 @@ namespace DVSRegister.UnitTests.Services
 
             await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
                 log.ShowInRegisterUpdates == false &&
-                log.DisplayMessage == dto.ProviderName
+                log.DisplayMessage == "Registered Name"
             ));
         }
 
@@ -176,12 +173,17 @@ namespace DVSRegister.UnitTests.Services
             // Act
             await _service.AddEditActionLogs(ActionCategoryEnum.ProviderUpdates,
                 ActionDetailsEnum.ProviderContactUpdate, "test@domain.com", new ChangeSet(updatedData, previousData),
-                new ProviderProfileDto { Id = 1, RegisteredName = "Registered Name" });
+                new ProviderProfileDto
+                {
+                    Id = 1,
+                    RegisteredName = "Registered Name",
+                    Services = [new ServiceDto { IsInRegister = true }]
+                });
 
             // Assert
             await _actionLogRepository.Received(1).SaveActionLogs(Arg.Is<ActionLogs>(log =>
                 log.ShowInRegisterUpdates == true &&
-                log.DisplayMessage == dto.ProviderName &&
+                log.DisplayMessage == "Registered Name" &&
                 log.OldValues.RootElement.GetProperty(Constants.ProviderWebsiteAddress).EnumerateArray().First()
                     .GetString() == "http://oldsite.com" &&
                 log.NewValues.RootElement.GetProperty(Constants.ProviderWebsiteAddress).EnumerateArray().First()
