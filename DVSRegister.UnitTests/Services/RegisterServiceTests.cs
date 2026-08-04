@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.Internal;
 using DVSRegister.BusinessLogic;
-using DVSRegister.BusinessLogic.Services;
+using DVSRegister.BusinessLogic.Services.Register;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data;
 using DVSRegister.Data.Entities;
 using DVSRegister.Data.Models;

@@ -10,7 +10,7 @@ using NSubstitute;
 namespace DVSRegister.UnitTests.Repository
 {
     [Collection("Postgres Collection")]
-    public class CabRemovalRequestRepositoryTests
+    public class CabRemovalRequestRepositoryTests : IAsyncLifetime
     {
         private readonly ILogger<CabRemovalRequestRepository> logger;
         private readonly PostgresTestFixture fixture;
@@ -20,6 +20,10 @@ namespace DVSRegister.UnitTests.Repository
             this.fixture = fixture;
             logger = Substitute.For<ILogger<CabRemovalRequestRepository>>();
         }
+
+        public Task InitializeAsync() => fixture.ResetAsync();
+
+        public Task DisposeAsync() => Task.CompletedTask;
 
         //[Fact]
         //public async Task UpdateRemovalStatus_ReturnSuccess()

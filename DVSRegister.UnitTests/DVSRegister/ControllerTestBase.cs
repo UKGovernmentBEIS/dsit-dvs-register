@@ -37,6 +37,7 @@ public abstract class ControllerTestBase<TController>
         CabRemovalRequestService  = Substitute.For<ICabRemovalRequestService>();
         UserService  = Substitute.For<IUserService>();
         BucketService = Substitute.For<IBucketService>();
+        ActionLogService = Substitute.For<IActionLogService>();
         Mapper        = Substitute.For<IMapper>();
         Logger        = Substitute.For<ILogger<TController>>();
 
