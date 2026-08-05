@@ -12,8 +12,12 @@ using Microsoft.EntityFrameworkCore;
 namespace DVSRegister.UnitTests.Reports;
 
 [Collection("Postgres Collection")]
-public sealed class CurrentRegisterWithContactsIntegrationTests(PostgresTestFixture fixture)
+public sealed class CurrentRegisterWithContactsIntegrationTests(PostgresTestFixture fixture) : IAsyncLifetime
 {
+    public Task InitializeAsync() => fixture.ResetAsync();
+
+    public Task DisposeAsync() => Task.CompletedTask;
+
     [Fact]
     public async Task GenerateAsync_GeneratesCsvWithContacts_WhenServicesExist()
     {

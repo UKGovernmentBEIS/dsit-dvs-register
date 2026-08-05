@@ -7,8 +7,12 @@ using Microsoft.EntityFrameworkCore;
 namespace DVSRegister.UnitTests.Repository;
 
 [Collection("Postgres Collection")]
-public sealed class PublishedServicesQueryTests(PostgresTestFixture fixture)
+public sealed class PublishedServicesQueryTests(PostgresTestFixture fixture) : IAsyncLifetime
 {
+    public Task InitializeAsync() => fixture.ResetAsync();
+
+    public Task DisposeAsync() => Task.CompletedTask;
+
     [Fact]
     public async Task GetAsync_OnlyReturnsServicesWithIsInRegisterTrue()
     {

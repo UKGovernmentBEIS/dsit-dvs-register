@@ -139,7 +139,8 @@ namespace DVSRegister.UnitTests
             ConformityIssueDate = DateTime.Now,
             ConformityExpiryDate = DateTime.Now.AddYears(2),
             CabUserId = cabUserId,
-            ServiceStatus = serviceStatus            
+            ServiceStatus = serviceStatus,
+            TrustFrameworkVersionId = 1
 
             };
 

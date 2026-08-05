@@ -165,10 +165,11 @@ namespace DVSRegister
             services.AddScoped<ICommonRepository, CommonRepository>();
             services.AddScoped<ICabRemovalRequestEmailSender, CabRemovalRequestEmailSender>();
             services.AddTransient<LoginEmailSender>();
+            services.AddTransient<ILoginEmailSender>(provider => provider.GetRequiredService<LoginEmailSender>());
             services.AddTransient<CabEmailSender>();
             services.AddTransient<IRemoval2iCheckEmailSender, Removal2iCheckEmailSender>();
-            services.AddTransient<ConsentEmailSender>();
-            services.AddTransient<CabTransferEmailSender>();
+            services.AddTransient<IConsentEmailSender, ConsentEmailSender>();
+            services.AddTransient<ICabTransferEmailSender, CabTransferEmailSender>();
             services.AddTransient<IProviderEditEmailSender, ProviderEditEmailSender>();
             services.AddScoped(opt =>
             {
@@ -178,6 +179,7 @@ namespace DVSRegister
                 string region = string.Format(configuration.GetValue<string>("Region"));
                 return new CognitoClient(userPoolId, clientId, region);
             });
+            services.AddScoped<ICognitoClient>(provider => provider.GetRequiredService<CognitoClient>());
 
             services.AddScoped<ReportFactory>();
             services.AddScoped<CurrentRegisterReportGenerator>();

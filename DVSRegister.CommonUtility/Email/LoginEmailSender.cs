@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace DVSRegister.CommonUtility.Email
 {
-    public class LoginEmailSender : EmailSender
+    public class LoginEmailSender : EmailSender, ILoginEmailSender
     {
         public LoginEmailSender(GovUkNotifyApi govUkNotifyApi, IOptions<GovUkNotifyConfiguration> config) : base(govUkNotifyApi, config)
         {
@@ -33,7 +33,7 @@ namespace DVSRegister.CommonUtility.Email
             return await SendNotification(emailAddress, template, personalisation);
         }
 
-        public async Task<bool> SendEmailCabAccountCreatedToDSIT(string recipientName, string recipientEmail, string cabEmail, string cabName)
+        public async Task<bool> SendEmailCabAccountCreatedToDSIT(string recipientName, string recipientEmail, string cabEmail, string? cabName)
         {
             var template = govUkNotifyConfig.CabAccountCreatedToDSIT;
 
