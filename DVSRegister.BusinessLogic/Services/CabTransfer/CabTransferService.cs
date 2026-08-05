@@ -11,10 +11,10 @@ namespace DVSRegister.BusinessLogic.Services.CabTransfer
     public class CabTransferService: ICabTransferService
     {
         private readonly ICabTransferRepository cabTransferRepository;     
-        private readonly CabTransferEmailSender emailSender;
+        private readonly ICabTransferEmailSender emailSender;
         private readonly IMapper automapper;
 
-        public CabTransferService(ICabTransferRepository cabTransferRepository, CabTransferEmailSender emailSender, IMapper automapper)
+        public CabTransferService(ICabTransferRepository cabTransferRepository, ICabTransferEmailSender emailSender, IMapper automapper)
         {
             this.cabTransferRepository = cabTransferRepository;        
             this.emailSender = emailSender;

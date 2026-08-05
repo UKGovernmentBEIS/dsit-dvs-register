@@ -169,7 +169,7 @@ namespace DVSRegister
             services.AddTransient<CabEmailSender>();
             services.AddTransient<Removal2iCheckEmailSender>();
             services.AddTransient<IConsentEmailSender, ConsentEmailSender>();
-            services.AddTransient<CabTransferEmailSender>();
+            services.AddTransient<ICabTransferEmailSender, CabTransferEmailSender>();
             services.AddTransient<IProviderEditEmailSender, ProviderEditEmailSender>();
             services.AddScoped(opt =>
             {
