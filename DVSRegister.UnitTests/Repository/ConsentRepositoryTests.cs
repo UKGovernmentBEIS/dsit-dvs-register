@@ -12,7 +12,7 @@ using NuGet.Common;
 namespace DVSRegister.UnitTests.Repository
 {
     [Collection("Postgres Collection")]
-    public class ConsentRepositoryTests
+    public class ConsentRepositoryTests : IAsyncLifetime
     {
         private readonly ILogger<ConsentRepository> logger;
         private readonly PostgresTestFixture fixture;
@@ -22,6 +22,10 @@ namespace DVSRegister.UnitTests.Repository
             this.fixture = fixture;
             logger = Substitute.For<ILogger<ConsentRepository>>();
         }
+
+        public Task InitializeAsync() => fixture.ResetAsync();
+
+        public Task DisposeAsync() => Task.CompletedTask;
 
         #region Opening the loop
 

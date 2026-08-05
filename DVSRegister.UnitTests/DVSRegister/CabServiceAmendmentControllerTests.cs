@@ -51,8 +51,8 @@ namespace DVSRegister.UnitTests.DVSRegister
         [Fact]
         public void ServiceAmendmentsSummary_ReadsFromSessionAndReturnsView_Test()
         {
-            var review = TestDataFactory.CreateCertificateReviewDto();
-            Session.Set("CertificateReviewDetails", review);
+            var review = TestDataFactory.CreateCertificateReviewDto().Single();
+            Session.Set("CertificateReviewDetails", System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(review)));
 
             var result = Controller.ServiceAmendmentsSummary();
 
@@ -98,7 +98,11 @@ namespace DVSRegister.UnitTests.DVSRegister
                     Arg.Any<int>(),
                     Arg.Any<string>()
                 )
-                .Returns(new GenericResponse { Success = true });
+                .Returns(new GenericResponse { Success = true, InstanceId = mappedDto.Id });
+
+            CabService
+                .GetServiceDetailsWithProvider(mappedDto.Id, Arg.Any<int>())
+                .Returns(mappedDto);
 
             var result = await Controller.SaveServiceAmendmentsSummary("save");
 

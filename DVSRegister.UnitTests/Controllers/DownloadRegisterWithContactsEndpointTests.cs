@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using NSubstitute;
 
 namespace DVSRegister.UnitTests.Controllers;
@@ -49,10 +51,11 @@ public sealed class DownloadRegisterWithContactsEndpointTests
         var controller = CreateController(reportFactory, query);
         var result = await controller.DownloadRegisterWithContacts(CancellationToken.None);
 
-        var fileResult = Assert.IsType<FileContentResult>(result);
+        var fileResult = Assert.IsType<FileStreamResult>(result);
         Assert.Equal("text/csv", fileResult.ContentType);
 
-        var content = Encoding.UTF8.GetString(fileResult.FileContents);
+        using var reader = new StreamReader(fileResult.FileStream, Encoding.UTF8);
+        var content = await reader.ReadToEndAsync();
         Assert.Contains("Test Provider", content);
     }
 
@@ -87,7 +90,7 @@ public sealed class DownloadRegisterWithContactsEndpointTests
         var controller = CreateController(reportFactory, query);
         var result = await controller.DownloadRegisterWithContacts(CancellationToken.None);
 
-        var fileResult = Assert.IsType<FileContentResult>(result);
+        var fileResult = Assert.IsType<FileStreamResult>(result);
         Assert.Equal("dvs-register-with-contacts_01012025.csv", fileResult.FileDownloadName);
     }
 
@@ -133,10 +136,19 @@ public sealed class DownloadRegisterWithContactsEndpointTests
         {
             HttpContext = new DefaultHttpContext
             {
-                RequestServices = Substitute.For<IServiceProvider>()
+                RequestServices = CreateRequestServices()
             }
         };
 
         return controller;
+    }
+
+    private static IServiceProvider CreateRequestServices()
+    {
+        var services = new ServiceCollection();
+        var tempDataFactory = Substitute.For<ITempDataDictionaryFactory>();
+        tempDataFactory.GetTempData(Arg.Any<HttpContext>()).Returns(Substitute.For<ITempDataDictionary>());
+        services.AddSingleton(tempDataFactory);
+        return services.BuildServiceProvider();
     }
 }

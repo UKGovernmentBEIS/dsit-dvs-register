@@ -85,13 +85,13 @@ public class ResultControllerBaseTests
     }
 
     [Fact]
-    public void FromResult_Returns_409_For_CONFLICT()
+    public void FromResult_Returns_429_For_CONFLICT()
     {
         var ctrl = CreateController();
         var result = ctrl.TestConflict();
 
         var status = Assert.IsType<ObjectResult>(result);
-        Assert.Equal(409, status.StatusCode);
+        Assert.Equal(429, status.StatusCode);
     }
 
     [Fact]

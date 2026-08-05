@@ -1,6 +1,7 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
+using DVSRegister.Data.Reports.RegisterHistory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -178,6 +179,13 @@ namespace DVSRegister.Data
                         }
                     }
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveProvider2i, loggedInUserEmail);
+                    await PublishedRegisterEntryRevisionRecorder.RecordAsync(context,
+                        existingProvider.Services?
+                            .Where(service => service.ServiceStatus == ServiceStatusEnum.Removed)
+                            .Select(service => service.Id) ??
+                        [],
+                        RegisterHistoryActivityKind.Removed, "provider-removal-2i",
+                        $"request:{providerRemovalRequestId}", "Approved provider removal.");
                     await transaction.CommitAsync();
                     genericResponse.Success = true;
                 }
@@ -394,6 +402,9 @@ namespace DVSRegister.Data
                     }
 
                     await context.SaveChangesAsync(TeamEnum.Provider, EventTypeEnum.RemoveProvider2i, loggedInUserEmail);
+                    await PublishedRegisterEntryRevisionRecorder.RecordAsync(context, [existingService.Id],
+                        RegisterHistoryActivityKind.Removed, "service-removal-2i",
+                        $"request:{serviceRemovalRequestId}", "Approved service removal.");
                     await transaction.CommitAsync();
                     genericResponse.Success = true;
                 }
