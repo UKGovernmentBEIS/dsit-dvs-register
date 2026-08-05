@@ -167,7 +167,7 @@ namespace DVSRegister
             services.AddTransient<LoginEmailSender>();
             services.AddTransient<ILoginEmailSender>(provider => provider.GetRequiredService<LoginEmailSender>());
             services.AddTransient<CabEmailSender>();
-            services.AddTransient<Removal2iCheckEmailSender>();
+            services.AddTransient<IRemoval2iCheckEmailSender, Removal2iCheckEmailSender>();
             services.AddTransient<IConsentEmailSender, ConsentEmailSender>();
             services.AddTransient<ICabTransferEmailSender, CabTransferEmailSender>();
             services.AddTransient<IProviderEditEmailSender, ProviderEditEmailSender>();
