@@ -181,7 +181,7 @@ namespace DVSRegister
             });
             services.AddScoped<ICognitoClient>(provider => provider.GetRequiredService<CognitoClient>());
 
-            services.AddScoped<ReportFactory>();
+            services.AddScoped<IReportFactory, ReportFactory>();
             services.AddScoped<CurrentRegisterReportGenerator>();
             services.AddScoped<CurrentRegisterWithContactsReport>();
             services.AddSingleton<IUtcClock, SystemUtcClock>();
