@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>85f97d03-637c-469a-921f-d71c3c742f5a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OneLogin.Authentication\OneLogin.Authentication.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Pages\" />
+  </ItemGroup>
+
+</Project>

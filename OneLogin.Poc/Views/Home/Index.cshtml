@@ -1,0 +1,34 @@
+@model OneLoginClaimsViewModel
+@{
+    ViewData["Title"] = "Your One Login details";
+}
+
+<h1>Your GOV.UK One Login details</h1>
+<p class="success">You are signed in using the integration environment.</p>
+
+<dl class="claims">
+    <div>
+        <dt>Subject</dt>
+        <dd>@Model.Subject</dd>
+    </div>
+    <div>
+        <dt>Email address</dt>
+        <dd>@Model.Email</dd>
+    </div>
+    <div>
+        <dt>Phone number</dt>
+        <dd>@Model.PhoneNumber</dd>
+    </div>
+    <div>
+        <dt>Vector of trust</dt>
+        <dd>@Model.VectorOfTrust</dd>
+    </div>
+    <div>
+        <dt>Session ID</dt>
+        <dd>@Model.SessionId</dd>
+    </div>
+</dl>
+
+<form asp-controller="Home" asp-action="Logout" method="post">
+    <button class="button" type="submit">Sign out</button>
+</form>
