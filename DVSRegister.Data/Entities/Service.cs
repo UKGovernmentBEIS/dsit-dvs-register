@@ -68,11 +68,11 @@ namespace DVSRegister.Data.Entities
         // Foreign key for self-referencing
         [ForeignKey("UnderPinningService")]
         public int? UnderPinningServiceId { get; set; }
-        public Service UnderPinningService { get; set; }
+        public Service? UnderPinningService { get; set; }
 
         [ForeignKey("ManualUnderPinningService")]
         public int? ManualUnderPinningServiceId { get; set; }
-        public ManualUnderPinningService ManualUnderPinningService { get; set; }
+        public ManualUnderPinningService? ManualUnderPinningService { get; set; }
 
         public ServiceDraft ServiceDraft { get; set; }
 
