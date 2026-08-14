@@ -188,10 +188,10 @@ public static class PublishedRegisterEntryRevisionRecorder
             DbsIdentityProfiles = JoinSchemeIdentityProfiles(dbs), IsDbsCertifiedAgainstGpg44 = dbs?.HasGpg44Mapping,
             DbsAuthenticationQualities = JoinSchemeQualityLevels(dbs, QualityTypeEnum.Authentication),
             DbsProtectionQualities = JoinSchemeQualityLevels(dbs, QualityTypeEnum.Protection),
-            UnderpinningServiceName = linked.ServiceName ?? manual.ServiceName,
-            UnderpinningProviderName = linked.Provider.RegisteredName,
-            UnderpinningCab = linked.CabUser.Cab?.CabName ?? manual.Cab.CabName,
-            UnderpinningCertificateExpiryDate = linked.ConformityExpiryDate ?? manual.CertificateExpiryDate
+            UnderpinningServiceName = linked?.ServiceName ?? manual?.ServiceName,
+            UnderpinningProviderName = linked?.Provider.RegisteredName,
+            UnderpinningCab = linked?.CabUser.Cab?.CabName ?? manual?.Cab.CabName,
+            UnderpinningCertificateExpiryDate = linked?.ConformityExpiryDate ?? manual?.CertificateExpiryDate
         };
     }
 
