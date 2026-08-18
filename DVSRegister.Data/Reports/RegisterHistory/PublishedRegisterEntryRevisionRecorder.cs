@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
+using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -101,8 +102,7 @@ public static class PublishedRegisterEntryRevisionRecorder
     }
 
     private static bool IsFieldChangeActivity(RegisterHistoryActivityKind activityKind) =>
-        activityKind is RegisterHistoryActivityKind.ServiceUpdated or RegisterHistoryActivityKind.ProviderUpdated
-            or RegisterHistoryActivityKind.CabTransferred;
+        activityKind is RegisterHistoryActivityKind.ServiceUpdated or RegisterHistoryActivityKind.ProviderUpdated;
 
     public static Task<List<int>> GetPublishedServiceIdsForProviderAsync(DVSRegisterDbContext context, int providerId) =>
         context.Service.Where(service => service.IsInRegister &&
@@ -153,7 +153,7 @@ public static class PublishedRegisterEntryRevisionRecorder
         var linked = service.UnderPinningService;
         var manual = service.ManualUnderPinningService;
 
-        return new PublishedRegisterEntryRevision
+            return new PublishedRegisterEntryRevision
         {
             ServiceKey = service.ServiceKey, ProviderProfileId = service.ProviderProfileId, ServiceId = service.Id,
             ServiceVersion = service.ServiceVersion, EffectiveAtUtc = now, IsInRegister = service.IsInRegister,
@@ -189,8 +189,8 @@ public static class PublishedRegisterEntryRevisionRecorder
             DbsAuthenticationQualities = JoinSchemeQualityLevels(dbs, QualityTypeEnum.Authentication),
             DbsProtectionQualities = JoinSchemeQualityLevels(dbs, QualityTypeEnum.Protection),
             UnderpinningServiceName = linked?.ServiceName ?? manual?.ServiceName,
-            UnderpinningProviderName = linked?.Provider.RegisteredName,
-            UnderpinningCab = linked?.CabUser.Cab?.CabName ?? manual?.Cab.CabName,
+            UnderpinningProviderName = linked?.Provider?.RegisteredName ?? manual?.ProviderName,
+            UnderpinningCab = linked?.CabUser?.Cab?.CabName ?? manual?.Cab?.CabName,
             UnderpinningCertificateExpiryDate = linked?.ConformityExpiryDate ?? manual?.CertificateExpiryDate
         };
     }
@@ -198,8 +198,7 @@ public static class PublishedRegisterEntryRevisionRecorder
     private static ServiceSupSchemeMapping? FindScheme(Service service, string name) =>
         service.ServiceSupSchemeMapping?.SingleOrDefault(x => string.Equals(x.SupplementaryScheme?.SchemeName, name, StringComparison.OrdinalIgnoreCase));
 
-    private static string CreateChangeSummary(PublishedRegisterEntryRevision? previous,
-        PublishedRegisterEntryRevision current)
+    private static string CreateChangeSummary(PublishedRegisterEntryRevision? previous, PublishedRegisterEntryRevision current)
     {
         var changes = new[]
             {
