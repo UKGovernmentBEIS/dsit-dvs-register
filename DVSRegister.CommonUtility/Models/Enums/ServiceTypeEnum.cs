@@ -40,5 +40,16 @@ namespace DVSRegister.CommonUtility.Models.Enums
                     return "Incomplete";
             }
         }
+
+        public static string? GetReportValue(this ServiceTypeEnum value)
+        {
+            return value switch
+            {
+                ServiceTypeEnum.UnderPinning => "Underpinning",
+                ServiceTypeEnum.WhiteLabelled => "White-labelled",
+                ServiceTypeEnum.Neither => "Neither",
+                _ => null
+            };
+        }
     }
 }

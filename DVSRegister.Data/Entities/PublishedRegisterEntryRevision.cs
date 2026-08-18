@@ -44,7 +44,7 @@ public sealed class PublishedRegisterEntryRevision
     public string? TrustFrameworkVersion { get; set; }
     [MaxLength(4000)]
     public string RolesCertifiedAgainst { get; set; } = string.Empty;
-    public bool? IsUnderpinningOrWhiteLabelledService { get; set; }
+    public string? ServiceType { get; set; }
     public bool? IsCertifiedAgainstGpg45Profiles { get; set; }
     [MaxLength(4000)]
     public string IdentityProfiles { get; set; } = string.Empty;
