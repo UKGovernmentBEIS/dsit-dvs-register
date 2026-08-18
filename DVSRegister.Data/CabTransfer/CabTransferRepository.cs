@@ -77,14 +77,23 @@ namespace DVSRegister.Data.CabTransfer
             using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                
-                var entity = await context.CabTransferRequest.Include(c=>c.RequestManagement).Include(c=>c.Service).Where(x=>x.Id == requestId).FirstOrDefaultAsync();
+                var entity = await context.CabTransferRequest
+                    .Include(c => c.RequestManagement)
+                    .Include(c => c.Service)
+                    .Include(c => c.FromCabUser).ThenInclude(c => c!.Cab)
+                    .Include(c => c.ToCab)
+                    .FirstOrDefaultAsync(x => x.Id == requestId);
+        
+                if (entity?.RequestManagement == null || entity.Service == null || (entity.Service.ServiceStatus != ServiceStatusEnum.PublishedUnderReassign && entity.Service.ServiceStatus != ServiceStatusEnum.RemovedUnderReassign))
+                {
+                    throw new InvalidOperationException("Details null or invalid service status");
+                }
+
                 var cabUser = await context.CabUser.Where(x => x.CabEmail == loggedInUserEmail && x.AccountStatus==AccountStatusEnum.Active).FirstOrDefaultAsync();
                 var previousVersions = await context.Service.Where(x => x.ServiceKey == entity.Service.ServiceKey && x.ServiceVersion < entity.Service.ServiceVersion).ToListAsync();
                 var inProgressServices = await context.Service.Include(c=>c.CertificateReview).Include(p=>p.PublicInterestCheck).Include(x=>x.ActionLogs)
                     .Where(x => x.ServiceKey == entity!.Service.ServiceKey && x.ServiceVersion > entity.Service.ServiceVersion).ToListAsync();
-                if (entity != null && entity.RequestManagement != null && entity.Service != null && 
-                (entity.Service.ServiceStatus == ServiceStatusEnum.PublishedUnderReassign || entity.Service.ServiceStatus == ServiceStatusEnum.RemovedUnderReassign))
+                if (entity.RequestManagement != null)
                 {
                     if(approve)
                     {
@@ -121,9 +130,8 @@ namespace DVSRegister.Data.CabTransfer
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ApproveOrRejectReAssign, loggedInUserEmail);
                     if (approve)
                     {
-                        await PublishedRegisterEntryRevisionRecorder.RecordAsync(context, [entity.Service.Id],
-                            RegisterHistoryActivityKind.CabTransferred, "cab-transfer",
-                            $"request:{requestId}", "Approved CAB transfer.");
+                        await PublishedRegisterEntryRevisionRecorder.RecordAsync(context, [entity.Service.Id], RegisterHistoryActivityKind.CabTransferred, "cab-transfer", $"request:{requestId}",
+                            $"Service reassigned : From {entity.FromCabUser.Cab.CabName} to {entity.ToCab.CabName}");
                     }
                    
                     await transaction.CommitAsync();
@@ -133,7 +141,7 @@ namespace DVSRegister.Data.CabTransfer
                 {
                     await transaction.RollbackAsync();
                     genericResponse.Success = true;
-                    throw new InvalidOperationException("Details null or invalid service status");
+                    throw new InvalidOperationException("Request management details are missing");
                 }
                
 
