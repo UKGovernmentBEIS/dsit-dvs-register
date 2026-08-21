@@ -1,6 +1,4 @@
-using DVSRegister.BusinessLogic.Abstractions;
 using DVSRegister.BusinessLogic.Reports;
-using DVSRegister.BusinessLogic.Reports.CurrentRegister;
 
 namespace DVSRegister.UnitTests.Reports;
 
@@ -10,8 +8,7 @@ public class ReportFactoryTests
     public void GetCurrentRegisterGenerator_Returns_Instance()
     {
         var gen = new CurrentRegisterReportGenerator();
-        var contacts = new CurrentRegisterWithContactsReport(NSubstitute.Substitute.For<IUtcClock>());
-        var factory = new ReportFactory(gen, contacts);
+        var factory = new ReportFactory(gen);
 
         var result = factory.GetCurrentRegisterGenerator();
 

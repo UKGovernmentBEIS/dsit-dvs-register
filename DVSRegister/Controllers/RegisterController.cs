@@ -7,7 +7,6 @@ using DVSRegister.BusinessLogic.Services.Register;
 using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
-using DVSRegister.Data.Register;
 using DVSRegister.Models;
 using DVSRegister.Models.Register;
 using DVSRegister.Models.UI;
@@ -25,8 +24,7 @@ namespace DVSRegister.Controllers
         IBucketService bucketService,
         IOptions<S3Configuration> config,
         ILogger<RegisterController> logger,
-        IReportFactory reportFactory,
-        IPublishedServicesQuery publishedServicesQuery) : ResultControllerBase
+        IReportFactory reportFactory) : ResultControllerBase
     {
         private readonly IRegisterService registerService = registerService;
         private readonly ICabService cabService = cabService;
@@ -34,7 +32,6 @@ namespace DVSRegister.Controllers
         private readonly ILogger<RegisterController> logger = logger;
         private readonly S3Configuration config = config.Value;
         private readonly IReportFactory reportFactory = reportFactory;
-        private readonly IPublishedServicesQuery publishedServicesQuery = publishedServicesQuery;
         private readonly decimal TFVersionNumber = 0.4m;
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(10);
 
@@ -219,53 +216,6 @@ namespace DVSRegister.Controllers
             catch (Exception ex)
             {
                 throw new InvalidOperationException("An error occurred while attempting to download the register.", ex);
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
-        }
-
-        [EnableRateLimiting("DownloadRequestLimit")]
-        [HttpGet("download-register-with-contacts")]
-        public async Task<IActionResult> DownloadRegisterWithContacts(CancellationToken ct)
-        {
-            if (!await _semaphore.WaitAsync(TimeSpan.FromSeconds(5), ct))
-            {
-                return StatusCode(StatusCodes.Status429TooManyRequests,
-                    "Too many concurrent downloads. Please try again later.");
-            }
-
-            try
-            {
-                var queryResult = await publishedServicesQuery.GetAsync(ct);
-
-                if (queryResult.IsFailure)
-                {
-                    var errorResult = Result<CsvResult>.Fail(queryResult.Error);
-                    return FromResult(errorResult, ok => File(ok.Data, ok.ContentType, ok.FileName));
-                }
-
-                var services = queryResult.Value;
-
-                if (services.Count == 0)
-                {
-                    var noDataResult = Result<CsvResult>.Fail(
-                        Error.NotFound("No data available for download"));
-
-                    return FromResult(noDataResult, ok => File(ok.Data, ok.ContentType, ok.FileName));
-                }
-
-                var ctx = new ReportContext(CsvReportType.CurrentRegisterWithContacts, null, null);
-                var generator = (IReportGenerator<IEnumerable<PublishedServiceForContactsReport>>)
-                    reportFactory.GetReport(CsvReportType.CurrentRegisterWithContacts);
-
-                var result = await generator.GenerateAsync(services, ctx, ct);
-                return FromResult(result, ok => File(ok.Data, ok.ContentType, ok.FileName));
-            }
-            catch (Exception ex)
-            {
-                return FromError(Error.FromException(ex, "DownloadRegisterWithContacts failed"));
             }
             finally
             {

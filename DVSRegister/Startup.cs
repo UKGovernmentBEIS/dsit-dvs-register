@@ -6,7 +6,6 @@ using AutoMapper.Internal;
 using DVSAdmin.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Abstractions;
 using DVSRegister.BusinessLogic.Reports;
-using DVSRegister.BusinessLogic.Reports.CurrentRegister;
 using DVSRegister.BusinessLogic.Services;
 using DVSRegister.BusinessLogic.Services.CAB;
 using DVSRegister.BusinessLogic.Services.CabTransfer;
@@ -23,7 +22,6 @@ using DVSRegister.Data.CAB;
 using DVSRegister.Data.CabRemovalRequest;
 using DVSRegister.Data.CabTransfer;
 using DVSRegister.Data.Edit;
-using DVSRegister.Data.Register;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
 using DVSRegister.Services;
@@ -183,9 +181,7 @@ namespace DVSRegister
 
             services.AddScoped<IReportFactory, ReportFactory>();
             services.AddScoped<CurrentRegisterReportGenerator>();
-            services.AddScoped<CurrentRegisterWithContactsReport>();
             services.AddSingleton<IUtcClock, SystemUtcClock>();
-            services.AddScoped<IPublishedServicesQuery, PublishedServicesQuery>();
         }
 
         public void ConfigureAutomapperServices(IServiceCollection services)
