@@ -130,8 +130,10 @@ namespace DVSRegister.Data.CabTransfer
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.ApproveOrRejectReAssign, loggedInUserEmail);
                     if (approve)
                     {
+                        var fromCabName = entity.FromCabUser?.Cab?.CabName ?? "unknown";
+                        var toCabName = entity.ToCab?.CabName ?? "unknown";
                         await PublishedRegisterEntryRevisionRecorder.RecordAsync(context, [entity.Service.Id], RegisterHistoryActivityKind.CabTransferred, "cab-transfer", $"request:{requestId}",
-                            $"Service reassigned : From {entity.FromCabUser.Cab.CabName} to {entity.ToCab.CabName}");
+                            $"Service reassigned : From {fromCabName} to {toCabName}");
                     }
                    
                     await transaction.CommitAsync();
