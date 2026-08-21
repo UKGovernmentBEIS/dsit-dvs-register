@@ -142,7 +142,8 @@ public static class PublishedRegisterEntryRevisionRecorder
             .Include(service => service.UnderPinningService).ThenInclude(underpinning => underpinning.Provider)
             .Include(service => service.UnderPinningService).ThenInclude(underpinning => underpinning.CabUser)
                 .ThenInclude(cabUser => cabUser.Cab)
-            .Include(service => service.ManualUnderPinningService).ThenInclude(underpinning => underpinning.Cab);
+            .Include(service => service.ManualUnderPinningService).ThenInclude(underpinning => underpinning.Cab)
+            .Include(service=> service.ServiceRemovalRequest);
 
     private static PublishedRegisterEntryRevision Map(Service service, RegisterHistoryActivityKind activityKind,
         string sourceType, string sourceId, string additionalInformation, DateTimeOffset now)
@@ -166,7 +167,11 @@ public static class PublishedRegisterEntryRevisionRecorder
             CompanyAddress = service.CompanyAddress, PublicEmailAddress = service.Provider.PublicContactEmail,
             PublicTelephoneNumber = service.Provider.ProviderTelephoneNumber, WebsiteAddress = service.WebSiteAddress,
             SubmittedOn = service.ResubmissionTime ?? service.CreatedTime, PublishedOn = service.PublishedTime,
-            RemovedOn = service.RemovedTime, TrustFrameworkVersion = service.TrustFrameworkVersion.Version.ToString("0.0", CultureInfo.InvariantCulture),
+            RemovedOn = service.RemovedTime ?? service.ServiceRemovalRequest
+            ?.Where(request => request.RemovedTime.HasValue)
+            .MaxBy(request => request.RemovedTime)
+            ?.RemovedTime,
+                TrustFrameworkVersion = service.TrustFrameworkVersion.Version.ToString("0.0", CultureInfo.InvariantCulture),
             RolesCertifiedAgainst = Join(service.ServiceRoleMapping?.OrderBy(x => x.Role.Order).Select(x => x.Role.RoleName)),
             ServiceType = service.ServiceType?.GetReportValue(),
             IsCertifiedAgainstGpg45Profiles = service.HasGPG45,

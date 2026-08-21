@@ -78,7 +78,7 @@ namespace DVSRegister.Data.Entities
 
         [ForeignKey("User")]
         public int? RemovalRequestedUser{ get; set; }
-        public ICollection<ServiceRemovalRequest?> ServiceRemovalRequest { get; set; }
+        public ICollection<ServiceRemovalRequest> ServiceRemovalRequest { get; set; }
         public ICollection<ActionLogs> ActionLogs { get; set; }
         public ProviderRemovalRequestServiceMapping? ProviderRemovalRequestServiceMapping { get; set; }
         public string? TOUFileName { get; set; }
