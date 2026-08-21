@@ -134,8 +134,10 @@ namespace DVSRegister.Data
                     {
                         foreach (var service in existingProvider.Services.Where(x=>x.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation))
                         {
+                            var removedAt = DateTime.UtcNow;
                             service.ServiceStatus = ServiceStatusEnum.Removed;
-                            service.ModifiedTime = DateTime.UtcNow;
+                            service.ModifiedTime = removedAt;
+                            service.RemovedTime = removedAt;
                             service.IsInRegister = false;
 
                             if (service.TrustmarkNumber != null)
@@ -368,10 +370,12 @@ namespace DVSRegister.Data
                 var serviceRemovalRequest = await context.ServiceRemovalRequest.FirstOrDefaultAsync(p => p.Id == serviceRemovalRequestId && p.ServiceId == serviceId);
                 if (existingService != null && serviceRemovalRequest != null && existingService.ServiceStatus == ServiceStatusEnum.AwaitingRemovalConfirmation)
                 {
+                    var removedAt = DateTime.UtcNow;
                     existingService.IsInRegister = false;
-                    existingService.ModifiedTime = DateTime.UtcNow;
+                    existingService.ModifiedTime = removedAt;
                     existingService.ServiceStatus = ServiceStatusEnum.Removed;
-                    serviceRemovalRequest.RemovedTime = DateTime.UtcNow;
+                    existingService.RemovedTime = removedAt;
+                    serviceRemovalRequest.RemovedTime = removedAt;
                     serviceRemovalRequest.Token = null;
                     serviceRemovalRequest.TokenId = null;
                     serviceRemovalRequest.IsRequestPending = false;
