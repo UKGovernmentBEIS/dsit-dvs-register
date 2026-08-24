@@ -18,12 +18,12 @@ namespace DVSRegister.BusinessLogic.Services
         private readonly IRemoveProvider2iRepository removeProvider2iRepository;
 
         private readonly IMapper mapper;
-        private readonly Removal2iCheckEmailSender emailSender;
+        private readonly IRemoval2iCheckEmailSender emailSender;
         private readonly ICabRepository cabRepository;
 
 
         public RemoveProvider2iService(IRemoveProvider2iRepository removeProvider2iRepository, 
-            ICabRepository cabRepository, IMapper mapper, Removal2iCheckEmailSender emailSender)
+            ICabRepository cabRepository, IMapper mapper, IRemoval2iCheckEmailSender emailSender)
         {         
             this.removeProvider2iRepository = removeProvider2iRepository;
             this.mapper = mapper;

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace DVSRegister.CommonUtility.Email
 {
-    public class Removal2iCheckEmailSender : EmailSender
+    public class Removal2iCheckEmailSender : EmailSender, IRemoval2iCheckEmailSender
     {
         public Removal2iCheckEmailSender(GovUkNotifyApi govUkNotifyApi, IOptions<GovUkNotifyConfiguration> config) : base(govUkNotifyApi, config)
         {
