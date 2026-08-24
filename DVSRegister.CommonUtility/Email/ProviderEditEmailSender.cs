@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace DVSRegister.CommonUtility.Email
 {
-    public class ProviderEditEmailSender : EmailSender
+    public class ProviderEditEmailSender : EmailSender, IProviderEditEmailSender
     {
         public ProviderEditEmailSender(GovUkNotifyApi govUkNotifyApi, IOptions<GovUkNotifyConfiguration> config) : base(govUkNotifyApi, config)
         {

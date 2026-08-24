@@ -32,8 +32,25 @@ namespace DVSRegister.UnitTests.Repository
                 .Options;
 
             DbContext = new DVSRegisterDbContext(options);
+            SeedDatabase();
+        }
 
-            DbContext.Database.MigrateAsync().Wait();
+        public async Task ResetAsync()
+        {
+            await DbContext.DisposeAsync();
+            var options = new DbContextOptionsBuilder<DVSRegisterDbContext>()
+                .UseNpgsql(_postgresContainer.GetConnectionString())
+                .Options;
+
+            DbContext = new DVSRegisterDbContext(options);
+            await DbContext.Database.EnsureDeletedAsync();
+            await DbContext.Database.MigrateAsync();
+            SeedDatabase();
+        }
+
+        private void SeedDatabase()
+        {
+            DbContext.Database.Migrate();
             DbContext.User.Add(new User { UserName = "test.user@dsit.gov.com", Email = "test.user@dsit.gov.com", Profile = "DSIT", CreatedDate = DateTime.UtcNow });
             DbContext.User.Add(new User { UserName = "test.user123@dsit.gov.com", Email = "test.user123@dsit.gov.com", Profile = "DSIT", CreatedDate = DateTime.UtcNow });
 

@@ -2,15 +2,14 @@
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
 using DVSRegister.CommonUtility.Models;
-using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Data;
 using Microsoft.Extensions.Configuration;
 
-namespace DVSRegister.BusinessLogic.Services
+namespace DVSRegister.BusinessLogic.Services.Register
 {
     public class RegisterService : IRegisterService
     {
-        private readonly IRegisterRepository registerRepository; 
+        private readonly IRegisterRepository registerRepository;
         private readonly IConfiguration configuration;
         private readonly IMapper automapper;
 
@@ -18,12 +17,15 @@ namespace DVSRegister.BusinessLogic.Services
         public RegisterService(IRegisterRepository registerRepository, IMapper automapper, IConfiguration configuration)
         {
             this.registerRepository = registerRepository;
-            this.configuration = configuration; 
+            this.configuration = configuration;
             this.automapper = automapper;
-         }
-        public async Task<PaginatedResult<ProviderProfileDto>> GetProviders(List<int> roles, List<int> schemes, List<int> tfVersions, int pageNum, string searchText = "", string sortBy = "")
-        {        
-            var providers = await registerRepository.GetProviders(roles, schemes, tfVersions, pageNum, searchText, sortBy);
+        }
+
+        public async Task<PaginatedResult<ProviderProfileDto>> GetProviders(List<int> roles, List<int> schemes,
+            List<int> tfVersions, int pageNum, string searchText = "", string sortBy = "")
+        {
+            var providers =
+                await registerRepository.GetProviders(roles, schemes, tfVersions, pageNum, searchText, sortBy);
             List<ProviderProfileDto> providerProfileDtos = automapper.Map<List<ProviderProfileDto>>(providers.Items);
             return new PaginatedResult<ProviderProfileDto>
             {
@@ -32,16 +34,19 @@ namespace DVSRegister.BusinessLogic.Services
             };
         }
 
-        public async Task<PaginatedResult<ServiceDto>> GetServices(List<int> roles, List<int> schemes, List<int> tfVersions, int pageNum, string searchText = "", string sortBy = "")
+        public async Task<PaginatedResult<ServiceDto>> GetServices(List<int> roles, List<int> schemes,
+            List<int> tfVersions, int pageNum, string searchText = "", string sortBy = "")
         {
-            var services = await registerRepository.GetServices(roles, schemes, tfVersions, pageNum, searchText, sortBy);
+            var services =
+                await registerRepository.GetServices(roles, schemes, tfVersions, pageNum, searchText, sortBy);
             List<ServiceDto> serviceDtos = automapper.Map<List<ServiceDto>>(services.Items);
 
-            var servicesWithTrustMark = serviceDtos.Where(x=>x.TrustmarkNumber!=null).ToList();
+            var servicesWithTrustMark = serviceDtos.Where(x => x.TrustmarkNumber != null).ToList();
             foreach (ServiceDto serviceDto in servicesWithTrustMark)
             {
                 serviceDto.TrustmarkNumber.SvgLogoLink = GetSVGLogoEndPoint(serviceDto.TrustmarkNumber.SvgLogoLink);
             }
+
             return new PaginatedResult<ServiceDto>
             {
                 Items = serviceDtos,
@@ -58,24 +63,27 @@ namespace DVSRegister.BusinessLogic.Services
 
             return providerProfileDto;
         }
+
         public async Task<ServiceDto> GetServiceDetails(int serviceId)
         {
             var service = await registerRepository.GetServiceDetails(serviceId);
             ServiceDto serviceDto = automapper.Map<ServiceDto>(service);
-        
-            if(serviceDto.TrustmarkNumber!=null)
+
+            if (serviceDto.TrustmarkNumber != null)
             {
                 serviceDto.TrustmarkNumber.SvgLogoLink = GetSVGLogoEndPoint(serviceDto.TrustmarkNumber.SvgLogoLink);
             }
+
             serviceDto.LastUpdated = await registerRepository.GetServiceLastUpdatedTime(serviceId);
 
 
             return serviceDto;
         }
+
         public async Task<PaginatedResult<GroupedResult<ActionLogsDto>>> GetUpdateLogs(int pageNumber)
         {
             var list = await registerRepository.GetUpdateLogs(pageNumber);
-      
+
             var groupedDtos = list.Items.Select(group => new GroupedResult<ActionLogsDto>
             {
                 LogDate = group.LogDate,
@@ -95,12 +103,12 @@ namespace DVSRegister.BusinessLogic.Services
         {
             return await registerRepository.GetLastUpdatedDate();
         }
+
         public async Task<List<ServiceDto>> GetPublishedServices()
         {
             var services = await registerRepository.GetPublishedServices();
             List<ServiceDto> serviceDtos = automapper.Map<List<ServiceDto>>(services);
             return serviceDtos;
-
         }
 
         public string GetSVGLogoEndPoint(string svgLink)
@@ -109,13 +117,12 @@ namespace DVSRegister.BusinessLogic.Services
             if (useCloudFront)
             {
                 string cloudFrontBaseUrl = configuration["CloudfrontDomain"]!;
-               return  $"https://{cloudFrontBaseUrl}/{svgLink}";
+                return $"https://{cloudFrontBaseUrl}/{svgLink}";
             }
             else
             {
-               return "/register/download-logo?logoKey=" + svgLink;
+                return "/register/download-logo?logoKey=" + svgLink;
             }
         }
-
     }
 }

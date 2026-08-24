@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace DVSRegister.CommonUtility.Email
 {
-    public class ConsentEmailSender : EmailSender
+    public class ConsentEmailSender : EmailSender, IConsentEmailSender
     {
         public ConsentEmailSender(GovUkNotifyApi govUkNotifyApi, IOptions<GovUkNotifyConfiguration> config) : base(govUkNotifyApi, config)
         {
