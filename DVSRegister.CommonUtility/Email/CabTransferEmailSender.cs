@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
  
 namespace DVSRegister.CommonUtility.Email
 {
-    public class CabTransferEmailSender : EmailSender
+    public class CabTransferEmailSender : EmailSender, ICabTransferEmailSender
     {
         public CabTransferEmailSender(GovUkNotifyApi govUkNotifyApi, IOptions<GovUkNotifyConfiguration> config) : base(govUkNotifyApi, config)
         {

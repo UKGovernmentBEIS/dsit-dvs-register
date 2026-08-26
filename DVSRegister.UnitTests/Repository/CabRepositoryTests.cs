@@ -10,7 +10,7 @@ using NSubstitute;
 namespace DVSRegister.UnitTests.Repository
 {
     [Collection("Postgres Collection")]
-    public class CabRepositoryTests
+    public class CabRepositoryTests : IAsyncLifetime
     {
         private  readonly ILogger<CabRepository> logger;
         private readonly PostgresTestFixture fixture;
@@ -20,6 +20,10 @@ namespace DVSRegister.UnitTests.Repository
             this.fixture = fixture;
             logger = Substitute.For<ILogger<CabRepository>>();
         }
+
+        public Task InitializeAsync() => fixture.ResetAsync();
+
+        public Task DisposeAsync() => Task.CompletedTask;
 
 
         #region Provider
@@ -341,7 +345,7 @@ namespace DVSRegister.UnitTests.Repository
            .Include(p => p.ServiceQualityLevelMapping).ThenInclude(p => p.QualityLevel)
            .Include(p => p.ServiceIdentityProfileMapping).ThenInclude(p => p.IdentityProfile)
            .Include(p => p.ServiceSupSchemeMapping).ThenInclude(p => p.SupplementaryScheme)
-           .FirstOrDefaultAsync(p => p.ServiceKey == newGenericResponse.InstanceId && p.IsCurrent == true);// fetch the saved new version
+           .FirstOrDefaultAsync(p => p.Id == newGenericResponse.InstanceId && p.IsCurrent == true);// fetch the saved new version
 
 
             Assert.True(newGenericResponse.Success);
@@ -396,7 +400,7 @@ namespace DVSRegister.UnitTests.Repository
             .FirstOrDefaultAsync(p => p.Id == amendmentsResponse.InstanceId);
 
             Assert.NotNull(savedAmendedService);
-            Assert.Null(savedAmendedService.CertificateReview);
+            Assert.NotNull(savedAmendedService.CertificateReview);
 
             Assert.Equal(amendedService.ServiceVersion, savedAmendedService.ServiceVersion);
             Assert.Equal("sample service 1 amended", savedAmendedService.ServiceName);

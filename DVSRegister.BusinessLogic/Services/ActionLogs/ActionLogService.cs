@@ -68,17 +68,22 @@ namespace DVSRegister.BusinessLogic.Services
                             else
                             {
                                 StringBuilder stringBuilder = new();
-                                if (previousData.ContainsKey(Constants.RegisteredName))
+                                var businessDetailKeys = new[]
                                 {
-                                    stringBuilder.Append(previousData[Constants.RegisteredName].FirstOrDefault() + " to " + updatedData[Constants.RegisteredName].FirstOrDefault() + " (" + Constants.RegisteredName + ")");
-                                }
+                                    Constants.RegisteredName,
+                                    Constants.TradingName,
+                                    Constants.CompanyRegistrationNumber,
+                                    Constants.ParentCompanyRegisteredName,
+                                    Constants.ParenyCompanyLocation
+                                };
 
-                                if (previousData.ContainsKey(Constants.TradingName))
+                                foreach (var key in businessDetailKeys.Where(previousData.ContainsKey))
                                 {
                                     if (!string.IsNullOrEmpty(stringBuilder.ToString()))
                                         stringBuilder.AppendLine();
 
-                                    stringBuilder.Append(previousData[Constants.TradingName].FirstOrDefault() + " to " + updatedData[Constants.TradingName].FirstOrDefault() + " (" + Constants.TradingName + ")");
+                                    stringBuilder.Append(previousData[key].FirstOrDefault() + " to " +
+                                                         updatedData[key].FirstOrDefault() + " (" + key + ")");
                                 }
                                 displayMessage = stringBuilder.ToString();
                                 actionLog.ShowInRegisterUpdates = actionLogsDto.IsProviderPreviouslyPublished ? true : false;

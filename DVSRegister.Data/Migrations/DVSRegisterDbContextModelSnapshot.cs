@@ -1662,6 +1662,231 @@ namespace DVSRegister.Data.Migrations
                     b.ToTable("PublicInterestCheck");
                 });
 
+            modelBuilder.Entity("DVSRegister.Data.Entities.PublishedRegisterEntryRevision", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("ActivityKind")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("AdditionalInformation")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("Cab")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<DateTime?>("CertificateExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("CertificateIssueDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CompanyAddress")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DbsAuthenticationQualities")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("DbsIdentityProfiles")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("DbsProtectionQualities")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateTimeOffset>("EffectiveAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FormatVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Gpg44AuthenticationQualities")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("Gpg44ProtectionQualities")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("IdentityProfiles")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<bool?>("IsCertifiedAgainstGpg44")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsCertifiedAgainstGpg45Profiles")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsCertifiedAgainstSupplementaryCodes")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsDbsCertifiedAgainstGpg44")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsInRegister")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsRightToRentCertifiedAgainstGpg44")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool?>("IsRightToWorkCertifiedAgainstGpg44")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<int>("ProviderProfileId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PublicEmailAddress")
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)");
+
+                    b.Property<string>("PublicTelephoneNumber")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("PublicationType")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<DateTime?>("PublishedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("RemovedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RightToRentAuthenticationQualities")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("RightToRentIdentityProfiles")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("RightToRentProtectionQualities")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("RightToWorkAuthenticationQualities")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("RightToWorkIdentityProfiles")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("RightToWorkProtectionQualities")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("RolesCertifiedAgainst")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<int>("ServiceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ServiceKey")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ServiceName")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<string>("ServiceType")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ServiceVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SourceId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("SourceType")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("SubmittedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SupplementaryCodes")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("TrustFrameworkVersion")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("UnderpinningCab")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<DateTime?>("UnderpinningCertificateExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UnderpinningProviderName")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<string>("UnderpinningServiceName")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<string>("WebsiteAddress")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EffectiveAtUtc", "ActivityKind", "ServiceKey");
+
+                    b.HasIndex("ServiceKey", "EffectiveAtUtc", "Id");
+
+                    b.HasIndex("SourceType", "SourceId", "ServiceKey", "ActivityKind")
+                        .IsUnique();
+
+                    b.ToTable("PublishedRegisterEntryRevisions", t =>
+                        {
+                            t.HasCheckConstraint("CK_PublishedRegisterEntryRevisions_PositiveKeys", "\"ServiceKey\" > 0 AND \"ServiceVersion\" > 0 AND \"FormatVersion\" > 0");
+                        });
+                });
+
             modelBuilder.Entity("DVSRegister.Data.Entities.QualityLevel", b =>
                 {
                     b.Property<int>("Id")
