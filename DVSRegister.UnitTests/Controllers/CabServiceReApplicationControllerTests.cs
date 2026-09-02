@@ -25,7 +25,7 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
     public async Task ServiceDraftDetails_ServiceWithoutManualUnderpinning_ReturnsViewAndStoresSummary()
     {
         var service = CreateServiceDto(10);
-        CabService.GetServiceDetails(10, 1).Returns(service);
+        CabService.GetServiceDetails(10, 123).Returns(service);
 
         var result = await Controller.ServiceDraftDetails(10);
 
@@ -40,7 +40,7 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
     {
         var service = CreateServiceDto(10);
         service.ManualUnderPinningServiceId = 25;
-        CabService.GetServiceDetails(10, 1).Returns(service);
+        CabService.GetServiceDetails(10, 123).Returns(service);
         CabService.IsManualServiceLinkedToMultipleServices(25).Returns(true);
 
         var result = await Controller.ServiceDraftDetails(10);
@@ -54,7 +54,7 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
     [Fact]
     public async Task ServiceDraftDetails_ServiceLookupFails_PropagatesException()
     {
-        CabService.GetServiceDetails(10, 1).Returns<Task<ServiceDto>>(_ => throw new InvalidOperationException("lookup failed"));
+        CabService.GetServiceDetails(10, 123).Returns<Task<ServiceDto>>(_ => throw new InvalidOperationException("lookup failed"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => Controller.ServiceDraftDetails(10));
 
@@ -118,11 +118,11 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
     [Fact]
     public async Task BeforeYouSubmitNewCertificate_ValidProviderAndExpiredCertificate_ClearsCertificateAndReturnsView()
     {
-        UserService.GetUser(Arg.Any<string>()).Returns(new CabUserDto { Id = 8, CabId = 1 });
-        CabService.CheckValidCabAndProviderProfile(30, 1).Returns(true);
+        UserService.GetUser(Arg.Any<string>()).Returns(new CabUserDto { Id = 8, CabId = 123 });
+        CabService.CheckValidCabAndProviderProfile(30, 123).Returns(true);
         var service = CreateServiceDto(20);
         service.ConformityExpiryDate = DateTime.Today.AddDays(-1);
-        CabService.GetServiceDetails(20, 1).Returns(service);
+        CabService.GetServiceDetails(20, 123).Returns(service);
 
         var result = await Controller.BeforeYouSubmitNewCertificate(40, 30, 20, true);
 
@@ -144,11 +144,11 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
     [Fact]
     public async Task BeforeYouSubmitNewCertificate_CertificateExpiresToday_PreservesCertificate()
     {
-        UserService.GetUser(Arg.Any<string>()).Returns(new CabUserDto { Id = 8, CabId = 1 });
-        CabService.CheckValidCabAndProviderProfile(30, 1).Returns(true);
+        UserService.GetUser(Arg.Any<string>()).Returns(new CabUserDto { Id = 8, CabId = 123 });
+        CabService.CheckValidCabAndProviderProfile(30, 123).Returns(true);
         var service = CreateServiceDto(20);
         service.ConformityExpiryDate = DateTime.Today;
-        CabService.GetServiceDetails(20, 1).Returns(service);
+        CabService.GetServiceDetails(20, 123).Returns(service);
 
         await Controller.BeforeYouSubmitNewCertificate(40, 30, 20, false);
 
@@ -161,8 +161,8 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
     [Fact]
     public async Task BeforeYouSubmitNewCertificate_ProviderDoesNotBelongToCab_ThrowsArgumentException()
     {
-        UserService.GetUser(Arg.Any<string>()).Returns(new CabUserDto { CabId = 1 });
-        CabService.CheckValidCabAndProviderProfile(30, 1).Returns(false);
+        UserService.GetUser(Arg.Any<string>()).Returns(new CabUserDto { CabId = 123 });
+        CabService.CheckValidCabAndProviderProfile(30, 123).Returns(false);
 
         var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
             Controller.BeforeYouSubmitNewCertificate(40, 30, 20, false));
@@ -184,7 +184,7 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
     public async Task ContinueSubmission_Reupload_RedirectsToTrustFrameworkWithoutInspectingApplications()
     {
         Session.Set("ServiceSummary", new ServiceSummaryViewModel { ServiceKey = 40, ProviderProfileId = 30, IsReupload = true });
-        CabService.GetServiceList(40, 1).Returns(new List<ServiceDto>());
+        CabService.GetServiceList(40, 123).Returns(new List<ServiceDto>());
 
         var result = await Controller.ContinueSubmission();
 
@@ -195,7 +195,7 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
     public async Task ContinueSubmission_NewSubmissionWithoutExistingApplications_RedirectsToTrustFramework()
     {
         Session.Set("ServiceSummary", new ServiceSummaryViewModel { ServiceKey = 40, ProviderProfileId = 30, IsReupload = false });
-        CabService.GetServiceList(40, 1).Returns(new List<ServiceDto> { CreateServiceDto(0) });
+        CabService.GetServiceList(40, 123).Returns(new List<ServiceDto> { CreateServiceDto(0) });
 
         var result = await Controller.ContinueSubmission();
 
@@ -211,7 +211,7 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
         Session.Set("ServiceSummary", new ServiceSummaryViewModel { ServiceKey = 40, IsReupload = false });
         var service = CreateServiceDto(12);
         service.ServiceStatus = status;
-        CabService.GetServiceList(40, 1).Returns(new List<ServiceDto> { service });
+        CabService.GetServiceList(40, 123).Returns(new List<ServiceDto> { service });
 
         var result = await Controller.ContinueSubmission();
 
@@ -226,7 +226,7 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
         var service = CreateServiceDto(12);
         service.ServiceStatus = ServiceStatusEnum.UpdatesRequested;
         service.serviceDraft = new ServiceDraftDto { PreviousServiceStatus = ServiceStatusEnum.Submitted };
-        CabService.GetServiceList(40, 1).Returns(new List<ServiceDto> { service });
+        CabService.GetServiceList(40, 123).Returns(new List<ServiceDto> { service });
 
         var result = await Controller.ContinueSubmission();
 
@@ -237,7 +237,7 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
     public async Task ContinueSubmission_ServiceListLookupFails_PropagatesException()
     {
         Session.Set("ServiceSummary", new ServiceSummaryViewModel { ServiceKey = 40 });
-        CabService.GetServiceList(40, 1).Returns<Task<List<ServiceDto>>>(_ => throw new InvalidOperationException("list failed"));
+        CabService.GetServiceList(40, 123).Returns<Task<List<ServiceDto>>>(_ => throw new InvalidOperationException("list failed"));
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => Controller.ContinueSubmission());
     }
@@ -249,8 +249,8 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
         var blockingService = CreateServiceDto(12);
         blockingService.ServiceStatus = ServiceStatusEnum.Submitted;
         var details = CreateServiceDto(12);
-        CabService.GetServiceList(40, 1).Returns(new List<ServiceDto> { blockingService });
-        CabService.GetServiceDetailsWithProvider(12, 1).Returns(details);
+        CabService.GetServiceList(40, 123).Returns(new List<ServiceDto> { blockingService });
+        CabService.GetServiceDetailsWithProvider(12, 123).Returns(details);
 
         var result = await Controller.StartInProgressApplicationRemoval();
 
@@ -259,14 +259,14 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
         Assert.Equal(40, Controller.ViewBag.ServiceKey);
         Assert.Equal(30, Controller.ViewBag.ProviderProfileId);
         Assert.Equal(20, Controller.ViewBag.ServiceId);
-        await CabService.Received(1).GetServiceDetailsWithProvider(12, 1);
+        await CabService.Received(1).GetServiceDetailsWithProvider(12, 123);
     }
 
     [Fact]
     public async Task StartInProgressApplicationRemoval_NoServices_ThrowsNullReferenceException()
     {
         Session.Set("ServiceSummary", new ServiceSummaryViewModel { ServiceKey = 40 });
-        CabService.GetServiceList(40, 1).Returns(new List<ServiceDto>());
+        CabService.GetServiceList(40, 123).Returns(new List<ServiceDto>());
 
         await Assert.ThrowsAsync<NullReferenceException>(() => Controller.StartInProgressApplicationRemoval());
     }
@@ -287,7 +287,7 @@ public class CabServiceReApplicationControllerTests : ControllerTestBase<CabServ
             ServiceSupSchemeMapping = [],
             CertificateReview = [],
             PublicInterestCheck = [],
-            CabUser = new CabUserDto { CabId = 1 },
+            CabUser = new CabUserDto { CabId = 123 },
             TrustFrameworkVersion = new TrustFrameworkVersionDto { Version = Constants.TFVersion1_0 },
             FileName = "certificate.pdf",
             FileLink = "certificate-link",
