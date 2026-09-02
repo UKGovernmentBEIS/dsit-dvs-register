@@ -1,5 +1,13 @@
 **/bin/
 **/obj/
 **/out/
-
+**/node_modules/
+/.vs/
+**/.vscode/
+.git/
+.gitignore
 Dockerfile*
+compose.override.yml
+*.user
+*.suo
+.env
