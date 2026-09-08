@@ -1,4 +1,5 @@
 ﻿@model DVSRegister.BusinessLogic.Models.CAB.ServiceDto
+@using DVSRegister.CommonUtility;
 @{
     ViewData["Title"] = "UK CertifID trust mark for "+@Model.ServiceName ;
     Layout = "~/Views/Shared/_LayoutConsentPages.cshtml";
@@ -149,7 +150,7 @@
                         <div class="govuk-summary-list__row">
                             <p class="govuk-body">
                                 When using the trust mark, you should refer to the Terms of Use you signed with your Conformity Assessment
-                                    Body and to the <a href="#" class="govuk-link">usage guidelines found on the GOV.UK website.</a>
+                                    Body and to the <a href="@Constants.TrustMarkUsageGuideLineLink" class="govuk-link">usage guidelines found on the GOV.UK website.</a>
                             </p>
                            
                         </div>

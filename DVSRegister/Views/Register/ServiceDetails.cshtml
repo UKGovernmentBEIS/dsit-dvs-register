@@ -6,6 +6,7 @@
 @model ServiceDto
 @{
     bool isAbove0_3 = Model?.TrustFrameworkVersion?.Version >= Constants.TFVersion0_4;
+    bool isVersion1 = Model?.TrustFrameworkVersion.Version == Constants.TFVersion1_0;
     bool showTmNumber = Model?.TrustmarkNumber != null;
     ViewData["Title"] = "Service details";
     Layout = "~/Views/Shared/_Layout_Register.cshtml";
@@ -223,6 +224,18 @@
                                 <dt class="govuk-summary-list__key">Certificate of conformity's date of expiry</dt>
                                 <dd class="govuk-summary-list__value">@DateTimeExtensions.FormatDateTime(Model.ConformityExpiryDate, "dd MMMM yyyy")</dd>
                             </div>
+                            @if (isVersion1)
+                            {
+                                <div class="govuk-summary-list__row">
+                                    <dt class="govuk-summary-list__key">
+                                        Following vouching guidance
+                                    </dt>
+                                    <dd class="govuk-summary-list__value">
+                                        @(Model.HasVouchingGuidance == true ? "Yes" : "No")
+                                    </dd>
+
+                                </div>
+                            }
                         </dl>
                     </div>
                 </div>
@@ -432,16 +445,7 @@
                 }
 
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible govuk-!-margin-bottom-7">
-                <h3 class="govuk-heading-m">Explore the Topic</h3>
-                <p class="govuk-body">
-                    <strong><a href="https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#rules-for-all-identity-and-attribute-service-providers" class="govuk-link">Role types</a></strong>
-                </p>
-                <p class="govuk-body">
-                    <strong><a href="https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles" class="govuk-link">Identity profiles</a></strong>
-                </p>
-                <p class="govuk-body">
-                    <strong><a href="https://www.gov.uk/government/publications/digital-identity-document-validation-technology-idvt" class="govuk-link">Supplementary codes</a></strong>
-                </p>
+                @await Html.PartialAsync("~/Views/Register/PartialViews/_ExploreTopicLinks.cshtml")
             </div>
         </div>
     </main>
