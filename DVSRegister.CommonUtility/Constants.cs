@@ -93,5 +93,10 @@
         public const string CabUsersEmailRegex = @"^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.(com|co\.uk)|dsit\.gov\.uk)$";
 
         public const string TrustMarkUsageGuideLineLink = "https://www.gov.uk/government/publications/uk-certifid-trust-mark-usage-guidelines-for-digital-verification-service-providers/uk-certifid-trust-mark-usage-guidelines-for-digital-verification-service-dvs-providers";
+        
+        //Explore the topic Links
+        public const string RoleTypesGuidanceLink = "https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-beta-version/uk-digital-identity-and-attributes-trust-framework-beta-version#how-organisations-participate-in-the-trust-framework";
+        public const string IdentityProfilesGuidanceLink = "https://www.gov.uk/government/publications/identity-proofing-and-verification-of-an-individual/identity-profiles";
+        public const string SupplementaryCodesGuidanceLink = "https://www.gov.uk/government/collections/supplementary-codes-for-digital-verification-services";
     }
 }
