@@ -8,6 +8,7 @@
 @{
     bool hidePublishStatus = ViewData["HidePublishStatus"] as bool? ?? false;
     bool isAbove0_3 = Model?.TrustFrameworkVersion?.Version >= Constants.TFVersion0_4;
+    bool isVersion1 = Model?.TrustFrameworkVersion.Version == Constants.TFVersion1_0;
 }
 
 <dl class="govuk-summary-list govuk-!-margin-bottom-8">
@@ -231,5 +232,16 @@
             @DateTimeExtensions.FormatDateTime(@Model.ConformityExpiryDate, "dd MMMM yyyy")
         </dd>
     </div>
+    @if (isVersion1)
+    {
+        <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+                Following vouching guidance
+            </dt>
+            <dd class="govuk-summary-list__value">
+                @(Model.HasVouchingGuidance == true ? "Yes" : "No")
+            </dd>           
+        </div>
+    }
 </dl>
 
