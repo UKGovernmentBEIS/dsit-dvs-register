@@ -57,16 +57,29 @@ namespace DVSRegister.Controllers
             bool isValid = await cabService.CheckValidCabAndProviderProfile(providerProfileId, cabUserDto.CabId);
             if (isValid)
             {
+                ServiceDto currentServiceVersion = await cabService.GetServiceDetails(currentServiceId, CabId);
 
-                ServiceDto currentServiceVersion = await cabService.GetServiceDetails(currentServiceId, CabId);              
                 SetServiceDataToSession(CabId, currentServiceVersion);
                 ServiceSummaryViewModel serviceSummary = HttpContext?.Session.Get<ServiceSummaryViewModel>("ServiceSummary") ?? new ServiceSummaryViewModel();
+
+                bool IsPreviousCertExpired = serviceSummary.ConformityExpiryDate < DateTime.Today;
+
                 serviceSummary.IsResubmission = true;
                 serviceSummary.IsReupload = isReupload;
                 serviceSummary.CabId = cabUserDto.CabId;
                 serviceSummary.CabUserId = cabUserDto.Id;
                 serviceSummary.ServiceKey = serviceKey;
                 serviceSummary.ProviderProfileId = providerProfileId;
+                
+                if (IsPreviousCertExpired)
+                {
+                    serviceSummary.FileLink = null;
+                    serviceSummary.FileName = null;
+                    serviceSummary.FileSizeInKb = null;
+                    serviceSummary.ConformityExpiryDate = null;
+                    serviceSummary.ConformityIssueDate = null;
+                }
+                
                 HttpContext?.Session.Set("ServiceSummary", serviceSummary);
                 return View();
             }
