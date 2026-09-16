@@ -55,7 +55,7 @@ namespace DVSRegister
             {
                 options.Preload = true;
                 options.IncludeSubDomains = true;
-                options.MaxAge = TimeSpan.FromDays(1);
+                options.MaxAge = TimeSpan.FromDays(365);
             });
 
             services.AddControllersWithViews(options =>
