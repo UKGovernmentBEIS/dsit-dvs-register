@@ -57,6 +57,7 @@ namespace DVSRegister.UnitTests.Repository
             Assert.Equal(providerProfileTest.PublicContactEmail, providerProfile.PublicContactEmail);
             Assert.Equal(providerProfileTest.ProviderTelephoneNumber, providerProfile.ProviderTelephoneNumber);
             Assert.Equal(providerProfileTest.ProviderWebsiteAddress, providerProfile.ProviderWebsiteAddress);
+            Assert.NotEqual(Guid.Empty, providerProfile.Guid);
 
         }
 
@@ -98,6 +99,40 @@ namespace DVSRegister.UnitTests.Repository
             Assert.Equal(providerProfileTest.ParentCompanyRegisteredName, providerProfile.ParentCompanyRegisteredName);
             Assert.Equal(providerProfileTest.ParentCompanyLocation, providerProfile.ParentCompanyLocation);
 
+        }
+
+        [Fact]
+        public async Task Save_ProviderProfile_Update_PreservesGuid()
+        {
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            var cabRepository = new CabRepository(dbContext, logger);
+            var provider = RepositoryTestHelper.CreateProviderProfile(1, "ABC Company");
+
+            var createResponse = await cabRepository.SaveProviderProfile(provider, "test.user123@test.com");
+            var savedProvider = await dbContext.ProviderProfile.SingleAsync(p => p.Id == createResponse.InstanceId);
+            var originalGuid = savedProvider.Guid;
+            savedProvider.RegisteredName = "Updated Company";
+
+            var updateResponse = await cabRepository.SaveProviderProfile(savedProvider, "test.user123@test.com");
+            var updatedProvider = await dbContext.ProviderProfile.SingleAsync(p => p.Id == updateResponse.InstanceId);
+
+            Assert.True(updateResponse.Success);
+            Assert.Equal(originalGuid, updatedProvider.Guid);
+            Assert.Equal("Updated Company", updatedProvider.RegisteredName);
+        }
+
+        [Fact]
+        public async Task Save_ProviderProfile_DuplicateGuid_ReturnsFailure()
+        {
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            var duplicateGuid = Guid.NewGuid();
+            var firstProvider = RepositoryTestHelper.CreateProviderProfile(1, "First Company");
+            var secondProvider = RepositoryTestHelper.CreateProviderProfile(1, "Second Company");
+            firstProvider.Guid = duplicateGuid;
+            secondProvider.Guid = duplicateGuid;
+            dbContext.ProviderProfile.AddRange(firstProvider, secondProvider);
+
+            await Assert.ThrowsAsync<DbUpdateException>(() => dbContext.SaveChangesAsync());
         }
 
         [Fact]
