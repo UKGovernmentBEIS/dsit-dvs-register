@@ -15,7 +15,8 @@ namespace DVSRegister.UnitTests.Repository
         public DVSRegisterDbContext DbContext { get; private set; }
         public PostgresTestFixture()
         {
-            _postgresContainer = new PostgreSqlBuilder()
+            // The parameterless PostgreSqlBuilder() constructor is obsolete; pin an explicit image instead.
+            _postgresContainer = new PostgreSqlBuilder("postgres:15.1")
                .WithDatabase("unittestdb")
                .WithUsername("postgres")
                .WithPassword("postgres")
