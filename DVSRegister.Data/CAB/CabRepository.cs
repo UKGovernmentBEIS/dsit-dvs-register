@@ -337,6 +337,9 @@ namespace DVSRegister.Data.CAB
                 else
                 {
                     //insert as new service
+                    service.Guid = service.Guid == Guid.Empty
+                        ? Guid.NewGuid()
+                        : service.Guid;
                     service.CreatedTime = DateTime.UtcNow;
                     service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue
                         ? null
@@ -474,6 +477,7 @@ namespace DVSRegister.Data.CAB
                             .ToListAsync();
                         int maxServiceVersion = serviceList.Any() ? serviceList.Max(s => s.ServiceVersion) : 0;
                         service.Id = 0; // to insert as new record
+                        service.Guid = Guid.NewGuid();
                         service.ServiceVersion = maxServiceVersion + 1;
                         service.CreatedTime = DateTime.UtcNow;
                         service.ModifiedTime = DateTime.UtcNow;
