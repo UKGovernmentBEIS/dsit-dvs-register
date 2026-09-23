@@ -185,6 +185,7 @@ namespace DVSRegister.UnitTests.Repository
             Assert.Equal(serviceTest.ServiceName, savedService.ServiceName);
             Assert.Equal(1, savedService.ServiceVersion);
             Assert.Equal(genericResponse.InstanceId, savedService.ServiceKey);
+            Assert.NotEqual(Guid.Empty, savedService.Guid);
             Assert.Null(savedService.HasGPG44);
             Assert.Null(savedService.HasGPG45);
             Assert.Null(savedService.HasSupplementarySchemes);
