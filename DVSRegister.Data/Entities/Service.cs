@@ -12,6 +12,7 @@ namespace DVSRegister.Data.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+        public Guid Guid { get; set; } = System.Guid.NewGuid();
 
         [ForeignKey("ProviderProfile")]
         public int ProviderProfileId { get; set; }

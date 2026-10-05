@@ -155,6 +155,15 @@ namespace DVSRegister.Data
                     .HasDatabaseName("IX_ProviderProfile_Guid");
             });
 
+            modelBuilder.Entity<Service>(entity =>
+            {
+                entity.Property(service => service.Guid)
+                    .HasDefaultValueSql("gen_random_uuid()");
+                entity.HasIndex(service => service.Guid)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Service_Guid");
+            });
+
             modelBuilder.Entity<ActionCategory>()
             .HasIndex(p => new { p.ActionKey })
             .IsUnique(true);
