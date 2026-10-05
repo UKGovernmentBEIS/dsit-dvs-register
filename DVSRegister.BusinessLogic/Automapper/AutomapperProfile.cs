@@ -58,6 +58,7 @@ namespace DVSRegister.BusinessLogic
             .ForMember(dest => dest.ProviderProfileCabMapping, opt => opt.MapFrom(src => src.ProviderProfileCabMapping))
             .ForMember(dest => dest.LastUpdatedInfo, opt => opt.MapFrom<LastModifiedDateResolver>());
             CreateMap<ProviderProfileDto, ProviderProfile>()
+            .ForMember(dest => dest.Guid, opt => opt.Condition(src => src.Guid != Guid.Empty))
             .ForMember(dest => dest.ProviderProfileCabMapping, opt => opt.MapFrom(src => src.ProviderProfileCabMapping))
             .ForMember(dest => dest.Services, opt => opt.MapFrom(src => src.Services));
 

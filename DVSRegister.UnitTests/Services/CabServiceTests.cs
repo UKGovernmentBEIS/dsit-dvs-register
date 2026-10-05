@@ -65,6 +65,22 @@ namespace DVSRegister.UnitTests.Services
         }
 
         [Fact]
+        public async Task SaveProviderProfile_PreservesProvidedGuid()
+        {
+            var providerProfileDto = ServiceTestHelper.CreateProviderProfile(1, "Test company");
+            var providerGuid = Guid.NewGuid();
+            providerProfileDto.Guid = providerGuid;
+            _cabRepository.SaveProviderProfile(Arg.Any<ProviderProfile>(), Arg.Any<string>())
+                .Returns(Task.FromResult(new GenericResponse { InstanceId = 1, Success = true }));
+
+            await _cabService.SaveProviderProfile(providerProfileDto, "test@example.com");
+
+            await _cabRepository.Received(1).SaveProviderProfile(
+                Arg.Is<ProviderProfile>(provider => provider.Guid == providerGuid),
+                Arg.Any<string>());
+        }
+
+        [Fact]
         public async Task SaveProviderProfile_ReturnsFailure()
         {
             var providerProfileDto = ServiceTestHelper.CreateProviderProfile(1, "Test company");           

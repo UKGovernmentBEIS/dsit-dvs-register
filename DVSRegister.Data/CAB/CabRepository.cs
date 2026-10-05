@@ -289,6 +289,9 @@ namespace DVSRegister.Data.CAB
                 }
                 else
                 {
+                    providerProfile.Guid = providerProfile.Guid == Guid.Empty
+                        ? Guid.NewGuid()
+                        : providerProfile.Guid;
                     providerProfile.CreatedTime = DateTime.UtcNow;
                     var entity = await context.ProviderProfile.AddAsync(providerProfile);
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddProvider, loggedInUserEmail);
