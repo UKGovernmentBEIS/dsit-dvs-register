@@ -60,6 +60,19 @@ namespace DVSRegister.Models
                 summaryViewModel.SchemeQualityLevelMapping = [];
         }
 
+        public static void UpdateSupplementarySchemeSelection(
+            ServiceSummaryViewModel summaryViewModel,
+            IEnumerable<SupplementarySchemeDto> availableSchemes,
+            IReadOnlyCollection<int> selectedSchemeIds)
+        {
+            summaryViewModel.SupplementarySchemeViewModel!.SelectedSupplementarySchemes =
+                availableSchemes.Where(scheme => selectedSchemeIds.Contains(scheme.Id)).ToList();
+            summaryViewModel.SchemeIdentityProfileMapping?.RemoveAll(
+                mapping => !selectedSchemeIds.Contains(mapping.SchemeId));
+            summaryViewModel.SchemeQualityLevelMapping?.RemoveAll(
+                mapping => !selectedSchemeIds.Contains(mapping.SchemeId));
+        }
+
         public static void ClearSchemeGpg44(ServiceSummaryViewModel summaryViewModel, int shcemeId)
         {
             if (summaryViewModel.SchemeQualityLevelMapping != null && summaryViewModel.SchemeQualityLevelMapping.Count>0)

@@ -285,7 +285,8 @@ namespace DVSRegister.Controllers
 
             model.SelectedSupplementarySchemeIds ??= [];
 
-            summary.SupplementarySchemeViewModel.SelectedSupplementarySchemes = availableSchemes.Where(s => model.SelectedSupplementarySchemeIds.Contains(s.Id)).ToList();
+            ViewModelHelper.UpdateSupplementarySchemeSelection(
+                summary, availableSchemes, model.SelectedSupplementarySchemeIds);
 
             summary.SupplementarySchemeViewModel.FromSummaryPage = false;
 
@@ -612,7 +613,7 @@ namespace DVSRegister.Controllers
         private async Task<IActionResult> SaveServiceSummary(ServiceSummaryViewModel summaryViewModel, InProgressApplicationParameters? inProgressApplicationParameters)
         {
             summaryViewModel.ServiceStatus = ServiceStatusEnum.Submitted;
-            if (!HasAllRequiredData(summaryViewModel))
+            if (!ServiceSummaryValidator.HasAllRequiredData(summaryViewModel))
             {
                 throw new InvalidOperationException("SummarySaveFail: All fields must be completed before submitting.");
             }
@@ -746,79 +747,6 @@ namespace DVSRegister.Controllers
                     throw new ArgumentException("Invalid action parameter");
             }
         }
-
-        private bool HasAllRequiredData(ServiceSummaryViewModel vm)
-        {
-            if (vm == null)
-                return false;
-
-            bool hasBasicInfo =
-                !string.IsNullOrWhiteSpace(vm.ServiceName) &&
-                vm.TFVersionViewModel?.SelectedTFVersion != null &&
-                !string.IsNullOrWhiteSpace(vm.ServiceURL) &&
-                !string.IsNullOrWhiteSpace(vm.CompanyAddress) &&
-                vm.RoleViewModel?.SelectedRoles != null &&
-                vm.ConformityIssueDate != null &&
-                vm.ConformityExpiryDate != null;
-
-            bool hasGpg44Data =
-                vm.HasGPG44.HasValue &&
-                (!vm.HasGPG44.GetValueOrDefault() ||
-                 (vm.QualityLevelViewModel?.SelectedLevelOfProtections != null &&
-                  vm.QualityLevelViewModel?.SelectedQualityofAuthenticators != null));
-
-            bool hasGpg45Data =
-                vm.HasGPG45.HasValue &&
-                (!vm.HasGPG45.GetValueOrDefault() ||
-                 vm.IdentityProfileViewModel?.SelectedIdentityProfiles != null);
-
-            bool hasSupplementaryData =
-                vm.HasSupplementarySchemes.HasValue &&
-                (!vm.HasSupplementarySchemes.GetValueOrDefault() ||
-                 vm.SupplementarySchemeViewModel?.SelectedSupplementarySchemes != null);
-
-            bool hasTfVersion04Data = true;
-            if (vm.TFVersionViewModel.SelectedTFVersion.Version >= Constants.TFVersion0_4)
-            {
-                hasTfVersion04Data =
-                    vm.ServiceType.HasValue &&
-                    (vm.ServiceType != ServiceTypeEnum.WhiteLabelled ||
-                        // White-labelled checks
-                        (vm.IsUnderpinningServicePublished == true && vm.SelectedUnderPinningServiceId != null) ||
-                        (vm.IsUnderpinningServicePublished == false && vm.SelectedManualUnderPinningServiceId != null) ||
-                        (vm.IsUnderpinningServicePublished == false &&
-                         !string.IsNullOrWhiteSpace(vm.UnderPinningProviderName) &&
-                         !string.IsNullOrWhiteSpace(vm.UnderPinningServiceName) &&
-                         vm.UnderPinningServiceExpiryDate != null &&
-                         !string.IsNullOrWhiteSpace(vm.SelectCabViewModel?.SelectedCabName)))
-                    &&
-                    // Supplementary scheme checks only for TF 0.4
-                    (vm.HasSupplementarySchemes.HasValue &&
-                     (!vm.HasSupplementarySchemes.GetValueOrDefault() ||
-                      ((vm.SchemeIdentityProfileMapping.Count() == vm.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count() &&
-                        vm.SchemeIdentityProfileMapping.All(sc =>
-                            sc.IdentityProfile?.SelectedIdentityProfiles != null)) &&
-                       (vm.SchemeQualityLevelMapping.Count == vm.SupplementarySchemeViewModel.SelectedSupplementarySchemes.Count() &&
-                        vm.SchemeQualityLevelMapping.All(sc => sc.HasGPG44.HasValue &&
-                            (!sc.HasGPG44.GetValueOrDefault() ||
-                            (sc.QualityLevel?.SelectedLevelOfProtections != null &&
-                             sc.QualityLevel?.SelectedQualityofAuthenticators != null)))))));
-            }
-
-            bool hasTfVersion1_0Data = true;
-            if (vm.TFVersionViewModel.SelectedTFVersion.Version == Constants.TFVersion1_0)
-            {
-                hasTfVersion1_0Data = vm.TOUFileName != null && vm.HasVouchingGuidance.HasValue;
-            }
-
-            return hasBasicInfo
-                && hasGpg44Data
-                && hasGpg45Data
-                && hasSupplementaryData
-                && hasTfVersion04Data
-                && hasTfVersion1_0Data;
-        }
-
 
         #endregion
         #endregion
