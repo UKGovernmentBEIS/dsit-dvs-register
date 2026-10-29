@@ -113,12 +113,14 @@ namespace DVSRegister.Data
                     .Include(p => p.Services)!.ThenInclude(s => s.DownloadLogoToken)
                     .FirstOrDefaultAsync(p => p.Id == providerProfileId);
                 var providerRemovalRequest = await context.ProviderRemovalRequest.FirstOrDefaultAsync(p => p.Id == providerRemovalRequestId && p.ProviderProfileId == providerProfileId);
+                var removedAt = DateTime.UtcNow;
                 if (existingProvider != null && providerRemovalRequest != null)
                 {
                     existingProvider.IsInRegister = false;
-                    existingProvider.ModifiedTime = DateTime.UtcNow;
+                    existingProvider.RemovedTime = removedAt;
+                    existingProvider.ModifiedTime = removedAt;
                     existingProvider.ProviderStatus = ProviderStatusEnum.NA;
-                    providerRemovalRequest.RemovedTime = DateTime.UtcNow;
+                    providerRemovalRequest.RemovedTime = removedAt;
                     providerRemovalRequest.Token = null;
                     providerRemovalRequest.TokenId = null;
                     providerRemovalRequest.IsRequestPending = false;
@@ -136,8 +138,7 @@ namespace DVSRegister.Data
                         .ToList();
 
                     foreach (var service in servicesToRemove)
-                    {
-                        var removedAt = DateTime.UtcNow;
+                    {                       
                         service.ServiceStatus = ServiceStatusEnum.Removed;
                         service.ModifiedTime = removedAt;
                         service.RemovedTime = removedAt;                                            
@@ -409,14 +410,15 @@ namespace DVSRegister.Data
                     {                      
 
                         ProviderRemovalRequest providerRemovalRequest = new ();
-                        providerRemovalRequest.RemovedTime = DateTime.UtcNow;                       
+                        providerRemovalRequest.RemovedTime = removedAt;                       
                         providerRemovalRequest.IsRequestPending = false;
                         providerRemovalRequest.ProviderProfileId = provider.Id;
                         providerRemovalRequest.PreviousProviderStatus = provider.ProviderStatus;
                         await context.ProviderRemovalRequest.AddAsync(providerRemovalRequest);
 
-                        provider.ModifiedTime = DateTime.UtcNow;
+                        provider.ModifiedTime = removedAt;
                         provider.IsInRegister = false;
+                        provider.RemovedTime = removedAt;
                         provider.ProviderStatus = ProviderStatusEnum.NA;
                     }
 

@@ -65,6 +65,22 @@ namespace DVSRegister.UnitTests.Services
         }
 
         [Fact]
+        public async Task SaveProviderProfile_PreservesProvidedGuid()
+        {
+            var providerProfileDto = ServiceTestHelper.CreateProviderProfile(1, "Test company");
+            var providerGuid = Guid.NewGuid();
+            providerProfileDto.Guid = providerGuid;
+            _cabRepository.SaveProviderProfile(Arg.Any<ProviderProfile>(), Arg.Any<string>())
+                .Returns(Task.FromResult(new GenericResponse { InstanceId = 1, Success = true }));
+
+            await _cabService.SaveProviderProfile(providerProfileDto, "test@example.com");
+
+            await _cabRepository.Received(1).SaveProviderProfile(
+                Arg.Is<ProviderProfile>(provider => provider.Guid == providerGuid),
+                Arg.Any<string>());
+        }
+
+        [Fact]
         public async Task SaveProviderProfile_ReturnsFailure()
         {
             var providerProfileDto = ServiceTestHelper.CreateProviderProfile(1, "Test company");           
@@ -83,6 +99,8 @@ namespace DVSRegister.UnitTests.Services
         public async Task SaveService_ReturnsSuccess()
         {
             var serviceDto = ServiceTestHelper.CreateService(1, "Test service", 1,ServiceStatusEnum.Submitted,true,true,true,0);
+            var serviceGuid = Guid.NewGuid();
+            serviceDto.Guid = serviceGuid;
             var service = ServiceTestHelper.CreateService(1, "Test service", 1, ServiceStatusEnum.Submitted, true, true, true, 0);
 
             var loggedInUserEmail = "test@example.com";
@@ -95,6 +113,7 @@ namespace DVSRegister.UnitTests.Services
 
             await _cabRepository.Received(1).SaveService(Arg.Is<Service>(p =>
             p.Id == service.Id &&
+            p.Guid == serviceGuid &&
             p.ServiceName == service.ServiceName),
             Arg.Is<string>(email => email == loggedInUserEmail));
         }
