@@ -4,8 +4,8 @@
 
 **Requirements:**
   - Visual Studio or JetBrain Rider
-  - download and install .NET 8 - https://learn.microsoft.com/en-us/dotnet/core/install/macos
-  - dotnet tool install --global dotnet-ef --version 8.*
+  - download and install .NET 10 - https://learn.microsoft.com/en-us/dotnet/core/install/macos
+  - dotnet tool install --global dotnet-ef --version 10.*
   - Node
   - NPM
 
