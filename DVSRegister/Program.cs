@@ -30,7 +30,7 @@ var forwardedHeadersOptions = new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 };
 // Clear the default settings for KnownNetworks and KnownProxies
-forwardedHeadersOptions.KnownNetworks.Clear(); // Clear default networks
+forwardedHeadersOptions.KnownIPNetworks.Clear(); // Clear default networks
 forwardedHeadersOptions.KnownProxies.Clear();  // Clear default proxies
 app.UseForwardedHeaders(forwardedHeadersOptions);
 
