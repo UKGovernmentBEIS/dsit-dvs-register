@@ -11,6 +11,7 @@ namespace DVSRegister.Data.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }        
+        public Guid Guid { get; set; } = System.Guid.NewGuid();
         public string RegisteredName { get; set; }
         public string? TradingName { get; set; }
         public bool? HasRegistrationNumber {  get; set; }

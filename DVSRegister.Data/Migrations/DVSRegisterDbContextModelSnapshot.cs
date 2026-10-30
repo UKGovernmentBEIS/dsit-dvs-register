@@ -1301,6 +1301,11 @@ namespace DVSRegister.Data.Migrations
                     b.Property<int>("EditProviderTokenStatus")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("Guid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
                     b.Property<bool?>("HasParentCompany")
                         .HasColumnType("boolean");
 
@@ -1378,6 +1383,10 @@ namespace DVSRegister.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Guid")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ProviderProfile_Guid");
 
                     b.ToTable("ProviderProfile");
                 });
@@ -2210,6 +2219,11 @@ namespace DVSRegister.Data.Migrations
                     b.Property<decimal?>("FileSizeInKb")
                         .HasColumnType("decimal(10, 1)");
 
+                    b.Property<Guid>("Guid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
                     b.Property<bool?>("HasGPG44")
                         .HasColumnType("boolean");
 
@@ -2300,6 +2314,10 @@ namespace DVSRegister.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CabUserId");
+
+                    b.HasIndex("Guid")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Service_Guid");
 
                     b.HasIndex("ManualUnderPinningServiceId");
 
