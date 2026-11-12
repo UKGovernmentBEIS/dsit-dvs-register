@@ -8,6 +8,7 @@ namespace DVSRegister.BusinessLogic.Models.CAB
     {       
         public int Id { get; set; }
         public Guid Guid { get; set; }
+        public Guid ServiceGuid { get; set; }
         public int ProviderProfileId { get; set; }
         public ProviderProfileDto Provider { get; set; }
         public string ServiceName { get; set; }

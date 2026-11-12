@@ -10,6 +10,7 @@ using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.Models;
 using DVSRegister.Models.Register;
 using DVSRegister.Models.UI;
+using DVSRegister.PublishedService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
@@ -157,37 +158,18 @@ namespace DVSRegister.Controllers
         #endregion
 
         [HttpGet("provider-details")]
-        public async Task<IActionResult> ProviderDetails(int providerId, bool? fromServicePage, int? previousServiceId)
+        public async Task<IActionResult> ProviderDetails(int providerId, bool? fromServicePage)
         {
             if (fromServicePage == true)
             {
-                ViewBag.FromServicePage = fromServicePage;
-                ViewBag.PreviousServiceId = previousServiceId;
+                ViewBag.FromServicePage = true;
+                        ViewBag.PreviousServiceUrl = PublishedServiceNavigation.GetPreviousServiceUrl(Request);
             }
 
             ProviderProfileDto providerProfileDto = await registerService.GetProviderWithServiceDeatils(providerId);
             if (providerProfileDto == null)
                 return RedirectToAction("RegisterPageNotFound", "Error");
             return View(providerProfileDto);
-        }
-
-        [HttpGet("service-details")]
-        public async Task<IActionResult> ServiceDetails(int serviceId, bool? fromProviderPage, int? previousServiceId)
-        {
-            if (fromProviderPage == true)
-            {
-                ViewBag.FromProviderPage = true;
-            }
-
-            if (previousServiceId != null)
-            {
-                ViewBag.PreviousServiceId = previousServiceId;
-            }
-
-            ServiceDto service = await registerService.GetServiceDetails(serviceId);
-            if (service == null)
-                return RedirectToAction("RegisterPageNotFound", "Error");
-            return View(service);
         }
 
         [EnableRateLimiting("DownloadRequestLimit")]

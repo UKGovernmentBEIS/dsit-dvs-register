@@ -62,6 +62,11 @@ namespace DVSRegister.UnitTests.Repository
 
        
 
+        public DVSRegisterDbContext CreateDbContext() =>
+            new(new DbContextOptionsBuilder<DVSRegisterDbContext>()
+                .UseNpgsql(_postgresContainer.GetConnectionString())
+                .Options);
+
         public string GetConnectionString()
         {
             return _postgresContainer.GetConnectionString();

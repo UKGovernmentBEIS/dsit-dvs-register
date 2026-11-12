@@ -1,5 +1,6 @@
 ﻿using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
+using DVSRegister.Data;
 using DVSRegister.Data.Entities;
 
 namespace DVSRegister.UnitTests
@@ -103,6 +104,7 @@ namespace DVSRegister.UnitTests
             {
 
             ServiceKey = serviceKey,
+            ServiceGuid = Guid.NewGuid(),
             ProviderProfileId = providerProfileId,
              ServiceName = serviceName,           
             WebSiteAddress = "https://www.sample-service.com",
@@ -187,6 +189,32 @@ namespace DVSRegister.UnitTests
             return token;
         }
 
+        // Version 1 is published; version 2 is a newer draft sharing the same ServiceGuid
+        public static async Task<(ProviderProfile Provider, Service Published, Service Draft)>
+            SeedPublishedWithNewerDraftAsync(DVSRegisterDbContext dbContext)
+        {
+            ProviderProfile provider = CreateProviderProfile(1, "Published provider");
+            provider.IsInRegister = true;
+            dbContext.ProviderProfile.Add(provider);
+            await dbContext.SaveChangesAsync();
 
+            Service published = CreateService(1, "Published service", provider.Id,
+                ServiceStatusEnum.Published, false, false, false, 5001);
+            published.IsInRegister = true;
+            published.ServiceVersion = 1;
+            published.IsCurrent = false;
+            dbContext.Service.Add(published);
+            await dbContext.SaveChangesAsync();
+
+            Service draft = CreateService(1, "Newer draft", provider.Id,
+                ServiceStatusEnum.SavedAsDraft, false, false, false, 5001);
+            draft.ServiceGuid = published.ServiceGuid;
+            draft.ServiceVersion = 2;
+            draft.IsInRegister = false;
+            dbContext.Service.Add(draft);
+            await dbContext.SaveChangesAsync();
+
+            return (provider, published, draft);
+        }
     }
 }

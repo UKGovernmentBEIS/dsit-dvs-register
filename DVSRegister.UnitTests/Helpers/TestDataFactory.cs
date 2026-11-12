@@ -39,5 +39,19 @@ namespace DVSRegister.UnitTests.Helpers
                 IsAmendment = isAmendment
             };
         }
+
+        public static ServiceDto CreatePublishedServiceDto(Guid providerGuid, string providerName, int providerId, int serviceId, Guid serviceGuid, string serviceName) => new()
+        {
+            Id = serviceId,
+            ServiceGuid = serviceGuid,
+            ProviderProfileId = providerId,
+            ServiceName = serviceName,
+            Provider = new ProviderProfileDto { Id = providerId, Guid = providerGuid, RegisteredName = providerName },
+            TrustFrameworkVersion = new TrustFrameworkVersionDto { TrustFrameworkName = "Trust framework", Version = 1.0m },
+            CabUser = new CabUserDto { Cab = new CabDto { CabName = "Test CAB" } },
+            ServiceRoleMapping = [],
+            ConformityIssueDate = DateTime.UtcNow.AddYears(-1),
+            ConformityExpiryDate = DateTime.UtcNow.AddYears(1)
+        };
     }
 }

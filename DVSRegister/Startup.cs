@@ -1,5 +1,3 @@
-﻿using System.Data.Common;
-using System.Threading.RateLimiting;
 using Amazon;
 using Amazon.S3;
 using AutoMapper.Internal;
@@ -24,12 +22,15 @@ using DVSRegister.Data.CabTransfer;
 using DVSRegister.Data.Edit;
 using DVSRegister.Data.Repositories;
 using DVSRegister.Middleware;
+using DVSRegister.PublishedService;
 using DVSRegister.Services;
 using DVSRegister.Services.Cookies;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
+using System.Threading.RateLimiting;
 
 namespace DVSRegister
 {
@@ -169,6 +170,7 @@ namespace DVSRegister
             services.AddTransient<IConsentEmailSender, ConsentEmailSender>();
             services.AddTransient<ICabTransferEmailSender, CabTransferEmailSender>();
             services.AddTransient<IProviderEditEmailSender, ProviderEditEmailSender>();
+            services.AddPublishedService();
             services.AddScoped(opt =>
             {
                 string userPoolId = string.Format(configuration.GetValue<string>("UserPoolId"));

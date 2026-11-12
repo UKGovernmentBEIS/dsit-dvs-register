@@ -11,6 +11,7 @@ public class Error
         Message = message;
     }
 
+    public static Error Custom(string code, string message) => new Error(code, message);
     public static Error NotFound(string message = "Resource not found") =>
         new Error("NOT_FOUND", message);
 

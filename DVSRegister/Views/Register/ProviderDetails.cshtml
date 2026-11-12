@@ -1,5 +1,6 @@
 ﻿@using DVSRegister.BusinessLogic.Models.CAB
 @using DVSRegister.Extensions
+@using DVSRegister.CommonUtility;
 @model ProviderProfileDto
 
 @{
@@ -9,18 +10,11 @@
 }                                                       
 
 <div class="govuk-width-container">
-    @if (ViewBag.FromServicePage == true )
+    @if (ViewBag.FromServicePage == true)
     {
-        @if (ViewBag.PreviousServiceId != null)
-        {       
-            <a href = "@Url.Action("ServiceDetails", "Register", new { serviceId = ViewBag.PreviousServiceId })" class= "govuk-back-link" > Back </a>
-        }
-        else
-        {
-            <a href="@Url.Action("AllServices", "Register", null)" class="govuk-back-link"> Back </a>
-        }       
+        <a href="@(ViewBag.PreviousServiceUrl ?? Url.Action("AllServices", "Register", null))" class="govuk-back-link">Back</a>
     }
-    else 
+    else
     {
         <a href="@Url.Action("AllProviders", "Register", null)" class="govuk-back-link">Back</a>
     }
@@ -66,7 +60,7 @@
                                     <dt class="govuk-summary-list__key">Service Name</dt>
                                     <dd class="govuk-summary-list__value">@service.ServiceName</dd>
                                     <dd class="govuk-summary-list__actions">
-                                        <a class="govuk-link" aria-label="View details for @service.ServiceName" href="@Url.Action("ServiceDetails", "Register", new { serviceId = service.Id, fromProviderPage = true })">View Details</a>
+                                        <a class="govuk-link" aria-label="View details for @service.ServiceName" href="@ServiceLinks.Latest(Model.Guid, service.ServiceGuid)">View Details</a>
                                     </dd>
                                 </div>
                             }                            
