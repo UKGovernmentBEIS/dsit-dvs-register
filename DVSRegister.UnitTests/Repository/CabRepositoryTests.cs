@@ -447,6 +447,64 @@ namespace DVSRegister.UnitTests.Repository
             Assert.Equal(0, savedAmendedService?.ServiceSupSchemeMapping?.Count);
         }
 
+        [Fact]
+        public async Task Save_Service_NewService_GetsFreshServiceGuid_IgnoringCallerValue()
+        {
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
+            int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
+            Guid suppliedGuid = Guid.NewGuid();
+            Service service = RepositoryTestHelper.CreateService(1, "guid service", providerProfileId, ServiceStatusEnum.Submitted, true, true, true, 0);
+            service.ServiceGuid = suppliedGuid;
+
+            GenericResponse response = await cabRepository.SaveService(service, "test.user123@test.com");
+
+            Service saved = await dbContext.Service.AsNoTracking().SingleAsync(s => s.Id == response.InstanceId);
+            Assert.NotEqual(Guid.Empty, saved.ServiceGuid);
+            Assert.NotEqual(suppliedGuid, saved.ServiceGuid);
+        }
+
+        [Fact]
+        public async Task Save_Service_DifferentServices_GetDifferentServiceGuids()
+        {
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
+            int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
+
+            GenericResponse first = await cabRepository.SaveService(
+                RepositoryTestHelper.CreateService(1, "service one", providerProfileId, ServiceStatusEnum.Submitted, true, true, true, 0), "test.user123@test.com");
+            GenericResponse second = await cabRepository.SaveService(
+                RepositoryTestHelper.CreateService(1, "service two", providerProfileId, ServiceStatusEnum.Submitted, true, true, true, 0), "test.user123@test.com");
+
+            var guids = await dbContext.Service.AsNoTracking()
+                .Where(s => s.Id == first.InstanceId || s.Id == second.InstanceId)
+                .Select(s => s.ServiceGuid).ToListAsync();
+            Assert.Equal(2, guids.Distinct().Count());
+        }
+
+        [Theory]
+        [InlineData(ServiceStatusEnum.Submitted)]
+        [InlineData(ServiceStatusEnum.SavedAsDraft)]
+        public async Task Save_Service_Reapplication_SharesServiceGuidWithFirstVersion(ServiceStatusEnum reapplicationStatus)
+        {
+            InitializeDbContext(out DVSRegisterDbContext dbContext);
+            CabRepository cabRepository = new(dbContext, logger);
+            int providerProfileId = await SaveProviderProfileHelper("company name", "test@test.com", 1, cabRepository);
+            GenericResponse first = await cabRepository.SaveService(
+                RepositoryTestHelper.CreateService(1, "version one", providerProfileId, ServiceStatusEnum.Submitted, true, true, true, 0), "test.user123@test.com");
+            Service version1 = await dbContext.Service.AsNoTracking().SingleAsync(s => s.Id == first.InstanceId);
+
+            Service reapplication = RepositoryTestHelper.CreateService(1, "version two", providerProfileId, reapplicationStatus, null, null, null, version1.ServiceKey);
+            reapplication.ServiceRoleMapping = [new() { RoleId = 1 }];
+            GenericResponse second = await cabRepository.SaveServiceReApplication(reapplication, "test.user123@test.com", false, null);
+
+            Service version2 = await dbContext.Service.AsNoTracking().SingleAsync(s => s.Id == second.InstanceId);
+            Assert.NotEqual(version1.Id, version2.Id);
+            Assert.Equal(2, version2.ServiceVersion);
+            Assert.Equal(version1.ServiceGuid, version2.ServiceGuid);
+            Assert.NotEqual(version1.Guid, version2.Guid); // per-version Guid is unchanged behaviour
+        }
+
         #endregion
 
         #region Private methods

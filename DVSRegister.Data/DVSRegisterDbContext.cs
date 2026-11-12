@@ -162,6 +162,16 @@ namespace DVSRegister.Data
                 entity.HasIndex(service => service.Guid)
                     .IsUnique()
                     .HasDatabaseName("IX_Service_Guid");
+
+                entity.Property(service => service.ServiceGuid)
+                .IsRequired();
+                entity.HasIndex(service => new
+                {
+                    service.ServiceGuid,
+                    service.ServiceVersion
+                })
+                .IsUnique()
+                .HasDatabaseName("IX_Service_ServiceGuid_ServiceVersion");
             });
 
             modelBuilder.Entity<ActionCategory>()
