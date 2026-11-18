@@ -9,8 +9,10 @@ public sealed class ResolveLegacyServiceLink(DVSRegisterDbContext dbContext) : I
 {
     public async Task<Result<string>> HandleAsync(int id, CancellationToken ct)
     {
+        // Only published rows (or removed ones, which are no longer in the register) may redirect,
+        // so a never-published version (for example a submitted v3) does not reveal that it exists
         var row = await dbContext.Service.AsNoTracking()
-            .Where(s => s.Id == id && s.ServiceStatus != ServiceStatusEnum.SavedAsDraft)
+            .Where(s => s.Id == id && (s.IsInRegister || s.ServiceStatus == ServiceStatusEnum.Removed))
             .Select(s => new { s.ServiceGuid, s.ProviderProfileId, ProviderGuid = s.Provider.Guid })
             .SingleOrDefaultAsync(ct);
 

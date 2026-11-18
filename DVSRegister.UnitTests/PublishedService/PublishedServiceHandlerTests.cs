@@ -86,6 +86,7 @@ namespace DVSRegister.UnitTests.PublishedService
             var (provider, published, draft) = await RepositoryTestHelper.SeedPublishedWithNewerDraftAsync(dbContext);
             // old public row that was superseded by the currently published version
             published.IsInRegister = false;
+            published.ServiceStatus = ServiceStatusEnum.Removed;
             draft.ServiceStatus = ServiceStatusEnum.Published;
             draft.IsInRegister = true;
             await dbContext.SaveChangesAsync();
@@ -125,9 +126,30 @@ namespace DVSRegister.UnitTests.PublishedService
             await using var dbContext = fixture.CreateDbContext();
             var (_, published, _) = await RepositoryTestHelper.SeedPublishedWithNewerDraftAsync(dbContext);
             published.IsInRegister = false;
+            published.ServiceStatus = ServiceStatusEnum.Removed;
             await dbContext.SaveChangesAsync();
 
             var result = await new ResolveLegacyServiceLink(dbContext).HandleAsync(published.Id, CancellationToken.None);
+
+            AssertNotFound(result);
+        }
+
+        [Theory]
+        [InlineData(ServiceStatusEnum.SavedAsDraft)]
+        [InlineData(ServiceStatusEnum.Submitted)]
+        [InlineData(ServiceStatusEnum.Received)]
+        [InlineData(ServiceStatusEnum.Resubmitted)]
+        [InlineData(ServiceStatusEnum.UpdatesRequested)]
+        [InlineData(ServiceStatusEnum.AmendmentsRequired)]
+        public async Task ResolveLegacyServiceLink_NeverPublishedRow_ReturnsNotFound(ServiceStatusEnum status)
+        {
+            await using var dbContext = fixture.CreateDbContext();
+            var (_, _, draft) = await RepositoryTestHelper.SeedPublishedWithNewerDraftAsync(dbContext);
+            draft.ServiceStatus = status;
+            draft.IsInRegister = false;
+            await dbContext.SaveChangesAsync();
+
+            var result = await new ResolveLegacyServiceLink(dbContext).HandleAsync(draft.Id, CancellationToken.None);
 
             AssertNotFound(result);
         }
