@@ -10,14 +10,15 @@ public sealed class PublishedServiceController(IGetPublishedService getPublished
         Redirect(ServiceLinks.Latest(providerGuid, serviceGuid));
 
     [HttpGet("~/organisation/{providerGuid:guid}/service/{serviceGuid:guid}/version/latest")]
-    public async Task<IActionResult> Latest(Guid providerGuid, Guid serviceGuid, CancellationToken ct)
+    public async Task<IActionResult> Latest(Guid providerGuid, Guid serviceGuid, bool? fromProviderPage, CancellationToken ct)
     {
         var result = await getPublishedService.HandleAsync(providerGuid, serviceGuid, ct);
 
         return result.Match(
             model => View("Index", model with
             {
-                PreviousServiceUrl = PublishedServiceNavigation.GetBackUrl(Request, model.UnderpinningService)
+                PreviousServiceUrl = PublishedServiceNavigation.GetBackUrl(Request, model.UnderpinningService),
+                FromProviderPage = fromProviderPage == true
             }),
             PublishedServiceActionResult.FromError);
     }

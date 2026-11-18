@@ -30,6 +30,7 @@ public sealed record PublishedServiceViewModel(
     ManualUnderpinningServiceViewModel? ManualUnderpinningService)
 {
     public string? PreviousServiceUrl { get; init; }
+    public bool FromProviderPage { get; init; }
 }
 
 public sealed record IdentityProfileGroupViewModel(string Type, IReadOnlyList<string> Names);

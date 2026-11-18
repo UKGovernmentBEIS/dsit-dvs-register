@@ -14,6 +14,10 @@
     {
         <a href="@Model.PreviousServiceUrl" class="govuk-back-link">Back</a>
     }
+    else if (Model.FromProviderPage)
+    {
+        <a href="@Url.Action("ProviderDetails", "Register", new { providerId = Model.ProviderProfileId })" class="govuk-back-link">Back</a>
+    }
     else
     {
         <a href="@Url.Action("AllServices", "Register", null)" class="govuk-back-link">Back</a>

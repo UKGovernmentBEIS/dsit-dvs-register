@@ -60,7 +60,7 @@
                                     <dt class="govuk-summary-list__key">Service Name</dt>
                                     <dd class="govuk-summary-list__value">@service.ServiceName</dd>
                                     <dd class="govuk-summary-list__actions">
-                                        <a class="govuk-link" aria-label="View details for @service.ServiceName" href="@ServiceLinks.Latest(Model.Guid, service.ServiceGuid)">View Details</a>
+                                        <a class="govuk-link" aria-label="View details for @service.ServiceName" href="@Url.Action("Latest", "PublishedService", new { providerGuid = Model.Guid, serviceGuid = service.ServiceGuid, fromProviderPage = true })">View Details</a>
                                     </dd>
                                 </div>
                             }                            
