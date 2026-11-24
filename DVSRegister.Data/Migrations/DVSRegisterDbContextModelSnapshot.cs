@@ -18,7 +18,7 @@ namespace DVSRegister.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.27")
+                .HasAnnotation("ProductVersion", "10.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -2275,6 +2275,9 @@ namespace DVSRegister.Data.Migrations
                     b.Property<DateTime?>("ResubmissionTime")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<Guid>("ServiceGuid")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("ServiceKey")
                         .HasColumnType("integer");
 
@@ -2326,6 +2329,10 @@ namespace DVSRegister.Data.Migrations
                     b.HasIndex("TrustFrameworkVersionId");
 
                     b.HasIndex("UnderPinningServiceId");
+
+                    b.HasIndex("ServiceGuid", "ServiceVersion")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Service_ServiceGuid_ServiceVersion");
 
                     b.ToTable("Service");
                 });

@@ -260,7 +260,7 @@
                                 <li class="govuk-grid-row govuk-!-margin-bottom-6">
                                     <div class="govuk-grid-column-one-half">
                                         <h3 class="govuk-heading-m govuk-!-margin-bottom-2">
-                                            <a href="@Url.Action("ServiceDetails", "Register", new { serviceId = service.Id})" class="govuk-link">
+                                            <a href="@ServiceLinks.Latest(service.Provider.Guid, service.ServiceGuid)" class="govuk-link">
                                                 @service.ServiceName
                                             </a>
                                         </h3>
