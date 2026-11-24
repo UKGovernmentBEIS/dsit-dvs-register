@@ -289,9 +289,7 @@ namespace DVSRegister.Data.CAB
                 }
                 else
                 {
-                    providerProfile.Guid = providerProfile.Guid == Guid.Empty
-                        ? Guid.NewGuid()
-                        : providerProfile.Guid;
+                    providerProfile.Guid = Guid.NewGuid();
                     providerProfile.CreatedTime = DateTime.UtcNow;
                     var entity = await context.ProviderProfile.AddAsync(providerProfile);
                     await context.SaveChangesAsync(TeamEnum.CAB, EventTypeEnum.AddProvider, loggedInUserEmail);
@@ -323,6 +321,7 @@ namespace DVSRegister.Data.CAB
                     .Include(x => x.ManualUnderPinningService)
                     .Where(x => x.ServiceKey > 0 && x.ServiceKey == service.ServiceKey && service.IsCurrent == true)
                     .FirstOrDefaultAsync();
+                // An existing current service means a draft update or reapplication, so update that record
                 if (existingService != null && existingService.Id > 0)
                 {
                     // save as draft : update existing records
@@ -337,9 +336,8 @@ namespace DVSRegister.Data.CAB
                 else
                 {
                     //insert as new service
-                    service.Guid = service.Guid == Guid.Empty
-                        ? Guid.NewGuid()
-                        : service.Guid;
+                    service.Guid = Guid.NewGuid(); // assign new guid for each new service addition
+                    service.ServiceGuid = Guid.NewGuid(); // assign new service guid for each new service addition
                     service.CreatedTime = DateTime.UtcNow;
                     service.ConformityExpiryDate = service.ConformityExpiryDate == DateTime.MinValue
                         ? null
@@ -478,6 +476,7 @@ namespace DVSRegister.Data.CAB
                         int maxServiceVersion = serviceList.Any() ? serviceList.Max(s => s.ServiceVersion) : 0;
                         service.Id = 0; // to insert as new record
                         service.Guid = Guid.NewGuid();
+                        service.ServiceGuid = existingService.ServiceGuid; // keep the same guid for reapplication
                         service.ServiceVersion = maxServiceVersion + 1;
                         service.CreatedTime = DateTime.UtcNow;
                         service.ModifiedTime = DateTime.UtcNow;

@@ -54,6 +54,7 @@ else
 app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseMiddleware<LegacyServiceLinkRedirectMiddleware>();
 app.UseCookiePolicy();
 app.UseRouting();
 app.UseSession();
