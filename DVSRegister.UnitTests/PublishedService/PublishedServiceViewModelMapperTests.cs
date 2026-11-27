@@ -1,5 +1,6 @@
 using DVSRegister.BusinessLogic.Models;
 using DVSRegister.BusinessLogic.Models.CAB;
+using DVSRegister.CommonUtility;
 using DVSRegister.CommonUtility.Models;
 using DVSRegister.CommonUtility.Models.Enums;
 using DVSRegister.PublishedService;
@@ -29,6 +30,24 @@ namespace DVSRegister.UnitTests.PublishedService
             Assert.Equal(["Identity", "Holder"], model.Roles);
             Assert.Null(model.UnderpinningService);
             Assert.Null(model.ManualUnderpinningService);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void Map_MissingOptionalProviderFields_ShowNotApplicable(string? missing)
+        {
+            var dto = CreateDto(Guid.NewGuid(), Guid.NewGuid());
+            dto.Provider.TradingName = missing;
+            dto.Provider.PublicContactEmail = missing;
+            dto.Provider.ProviderTelephoneNumber = missing;
+
+            var model = PublishedServiceViewModelMapper.Map(dto);
+
+            Assert.Equal(Constants.NullFieldsDisplay, model.ProviderTradingName);
+            Assert.Equal(Constants.NullFieldsDisplay, model.ProviderPublicContactEmail);
+            Assert.Equal(Constants.NullFieldsDisplay, model.ProviderTelephoneNumber);
         }
 
         [Fact]
